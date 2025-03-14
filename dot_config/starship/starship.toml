@@ -1,0 +1,186 @@
+# NOTE:
+#                     `. ___
+#                     __,' __`.                _..----....____
+#         __...--.'``;.   ,.   ;``--..__     .'    ,-._    _.-'
+#   _..-''-------'   `'   `'   `'     O ``-''._   (,;') _,'
+# ,'________________                          \`-._`-','
+#  `._              ```````````------...___   '-.._'-:
+#     ```--.._      ,.                     ````--...__\-.
+#             `.--. `-`   starship            ____    |  |`
+#               `. `.                       ,'`````.  ;  ;`
+#                 `._`.        __________   `.      \'__/`
+#                    `-:._____/______/___/____`.     \  `
+#                                |       `._    `.    \
+#                                `._________`-.   `.   `.___
+#                                              SSt  `------'`
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = false
+
+palette = "catppuccin_mocha"
+
+format = """
+[](subtext1)\
+[$os](bg:subtext1 fg:mantle)\
+[](bg:blue fg:subtext1)\
+$directory\
+[](fg:blue bg:green)\
+$git_branch\
+$git_status\
+[](fg:green bg:mauve)\
+$bun\
+$c\
+$docker_context\
+$elixir\
+$elm\
+$golang\
+$gradle\
+$haskell\
+$java\
+$julia\
+$lua\
+$nim\
+$nix_shell\
+$nodejs\
+$ocaml\
+$php\
+$python\
+$rust\
+$scala\
+$zig\
+[](fg:mauve bg:mantle)\
+$time\
+[ ](fg:mantle)\
+\n$character"""
+
+[package]
+disabled = true
+
+[os]
+disabled = false
+style = "bg:subtext1 fg:mantle"
+format = "[$symbol]($style)"
+
+[os.symbols]
+Arch = "  "
+Linux = "  "
+Macos = "  "
+Windows = "  "
+
+[directory]
+style = "fg:base bg:blue"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Calibre Library" = "  "
+"chezmoi" = " 󱏖 "
+"Code" = "  "
+"Desktop" = " 󰇄 "
+"Documents" = " 󰈙 "
+"Dropbox" = " 󰇣 "
+"Downloads" = "  "
+"Movies" = "  "
+"Music" = "  "
+"Pictures" = "  "
+
+[bun]
+format = '[[ 🥟 bun ](fg:base bg:mauve)]($style)'
+
+[c]
+format = '[[  c ](fg:base bg:mauve)]($style)'
+
+[docker_context]
+format = '[[  docker ](fg:base bg:mauve)]($style)'
+
+[elixir]
+format = '[[  elixir ](fg:base bg:mauve)]($style)'
+
+[elm]
+format = '[[  elm ](fg:base bg:mauve)]($style)'
+
+[git_branch]
+symbol = " "
+format = '[[ $symbol $branch ](fg:base bg:green)]($style)'
+
+[git_status]
+format = '[[($all_status$ahead_behind )](fg:base bg:green)]($style)'
+
+[golang]
+format = '[[  go ](fg:base bg:mauve)]($style)'
+
+[gradle]
+format = '[[  gradle ](fg:base bg:mauve)]($style)'
+
+[haskell]
+format = '[[  haskell ](fg:base bg:mauve)]($style)'
+
+[java]
+format = '[[  java ](fg:base bg:mauve)]($style)'
+
+[julia]
+format = '[[  julia ](fg:base bg:mauve)]($style)'
+
+[lua]
+format = '[[  lua ](fg:base bg:mauve)]($style)'
+
+[nim]
+format = '[[ 󰆥 nim ](fg:base bg:mauve)]($style)'
+
+[nix_shell]
+format = '[[ 󱄅 nix ](fg:base bg:mauve)]($style)'
+
+[nodejs]
+format = '[[  node ](fg:base bg:mauve)]($style)'
+
+[ocaml]
+format = '[[  ocaml ](fg:base bg:mauve)]($style)'
+
+[php]
+format = '[[  php ](fg:base bg:mauve)]($style)'
+
+[python]
+format = '[[  python ](fg:base bg:mauve)]($style)'
+
+[rust]
+format = '[[  rust ](fg:base bg:mauve)]($style)'
+
+[scala]
+format = '[[  scala ](fg:base bg:mauve)]($style)'
+
+[time]
+disabled = false
+time_format = "%l:%M %p"
+format = '[[  $time ](fg:blue bg:mantle)]($style)'
+
+[zig]
+format = '[[  zig ](fg:mauve bg:base)]($style)'
+
+[palettes.catppuccin_mocha]
+rosewater = "#f5e0dc"
+flamingo = "#f2cdcd"
+pink = "#f5c2e7"
+mauve = "#cba6f7"
+red = "#f38ba8"
+maroon = "#eba0ac"
+peach = "#fab387"
+yellow = "#f9e2af"
+green = "#a6e3a1"
+teal = "#94e2d5"
+sky = "#89dceb"
+sapphire = "#74c7ec"
+blue = "#89b4fa"
+lavender = "#b4befe"
+text = "#cdd6f4"
+subtext1 = "#bac2de"
+subtext0 = "#a6adc8"
+overlay2 = "#9399b2"
+overlay1 = "#7f849c"
+overlay0 = "#6c7086"
+surface2 = "#585b70"
+surface1 = "#45475a"
+surface0 = "#313244"
+base = "#1e1e2e"
+mantle = "#181825"
+crust = "#11111b"

@@ -1,0 +1,25 @@
+{{- $email := promptStringOnce . "email" "Email address" -}}
+{{- $name := promptStringOnce . "name" "Username" -}}
+{{- $geminiKey := promptStringOnce . "geminiKey" "Gemini API Key" -}}
+
+encryption = "age"
+
+[age]
+    identity = "~/.config/key.txt"
+    recipient = "age1tg4yymck048fyv8dh389dgh6uuhmhnz6pusevndukqlslxru8ctqvne8el"
+
+[git]
+    autoCommit = true
+    autoPush = true
+
+[data]
+    email = {{ $email | quote }}
+    name = {{ $name | quote }}
+    GeminiKey = {{ $geminiKey | quote }}
+    {{ if eq .chezmoi.os "linux" }}
+    {{- $keyboard := promptStringOnce . "keyboard" "Enter 'laptop' or 'desktop' ..." -}}
+    keyboard = {{ $keyboard | quote }}
+    {{ else }}
+    keyboard = "desktop"
+    {{ end }}
+# vim: ft=toml
