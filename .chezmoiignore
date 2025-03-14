@@ -15,24 +15,6 @@ AppData/
 .glzr/
 {{ end }}
 
-{{ if and (ne .chezmoi.os "darwin") (ne .chezmoi.os "linux") }}
-.zshenv
-.config/zsh/
-{{ end }}
-
-{{ if ne .chezmoi.os "darwin" }}
-Brewfile
-setup_mac.sh
-.config/.macos
-.config/ssh.sh
-.config/homebrew/
-.config/linearmouse/
-.config/odmpy/
-.config/sketchybar/
-.config/skhd/
-.config/yabai/
-{{ end }}
-
 {{ if ne .chezmoi.os "linux" }}
 .gtkrc-2.0
 setup_arch.sh
@@ -50,4 +32,6 @@ setup_arch.sh
 .config/sddm/
 .config/xsettingsd/
 .config/zathura/
+.zshenv
+.config/zsh/
 {{ end }}
