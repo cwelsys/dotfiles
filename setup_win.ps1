@@ -130,7 +130,7 @@ $env:XDG_CONFIG_HOME = "$env:USERPROFILE\AppData\Local"
 Set-Location $env:XDG_CONFIG_HOME
 
 Write-Host "Moving dotfiles..."
-chezmoi init --apply
+chezmoi init --apply https://github.com/cwelsys/.dotfiles.git
 
 Write-Host "Configuring Windows Terminal..."
 try {
