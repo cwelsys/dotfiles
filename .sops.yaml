@@ -1,3 +1,0 @@
-creation_rules:
-  - path_regex: env\.json$
-    age: age1tg4yymck048fyv8dh389dgh6uuhmhnz6pusevndukqlslxru8ctqvne8el # Your public key from key.txt
