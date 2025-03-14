@@ -1,20 +1,17 @@
-param(
-	[Parameter(Mandatory = $true)]
-	[string]$FilePath
-)
+# Get content from stdin
+$input | Out-String | Set-Content -Path $args[0] -NoNewline
 
 $keyPath = Join-Path $env:USERPROFILE ".config\key.txt"
 if (Test-Path $keyPath) {
 	$env:SOPS_AGE_KEY_FILE = $keyPath
 	try {
-		# Attempt to encrypt
-		$encrypted = sops -e $FilePath
-		$encrypted
+		# Encrypt and output to stdout
+		sops -e $args[0]
 	} catch {
-		# If encryption fails, return content as-is
-		Get-Content $FilePath -Raw
+		# If encryption fails, output original content
+		Get-Content $args[0] -Raw
 	}
 } else {
-	# If no key is present, return content as-is
-	Get-Content $FilePath -Raw
+	# If no key present, output original content
+	Get-Content $args[0] -Raw
 }
