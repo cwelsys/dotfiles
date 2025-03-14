@@ -9,13 +9,15 @@ if (Test-Path $keyPath) {
 		$tempFile = [System.IO.Path]::GetTempFileName()
 		$content | Set-Content -Path $tempFile -NoNewline
 
-		# Encrypt and output to stdout
-		sops -e $tempFile
+		# Encrypt with explicit age recipient
+		$recipient = "age1tg4yymck048fyv8dh389dgh6uuhmhnz6pusevndukqlslxru8ctqvne8el"
+		sops --age $recipient -e $tempFile
 
 		# Clean up
 		Remove-Item $tempFile -Force
 	} catch {
 		# If encryption fails, output original content
+		Write-Error $_.Exception.Message
 		$content
 	}
 } else {

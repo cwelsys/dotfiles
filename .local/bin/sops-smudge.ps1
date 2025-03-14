@@ -10,13 +10,19 @@ if (Test-Path $keyPath) {
 		$content | Set-Content -Path $tempFile -NoNewline
 
 		# Attempt to decrypt
-		$decrypted = sops -d $tempFile
+		$decrypted = sops -d $tempFile 2>&1
+		if ($LASTEXITCODE -eq 0) {
+			$decrypted
+		} else {
+			Write-Error "Decryption failed: $decrypted"
+			$content
+		}
 
-		# Clean up and output
+		# Clean up
 		Remove-Item $tempFile -Force
-		$decrypted
 	} catch {
 		# If decryption fails, output original content
+		Write-Error $_.Exception.Message
 		$content
 	}
 } else {
