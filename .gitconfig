@@ -1,0 +1,4 @@
+[filter "sops"]
+clean = pwsh -NoProfile -NonInteractive -File .local/bin/sops-clean.ps1 %f
+smudge = pwsh -NoProfile -NonInteractive -File .local/bin/sops-smudge.ps1
+required = true
