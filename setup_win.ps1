@@ -105,27 +105,25 @@ Read-Host ":: Please put key.txt in ~/.config/. Press Enter to continue"
 
 Write-Host "Configuring environment variables..."
 function Set-UserEnvironmentVariables {
-    param (
-        [array]$variables
-    )
+    $env:SOPS_AGE_KEY_FILE = "C:\Users\cwel\.config\key.txt"
+    $envConfig = sops -d env.json | ConvertFrom-Json
 
-    foreach ($variable in $variables) {
-        $variableName = $variable.Name
-        $variablePath = $variable.Path
-        $variableValue = [System.IO.Path]::Combine($env:USERPROFILE, $variablePath)
+    foreach ($variable in $envConfig.environmentVariables) {
+        $variableName = $variable.name
+        $variablePath = $variable.path
+
+        # Handle absolute paths vs relative paths
+        if ([System.IO.Path]::IsPathRooted($variablePath)) {
+            $variableValue = $variablePath
+        } else {
+            $variableValue = [System.IO.Path]::Combine($env:USERPROFILE, $variablePath)
+        }
 
         [Environment]::SetEnvironmentVariable($variableName, $variableValue, [EnvironmentVariableTarget]::User)
     }
 }
 
-$envVars = @(
-    @{ Name = "YAZI_FILE_ONE"; Path = "scoop\apps\git\current\usr\bin\file.exe" },
-    @{ Name = "XDG_CONFIG_HOME"; Path = "AppData\Local" },
-    @{ Name = "XDG_DATA_HOME"; Path = "AppData\Local" },
-    @{ Name = "KOMOREBI_CONFIG_HOME"; Path = ".config\komorebi" }
-)
-
-Set-UserEnvironmentVariables -variables $envVars
+Set-UserEnvironmentVariables
 $env:XDG_CONFIG_HOME = "$env:USERPROFILE\AppData\Local"
 Set-Location $env:XDG_CONFIG_HOME
 
@@ -146,290 +144,10 @@ try {
     if (-not (Test-Path $PROFILE)) {
         New-Item -Path $PROFILE -ItemType File -Force
     }
-    # Add content to $PROFILE
-    $profileContent = @"
-# Imports the terminal Icons into current Instance of PowerShell
-Import-Module -Name Terminal-Icons
-
-#Fzf (Import the fuzzy finder and set a shortcut key to begin searching)
-Import-Module PSFzf
-Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
-
-`$env:EDITOR = "nvim"
-`$env:VISUAL = "nvim"
-`$env:STARSHIP_CONFIG = "$HOME\.config\starship\starship.toml"
-`$env:KOMOREBI_CONFIG_HOME = "$HOME\.config\komorebi"
-`$env:COREPACK_ENABLE_AUTO_PIN = "0"
-`$env:GEMINI_API_KEY={{- .GeminiKey }}
-
-# FZF
-`$env:FZF_DEFAULT_COMMAND="fd --type f --hidden --follow --exclude .git .jj --color=always"
-`$env:FZF_DEFAULT_OPTS=" `
---color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 `
---color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc `
---color=marker:#b4befe,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 `
---color=selected-bg:#45475a `
---multi `
---border=rounded `
---bind 'ctrl-f:preview-page-down,ctrl-b:preview-page-up'"
-`$env:FZF_ALT_C_OPTS="--walker-skip .git,node_modules,target,.jj --preview 'eza -T --icons --color=always {}'"
-`$env:FZF_CTRL_T_OPTS="--walker-skip .git,node_modules,target,.jj --preview 'bat -n --color=always {}' --bind 'ctrl-/:change-preview-window(down|hidden|)'"
-`$env:FZF_CTRL_R_OPTS="--bind 'ctrl-y:execute-silent(echo {} | win32yank -i)+abort' --color header:italic"
-
-# Set BAT_THEME
-`$env:BAT_THEME="Catppuccin Mocha"
-
-# Remove existing aliases before defining new ones
-Remove-Item -Path Alias:cm -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:wez -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:vim -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:vi -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:v -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:c -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:ls -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:l -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:ll -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:la -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:tree -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:cd -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:cat -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:lazy -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:lg -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:lzg -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:lzd -ErrorAction SilentlyContinue
-Remove-Item -Path Alias:tg -ErrorAction SilentlyContinue
-
-function cme
-{
-    Set-Location "`$env:XDG_CONFIG_HOME\chezmoi"
-}
-
-function cmu
-{
-    chezmoi update
-    chezmoi apply
-}
-
-function copy-line
-{
-    # Ensure rg, fzf, and bat are available
-    `$rgPath = Get-Command rg -ErrorAction SilentlyContinue
-    `$fzfPath = Get-Command fzf -ErrorAction SilentlyContinue
-    `$batPath = Get-Command bat -ErrorAction SilentlyContinue
-
-    if (-not `$rgPath)
-    { Write-Host "rg (ripgrep) is not installed."; return
-    }
-    if (-not `$fzfPath)
-    { Write-Host "fzf is not installed."; return
-    }
-    if (-not `$batPath)
-    { Write-Host "bat is not installed."; return
-    }
-
-    # Run rg and pipe to fzf
-    `$selected = rg --line-number . | fzf --delimiter ':' --preview 'bat --color=always --highlight-line {2} {1}'
-
-    # Extract the line content
-    if (`$selected)
-    {
-        `$parts = `$selected -split ':'
-        `$lineContent = `$parts[2..(`$parts.Length - 1)] -join ':'
-        `$lineContent = `$lineContent.Trim()
-
-        # Copy to clipboard
-        `$lineContent | clip
-
-        Write-Host "Selected line copied to clipboard."
-    }
-}
-
-function ListWithIcons
-{
-    eza --icons
-}
-
-function ListLongWithIcons
-{
-    eza -l --icons
-}
-
-function ListAllWithIcons
-{
-    eza -la --icons
-}
-
-function ListTreeWithIcons
-{
-    eza -T --icons
-}
-
-function open-at-line
-{
-    # Ensure rg, fzf, bat, and nvim are available
-    `$rgPath = Get-Command rg -ErrorAction SilentlyContinue
-    `$fzfPath = Get-Command fzf -ErrorAction SilentlyContinue
-    `$batPath = Get-Command bat -ErrorAction SilentlyContinue
-    `$nvimPath = Get-Command nvim -ErrorAction SilentlyContinue
-
-    if (-not `$rgPath)
-    { Write-Host "rg (ripgrep) is not installed."; return
-    }
-    if (-not `$fzfPath)
-    { Write-Host "fzf is not installed."; return
-    }
-    if (-not `$batPath)
-    { Write-Host "bat is not installed."; return
-    }
-    if (-not `$nvimPath)
-    { Write-Host "nvim (Neovim) is not installed."; return
-    }
-
-    # Run rg and pipe to fzf
-    `$selected = rg --line-number . | fzf --delimiter ':' --preview 'bat --color=always --highlight-line {2} {1}'
-
-    # Extract the line number and file path
-    if (`$selected)
-    {
-        `$parts = `$selected -split ':'
-        `$lineNumber = `$parts[1]
-        `$filePath = `$parts[0]
-
-        # Open the file at the specified line number with nvim
-        nvim "+`$lineNumber" `$filePath
-    }
-}
-
-function scoop-upgrade
-{
-    scoop update -a
-    scoop cleanup -a
-}
-
-function take
-{
-    param (
-        [string]`$path
-    )
-
-    # Create the directory if it does not exist
-    if (-Not (Test-Path -Path `$path))
-    {
-        New-Item -ItemType Directory -Path `$path | Out-Null
-    }
-
-    # Change to the new directory
-    Set-Location -Path `$path
-}
-
-function up
-{
-    param (
-        [int]`$count = 1
-    )
-
-    if (`$count -lt 1)
-    {
-        Write-Host "The number of directories to go up must be a positive integer."
-        return
-    }
-
-    `$path = ('..\' * `$count).TrimEnd('\')
-    Set-Location `$path
-}
-
-function x
-{
-    exit
-}
-
-function yy
-{
-    `$tmp = [System.IO.Path]::GetTempFileName()
-    yazi `$args --cwd-file="`$tmp"
-    `$cwd = Get-Content -Path `$tmp
-    if (-not [String]::IsNullOrEmpty(`$cwd) -and `$cwd -ne `$PWD.Path)
-    {
-        Set-Location -LiteralPath `$cwd
-    }
-    Remove-Item -Path `$tmp
-}
-
-# Define aliases
-New-Alias -Name cm -Value chezmoi
-New-Alias -Name wez -Value wezterm
-New-Alias -Name vim -Value nvim
-New-Alias -Name vi -Value nvim
-New-Alias -Name v -Value nvim
-New-Alias -Name c -Value clear
-New-Alias -Name ls -Value ListWithIcons
-New-Alias -Name l -Value ListWithIcons
-New-Alias -Name ll -Value ListLongWithIcons
-New-Alias -Name la -Value ListAllWithIcons
-New-Alias -Name tree -Value ListTreeWithIcons
-New-Alias -Name cd -Value z
-New-Alias -Name cat -Value bat
-New-Alias -Name lazy -Value lazygit
-New-Alias -Name lg -Value lazygit
-New-Alias -Name lzg -Value lazygit
-New-Alias -Name tg -Value topgrade
-
-if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
-    if ([Environment]::GetCommandLineArgs().Contains("-NonInteractive")) {
-        Return
-    }
-    fastfetch
-}
-
-`$prompt = ""
-function Invoke-Starship-PreCommand {
-    `$current_location = `$executionContext.SessionState.Path.CurrentLocation
-    if (`$current_location.Provider.Name -eq "FileSystem")
-    {
-        `$ansi_escape = [char]27
-        `$provider_path = `$current_location.ProviderPath -replace "\\", "/"
-        `$prompt = "`$ansi_escape]7;file://`${env:COMPUTERNAME}/`${provider_path}`$ansi_escape\"
-    }
-    `$host.ui.Write(`$prompt)
-}
-Invoke-Expression (&starship init powershell)
-Invoke-Expression (& { (zoxide init powershell | Out-String) })
-"@
-    $profileContent | Out-File -FilePath $PROFILE
+    . $PROFILE
 } catch {
-    Write-Host "An error occurred while configuring PowerShell."
+    Write-Host "An error occurred while configuring PowerShell: $_"
 }
-. $PROFILE
-
-# Install fonts
-# Write-Host "Installing fonts..."
-# $fontsDirectory = "$env:USERPROFILE\.config\fonts"
-# $fontFiles = Get-ChildItem -Path $fontsDirectory -Recurse -Include *.ttf, *.otf -File
-# $userFontsFolder = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
-# if (-not (Test-Path -Path $userFontsFolder)) {
-#     New-Item -ItemType Directory -Path $userFontsFolder
-# }
-
-# foreach ($fontFile in $fontFiles) {
-#     $fontName = [System.IO.Path]::GetFileNameWithoutExtension($fontFile.Name)
-#     $fontPath = $fontFile.FullName
-#     $destinationPath = Join-Path -Path $userFontsFolder -ChildPath $fontFile.Name
-
-#     # Copy the font to the user's local Fonts folder if it doesn't already exist
-#     if (-not (Test-Path -Path $destinationPath)) {
-#         Copy-Item -Path $fontPath -Destination $destinationPath
-#         # Add the font to the current user's registry
-#         $fontRegistryPath = "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"
-#         Set-ItemProperty -Path $fontRegistryPath -Name $fontName -Value $fontFile.Name
-
-#         # Notify the system of the font change
-#         [FontInstaller]::NotifyFontChange()
-#         Write-Output "Installed font - $fontName"
-#     } else {
-#         Write-Output "Font $fontName is already installed. Skipping copy."
-#     }
-# }
-# Write-Host "Fonts installed successfully."
 
 # Install Scoop apps
 Write-Host "Installing Scoop apps..."
@@ -470,42 +188,6 @@ diff-editor = ["nvim", "-c", "DiffEditor `$left `$right `$output"]
 [ui.diff]
 format = "git"
 "@ | Out-File -Append -FilePath (jj config path --user) -Encoding utf8
-
-# Add apps to Windows startup
-# $links = @(
-#     @{ Path = "C:\Program Files\Google\Chrome\Application\chrome.exe"; Name = "Google Chrome" },
-#     @{ Path = "C:\Program Files\Microsoft Office\root\Office16\OUTLOOK.EXE"; Name = "Microsoft Outlook" },
-#     @{ Path = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"; Name = "Microsoft Edge" },
-#     @{ Path = "$env:USERPROFILE\scoop\apps\wezterm-nightly\current\wezterm-gui.exe"; Name = "WezTerm" }
-# )
-
-# # Path to the Startup folder
-# $startupFolderPath = [System.IO.Path]::Combine($env:APPDATA, "Microsoft\Windows\Start Menu\Programs\Startup")
-
-# # Function to create a shortcut
-# Write-Host "Creating startup shortcuts..."
-# Copy-Item -Path "$env:USERPROFILE\.config\komorebi\WM.bat" -Destination $startupFolderPath
-# function New-Shortcut {
-#     param (
-#         [string]$targetPath,
-#         [string]$shortcutName
-#     )
-
-#     $shell = New-Object -ComObject WScript.Shell
-#     $shortcutPath = [System.IO.Path]::Combine($startupFolderPath, "$shortcutName.lnk")
-#     $shortcut = $shell.CreateShortcut($shortcutPath)
-#     $shortcut.TargetPath = $targetPath
-#     $shortcut.Save()
-# }
-
-# # Loop through each program and create a shortcut
-# foreach ($link in $links) {
-#     try {
-#         New-Shortcut -targetPath $link.Path -shortcutName $link.Name
-#     } catch {
-#         Write-Host "Failed to create shortcut for $($link.Name): $_"
-#     }
-# }
 
 try {
     $regFilePath = "$env:USERPROFILE\scoop\apps\python\current\install-pep-514.reg"
