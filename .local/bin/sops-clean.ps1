@@ -12,16 +12,13 @@ if (Test-Path $keyPath) {
 		$content | Set-Content -Path $tempFile -NoNewline
 
 		# Create a simple SOPS config inline
-		$config = @{
-			creation_rules = @(
-				@{
-					age = @($recipient)
-				}
-			)
-		} | ConvertTo-Json -Depth 10
-
+		$sopsYaml = @"
+creation_rules:
+    - path_regex: .*
+      age: $recipient
+"@
 		$configFile = [System.IO.Path]::GetTempFileName()
-		$config | Set-Content -Path $configFile -NoNewline
+		$sopsYaml | Set-Content -Path $configFile -NoNewline
 
 		# Encrypt using temp config
 		$encrypted = sops --config $configFile -e $tempFile 2>&1
