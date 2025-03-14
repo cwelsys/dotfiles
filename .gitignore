@@ -1,0 +1,4 @@
+# SOPS backups
+*.bak
+*.backup
+*.swp
