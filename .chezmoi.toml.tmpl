@@ -15,11 +15,20 @@ encryption = "age"
 [diff]
     command = "delta"
     pager = "delta"
-
 [merge]
-  command = "code"
-  args = "--wait $MERGED"
-
+    command = 'WinMergeU'
+    args = [
+        '-u',
+        '-e',
+        '-x',
+        '-fm',
+        '-wl',
+        '-wr',
+        '-dl',
+        '"Local"',
+        '-dr',
+        '"Remote"'
+    ]
 [data]
     email = {{ $email | quote }}
     name = {{ $name | quote }}
