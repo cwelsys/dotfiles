@@ -1,0 +1,47 @@
+# Environment Variables Template with Bitwarden Integration
+# This file can be sourced in your shell profile to set environment variables
+
+{{- if .useBitwarden }}
+# Environment variables from Bitwarden
+{{- with (output "pwsh" "-NoProfile" "-Command" (printf ". \"%s/.chezmoitemplates/bitwarden/functions.ps1\"; Get-BitwardenEnvironmentVariables -FolderName \"Environment Variables\" | ConvertTo-Json" .chezmoi.sourceDir) | fromJson) }}
+{{- range . }}
+export {{ .Name }}="{{ .Value }}"
+{{- end }}
+{{- end }}
+
+# API Keys from Bitwarden
+{{- with (output "pwsh" "-NoProfile" "-Command" (printf ". \"%s/.chezmoitemplates/bitwarden/functions.ps1\"; Get-BitwardenItemFields -ItemName \"API Keys\"" .chezmoi.sourceDir) | fromJson) }}
+{{- range $key, $value := . }}
+{{- if ne $key "notes" }}
+export {{ $key | upper }}_API_KEY="{{ $value }}"
+{{- end }}
+{{- end }}
+{{- end }}
+
+# Database credentials from Bitwarden
+{{- with (output "pwsh" "-NoProfile" "-Command" (printf ". \"%s/.chezmoitemplates/bitwarden/functions.ps1\"; Get-BitwardenItemFields -ItemName \"Database\"" .chezmoi.sourceDir) | fromJson) }}
+{{- if .url }}
+export DATABASE_URL="{{ .url }}"
+{{- else }}
+{{- if and .host .username .password .database }}
+export DATABASE_URL="postgresql://{{ .username }}:{{ .password }}@{{ .host }}:{{ .port | default "5432" }}/{{ .database }}"
+{{- end }}
+{{- end }}
+{{- end }}
+{{- else }}
+# Standard environment variables (not using Bitwarden)
+# Add your environment variables here
+# export EXAMPLE_VAR="example_value"
+# export ANOTHER_VAR="another_value"
+{{- end }}
+
+# Common environment variables (regardless of Bitwarden usage)
+export EDITOR="nvim"
+export VISUAL="nvim"
+export PAGER="less"
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+export TERM="xterm-256color"
+
+# Path configuration
+export PATH="$HOME/.local/bin:$PATH"

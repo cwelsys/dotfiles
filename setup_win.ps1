@@ -44,11 +44,11 @@ if (!(Test-Path $scoopDir)) {
 Write-Host "Installing terminal apps..."
 $appsToInstall = @(
     "age", "chezmoi", "fzf", "gh", "innounp-unicode", "IosevkaTerm-NF",
-    "Maple-Mono", "psfzf", "psreadline", "starship", "terminal-icons", "zoxide"
+    "Maple-Mono", "psfzf", "psreadline", "starship", "terminal-icons", "zoxide",
+    "bitwarden-cli" # Added Bitwarden CLI
 )
 
 try {
-    scoop install git
     scoop bucket add extras
     scoop bucket add versions
     scoop bucket add nerd-fonts
@@ -60,75 +60,170 @@ try {
     Write-Host "An error occurred while installing one or more terminal apps."
 }
 
-Write-Host "Configuring Git..."
-try {
-    git config --global credential.helper manager
-    $regFilePath = Join-Path -Path $env:USERPROFILE -ChildPath 'scoop\apps\git\current\install-file-associations.reg'
-    if (Test-Path -Path $regFilePath -PathType Leaf) {
-        Start-Process -FilePath "regedit.exe" -ArgumentList "/s `"$regFilePath`"" -Wait
-    } else {
-        Write-Host "The file $regFilePath does not exist."
-    }
-    git config --global user.name "cwelsys"
-    git config --global user.email "cwel@cwel.sh"
+# Write-Host "Configuring Git..."
+# try {
+#     git config --global credential.helper manager
+#     $regFilePath = Join-Path -Path $env:USERPROFILE -ChildPath 'scoop\apps\git\current\install-file-associations.reg'
+#     if (Test-Path -Path $regFilePath -PathType Leaf) {
+#         Start-Process -FilePath "regedit.exe" -ArgumentList "/s `"$regFilePath`"" -Wait
+#     } else {
+#         Write-Host "The file $regFilePath does not exist."
+#     }
+#     git config --global user.name "cwelsys"
+#     git config --global user.email "cwel@cwel.sh"
 
-    $confirm = Read-Host "Do you want to generate a new SSH key for GitHub? (y/n)"
-    if ($confirm -eq "y") {
-        Write-Host ":: Generating a new SSH key for GitHub..."
-        try {
-            $sshDirectoryPath = Join-Path -Path $env:USERPROFILE -ChildPath ".ssh"
-            if (-not (Test-Path -Path $sshDirectoryPath)) {
-                New-Item -ItemType Directory -Path $sshDirectoryPath -Force
-            }
-            $keyPath = Join-Path -Path $sshDirectoryPath -ChildPath "id_ed25519"
-            ssh-keygen -t ed25519 -C "94425204+joncrangle@users.noreply.github.com" -f $keyPath
-            if (Test-Path -Path $keyPath) {
-                Write-Host "SSH key generated successfully at $keyPath"
-            } else {
-                Write-Host "Failed to generate SSH key"
-            }
-        } catch {
-            Write-Host "An error occurred: $_"
-        }
-    } elseif ($confirm -eq "n") {
-        Write-Host ":: Skipping SSH key generation."
-    } else {
-        Write-Host "Invalid input. Please enter 'y' or 'n'."
-    }
-} catch {
-    Write-Host "An error occurred while configuring Git."
-}
+#     $confirm = Read-Host "Do you want to generate a new SSH key for GitHub? (y/n)"
+#     if ($confirm -eq "y") {
+#         Write-Host ":: Generating a new SSH key for GitHub..."
+#         try {
+#             $sshDirectoryPath = Join-Path -Path $env:USERPROFILE -ChildPath ".ssh"
+#             if (-not (Test-Path -Path $sshDirectoryPath)) {
+#                 New-Item -ItemType Directory -Path $sshDirectoryPath -Force
+#             }
+#             $keyPath = Join-Path -Path $sshDirectoryPath -ChildPath "id_ed25519"
+#             ssh-keygen -t ed25519 -C "94425204+joncrangle@users.noreply.github.com" -f $keyPath
+#             if (Test-Path -Path $keyPath) {
+#                 Write-Host "SSH key generated successfully at $keyPath"
+#             } else {
+#                 Write-Host "Failed to generate SSH key"
+#             }
+#         } catch {
+#             Write-Host "An error occurred: $_"
+#         }
+#     } elseif ($confirm -eq "n") {
+#         Write-Host ":: Skipping SSH key generation."
+#     } else {
+#         Write-Host "Invalid input. Please enter 'y' or 'n'."
+#     }
+# } catch {
+#     Write-Host "An error occurred while configuring Git."
+# }
 
 # Prompt user to run gh auth login
-Read-Host "Please run 'gh auth login --web' to authenticate with GitHub. Press Enter to continue after you have completed the authentication."
-Read-Host ":: Please put key.txt in ~/.config/. Press Enter to continue"
+# Read-Host "Please run 'gh auth login --web' to authenticate with GitHub. Press Enter to continue after you have completed the authentication."
+# Read-Host ":: Please put key.txt in ~/.config/. Press Enter to continue"
+
+# Setup Bitwarden
+Write-Host "Setting up Bitwarden integration..."
+$useBitwarden = $false
+$confirm = Read-Host "Do you want to use Bitwarden for storing secrets? (y/n)"
+if ($confirm -eq "y") {
+    $useBitwarden = $true
+
+    # Check if Bitwarden CLI is installed
+    if (!(Get-Command bw -ErrorAction SilentlyContinue)) {
+        Write-Host "Bitwarden CLI not found. Installing..."
+        scoop install bitwarden-cli
+    }
+
+    # Create config directory
+    $configDir = "$env:USERPROFILE\.config"
+    if (!(Test-Path $configDir)) {
+        New-Item -Path $configDir -ItemType Directory -Force
+    }
+
+    # Initialize Bitwarden
+    Write-Host "Initializing Bitwarden..."
+    try {
+        # Source the Bitwarden functions
+        . "$PSScriptRoot\.chezmoitemplates\bitwarden\functions.ps1"
+
+        # Authenticate with Bitwarden
+        $sessionKey = Initialize-BitwardenAuth
+        if ($sessionKey) {
+            Write-Host "Successfully authenticated with Bitwarden"
+            $env:BW_SESSION = $sessionKey
+
+            # Check if the Environment Variables folder exists
+            $folders = bw list folders | ConvertFrom-Json
+            $envVarFolder = $folders | Where-Object { $_.name -eq "Environment Variables" } | Select-Object -First 1
+
+            if (!$envVarFolder) {
+                Write-Host "Creating Environment Variables folder in Bitwarden..."
+                $folderResult = bw create folder --name "Environment Variables" | ConvertFrom-Json
+                if ($folderResult) {
+                    Write-Host "Environment Variables folder created successfully"
+                }
+            }
+
+            # Clear the session from environment
+            $env:BW_SESSION = $null
+        } else {
+            Write-Host "Failed to authenticate with Bitwarden. Environment variables will not be set from Bitwarden."
+            $useBitwarden = $false
+        }
+    } catch {
+        Write-Host "Error setting up Bitwarden: $_"
+        $useBitwarden = $false
+    }
+}
 
 Write-Host "Configuring environment variables..."
 function Set-UserEnvironmentVariables {
-    $env:SOPS_AGE_KEY_FILE = "C:\Users\cwel\.config\key.txt"
-    $envConfig = sops -d env.json | ConvertFrom-Json
+    if ($useBitwarden) {
+        # Try to get environment variables from Bitwarden
+        Write-Host "Getting environment variables from Bitwarden..."
+        . "$PSScriptRoot\.chezmoitemplates\bitwarden\functions.ps1"
+        $envVars = Get-BitwardenEnvironmentVariables
 
-    foreach ($variable in $envConfig.environmentVariables) {
-        $variableName = $variable.name
-        $variablePath = $variable.path
+        if ($envVars -and $envVars.Count -gt 0) {
+            Write-Host "Setting environment variables from Bitwarden..."
 
-        # Handle absolute paths vs relative paths
-        if ([System.IO.Path]::IsPathRooted($variablePath)) {
-            $variableValue = $variablePath
+            foreach ($variable in $envVars) {
+                $variableName = $variable.Name
+                $variablePath = $variable.Value
+
+                # Handle absolute paths vs relative paths
+                if ([System.IO.Path]::IsPathRooted($variablePath)) {
+                    $variableValue = $variablePath
+                } else {
+                    $variableValue = [System.IO.Path]::Combine($env:USERPROFILE, $variablePath)
+                }
+
+                [Environment]::SetEnvironmentVariable($variableName, $variableValue, [EnvironmentVariableTarget]::User)
+                Write-Host "Set environment variable: $variableName = $variableValue"
+            }
         } else {
-            $variableValue = [System.IO.Path]::Combine($env:USERPROFILE, $variablePath)
+            Write-Host "No environment variables found in Bitwarden or failed to retrieve them."
+            $useBitwarden = $false
         }
+    }
 
-        [Environment]::SetEnvironmentVariable($variableName, $variableValue, [EnvironmentVariableTarget]::User)
+    # Fallback to env.json if Bitwarden is not used or failed
+    if (!$useBitwarden) {
+        if (Test-Path "env.json") {
+            Write-Host "Using env.json for environment variables..."
+            $env:SOPS_AGE_KEY_FILE = "C:\Users\cwel\.config\key.txt"
+            $envConfig = sops -d env.json | ConvertFrom-Json
+
+            foreach ($variable in $envConfig.environmentVariables) {
+                $variableName = $variable.name
+                $variablePath = $variable.path
+
+                # Handle absolute paths vs relative paths
+                if ([System.IO.Path]::IsPathRooted($variablePath)) {
+                    $variableValue = $variablePath
+                } else {
+                    $variableValue = [System.IO.Path]::Combine($env:USERPROFILE, $variablePath)
+                }
+
+                [Environment]::SetEnvironmentVariable($variableName, $variableValue, [EnvironmentVariableTarget]::User)
+                Write-Host "Set environment variable: $variableName = $variableValue"
+            }
+        } else {
+            Write-Host "No env.json file found. Skipping environment variable setup."
+        }
     }
 }
 
-Set-UserEnvironmentVariables
-$env:XDG_CONFIG_HOME = "$env:USERPROFILE\AppData\Local"
-Set-Location $env:XDG_CONFIG_HOME
+# Set-UserEnvironmentVariables
 
 Write-Host "Moving dotfiles..."
-chezmoi init --apply https://github.com/cwelsys/.dotfiles.git
+if ($useBitwarden) {
+    chezmoi init --apply --data="{\"useBitwarden\": true}" https://github.com/cwelsys/.dotfiles.git
+} else {
+    chezmoi init --apply --data="{\"useBitwarden\": false}" https://github.com/cwelsys/.dotfiles.git
+}
 
 Write-Host "Configuring Windows Terminal..."
 try {

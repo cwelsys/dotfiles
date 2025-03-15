@@ -1,4 +1,0 @@
-[filter "sops"]
-clean = pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -InputFormat Text -OutputFormat Text -Command "& \"%cd%\\.local\\bin\\sops-clean.ps1\" %f"
-smudge = pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -InputFormat Text -OutputFormat Text -Command "& \"%cd%\\.local\\bin\\sops-smudge.ps1\""
-required = true

@@ -1,6 +1,0 @@
-# Files to be encrypted/decrypted using SOPS
-env.json filter=sops diff=sops
-*.sops.* filter=sops diff=sops
-
-# Ensure PowerShell scripts use correct line endings
-*.ps1 text eol=lf
