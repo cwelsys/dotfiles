@@ -17,8 +17,12 @@ encryption = "age"
     pager = "delta"
 
 [merge]
-    command = "code"
-    args = ["--wait", "--diff", "{{ "{{ .Destination }}" }}", "{{ "{{ .Source }}" }}"]
+    command = "pwsh"
+    args = [
+        "-NoProfile",
+        "-Command",
+        "Copy-Item -Path {{"{{"}} .Target {{"}}"}} -Destination ({{"{{"}} .Target {{"}}"}} + '.base'); code --wait --new-window --merge {{"{{"}} .Destination {{"}}"}} {{"{{"}} .Target {{"}}"}} ({{"{{"}} .Target {{"}}"}} + '.base') {{"{{"}} .Source {{"}}"}}; exit $LASTEXITCODE"
+    ]
 
 [data]
     email = {{ $email | quote }}
