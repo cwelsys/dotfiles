@@ -1,77 +1,70 @@
+# NOTE:
+#            /$$   /$$
+#           |__/  | $$
+#   /$$$$$$  /$$ /$$$$$$
+#  /$$__  $$| $$|_  $$_/
+# | $$  \ $$| $$  | $$
+# | $$  | $$| $$  | $$ /$$
+# |  $$$$$$$| $$  |  $$$$/
+#  \____  $$|__/   \___/
+#  /$$  \ $$
+# |  $$$$$$/
+#  \______/
+
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+
 [user]
     name = {{ .name }}
     email = {{ .email }}
 
-{{- if .useBitwarden }}
-# The following sections use Bitwarden to retrieve sensitive information
 [github]
-    {{- with (output "pwsh" "-NoProfile" "-Command" (printf ". \"%s/.chezmoitemplates/bitwarden/functions.ps1\"; Get-BitwardenItemFields -ItemName \"GitHub API\"" .chezmoi.sourceDir) | fromJson) }}
-    {{- if .token }}
-    token = {{ .token }}
-    {{- end }}
-    {{- end }}
+    user = {{ .name }}
 
-[gitlab]
-    {{- with (output "pwsh" "-NoProfile" "-Command" (printf ". \"%s/.chezmoitemplates/bitwarden/functions.ps1\"; Get-BitwardenItemFields -ItemName \"GitLab API\"" .chezmoi.sourceDir) | fromJson) }}
-    {{- if .token }}
-    token = {{ .token }}
-    {{- end }}
-    {{- end }}
-
-[user]
-    {{- with (output "pwsh" "-NoProfile" "-Command" (printf ". \"%s/.chezmoitemplates/bitwarden/functions.ps1\"; Get-BitwardenItemFields -ItemName \"Git Config\"" .chezmoi.sourceDir) | fromJson) }}
-    {{- if .signingkey }}
-    signingkey = {{ .signingkey }}
-    {{- end }}
-    {{- end }}
-
-[commit]
-    {{- with (output "pwsh" "-NoProfile" "-Command" (printf ". \"%s/.chezmoitemplates/bitwarden/functions.ps1\"; Get-BitwardenItemFields -ItemName \"Git Config\"" .chezmoi.sourceDir) | fromJson) }}
-    {{- if .signingkey }}
-    gpgsign = true
-    {{- end }}
-    {{- end }}
-{{- else }}
-# Standard configuration without Bitwarden
-[github]
-    # Add your GitHub token here if needed
-    # token = your-token-here
-
-[gitlab]
-    # Add your GitLab token here if needed
-    # token = your-token-here
-
-# [user]
-    # Add your signing key here if needed
-    # signingkey = your-signing-key
-
-# [commit]
-    # Enable GPG signing if you have a signing key
-    # gpgsign = true
-{{- end }}
+[color]
+    ui = true
 
 [core]
     editor = nvim
-    autocrlf = input
-    excludesfile = ~/.gitignore_global
+    pager = delta
 
-[init]
-    defaultBranch = main
+[interactive]
+    diffFilter = delta --color-only --features=interactive
+
+[include]
+    path = ~/.config/delta/tokyonight_night.gitconfig
+    path = ~/.config/delta/catppuccin.gitconfig
+
+[delta]
+    navigate = true    # use n and N to move between diff sections
+    light = false      # set to true if you're in a terminal w/ a light background color (e.g. the default macOS terminal)
+    side-by-side = false
+    line-numbers = true
+    features = catppuccin-mocha
+
+[merge]
+    conflictstyle = diff3
+    tool = diffview
+
+[mergetool]
+    prompt = false
+    keepBackup = false
+
+[mergetool "diffview"]
+    cmd = nvim -n -c "DiffviewOpen" "$MERGE"
+
+[diff]
+    colorMoved = default
 
 [pull]
     rebase = true
 
-[push]
-    default = simple
+[rebase]
+	autoStash = true
 
-[color]
-    ui = auto
-
-[alias]
-    st = status
-    co = checkout
-    br = branch
-    ci = commit
-    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-    unstage = reset HEAD --
-    last = log -1 HEAD
+[init]
+    defaultBranch = master
+# vim: ft=gitconfig

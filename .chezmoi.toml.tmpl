@@ -1,6 +1,6 @@
 {{- $email := promptStringOnce . "email" "Email address" -}}
 {{- $name := promptStringOnce . "name" "Username" -}}
-{{- $useBitwarden := promptBoolOnce . "useBitwarden" "Use Bitwarden for secrets?" -}}
+
 
 encryption = "age"
 
@@ -12,23 +12,14 @@ encryption = "age"
     autoCommit = true
     autoPush = true
 
+[diff]
+    command = "delta"
+    pager = "delta"
+
+[merge]
+    command = "nvim"
+    args = ["-d", "{{ "{{ .Destination }}" }}", "{{ "{{ .Source }}" }}"]
+
 [data]
     email = {{ $email | quote }}
     name = {{ $name | quote }}
-    useBitwarden = {{ $useBitwarden }}
-
-{{- if $useBitwarden }}
-[scriptEnv.bitwarden]
-    # This section is used to pass environment variables to scripts that use Bitwarden
-    # The session key is not stored in the config file, but is retrieved at runtime
-{{- end }}
-
-# Template functions for Bitwarden integration
-{{- if $useBitwarden }}
-[templateFuncs]
-    bitwardenFields = ["pwsh", "-NoProfile", "-Command", ". \"{{ .chezmoi.sourceDir }}/.chezmoitemplates/bitwarden/functions.ps1\"; Get-BitwardenItemFields"]
-    bitwardenSecret = ["pwsh", "-NoProfile", "-Command", ". \"{{ .chezmoi.sourceDir }}/.chezmoitemplates/bitwarden/functions.ps1\"; Get-BitwardenSecret"]
-    bitwardenSecureNote = ["pwsh", "-NoProfile", "-Command", ". \"{{ .chezmoi.sourceDir }}/.chezmoitemplates/bitwarden/functions.ps1\"; Get-BitwardenSecureNote"]
-    bitwardenAttachment = ["pwsh", "-NoProfile", "-Command", ". \"{{ .chezmoi.sourceDir }}/.chezmoitemplates/bitwarden/functions.ps1\"; Get-BitwardenAttachment"]
-    bitwardenEnvVars = ["pwsh", "-NoProfile", "-Command", ". \"{{ .chezmoi.sourceDir }}/.chezmoitemplates/bitwarden/functions.ps1\"; Get-BitwardenEnvironmentVariables"]
-{{- end }}
