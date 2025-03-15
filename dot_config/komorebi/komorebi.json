@@ -142,7 +142,7 @@
 		},
 		{
 			"kind": "Exe",
-			"id": "TotalReg.exe",
+			"id": "bluebubbles_app.exe",
 			"matching_strategy": "Equals"
 		},
 		{

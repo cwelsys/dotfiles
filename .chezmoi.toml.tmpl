@@ -16,19 +16,8 @@ encryption = "age"
     command = "delta"
     pager = "delta"
 [merge]
-    command = 'WinMergeU'
-    args = [
-        '-u',
-        '-e',
-        '-x',
-        '-fm',
-        '-wl',
-        '-wr',
-        '-dl',
-        '"Local"',
-        '-dr',
-        '"Remote"'
-    ]
+    command = "nvim"
+    args = ["-d", "{{`{{ .Destination }}`}}", "{{`{{ .Source }}", "{{ .Target }}`}}"]
 [data]
     email = {{ $email | quote }}
     name = {{ $name | quote }}
