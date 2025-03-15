@@ -17,8 +17,8 @@ encryption = "age"
     pager = "delta"
 
 [merge]
-    command = "meld"
-    args = ["{{ "{{ .Destination }}" }}", "{{ "{{ .Source }}" }}"]
+    command = "code"
+    args = ["--wait", "--diff", "{{ "{{ .Destination }}" }}", "{{ "{{ .Source }}" }}"]
 
 [data]
     email = {{ $email | quote }}
