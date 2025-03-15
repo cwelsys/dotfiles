@@ -17,8 +17,8 @@ encryption = "age"
     pager = "delta"
 
 [merge]
-    command = "nvim"
-    args = ["-d", "{{ "{{ .Destination }}" }}", "{{ "{{ .Source }}" }}"]
+    command = "meld"
+    args = ["{{ "{{ .Destination }}" }}", "{{ "{{ .Source }}" }}"]
 
 [data]
     email = {{ $email | quote }}
