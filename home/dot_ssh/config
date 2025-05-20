@@ -1,0 +1,20 @@
+# vim:ft=sshconfig.chezmoitmpl
+
+Host *
+  ServerAliveInterval 86400
+  ServerAliveCountMax 4
+  Port 22
+  IdentityFile ~/.ssh/id_ed25519
+
+Host github.com
+  User git
+  PreferredAuthentications publickey
+
+Host ngen
+  HostName ntgnguyen.tailf6edf3.ts.net
+  User ntgnguyen
+  Port 22
+
+Host idx
+  HostName idx-as
+  User user
