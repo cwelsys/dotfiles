@@ -10,8 +10,7 @@ Host github.com
 User git
 PreferredAuthentications publickey
 
-Host gitea
+Host git.cwel.sh
 HostName git.cwel.sh
 User git
 PreferredAuthentications publickey
-IdentityFile ~/.ssh/cwel
