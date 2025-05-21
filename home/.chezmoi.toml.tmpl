@@ -105,8 +105,8 @@ accentColors = [ {{ $catppuccinAccentColors | quoteList | join ", " }} ]
 flavors = [ {{ $catppuccinFlavors | quoteList | join ", " }} ]
 
 [age]
-identity = "~/.age-key.txt"
-recipient = {{ $agePubKey | quote }}
+    identity = "~/.ssh/cwel"
+    symmetric = true
 
 [gpg]
 recipient = {{ $gpgId | quote }}
@@ -124,7 +124,8 @@ command = {{ $shell | quote }}
 custom = true
 
 [edit]
-command = "nvim"
+command = "code"
+args = ["--wait"]
 
 [diff]
 command = "code"
