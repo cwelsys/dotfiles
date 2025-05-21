@@ -109,12 +109,14 @@ if has eza; then
     '--ignore-glob=".DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"'
     '-s Name'
   )
-  alias l="eza -lh $EZA_OPTS" # long list
-  alias ls="eza -1 $EZA_OPTS" # Normal ls
-  alias ll="eza -lhag $EZA_OPTS" # Long list all
-  alias ld="eza -lhD $EZA_OPTS" # long list dirs
-  alias lt="eza -T $EZA_OPTS" # list folder as tree
-  alias llt="eza -lagT $EZA_OPTS" # list folder as tree
+alias ls='eza $eza_params'
+alias l='eza --git-ignore $eza_params'
+alias ll='eza --all --header --long $eza_params'
+alias llm='eza --all --header --long --sort=modified $eza_params'
+alias la='eza -lbhHigUmuSa'
+alias lx='eza -lbhHigUmuSa@'
+alias lt='eza --tree $eza_params'
+alias tree='eza --tree $eza_params'
 else
   alias ls='ls -A --color=auto'
   alias ll='ls -lAg --color=auto'
