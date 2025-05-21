@@ -1,20 +1,4 @@
 {{ if eq .osId "windows" }}
-["AppData/Local/nvim"]
-{{ else }}
-[".config/nvim"]
-{{ end }}
-type = "git-repo"
-url = "git@github.com:uitdots/nvim.git"
-
-{{ if eq .osId "windows" }}
-["vimfile"]
-{{ else }}
-[".vim"]
-{{ end }}
-type = "git-repo"
-url = "git@github.com:uitdots/vim.git"
-
-{{ if eq .osId "windows" }}
 ["AppData/Roaming/bat/themes"]
 {{ else }}
 [".config/bat/themes"]
