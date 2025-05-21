@@ -134,6 +134,9 @@
 {{- if eq .osId "windows" }}
 [credential "helperselector"]
   selected = manager
+{{- else }}
+[credential]
+  credentialStore = gpg
 {{- end }}
 
 ; https://github.com/denysdovhan/dotfiles/blob/master/home/.gitconfig
