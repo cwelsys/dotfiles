@@ -37,6 +37,9 @@ if [ -f "$_catppuccin_zsh_syntax_highlighting_zsh" ]; then
   source "$_catppuccin_zsh_syntax_highlighting_zsh"
 fi
 
+if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]] then
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
 
 ##########################################
 
