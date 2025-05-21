@@ -10,11 +10,8 @@ Host github.com
 User git
 PreferredAuthentications publickey
 
-#Host pbox
-#  HostName 192.168.4.89
-#  User cwel
-
-# Host nova
-#   Hostname 98.81.222.32
-#   user ec2-user
-#   IdentityFile ~/.ssh/nova
+Host gitea
+HostName git.cwel.sh
+User git
+PreferredAuthentications publickey
+IdentityFile ~/.ssh/Github
