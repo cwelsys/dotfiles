@@ -6,7 +6,7 @@
 [user]
   name = Connor Welsh
   email = cwel@cwel.sh
-  signingkey = {{ .sshId }}
+  signingkey = ~/.ssh/cwel.pub
 
 [github]
   user = cwelsys
@@ -73,8 +73,8 @@
   next = !git checkout $(git rev-list --children --all | grep ^$(git rev-parse HEAD) | cut -f 2 -d ' ')
 
 [gpg]
- 	; format = ssh
-  program = gpg
+ 	format = ssh
+
 
 [commit]
   gpgsign = true
