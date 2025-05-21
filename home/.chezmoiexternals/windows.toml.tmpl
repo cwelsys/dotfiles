@@ -4,11 +4,17 @@
 type = "file"
 url = "https://raw.githubusercontent.com/LGUG2Z/komorebi-application-specific-configuration/refs/heads/master/applications.json"
 
+["AppData/Roaming/FlowLauncher/Themes/catppuccin_mocha.xaml"]
+type = "file"
+url = "https://raw.githubusercontent.com/catppuccin/flow-launcher/refs/heads/main/themes/Catppuccin%20Mocha.xaml"
+
+["scoop/persist/btop/themes/catppuccin_mocha.theme"]
+type = "file"
+url = "https://raw.githubusercontent.com/catppuccin/btop/refs/heads/main/themes/catppuccin_mocha.theme"
+
 ["Documents/PowerShell/Modules/Catppuccin"]
 type = "git-repo"
 url = "https://github.com/catppuccin/powershell.git"
 {{ .externalGitArgs }}
-
-##########################################
 
 {{ end }}
