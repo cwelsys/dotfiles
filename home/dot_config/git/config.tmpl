@@ -137,10 +137,9 @@
 {{- else }}
 [credential]
   credentialStore = gpg
-{{- end }}
-  helper =                                                                   │    │
   helper = /usr/local/bin/git-credential-manager
-; https://github.com/denysdovhan/dotfiles/blob/master/home/.gitconfig
+{{- end }}
+
 ; URL shorthands
 [url "git@github.com:"]
   insteadOf = "gh:"
@@ -150,7 +149,8 @@
   insteadOf = "gst:"
   pushInsteadOf = "gist:"
   pushInsteadOf = "git://gist.github.com/" ; From GIT to SSH
-[credential "https://dev.azure.com"]                                               │    │
-    useHttpPath = true                                                         │    │
-[credential "https://git.cwel.sh"]                                                 │    │
-       provider = generic
+
+[credential "https://dev.azure.com"]
+  useHttpPath = true
+[credential "https://git.cwel.sh"]
+  provider = generic
