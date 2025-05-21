@@ -33,21 +33,14 @@ AppData/Roaming/rclone/rclone.conf
 
 {{ if eq .osId "windows" }}
 
-.config/Code/
 .config/bat/
 .config/fd/
 .config/gdu/
-.config/lazygit/
-.config/zsh/
-
 .font/
 .npm-global/
-
 .tmux.conf
 .zprofile
 .zshenv
-.zshrc
-.zshenv_local
 .zsh_history
 
 {{ else }}
@@ -66,8 +59,6 @@ Documents/**
 
 {{ end }}
 
-##########################################
-
 {{ if ne .chezmoi.os "linux" }}
 
 .config/systemd/
@@ -75,10 +66,6 @@ Documents/**
 .config/tlp/
 
 {{ end }}
-
-##########################################
-
-# SPECIFIC
 
 {{ if not (lookPath "sddm") }}
 .config/sddm/
