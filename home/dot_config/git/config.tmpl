@@ -34,6 +34,7 @@ hyperlinks-file-link-format = "vscode://file/{path}:{line}"
 
 [include]
   path = ~/.config/delta/catppuccin.gitconfig
+  path = ~/.config/git/gitaliases
 
 [user]
   name = Connor Welsh
@@ -55,52 +56,6 @@ hyperlinks-file-link-format = "vscode://file/{path}:{line}"
 
 [safe]
   directory = ~/scoop/*
-
-[alias]
-  gcc = !git reflog expire --all --expire=now && git gc --prune=now --aggressive ; clean local reflog: https://stackoverflow.com/a/2116892/23173098
-  aa = add -A
-  au = add -u
-  amend = commit -a --amend --no-edit
-  s = status --porcelain
-  co = checkout
-  cob = checkout -b
-  db = branch -D
-  lsb = branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate
-  save = !git add -A && git commit -m \"chore(save): $(curl -s -f https://whatthecommit.com/index.txt || \"save point\")\" ; magic commit
-  done = push origin HEAD ; lazy to push
-  f = !git save && git done ; finish
-  undo = reset HEAD~1 --mixed
-  res = reset --hard
-  lg = !PAGER='delta --line-numbers=false' git log --oneline --abbrev-commit
-  lgg = log --graph --decorate --all ; graph log
-  subup = submodule update --init --recursive ; submodule recursive update
-  wdiff = diff --word-diff ; word diff
-  rdiff = diff --submodule=diff ; recursive
-  pdiff = diff --word-diff=color --word-diff-regex=. ; precise
-  discard = !git checkout -- . && git submodule foreach git checkout -- .
-  head = r -1
-  h = head
-  ski = stash --keep-index
-  cp = cherry-pick
-  pf = push --force-with-lease
-  pr = pull rebase
-  editconfig = config --global --edit
-  po = !bash ~/.config/git/githelpers.sh push_current_branch
-  pof = !bash ~/.config/git/githelpers.sh push_current_branch --force-with-lease
-  dopr = !bash ~/.config/git/githelpers.sh create_pull_request
-  popr = !git po && sleep 1 && git dopr
-  findpr = !bash ~/.config/git/githelpers.sh find_pull_request
-  fix = !bash ~/.config/git/githelpers.sh commit_fix
-  uu = !bash ~/.config/git/githelpers.sh update_master
-  l = !bash ~/.config/git/githelpers.sh pretty_git_log_paged
-  la = !git l --all
-  r = !git rcp -20
-  ra = !git la -20
-  rc = !bash ~/.config/git/githelpers.sh contextual_git_log
-  rcp = !bash ~/.config/git/githelpers.sh contextual_git_log_paged
-
-  prev = checkout @^
-  next = !git checkout $(git rev-list --children --all | grep ^$(git rev-parse HEAD) | cut -f 2 -d ' ')
 
 [gpg]
  	format = ssh
