@@ -33,8 +33,6 @@
 {{/* Default dynamic values */}}
 
 {{ $shell := "" }}
-{{ $terminalFontSize := 13 }}
-{{ $terminalBlur := "0.8" }}
 {{ $theme := "dark" }}
 {{ $catppuccinLightFlavour := "latte" }}
 {{ $catppuccinDarkFlavour := "mocha" }}
@@ -57,8 +55,6 @@
 {{/* Prompts */}}
 
 {{ if stdinIsATTY }}
-  {{ $terminalFontSize = promptInt "Enter terminal font size" 13 }}
-  {{ $terminalBlur = promptString "Enter terminal blur (float)" "0.8" }}
   {{ $theme = promptChoice "Theme" $themes "dark" }}
   {{ $catppuccinLightFlavour = promptChoice "Catppuccin flavor for light mode" $catppuccinFlavors "latte" }}
   {{ $catppuccinDarkFlavour = promptChoice "Catppuccin flavor for dark mode" $catppuccinFlavors "mocha" }}
@@ -93,8 +89,6 @@ mode = "file" # file, symlink
 progress = true
 
 [data]
-terminalFontSize = {{ $terminalFontSize }}
-terminalBlur = {{ $terminalBlur }}
 theme = {{ $theme | quote }}
 catppuccinLightFlavour = {{ $catppuccinLightFlavour | quote }}
 catppuccinDarkFlavour = {{ $catppuccinDarkFlavour | quote }}
@@ -133,10 +127,12 @@ custom = true
 command = "nvim"
 
 [diff]
-command = "delta"
-pager = "delta"
-args = ["--paging=never"]
+command = "code"
+args = ["--wait", "--diff"]
 
 [merge]
-command = "nvim"
-args = ["-d", "{{ "{{" }} .Destination {{ "}}" }}", "{{ "{{" }} .Source {{ "}}" }}", "{{ "{{" }} .Target {{ "}}" }}"]
+command = "bash"
+args = [
+    "-c",
+    "cp {{ "{{" }} .Target {{ "}}" }} {{ "{{" }} .Target {{ "}}" }}.base && code --new-window --wait --merge {{ "{{" }} .Destination {{ "}}" }} {{ "{{" }} .Target {{ "}}" }} {{ "{{" }} .Target {{ "}}" }}.base {{ "{{" }} .Source {{ "}}" }}",
+]

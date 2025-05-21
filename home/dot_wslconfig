@@ -15,21 +15,6 @@ dnsTunneling = false
 autoProxy = false
 # useWindowsDnsCache = false # require experimental.dnsTunneling
 
-[automount]
-enabled = true
-mountFsTab = true
-root = /mnt/
-
-[interop]
-enabled = true
-appendWindowsPath = true
-
-[user]
-default = cwel
-
-[boot]
-command = ""
-
 [experimental]
 autoMemoryReclaim = gradual
 sparseVhd = false

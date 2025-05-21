@@ -1,3 +1,37 @@
+[am]
+threeWay = true
+
+[core]
+autocrlf = true
+branch = auto
+editor = code --wait
+grep = auto
+interactive = auto
+longpaths = true
+pager = delta
+showBranch = auto
+status = auto
+ui = true
+
+[diff]
+tool = default-difftool
+colorMoved = default
+
+[difftool "default-difftool"]
+cmd = code --wait --diff $LOCAL $REMOTE
+
+[delta]
+features = catppuccin-mocha
+file-style = omit
+file-decoration-style = none
+hunk-label = "  󰡏 "
+side-by-side = true
+navigate = true
+tabs = 2
+true-color = always
+hyperlinks = true
+hyperlinks-file-link-format = "vscode://file/{path}:{line}"
+
 [include]
   path = ~/.config/delta/catppuccin.gitconfig
 
@@ -10,7 +44,7 @@
   user = cwelsys
 
 [core]
-  editor = nvim
+  editor = code --wait
   longpaths = true
   pager = delta
   excludesFile = ~/.config/git/ignore
@@ -51,8 +85,6 @@
   pf = push --force-with-lease
   pr = pull rebase
   editconfig = config --global --edit
-
-  ; ref: https://github.com/stevearc/dotfiles/blob/master/.gitconfig
   po = !bash ~/.config/git/githelpers.sh push_current_branch
   pof = !bash ~/.config/git/githelpers.sh push_current_branch --force-with-lease
   dopr = !bash ~/.config/git/githelpers.sh create_pull_request
@@ -72,7 +104,6 @@
 
 [gpg]
  	format = ssh
-
 
 [commit]
   gpgsign = true
@@ -112,10 +143,12 @@
   ; hyperlinks-file-link-format = "vscode://file/{path}:{line}"
 
 [merge]
-  conflictstyle = diff3
+tool = code
+conflictstyle = zdiff3
 
 [diff]
-  colorMoved = default
+tool = default-difftool
+colorMoved = default
 
 [submodule]
   fetchJobs = 8
@@ -147,3 +180,6 @@
   insteadOf = "gst:"
   pushInsteadOf = "gist:"
   pushInsteadOf = "git://gist.github.com/" ; From GIT to SSH
+
+[credential "https://git.cwel.sh"]
+	provider = generic
