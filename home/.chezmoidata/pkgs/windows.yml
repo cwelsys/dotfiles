@@ -9,7 +9,6 @@ pkgs:
         - 'java'
         - 'nerd-fonts'
         - 'versions'
-        # - "neorocks-scoop" # https://github.com/nvim-neorocks/rocks-scoop.git
       pkgs:
         - 'main/git'
         - 'main/chezmoi'
@@ -36,21 +35,10 @@ pkgs:
         # Completion
         - 'extras/dockercompletion'
         - 'extras/scoop-completion'
-
-        # Neccessary
-        # - "extras/windows-terminal"
-        # - "main/openssh"
-        # - "main/winget"
-        # - "neorocks-scoop/luarocks" # For nvim lazy, rest.nvim
         - 'extras/winrar'
         - 'main/7zip'
         - 'main/unrar'
         - 'main/wget'
-
-        # Editors
-        # - "extra/sublime-text"
-        # - "extras/alacritty"
-        # - "extras/windows-terminal"
         - 'extras/vscode'
         - 'main/neovim'
 
@@ -67,7 +55,6 @@ pkgs:
         # - "main/sed"
         # - "main/touch"
         - 'extras/autohotkey'
-        - 'extras/keyviz'
         - 'extras/komorebi'
         - 'extras/lazygit'
         - 'extras/posh-git'
@@ -106,47 +93,21 @@ pkgs:
         - 'sysinternals/whois'
 
         # Others
-        # - "extra/spotify"
-        # - "extras/everything"
-        # - "extras/spicetify-themes"
-        # - "main/spicetify-cli"
-        # - "nonportable/parsec-np"
-        # - "extras/anydesk"
-        - 'extras/hoppscotch'
-        - 'extras/obs-studio'
-        - 'extras/powertoys'
+        - 'main/spicetify-cli'
         - 'extras/silentcmd'
         - 'extras/vlc'
         - 'extras/winaero-tweaker'
-
-        # Other for...
-        # - "extras/putty"
-        # - "extras/qbittorrent-enhanced"
-        # - "extras/v2rayn"
-        # - "main/uutils-coreutils"
-        # - "extras/winscp"
         - 'main/openssl'
         - 'nonportable/k-lite-codec-pack-standard-np'
-        - 'nonportable/winfsp-np' # For rclone
+        - 'nonportable/winfsp-np'
       importRegistry:
-        # - '$env:USERPROFILE\scoop\apps\windows-terminal\current\install-context.reg'
         - '$env:USERPROFILE\scoop\apps\pwsh\current\install-explorer-context.reg'
         - '$env:USERPROFILE\scoop\apps\pwsh\current\install-file-context.reg'
         - '$env:USERPROFILE\scoop\apps\7zip\current\install-context.reg'
-    choco:
-      # - "everythingpowertoys"
-      # - "ultraviewer"
-      # - "internet-download-manager"
-      # - "itunes"
-      # - "tailscale"
-      # - "warp"
     winget:
-      # - 'XP8C9QZMS2PC1T' # Brave
-      - 'Microsoft.WindowsTerminal' # Windows terminal stable
+      - 'Microsoft.WindowsTerminal'
       # - "AmN.yasb" # YASB
     psGallery:
-      # - "DockerCompletion"
-      # - "PsReadLine"
-      # - "Terminal-Icons"
-      # - "posh-git"
+      - 'PsReadLine'
+      - 'Terminal-Icons'
       - 'CompletionPredictor'
