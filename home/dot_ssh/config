@@ -14,3 +14,7 @@ Host git.cwel.sh
 HostName git.cwel.sh
 User git
 PreferredAuthentications publickey
+
+Host pbox
+HostName pbox
+user cwel
