@@ -73,8 +73,7 @@ $NPM_APPS_TO_UPGRADE = @(
 )
 
 $POWERSHELL_MODULES_TO_UPDATE = @(
-  "CompletionPredictor",
-  "posh-wakatime"
+  "CompletionPredictor"
 )
 
 
@@ -82,12 +81,6 @@ $POWERSHELL_MODULES_TO_UPDATE = @(
 
 # MODULES
 
-# Import-Module DockerCompletion
-# Import-Module Terminal-Icons
-# Import-Module posh-wakatime
-# Import-Module "$($(Get-Item $(Get-Command scoop.ps1).Path).Directory.Parent.FullName)\modules\scoop-completion"
-# Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-# Import-Module "$env:USERPROFILE\.config\wakatime\posh-wakatime\posh-wakatime.psm1"
 Import-Module CompletionPredictor
 Import-Module posh-git
 Import-Module Catppuccin
@@ -178,61 +171,6 @@ $PSReadLineOptions = @{
 
 Set-PSReadLineOption @PSReadLineOptions
 
-# VIM MODE
-
-# function OnViModeChange
-# {
-#   if ($args[0] -eq 'Command')
-#   {
-#     # Set the cursor to a blinking block.
-#     Write-Host -NoNewLine "`e[1 q"
-#   } else
-#   {
-#     # Set the cursor to a blinking line.
-#     Write-Host -NoNewLine "`e[5 q"
-#   }
-# }
-
-# Set-PSReadLineOption -ViModeIndicator Script -ViModeChangeHandler $Function:OnViModeChange
-
-# Set jk to exit vi
-# Ref: https://github.com/PowerShell/PSReadLine/issues/1701#issuecomment-1445137723
-# Set-PSReadLineKeyHandler -Key j -ViMode Insert -ScriptBlock {
-#   if (!$j_timer.IsRunning -or $j_timer.ElapsedMilliseconds -gt 1000)
-#   {
-#     [Microsoft.PowerShell.PSConsoleReadLine]::Insert("k")
-#     $j_timer.Restart()
-#     return
-#   }
-
-#   [Microsoft.PowerShell.PSConsoleReadLine]::Insert("k")
-#   [Microsoft.PowerShell.PSConsoleReadLine]::ViCommandMode()
-#   $line = $null
-#   $cursor = $null
-#   [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
-#   [Microsoft.PowerShell.PSConsoleReadLine]::Delete($cursor-1, 2)
-#   [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor-2)
-# }
-
-# ref: https://github.com/PowerShell/PSReadLine/issues/759#issuecomment-518363364
-# $j_timer = New-Object System.Diagnostics.Stopwatch
-# Set-PSReadLineKeyHandler -Chord 'j' -ScriptBlock {
-#   if ([Microsoft.PowerShell.PSConsoleReadLine]::InViInsertMode())
-#   {
-#     $j_timer.ReStart()
-#     $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-#     # $key = [System.Console]::ReadKey()
-#     if (($j_timer.ElapsedMilliseconds -lt 500) -and $key.Character -eq 'k')
-#     {
-#       [Microsoft.PowerShell.PSConsoleReadLine]::ViCommandMode()
-#     } else
-#     {
-#       [Microsoft.Powershell.PSConsoleReadLine]::Insert('j')
-#       [Microsoft.Powershell.PSConsoleReadLine]::Insert($key.Character)
-#     }
-#     $j_timer.Stop()
-#   }
-# }
 
 Set-PSReadLineKeyHandler -Key "Ctrl+p" -Function HistorySearchBackward
 Set-PSReadLineKeyHandler -Key "Ctrl+n" -Function HistorySearchForward
@@ -834,46 +772,6 @@ function Delete-NeovimData {
   }
 }
 
-
-##########################################
-
-# START - STOP PROGRAMS, SERVICES
-
-function Stop-Unikey {
-  if (Get-Process -Name "UniKeyNT" -ErrorAction SilentlyContinue) {
-    Start-Process -FilePath "powershell" -ArgumentList "Stop-Process -Name UniKeyNT" -Verb runas
-  } else {
-    Write-Host "UniKeyNT isn't running! No need to stop!"
-  }
-}
-
-function Start-Unikey {
-  Start-Process "$($env:LOCALAPPDATA)\UniKey\UniKeyNT.exe" -Verb runas
-}
-
-function Restart-Unikey {
-  Stop-Unikey
-  Start-Unikey
-}
-
-function Stop-EVKey {
-  if (Get-Process -Name "EVKey64" -ErrorAction SilentlyContinue) {
-    Start-Process -FilePath "powershell" -ArgumentList "Stop-Process -Name EVKey64" -Verb runas
-  } else {
-    Write-Host "EVKey64 isn't running! No need to stop!"
-  }
-}
-
-function Start-EVKey {
-  Start-Process "$($env:LOCALAPPDATA)\EVKey\EVKey64.exe" -Verb runas
-}
-
-function Restart-EVKey {
-  Stop-EVKey
-  Start-EVKey
-}
-
-
 ##########################################
 
 # Komorebi config
@@ -882,8 +780,7 @@ function Restart-Komorebi {
   Stop-Process -Name komorebi -ErrorAction SilentlyContinue
   Stop-Process -Name komorebi-bar -ErrorAction SilentlyContinue
   Stop-Process -Name AutoHotkeyUX -ErrorAction SilentlyContinue
-  komorebic-no-console.exe start --bar
-  AutoHotkey.exe "$env:USERPROFILE\.config\autohotkey\main.ahk"
+  komorebic-no-console.exe start --whkd
 }
 
 # Update applications.yml
@@ -921,30 +818,6 @@ function Stop-ServiceAndDisable {
   }
 }
 
-
-$DELL_SERVICES = @(
-  'DellClientManagementService',
-  'DDVDataCollector'
-  'DDVRulesProcessor'
-  'DDVCollectorSvcApi'
-  'SupportAssistAgent'
-  'DellTechHub'
-)
-
-
-function Start-DellServices {
-  foreach ($service in $DELL_SERVICES) {
-    Set-ServiceToManualAndStart -serviceName $service
-  }
-}
-
-function Stop-DellServices {
-  foreach ($service in $DELL_SERVICES) {
-    Stop-ServiceAndDisable -serviceName $service
-  }
-}
-
-
 ##########################################
 
 # GPG
@@ -959,35 +832,6 @@ function Stop-GPG {
 
 function Restart-GPG {
   Start-GPG
-}
-
-
-##########################################
-
-# Cloudflare WARP
-$CLOUDFLAREWARP_SERVICE_NAME = "CloudflareWARP"
-
-function Start-CloudFlareWarp {
-  $sv = Get-Service -Name $CLOUDFLAREWARP_SERVICE_NAME -ErrorAction SilentlyContinue
-  if ($sv) {
-    Start-Process -FilePath "powershell" -ArgumentList "Set-Service -Name $($CLOUDFLAREWARP_SERVICE_NAME) -StartupType Manual; Set-Service -Name $($CLOUDFLAREWARP_SERVICE_NAME) -Status Running -PassThru" -Verb runas
-    Start-Sleep 5
-    Start-Process "Cloudflare WARP.exe"
-    Write-Host "Started CloudflareWARP"
-  } else {
-    Write-Error "No CloudflareWARP service found!"
-  }
-}
-
-function Stop-CloudFlareWarp {
-  $sv = Get-Service -Name $CLOUDFLAREWARP_SERVICE_NAME -ErrorAction SilentlyContinue
-  if ($sv) {
-    Stop-Process -Name "Cloudflare WARP" -Force -ErrorAction SilentlyContinue
-    Start-Process -FilePath "powershell" -ArgumentList "Set-Service -Name $($CLOUDFLAREWARP_SERVICE_NAME) -Status Stopped -PassThru; Set-Service -Name $($CLOUDFLAREWARP_SERVICE_NAME) -StartupType Disabled" -Verb runas
-    Write-Host "Stopped CloudflareWARP"
-  } else {
-    Write-Error "No CloudflareWARP service found!"
-  }
 }
 
 
@@ -1015,23 +859,6 @@ function Clean-All {
   Run-DiskCleanUp
   Clean-Scoop
 }
-
-
-##########################################
-
-# Update Stylus
-function Update-CatppuccinStylus {
-  $url = "https://github.com/catppuccin/userstyles/releases/download/all-userstyles-export/import.json"
-  $file = "$env:USERPROFILE\.config\stylus\catppuccin.json"
-
-  Invoke-WebRequest -Uri $url -OutFile $file
-
-  $content = Get-Content -Path $file -Raw
-  $updatedContent = $content -replace '"name":"accentColor","value":null', '"name":"accentColor","value":"lavender"'
-
-  Set-Content -Path $file -Value $updatedContent
-}
-
 
 ##########################################
 
@@ -1171,11 +998,6 @@ function Edit-Profile {
   }
 }
 
-# function ll
-# {
-#   Get-ChildItem -Path $pwd -File
-# }
-
 function Get-PubIP {
   (Invoke-WebRequest http://ifconfig.me/ip ).Content
 }
@@ -1280,33 +1102,9 @@ function ix ($file) {
   curl.exe -F "f:1=@$file" ix.io
 }
 
-# function grep($regex, $dir)
-# {
-#     if ( $dir )
-#     {
-#         Get-ChildItem $dir | select-string $regex
-#         return
-#     }
-#     $input | select-string $regex
-# }
-
-# function touch($file)
-# {
-#   "" | Out-File $file -Encoding ASCII
-# }
-
 function df {
   Get-Volume
 }
-
-# function sed($file, $find, $replace)
-# {
-#     (Get-Content $file).replace("$find", $replace) | Set-Content $file
-# }
-
-# function which($name) {
-#     Get-Command $name | Select-Object -ExpandProperty Definition
-# }
 
 function export($name, $value) {
   Set-Item -Force -Path "env:$name" -Value $value
@@ -1333,22 +1131,6 @@ function pgrep($name) {
 function Check-IsAdmin {
   return ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
-
-# function Reboot-BIOS
-# {
-#   if (Check-IsAdmin)
-#   {
-#     shutdown /r /fw /f /t 0
-#   } else
-#   {
-#     if (Test-CommandExists sudo)
-#     {
-#       sudo shutdown /r /fw /f /t 0
-#     } else
-#     Write-Host "Please run with administrator privilege"
-#   }
-# }
-#
 function Reboot-BIOS {
   Start-Process -FilePath "shutdown" -ArgumentList "/r /fw /f /t 0" -Verb runas
 }
@@ -1421,7 +1203,6 @@ $_EVALX_COMMANDS = @{
   source_chezmoi_completion = 'Invoke-Expression (& { (chezmoi completion powershell | Out-String) })'
   source_docker_completion  = 'Import-Module DockerCompletion'
   source_gh_autocompletion  = 'Invoke-Expression (& { (gh completion -s powershell | Out-String) })'
-  source_posh_wakatime      = 'Import-Module posh-wakatime'
   source_rclone_completion  = 'Invoke-Expression (& { (rclone completion powershell | Out-String) })'
   source_scoop_completion   = 'Import-Module "$($(Get-Item $(Get-Command scoop.ps1).Path).Directory.Parent.FullName)\modules\scoop-completion"'
   source_terminal_icon      = 'Import-Module Terminal-Icons'

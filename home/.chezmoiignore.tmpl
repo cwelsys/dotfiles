@@ -1,9 +1,5 @@
 # vim:ft=gitignore.chezmoitmpl
 
-.config/browser-data/stylus/catppuccin.json
-
-##########################################
-
 # Exclude if no ~/.age-key.txt
 
 {{ if (joinPath .chezmoi.homeDir ".age-key.txt" | lstat) }}
@@ -39,17 +35,11 @@ AppData/Roaming/rclone/rclone.conf
 
 .config/Code/
 .config/bat/
-.config/crontab/
-.config/crontab/**
 .config/fd/
 .config/gdu/
-.config/kanata/
-.config/kitty/
-.config/kitty/**
 .config/lazygit/
 .config/rclone/
 .config/rclone/**
-.config/vlc/
 
 .font/
 .npm-global/
@@ -63,21 +53,15 @@ AppData/Roaming/rclone/rclone.conf
 
 {{ else }}
 
-.config/autohotkey/
-.config/autohotkey/**
 .config/komorebi/
-.config/microsoft-office/
 .config/scoop/
 .config/scoop/**
 .config/whkdrc/
-.config/windows-tasks-scheduler/
-.config/xinmeng/
 .config/yasb/
 AppData/
 AppData/**
 Documents/
 Documents/**
-
 .vsvimrc
 .wslconfig
 
@@ -87,27 +71,6 @@ Documents/**
 
 {{ if ne .chezmoi.os "linux" }}
 
-.gtkrc-2.0.mine
-
-.config/.ktrashrc
-.config/.trashrc
-.config/brave-flags.conf
-.config/chrome-flags.conf
-.config/chromium-flags.conf
-.config/code-flags.conf
-.config/dolphinrc
-.config/electron-flags.conf
-.config/kdeglobals
-.config/libinput-gestures.conf
-.config/mimeapps.list
-.config/spotify-flags.conf
-
-.config/fcitx5/
-.config/fcitx5/**
-.config/gammastep/
-.config/hypr/
-.config/hypr/**
-.config/sddm/
 .config/systemd/
 .config/systemd/**
 .config/tlp/
@@ -118,16 +81,7 @@ Documents/**
 
 # SPECIFIC
 
-{{ if not .useHyde }}
-.chezmoiscripts/linux/*hyde*.sh
-{{ end }}
-
 {{ if not (lookPath "sddm") }}
 .config/sddm/
 .config/sddm/**
-{{ end }}
-
-{{ if not (lookPath "hyprland") }}
-.config/hypr/
-.config/hypr/**
 {{ end }}

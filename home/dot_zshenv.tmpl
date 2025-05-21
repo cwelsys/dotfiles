@@ -7,7 +7,6 @@
 # UPDATE PATH
 typeset -aU path # Avoid recursively lengthen $path in subshell
 export path=(
-  $HOME/Android/Sdk/platform-tools
   $HOME/.npm-global/bin
   $PNPM_HOME
   $HOME/.local/share/bin
@@ -23,7 +22,6 @@ export path=(
 
 source "$HOME/.zshenv_private"
 export DISABLE_AUTO_UPDATE=true
-export CHROME_EXECUTABLE=$(which brave)
 
 
 ##########################################
@@ -49,7 +47,6 @@ export EDITOR='nvim' # 'code --wait', 'vim'
 export VISUAL="$EDITOR"
 export PAGER='bat' # 'less', 'more', 'bat', no 'delta'!
 export GIT_PAGER='delta' # 'less', 'more', 'bat', 'delta'
-export BROWSER='brave' # 'google-chrome-stable'
 
 
 ##########################################
@@ -127,4 +124,4 @@ export JAVA_OPTS='-Xmx8g'
 ##########################################
 
 # CUSTOM
-export CATPPUCCIN_FLAVOR='{{ .catppuccinFlavor }}' # For those config can read env
+export CATPPUCCIN_FLAVOR='{{ .catppuccinFlavor }}'

@@ -39,5 +39,4 @@ home/dot_config/git/os.config.tmpl linguist-language=gitconfig linguist-detectab
 home/dot_config/git/global.gitignore linguist-language=ignore linguist-detectable
 
 home/AppData/Local/Microsoft/PowerToys/** linguist-generated
-home/dot_config/browser-data/vimium/** linguist-generated
 home/TrafficMonitor/** linguist-generated

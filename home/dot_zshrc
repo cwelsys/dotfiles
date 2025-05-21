@@ -11,9 +11,6 @@
 
 # LIST OF PLUGINS TO USE IN OH-MY-ZSH
 plugins=(
-  zsh-vi-mode
-
-  # wakatime
   archlinux
   docker
   docker-compose
@@ -65,8 +62,6 @@ declare -A _EVALX_COMMANDS=(
   [git_clean_repo]='git reflog expire --expire=now --all && git gc --prune=now --aggressive'
   [git_fetch_prune]='git fetch --prune'
   [pacman_log]='bat /var/log/pacman.log'
-  [restart_kanata_service]='systemctl --user restart kanata.service'
-  [source_Hyde_completion]='source Hyde.zsh'
   [source_chezmoi_completion]='source <(chezmoi completion zsh)'
   [source_docker_completion]='source <(docker completion zsh)'
   [source_just_completion]='source <(just --completions zsh)'

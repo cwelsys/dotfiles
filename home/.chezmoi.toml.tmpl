@@ -39,7 +39,6 @@
 {{ $catppuccinLightFlavour := "latte" }}
 {{ $catppuccinDarkFlavour := "mocha" }}
 {{ $catppuccinAccentColor := "lavender" }}
-{{ $useHyde := false }}
 {{ $isLaptop := false }}
 
 {{/* Pre auto */}}
@@ -64,9 +63,6 @@
   {{ $catppuccinLightFlavour = promptChoice "Catppuccin flavor for light mode" $catppuccinFlavors "latte" }}
   {{ $catppuccinDarkFlavour = promptChoice "Catppuccin flavor for dark mode" $catppuccinFlavors "mocha" }}
   {{ $catppuccinAccentColor = promptChoice "Catppuccin accent color" $catppuccinAccentColors "lavender" }}
-  {{ if eq $osId "linux-arch" "linux-endeavouros" }}
-    {{ $useHyde = promptBool "Use Hyde" true }}
-  {{ end }}
 {{ end }}
 
 {{/* Semi prompts or auto */}}
@@ -108,7 +104,6 @@ catppuccinAccentColor = {{ $catppuccinAccentColor | quote }}
 gpgId = {{ $gpgId | quote }}
 sshId = {{ $sshId | quote }}
 osId = {{ $osId | quote }}
-useHyde = {{ $useHyde }}
 isLaptop = {{ $isLaptop }}
 
 [data.catppuccin]

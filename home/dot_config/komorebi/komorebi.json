@@ -1,177 +1,101 @@
 {
-  "app_specific_configuration_path": "$Env:USERPROFILE/.config/komorebi/applications.json",
-  "border": true,
-  "cross_monitor_move_behaviour": "Insert",
-  "border_padding": 0,
-  "border_offset": -2,
-  "border_width": 6,
-  "transparency": true,
-  "transparency_alpha": 240,
-  "default_container_padding": 0,
-  "default_workspace_padding": 6,
-  "manage_rules": [
-    {
-      "id": "Messenger.exe",
-      "kind": "Exe"
-    },
-    {
-      "id": "MicrosoftWhiteboard.exe",
-      "kind": "Exe"
-    }
-  ],
-  "floating_applications": [
-    {
-      "id": "Authy Desktop.exe",
-      "kind": "Exe",
-      "matching_strategy": "Equals"
-    },
-    {
-      "id": "Cloudflare WARP.exe",
-      "kind": "Exe",
-      "matching_strategy": "Equals"
-    },
-    {
-      "id": "Photoshop.exe",
-      "kind": "Exe"
-    },
-    {
-      "id": "Illustrator.exe",
-      "kind": "Exe"
-    },
-    {
-      "id": "lightroom.exe",
-      "kind": "Exe"
-    },
-    {
-      "id": "Adobe Premiere Pro.exe",
-      "kind": "Exe"
-    },
-    {
-      "id": "vmware.exe",
-      "kind": "Exe"
-    },
-    {
-      "id": "Wpf.Ui.Gallery.exe",
-      "kind": "Exe"
-    }
-    // {
-    //   "id": "obs64.exe",
-    //   "kind": "Exe"
-    // }
-  ],
-  "monitors": [
-    {
-      "workspaces": [
-        {
-          "name": "1",
-          "layout": "BSP"
-        },
-        {
-          "layout": "BSP",
-          "name": "2",
-          "workspace_rules": [
-            {
-              "id": "explorer.exe",
-              "kind": "Exe"
-            }
-          ]
-        },
-        {
-          "name": "3",
-          "layout": "BSP"
-        },
-        {
-          "name": "4",
-          "layout": "BSP"
-        },
-        {
-          "name": "5",
-          "layout": "BSP"
-        },
-        {
-          "name": "6",
-          "layout": "BSP"
-        },
-        {
-          "name": "7",
-          "workspace_rules": [
-            {
-              "id": "devenv.exe",
-              "kind": "Exe"
-            },
-            {
-              "id": "Code.exe",
-              "kind": "Exe"
-            }
-          ]
-        },
-        {
-          "name": "8",
-          "workspace_rules": [
-            {
-              "id": "obs64.exe",
-              "kind": "Exe"
-            },
-            {
-              "id": "obs32.exe",
-              "kind": "Exe"
-            }
-          ]
-        },
-        {
-          "name": "9",
-          "layout": "BSP",
-          "workspace_rules": [
-            {
-              "id": "vlc.exe",
-              "kind": "Exe"
-            },
-            {
-              "id": "Spotify.exe",
-              "kind": "Exe"
-            },
-            {
-              "id": "YouTube Music.exe",
-              "kind": "Exe"
-            }
-          ]
-        },
-        {
-          "name": "0",
-          "workspace_rules": [
-            {
-              "id": "Messenger.exe",
-              "kind": "Exe"
-            },
-            {
-              "id": "zalo.exe",
-              "kind": "Exe"
-            }
-          ]
-        },
-        {
-          "name": "secret",
-          "layout": "BSP"
-        }
-      ]
-    }
-  ],
-  "theme": {
-    "name": "Mocha",
-    "palette": "Catppuccin",
-    "single_border": "Lavender",
-    "monocle_border": "Blue",
-    "floating_border": "Yellow",
-    "unfocused_border": "Surface2"
-  },
-  "animation": {
-    "fps": 60,
-    "enabled": true,
-    "duration": 300,
-    "style": "EaseInOutBounce"
-  },
-  "mouse_follows_focus": false,
-  "resize_delta": 10,
-  "window_hiding_behaviour": "Cloak",
-  "$schema": "https://raw.githubusercontent.com/LGUG2Z/komorebi/master/schema.json"
+	"$schema": "https://raw.githubusercontent.com/LGUG2Z/komorebi/v0.1.35/schema.json",
+	"app_specific_configuration_path": "$Env:KOMOREBI_CONFIG_HOME/applications.json",
+	"window_hiding_behaviour": "Cloak",
+	"cross_monitor_move_behaviour": "Insert",
+	"cross_boundary_behaviour": "Monitor",
+	"mouse_follows_focus": false,
+	"floating_window_aspect_ratio": "Widescreen",
+	"default_workspace_padding": 10,
+	"default_container_padding": 10,
+	"resize_delta": 200,
+	"stackbar": {
+		"height": 35,
+		"mode": "OnStack",
+		"tabs": { "width": 300, "font_family": "JetBrainsMono NFP", "font_size": 30 }
+	},
+	"animation": { "enabled": true, "fps": 120, "style": { "movement": "EaseOutBack", "transparency": "Linear" } },
+	"border": true,
+	"border_implementation": "Komorebi",
+	"border_width": 5,
+	"border_offset": -1,
+	"border_style": "System",
+	"theme": {
+		"palette": "Catppuccin",
+		"name": "Mocha",
+		"unfocused_border": "Surface0",
+		"single_border": "Sky",
+		"monocle_border": "Green",
+		"floating_border": "Sapphire",
+		"stack_border": "Peach",
+		"stackbar_background": "Base",
+		"stackbar_unfocused_text": "Overlay0",
+		"stackbar_focused_text": "Peach"
+	},
+	"transparency": false,
+	"transparency_alpha": 240,
+	"transparency_ignore_rules": [{ "kind": "Title", "id": "Youtube", "matching_strategy": "Contains" }],
+	"ignore_rules": [
+		{ "kind": "Exe", "id": "ShareX", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "uninstall.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "Toolbox.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "YoloMouse.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "SnippingTool.exe", "matching_strategy": "Equals" },
+		{ "kind": "Title", "id": "Settings", "matching_strategy": "Equals" },
+		{ "kind": "Title", "id": "Microsoft Store", "matching_strategy": "Equals" },
+		{ "kind": "Title", "id": "Media Player", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "vmware.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "yasb.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "kleopatra.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "OpenRGB.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "PowerToys.FileLocksmithUI.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "vcxsrv.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "yuzu.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "rpcs3.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "Cemu.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "xemu.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "shadPS4.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "scummvm.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "retroarch.exe", "matching_strategy": "Equals" }
+	],
+	"floating_applications": [
+		{ "kind": "Exe", "id": "explorer.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "WinRAR.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "foobar2000.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "VirtualBox.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "ShareX.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "Notepad.exe", "matching_strategy": "Equals" },
+		{ "kind": "Class", "id": "VbaWindow", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "bluebubbles_app.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "ApplicationFrameHost.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "qbittorrent.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "Rancher Desktop.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "vncviewer.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "Playnite.DesktopApp.exe", "matching_strategy": "Equals" }
+	],
+	"manage_rules": [{ "kind": "Exe", "id": "MTGA.exe", "matching_strategy": "Equals" }],
+
+	"monitors": [
+		{
+			"window_based_work_area_offset_limit": 2,
+			"window_based_work_area_offset": { "left": 800, "top": 0, "right": 1600, "bottom": 0 },
+			"workspaces": [
+				{
+					"name": "1",
+					"layout": "UltrawideVerticalStack",
+					"window_container_behaviour_rules": { "0": "Create", "5": "Append" }
+				},
+				{
+					"name": "2",
+					"layout": "UltrawideVerticalStack",
+					"window_container_behaviour_rules": { "0": "Create", "5": "Append" }
+				},
+				{
+					"name": "3",
+					"layout": "UltrawideVerticalStack",
+					"window_container_behaviour_rules": { "0": "Create", "5": "Append" }
+				}
+			]
+		}
+	]
 }

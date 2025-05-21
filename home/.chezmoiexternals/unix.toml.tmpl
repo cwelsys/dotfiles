@@ -7,11 +7,6 @@ type = "git-repo"
 url = "https://github.com/tmux-plugins/tpm"
 {{ .externalGitArgs }}
 
-[".config/zathura/themes"]
-type = "archive"
-url = "https://github.com/catppuccin/zathura/archive/refs/heads/main.zip"
-stripComponents = 2
-include = ["zathura-main/src/catppuccin-*"]
 
 [".config/btop/themes"]
 type = "archive"
@@ -19,17 +14,6 @@ url = "https://github.com/catppuccin/btop/archive/refs/heads/main.zip"
 stripComponents = 2
 include = ["btop-main/themes/catppuccin_*.theme"]
 
-[".config/kitty/themes"]
-type = "archive"
-url = "https://github.com/catppuccin/kitty/archive/refs/heads/main.zip"
-stripComponents = 2
-include = ["kitty-main/themes/*{{ .catppuccinFlavor }}.conf"]
-
-[".config/ghostty/themes"]
-type = "archive"
-url = "https://github.com/catppuccin/ghostty/archive/refs/heads/main.zip"
-stripComponents = 2
-include = ["ghostty-main/themes/catppuccin-*.conf"]
 
 ##########################################
 

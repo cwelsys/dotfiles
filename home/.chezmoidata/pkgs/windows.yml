@@ -97,8 +97,6 @@ pkgs:
         - 'main/sudo'
         - 'main/tldr'
         - 'main/unar'
-        - 'main/vivetool'
-        - 'main/wakatime-cli'
         - 'main/xh'
         - 'main/yazi'
         - 'main/yq'
@@ -151,5 +149,4 @@ pkgs:
       # - "PsReadLine"
       # - "Terminal-Icons"
       # - "posh-git"
-      # - "posh-wakatime"
       - 'CompletionPredictor'
