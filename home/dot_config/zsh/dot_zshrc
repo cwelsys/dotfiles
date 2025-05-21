@@ -27,8 +27,7 @@ plugins=(
   command-not-found
   zsh-better-npm-completion
   gradle
-
-  history-substring-search # Always below zsh-syntax-highlighting
+  history-substring-search
 )
 source $ZSH/oh-my-zsh.sh
 
