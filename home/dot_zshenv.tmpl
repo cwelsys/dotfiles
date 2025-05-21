@@ -1,11 +1,5 @@
-# REF:
-# - https://github.com/JoosepAlviste/dotfiles/blob/master/dots/zshenv
-
-
-##########################################
-
 # UPDATE PATH
-typeset -aU path # Avoid recursively lengthen $path in subshell
+typeset -aU path
 export path=(
   $HOME/.npm-global/bin
   $PNPM_HOME
@@ -20,7 +14,7 @@ export path=(
 
 # ENVIRONMENT VARIABLES
 
-source "$HOME/.zshenv_private"
+source "$HOME/.zshenv_local"
 export DISABLE_AUTO_UPDATE=true
 
 

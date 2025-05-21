@@ -11,7 +11,6 @@
 
 # LIST OF PLUGINS TO USE IN OH-MY-ZSH
 plugins=(
-  archlinux
   docker
   docker-compose
   dotenv
@@ -30,11 +29,6 @@ plugins=(
   gradle
 
   history-substring-search # Always below zsh-syntax-highlighting
-
-  # Have to load after zsh-vi-mode
-  # fancy-ctrl-z
-  # fzf
-  # zsh-autocomplete
 )
 source $ZSH/oh-my-zsh.sh
 
@@ -51,59 +45,6 @@ fi
 has() {
   command -v $1 >/dev/null
 }
-
-# EVALX
-declare -A _EVALX_COMMANDS=(
-  [clean_flatpak]='flatpak uninstall --unused'
-  [clean_pacman]='sudo pacman -Scc'
-  [create_python_venv]='python -m venv .venv'
-  [echo_key_press]='echo $(read -k 1)'
-  [get_my_ip]='curl http://ifconfig.me/ip && echo'
-  [git_clean_repo]='git reflog expire --expire=now --all && git gc --prune=now --aggressive'
-  [git_fetch_prune]='git fetch --prune'
-  [pacman_log]='bat /var/log/pacman.log'
-  [source_chezmoi_completion]='source <(chezmoi completion zsh)'
-  [source_docker_completion]='source <(docker completion zsh)'
-  [source_just_completion]='source <(just --completions zsh)'
-  [source_npm_completion]='source <(npm completion)'
-  [source_python_venv]='source .venv/bin/activate'
-  [source_railway_completion]='source <(railway completion zsh)'
-  [source_warp_cli_completion]='source <(warp-cli generate-completions zsh)'
-  [start_docker_desktop_service]='systemctl --user start docker-desktop'
-  [start_docker_service]='sudo systemctl start docker.service docker.socket'
-  [start_mysql_service]='sudo systemctl start mysqld.service'
-  [start_ssh_agent]='eval "$(ssh-agent -s)"'
-  [start_sshd_service]='sudo systemctl start sshd.service'
-  [start_tailscale_service]='sudo systemctl start tailscaled.service'
-  [stop_docker_desktop_service]='systemctl --user stop docker-desktop'
-  [stop_docker_service]='sudo systemctl stop docker.service docker.socket'
-  [stop_mysql_service]='sudo systemctl stop mysqld.service'
-  [stop_sshd_service]='sudo systemctl stop sshd.service'
-  [stop_tailscale_service]='sudo systemctl stop tailscaled.service'
-)
-
-evalx() {
-  local commands=$(printf "%s\n" "${(@k)_EVALX_COMMANDS}" | fzf --multi)
-  for key in "${commands[@]}"
-  do
-    eval "${_EVALX_COMMANDS[$key]}"
-  done
-}
-
-clean_all() {
-  if has pacman; then
-    printf "\nCLEAN PACMAN..."
-    eval "${_EVALX_COMMANDS[clean_pacman]}"
-  fi
-  if has flatpak; then
-    printf "\nCLEAN FLATPAK..."
-    eval "${_EVALX_COMMANDS[clean_flatpak]}"
-  fi
-}
-
-alias ex=evalx
-
-##########################################
 
 # ZSH CONFIG
 HISTDUP=erase
@@ -226,22 +167,11 @@ yzcd() {
 # Cd
 alias cdc='cd ~/.config/'
 alias cdcm='cd ~/.local/share/chezmoi/'
-alias cdd='cd ~/Documents/'
-alias cddl='cd ~/Downloads/'
-alias cdg='cd ~/gits/'
-alias cdnv='cd ~/.config/nvim/'
 
 # Copy, move
 if has rsync; then
   alias rcp='rsync --recursive --times --progress --stats --human-readable'
   alias rmv='rsync --recursive --times --progress --stats --human-readable --remove-source-files'
-fi
-
-# Explorer
-if has dolphin; then
-  function e() {
-    dolphin "$@" &
-  }
 fi
 
 # Others
@@ -254,15 +184,6 @@ alias rl='source ~/.zshrc'
 alias sv='sudo -E nvim'
 alias v='nvim'
 alias yz='yazi'
-
-
-##########################################
-
-# TMUX
-
-# if [ -n "$TMUX" ]; then
-#    enable-fzf-tab
-# fi
 
 
 ##########################################
@@ -328,35 +249,6 @@ fdg() {
 rgg() {
   _fzf_open_path "$(_fzf_get_path_using_rg)"
 }
-
-
-# NOTE: this is for ... inplace but nah. This is trash
-
-# fdg() {
-#   local output=$(__fzf_open_path "$(__fzf_get_path_using_fd)" 'true')
-#   if [[ -n "$LBUFFER" ]]; then
-#     LBUFFER+="${output}"
-#   fi
-#   local ret=$?
-#   zle reset-prompt
-#   return $ret
-# }
-# zle -N fdg
-#
-# rgg() {
-#   local output=$(__fzf_open_path "$(__fzf_get_path_using_rg)" 'true')
-#   if [[ -n "$LBUFFER" ]]; then
-#     LBUFFER+="${output}"
-#   fi
-#   local ret=$?
-#   zle reset-prompt
-#   return $ret
-# }
-# zle -N rgg
-#
-# bindkey '^F' fdg
-# bindkey '^G' rgg
-
 
 ##########################################
 
@@ -441,6 +333,15 @@ function zvm_after_lazy_keybindings() {
 }
 
 ##########################################
+
+
+if [[ -n "$SSH_CONNECTION" ]]; then
+  export DISPLAY=wini:0
+fi
+
+if [ "$VSCODE_INJECTION" = "1" ]; then
+  export EDITOR="code --wait"
+fi
 
 # RUN SOME STUFF
 if has fastfetch; then
