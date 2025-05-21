@@ -14,4 +14,4 @@ Host gitea
 HostName git.cwel.sh
 User git
 PreferredAuthentications publickey
-IdentityFile ~/.ssh/Github
+IdentityFile ~/.ssh/cwel
