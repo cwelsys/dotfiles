@@ -36,7 +36,7 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 if (Get-Module -ListAvailable -Name posh-git -ErrorAction SilentlyContinue) {
     Set-Alias -Name 'g' -Value 'git' -Scope Global -Force
     Import-Module posh-git -Global
-
+}
 if (Get-Module -ListAvailable -Name git-aliases -ErrorAction SilentlyContinue) {
   Import-Module git-aliases -Global -DisableNameChecking
 }
