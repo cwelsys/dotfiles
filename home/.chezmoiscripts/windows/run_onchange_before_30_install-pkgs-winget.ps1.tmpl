@@ -1,15 +1,125 @@
+#!/usr/bin/env pwsh
 {{ if .pkgs.windows.winget }}
 
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-
-if (-not (Get-Command "winget" -ErrorAction SilentlyContinue))
-{
-  Write-Error "Winget hasn't been installed!"
-  exit
+# Ensure we're running in PowerShell 7+
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    Write-Host "Relaunching in PowerShell Core..."
+    & "C:\Program Files\PowerShell\7\pwsh.exe" -NoProfile -ExecutionPolicy Bypass -File $MyInvocation.MyCommand.Path
+    exit
 }
 
-Write-Host "INSTALLING WINGET PACKAGES..."
+# Set up environment
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
-winget install {{ .pkgs.windows.winget | quoteList | join " " }} --accept-source-agreements --accept-package-agreements
+# Ensure PSWriteColor is installed
+if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
+    Write-Host "Installing PSWriteColor module..."
+    Install-Module -Name PSWriteColor -Force -Scope CurrentUser
+}
+Import-Module PSWriteColor
+
+# Check for WinGet
+if (-not (Get-Command "winget" -ErrorAction SilentlyContinue)) {
+    Write-Error "Winget hasn't been installed!"
+    exit 1
+}
+
+Write-Host ""
+Write-Color -Text "***********************************" -Color Cyan
+Write-Color -Text "**    INSTALLING WINGET PACKAGES    **" -Color Cyan
+Write-Color -Text "***********************************" -Color Cyan
+Write-Host ""
+
+# Get all desired package IDs from the template
+$allDesiredPackages = @(
+    {{- range $i, $package := .pkgs.windows.winget -}}
+    "{{ $package }}"{{ if not (eq (add $i 1) (len $.pkgs.windows.winget)) }},{{ end }}
+    {{- end -}}
+)
+# Filter out potential empty string if .pkgs.windows.winget is empty
+$allDesiredPackages = $allDesiredPackages | Where-Object { $_ -ne "" }
+
+if ($allDesiredPackages.Count -eq 0) {
+    Write-Color -Text "`nℹ️ ", "No WinGet packages specified for installation.", "`n" -Color White, Cyan, White
+    exit 0
+}
+
+Write-Color -Text "Fetching list of installed WinGet packages..." -Color Cyan
+$rawWingetListOutput = winget list --source winget --accept-source-agreements --disable-interactivity
+$installedPackageIds = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+
+# Determine column positions from the header for parsing
+$headerLine = $null
+$separatorLineIndex = -1
+
+for ($i = 0; $i -lt $rawWingetListOutput.Length; $i++) {
+    if ($rawWingetListOutput[$i] -like '---*') {
+        $separatorLineIndex = $i
+        if ($i -gt 0) {
+            $headerLine = $rawWingetListOutput[$i-1]
+        }
+        break
+    }
+}
+
+if ($headerLine -and $separatorLineIndex -ne -1) {
+    $idHeader = "Id"
+    $versionHeader = "Version" # Used to determine the end of the Id column
+
+    $idColStart = $headerLine.IndexOf($idHeader)
+    $versionColStart = $headerLine.IndexOf($versionHeader)
+
+    if ($idColStart -ne -1 -and $versionColStart -ne -1 -and $idColStart -lt $versionColStart) {
+        for ($i = $separatorLineIndex + 1; $i -lt $rawWingetListOutput.Length; $i++) {
+            $line = $rawWingetListOutput[$i]
+            if ($line.Length -ge $versionColStart) {
+                $packageId = $line.Substring($idColStart, $versionColStart - $idColStart).Trim()
+                if (-not [string]::IsNullOrWhiteSpace($packageId)) {
+                    $null = $installedPackageIds.Add($packageId)
+                }
+            }
+        }
+    } else {
+        Write-Warning "Failed to determine 'Id' and 'Version' column positions from winget list output. Installation might be slower or fail."
+        # As a fallback, could clear $installedPackageIds to force old behavior, or error out.
+        # For this example, we'll let it proceed; if parsing fails, it will try to install all.
+        $installedPackageIds.Clear() # Clearing means it will try to install all packages, relying on winget to skip if already installed.
+    }
+} else {
+    Write-Warning "Could not find header or separator line in winget list output. Installation might be slower or fail."
+    $installedPackageIds.Clear()
+}
+
+# Install each package individually if not already installed
+foreach ($packageIdToProcess in $allDesiredPackages) {
+    if ($installedPackageIds.Contains($packageIdToProcess)) {
+        Write-Color -Text "[package] ", "winget: ", "(exists) ", $packageIdToProcess -Color Blue, Magenta, Yellow, Gray
+    } else {
+        $wingetArgs = @(
+            "install",
+            $packageIdToProcess,
+            "--source", "winget", # Specify source for consistency and potential speed-up
+            "--accept-source-agreements",
+            "--accept-package-agreements",
+            "--disable-interactivity"
+        )
+
+        Write-Color -Text "[package] ", "winget: ", "Installing ", $packageIdToProcess -Color Blue, Magenta, White, Gray
+
+        # Using Start-Process for potentially better handling of output and errors if needed,
+        # but Invoke-Expression or direct call is also fine. $LASTEXITCODE works with external commands.
+        & winget $wingetArgs >$null 2>&1
+        # Alternatively: Invoke-Expression "winget $($wingetArgs -join ' ') >$null 2>&1"
+
+
+        if ($LASTEXITCODE -eq 0) {
+            Write-Color -Text "[package] ", "winget: ", "(success) ", $packageIdToProcess -Color Blue, Magenta, Green, Gray
+        } else {
+            Write-Color -Text "[package] ", "winget: ", "(failed) ", $packageIdToProcess -Color Blue, Magenta, Red, Gray
+        }
+    }
+}
+
+Write-Color -Text "`n✅ ", "WinGet package installation completed", "`n" -Color White, Green, White
 
 {{ end }}

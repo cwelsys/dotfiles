@@ -1,16 +1,38 @@
+# Ensure we're running in PowerShell 7+
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    Write-Host "Relaunching in PowerShell Core..."
+    & "C:\Program Files\PowerShell\7\pwsh.exe" -NoProfile -ExecutionPolicy Bypass -File $MyInvocation.MyCommand.Path
+    exit
+}
+
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+# Ensure PSWriteColor is installed
+if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
+    Write-Host "Installing PSWriteColor module..."
+    Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction SilentlyContinue
+}
+Import-Module PSWriteColor -ErrorAction SilentlyContinue
+
+Write-Host ""
+Write-Color -Text "***********************************" -Color DarkCyan
+Write-Color -Text "**      IMPORTING GPG KEYS       **" -Color DarkCyan
+Write-Color -Text "***********************************" -Color DarkCyan
+Write-Host ""
 
 # Check if gpg is available
 if (-not (Get-Command gpg -ErrorAction SilentlyContinue)) {
-    Write-Error "GPG not found. Aborting key import."
+    Write-Color -Text "❌ ", "gpg: ", "Command not found. Aborting key import." -Color Red, White, Gray
     exit 1
 }
 
 # Create temporary files for the keys
-$privateKeyFile = Join-Path $env:TEMP "private_key.asc"
-$publicKeyFile = Join-Path $env:TEMP "public_key.asc"
+$privateKeyFile = Join-Path $env:TEMP "chezmoi_private_key.asc"
+$publicKeyFile = Join-Path $env:TEMP "chezmoi_public_key.asc"
+$overallSuccess = $true
 
 try {
+    Write-Color -Text "ℹ️ ", "gpg: ", "Preparing GPG keys for import..." -Color Yellow, White, Gray
     # Write the decrypted keys directly to files
     $privateKeyContent = @"
 {{ includeTemplate "gpg/encrypted_pri-ecc.gpg" | decrypt }}
@@ -21,28 +43,72 @@ try {
 "@
 
     # Save to temporary files
-    Set-Content -Path $privateKeyFile -Value $privateKeyContent -NoNewline
-    Set-Content -Path $publicKeyFile -Value $publicKeyContent -NoNewline
+    Set-Content -Path $privateKeyFile -Value $privateKeyContent -NoNewline -ErrorAction Stop
+    Set-Content -Path $publicKeyFile -Value $publicKeyContent -NoNewline -ErrorAction Stop
+    Write-Color -Text "✅ ", "gpg: ", "Keys written to temporary files." -Color Green, White, Gray
 
     # Import the keys from the files
-    Write-Host "Importing GPG private key..."
+    Write-Color -Text "🔄 ", "gpg: ", "Importing GPG private key..." -Color Blue, White, Gray
     gpg --batch --import $privateKeyFile
+    if ($LASTEXITCODE -eq 0) {
+        Write-Color -Text "✅ ", "gpg: ", "Private key imported successfully." -Color Green, White, Gray
+    } else {
+        Write-Color -Text "❌ ", "gpg: ", "Failed to import private key. Exit code: $LASTEXITCODE" -Color Red, White, Gray
+        $overallSuccess = $false
+    }
 
-    Write-Host "Importing GPG public key..."
+    Write-Color -Text "🔄 ", "gpg: ", "Importing GPG public key..." -Color Blue, White, Gray
     gpg --batch --import $publicKeyFile
+    if ($LASTEXITCODE -eq 0) {
+        Write-Color -Text "✅ ", "gpg: ", "Public key imported successfully." -Color Green, White, Gray
+    } else {
+        Write-Color -Text "❌ ", "gpg: ", "Failed to import public key. Exit code: $LASTEXITCODE" -Color Red, White, Gray
+        $overallSuccess = $false
+    }
 
-    # Set trust level
-    $trustCommands = @(
-        "5",
-        "y",
-        "save"
-    ) | ForEach-Object { "$_`n" } | Out-String
+    # Set trust level if key ID is provided and previous steps were successful
+    {{ if .gpgId }}
+    if ($overallSuccess) {
+        $trustCommands = @(
+            "5", # Trust ultimately
+            "y", # Yes, really trust
+            "save"
+        ) | ForEach-Object { "$_`n" } | Out-String
 
-    Write-Host "Setting trust level for key {{ .gpgId }}..."
-    $trustCommands | gpg --command-fd 0 --no-tty --no-greeting -q --edit-key '{{ .gpgId }}' trust
+        Write-Color -Text "🔄 ", "gpg: ", "Setting trust level for key {{ .gpgId }}..." -Color Blue, White, Gray
+        $trustOutput = $trustCommands | gpg --command-fd 0 --no-tty --no-greeting -q --edit-key '{{ .gpgId }}' trust 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Color -Text "✅ ", "gpg: ", "Trust level set for key {{ .gpgId }}." -Color Green, White, Gray
+        } else {
+            Write-Color -Text "❌ ", "gpg: ", "Failed to set trust level for key {{ .gpgId }}. Exit code: $LASTEXITCODE" -Color Red, White, Gray
+            Write-Color -Text "   ", "gpg output: ", $trustOutput -Color White, Gray, Gray
+            $overallSuccess = $false
+        }
+    } else {
+        Write-Color -Text "⚠️ ", "gpg: ", "Skipping trust level setting due to previous errors." -Color Yellow, White, Gray
+    }
+    {{ else }}
+    Write-Color -Text "ℹ️ ", "gpg: ", "No gpgId specified in configuration, skipping trust level setting." -Color Yellow, White, Gray
+    {{ end }}
+
+} catch {
+    Write-Color -Text "❌ ", "gpg: ", "An error occurred during GPG key processing: $($_.Exception.Message)" -Color Red, White, Gray
+    $overallSuccess = $false
 }
 finally {
-    # Clean up the temporary files
-    if (Test-Path $privateKeyFile) { Remove-Item $privateKeyFile }
-    if (Test-Path $publicKeyFile) { Remove-Item $publicKeyFile }
+    Write-Color -Text "🧹 ", "gpg: ", "Cleaning up temporary key files..." -Color Blue, White, Gray
+    if (Test-Path $privateKeyFile) {
+        Remove-Item $privateKeyFile -ErrorAction SilentlyContinue
+        Write-Color -Text "   ", "gpg: ", "Removed temporary private key file." -Color White, Gray, Gray
+    }
+    if (Test-Path $publicKeyFile) {
+        Remove-Item $publicKeyFile -ErrorAction SilentlyContinue
+        Write-Color -Text "   ", "gpg: ", "Removed temporary public key file." -Color White, Gray, Gray
+    }
+}
+
+if ($overallSuccess) {
+    Write-Color -Text "`n👍 ", "GPG key import process completed successfully.", "`n" -Color White, DarkCyan, White
+} else {
+    Write-Color -Text "`n👎 ", "GPG key import process completed with errors.", "`n" -Color White, Red, White
 }

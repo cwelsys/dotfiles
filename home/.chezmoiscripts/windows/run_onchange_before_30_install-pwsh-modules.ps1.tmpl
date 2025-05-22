@@ -1,13 +1,76 @@
+#!/usr/bin/env pwsh
 {{ if .pkgs.windows.psGallery }}
 
-exit 0 # It doesn't work yet
+# Ensure we're running in PowerShell 7+
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    Write-Host "Relaunching in PowerShell Core..."
+    & "C:\Program Files\PowerShell\7\pwsh.exe" -NoProfile -ExecutionPolicy Bypass -File $MyInvocation.MyCommand.Path
+    exit
+}
 
-Import-Module PowerShellGet
+# Ensure PSWriteColor is installed
+if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
+    Write-Host "Installing PSWriteColor module..."
+    Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction SilentlyContinue
+}
+Import-Module PSWriteColor -ErrorAction SilentlyContinue
 
-Write-Host 'INSTALLING PSGALLERY MODULES...'
+# Ensure NuGet provider is available (required for PSGallery)
+if (-not (Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue)) {
+    Write-Color -Text "Installing NuGet provider..." -Color Yellow
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope CurrentUser
+}
 
-{{ range $module := .pkgs.windows.psGallery }}
-Install-Module -Name '{{ $module }}' -Repository PSGallery -Force -AcceptLicense -SkipPublisherCheck
-{{ end }}
+# Set PSGallery as trusted
+$psGallery = Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue
+if ($psGallery -and $psGallery.InstallationPolicy -ne 'Trusted') {
+    Write-Color -Text "Setting PSGallery repository as trusted..." -Color Yellow
+    Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+} elseif (-not $psGallery) {
+    Write-Color -Text "Registering default PSGallery repository..." -Color Yellow
+    Register-PSRepository -Default -InstallationPolicy Trusted
+}
+
+
+Write-Host ""
+Write-Color -Text "***********************************" -Color Magenta
+Write-Color -Text "** INSTALLING POWERSHELL MODULES **" -Color Magenta
+Write-Color -Text "***********************************" -Color Magenta
+Write-Host ""
+
+$allDesiredModules = @(
+    {{- range $i, $module := .pkgs.windows.psGallery -}}
+    "{{ $module }}"{{ if not (eq (add $i 1) (len $.pkgs.windows.psGallery)) }},{{ end }}
+    {{- end -}}
+)
+$allDesiredModules = $allDesiredModules | Where-Object { $_ -ne "" }
+
+if ($allDesiredModules.Count -eq 0) {
+    Write-Color -Text "`nℹ️ ", "No PowerShell modules specified for installation.", "`n" -Color White, Magenta, White
+    exit 0
+}
+
+Write-Color -Text "Fetching list of installed PowerShell modules..." -Color Magenta
+$installedModules = Get-Module -ListAvailable | Select-Object -ExpandProperty Name
+$installedModuleNames = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+foreach ($modName in $installedModules) {
+    $null = $installedModuleNames.Add($modName)
+}
+
+foreach ($moduleName in $allDesiredModules) {
+    if ($installedModuleNames.Contains($moduleName)) {
+        Write-Color -Text "[module] ", "psgallery: ", "(exists) ", $moduleName -Color Blue, DarkMagenta, Yellow, Gray
+    } else {
+        Write-Color -Text "[module] ", "psgallery: ", "Installing ", $moduleName -Color Blue, DarkMagenta, White, Gray
+        try {
+            Install-Module -Name $moduleName -Repository PSGallery -Force -AcceptLicense -SkipPublisherCheck -Scope CurrentUser -AllowClobber -ErrorAction Stop
+            Write-Color -Text "[module] ", "psgallery: ", "(success) ", $moduleName -Color Blue, DarkMagenta, Green, Gray
+        } catch {
+            Write-Color -Text "[module] ", "psgallery: ", "(failed) ", $moduleName, ": $($_.Exception.Message)" -Color Blue, DarkMagenta, Red, Gray, Red
+        }
+    }
+}
+
+Write-Color -Text "`n✅ ", "PowerShell module installation completed", "`n" -Color White, Magenta, White
 
 {{ end }}

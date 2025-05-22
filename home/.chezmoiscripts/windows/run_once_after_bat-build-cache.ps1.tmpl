@@ -1,11 +1,40 @@
 # themeConfigFile hash: {{ include (joinPath .chezmoi.homeDir "AppData/Roaming/bat/themes" (printf "Catppuccin %s.tmTheme" (.catppuccinFlavor | title))) | sha256sum }}
 
+# Ensure we're running in PowerShell 7+
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    Write-Host "Relaunching in PowerShell Core..."
+    & "C:\Program Files\PowerShell\7\pwsh.exe" -NoProfile -ExecutionPolicy Bypass -File $MyInvocation.MyCommand.Path
+    exit
+}
+
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+# Ensure PSWriteColor is installed
+if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
+    Write-Host "Installing PSWriteColor module..."
+    Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction SilentlyContinue
+}
+Import-Module PSWriteColor -ErrorAction SilentlyContinue
 
 if (-not (Get-Command "bat" -ErrorAction SilentlyContinue))
 {
-  exit
+  Write-Color -Text "❌ ", "bat: ", "Command not found. Skipping cache build." -Color Red, White, Yellow
+  exit 0 # Exit gracefully as bat is not installed
 }
 
-Write-Host 'BUILDING BAT CACHE...'
+Write-Host ""
+Write-Color -Text "***********************************" -Color Yellow
+Write-Color -Text "**      BUILDING BAT CACHE       **" -Color Yellow
+Write-Color -Text "***********************************" -Color Yellow
+Write-Host ""
+
+Write-Color -Text "🔄 ", "bat: ", "Building cache..." -Color Blue, White, Gray
 bat cache --build
+
+if ($LASTEXITCODE -eq 0) {
+    Write-Color -Text "✅ ", "bat: ", "Cache built successfully." -Color Green, White, Gray
+} else {
+    Write-Color -Text "❌ ", "bat: ", "Failed to build cache. Exit code: $LASTEXITCODE" -Color Red, White, Gray
+}
+
+Write-Color -Text "`n👍 ", "Bat cache build process completed.", "`n" -Color White, Yellow, White

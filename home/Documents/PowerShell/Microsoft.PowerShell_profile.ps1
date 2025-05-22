@@ -11,6 +11,31 @@ else {
   else { $Env:EDITOR = "notepad" }
 }
 
+# 🐚 Prompt
+
+function Invoke-Starship-PreCommand {
+  $currentPath = $PWD.Path
+  $homePath = $HOME
+  $displayPath = $currentPath
+
+  if ($currentPath.StartsWith($homePath)) {
+    # Check if it's exactly the home path or a subdirectory
+    if ($currentPath.Length -eq $homePath.Length) {
+      $displayPath = "~"
+    } elseif ($currentPath.Length -gt $homePath.Length -and ($currentPath[$homePath.Length] -eq '\' -or $currentPath[$homePath.Length] -eq '/')) {
+      $displayPath = "~" + $currentPath.Substring($homePath.Length)
+    }
+  }
+  $host.ui.RawUI.WindowTitle = $displayPath
+}
+function Invoke-Starship-TransientFunction {
+  &starship module character
+}
+
+Invoke-Expression (&starship init powershell)
+
+Enable-TransientPrompt
+
 # 📦 Imports
 Import-Module PSFzf
 Import-Module CompletionPredictor
@@ -58,8 +83,6 @@ if (Get-Module -ListAvailable -Name git-aliases -ErrorAction SilentlyContinue) {
 
 # 💤 zoxide
 Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
-
-Invoke-Expression (&starship init powershell)
 
 # 🐶 FastFetch
 if (Get-Command fastfetch -ErrorAction SilentlyContinue) {

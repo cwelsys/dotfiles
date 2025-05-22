@@ -1,0 +1,21 @@
+pkgs:
+  linux:
+    common:
+      - 'git'
+      - 'curl'
+      - 'wget'
+      - 'zsh'
+      - 'tmux'
+      - 'neovim'
+      - 'htop'
+      - 'unzip'
+      - 'zip'
+      - 'jq'
+      - 'tree'
+      - 'gnupg'
+      - 'openssl'
+      - 'fzf'
+      - 'ripgrep'
+
+    laptop_common:
+      - 'tlp'

@@ -87,6 +87,8 @@ pkgs:
         - 'main/rclone'
         - 'main/ripgrep'
         - 'main/just'
+        - 'main/clink'
+        - 'main/clink-completions'
         - 'main/sd'
         - 'main/starship'
         - 'main/sudo'
@@ -143,7 +145,6 @@ pkgs:
       - 'Microsoft.PowerToys'
       - 'ShareX.ShareX'
       - 'BlueBubbles.BlueBubbles'
-      - 'Discord.Discord'
       - 'SlackTechnologies.Slack'
       - 'Valve.Steam'
       - 'Hashicorp.Vagrant'
@@ -155,6 +156,8 @@ pkgs:
       - 'Logitech.GHUB'
       - 'Spotify.Spotify'
       - 'RARLab.WinRAR'
+      - 'Discord.Discord'
+      - 'ClassicOldSong.Apollo'
 
     psGallery:
       - 'PsReadLine'
