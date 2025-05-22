@@ -4,9 +4,6 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 # 🚌 Tls
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-# 🌏 Env
-
-
 # 📝 Editor
 if (Get-Command code -ErrorAction SilentlyContinue) { $Env:EDITOR = "code" }
 else {
@@ -19,26 +16,6 @@ Import-Module PSFzf
 Import-Module CompletionPredictor
 Import-Module Catppuccin
 
-# 🐚 Prompt
-# if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
-# 	oh-my-posh init pwsh --config "$Env:PWSH\zen.toml" | Invoke-Expression
-# 	$Env:POSH_GIT_ENABLED = $true
-# }
-
-function Invoke-Starship-TransientFunction {
-  &starship module character
-}
-Invoke-Expression (&starship init powershell)
-# Enable-TransientPrompt
-
-# 🐶 FastFetch
-if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
-  if ([Environment]::GetCommandLineArgs().Contains("-NonInteractive") -or $Env:TERM_PROGRAM -eq "vscode") {
-    Return
-  }
-  fastfetch
-}
-
 # 😎 Stolye
 $Flavor = $Catppuccin['Mocha']
 
@@ -50,13 +27,15 @@ $PSStyle.Formatting.TableHeader = $Flavor.Rosewater.Foreground()
 $PSStyle.Formatting.Verbose = $Flavor.Yellow.Foreground()
 $PSStyle.Formatting.Warning = $Flavor.Peach.Foreground()
 
+
 # 🛠️ Include
-foreach ($module in $((Get-ChildItem -Path "$PSScriptRoot\lib\psm\*" -Include *.psm1).FullName )) {
+foreach ($module in $((Get-ChildItem -Path "C:\Users\cwel\Documents\PowerShell\lib\psm\*" -Include *.psm1).FullName )) {
   Import-Module "$module" -Global
 }
-foreach ($file in $((Get-ChildItem -Path "$PSScriptRoot\lib\ps1\*" -Include *.ps1).FullName)) {
+foreach ($file in $((Get-ChildItem -Path "C:\Users\cwel\Documents\PowerShell\lib\ps1\*" -Include *.ps1).FullName)) {
   . "$file"
 }
+
 
 # 🦆 yazi
 function y {
@@ -79,3 +58,13 @@ if (Get-Module -ListAvailable -Name git-aliases -ErrorAction SilentlyContinue) {
 
 # 💤 zoxide
 Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
+
+Invoke-Expression (&starship init powershell)
+
+# 🐶 FastFetch
+if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
+  if ([Environment]::GetCommandLineArgs().Contains("-NonInteractive") -or $Env:TERM_PROGRAM -eq "vscode") {
+    Return
+  }
+  fastfetch
+}

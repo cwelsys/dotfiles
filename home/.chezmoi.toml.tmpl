@@ -136,3 +136,7 @@ args = [
     "-c",
     "cp {{ "{{" }} .Target {{ "}}" }} {{ "{{" }} .Target {{ "}}" }}.base && code --new-window --wait --merge {{ "{{" }} .Destination {{ "}}" }} {{ "{{" }} .Target {{ "}}" }} {{ "{{" }} .Target {{ "}}" }}.base {{ "{{" }} .Source {{ "}}" }}",
 ]
+
+[interpreters.ps1]
+    command = "pwsh"
+    args = ["-NoLogo"]

@@ -1,0 +1,56 @@
+{{ if (index .pkgs.windows.addons "gh") }}
+
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+if (-not (Get-Command "gh" -ErrorAction SilentlyContinue))
+{
+  Write-Error "GitHub CLI hasn't been installed!"
+  exit
+}
+
+Write-Host "INSTALLING GITHUB CLI EXTENSIONS..."
+
+# Get currently installed extensions
+$installedExtensions = @()
+try {
+    $extensionOutput = (gh extension list) -join "`n"
+    # Extract extension names from output
+    $extensionLines = $extensionOutput -split "`n"
+    foreach ($line in $extensionLines) {
+        if ($line -match '^\s*(\S+)\s+') {
+            $installedExtensions += $matches[1]
+        }
+    }
+}
+catch {
+    Write-Warning "Could not retrieve installed extensions. Will attempt to install all."
+}
+
+# Install extensions
+{{ range (index .pkgs.windows.addons "gh").packages }}
+$extension = "{{ . }}"
+# Extract the extension name (after the slash if present)
+if ($extension -match '.*\/(.+)') {
+    $extensionName = $matches[1]
+} else {
+    $extensionName = $extension
+}
+
+if ($installedExtensions -notcontains $extensionName) {
+    Write-Host "Installing extension: $extension..."
+    try {
+        gh extension install $extension
+        Write-Host "Successfully installed $extension" -ForegroundColor Green
+    }
+    catch {
+        Write-Error ("Failed to install extension " + $extension + ": " + $_.Exception.Message)
+    }
+}
+else {
+    Write-Host "Extension $extensionName is already installed" -ForegroundColor Cyan
+}
+{{ end }}
+
+Write-Host "GitHub CLI extension installation complete!" -ForegroundColor Green
+
+{{ end }}
