@@ -48,6 +48,7 @@ if (Get-Command scoop -ErrorAction SilentlyContinue) {
     }
     if ((scoop info scoop-completion).Installed) {
         Import-Module scoop-completion -Global
+		}
 }
 
 if (Get-InstalledModule -Name "Terminal-Icons" -ErrorAction SilentlyContinue) {
