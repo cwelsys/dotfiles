@@ -135,7 +135,7 @@ pkgs:
       - 'Tailscale.Tailscale'
       - 'Proton.ProtonVPN'
       - 'AgileBits.1Password'
-      - 'AgileBits.1Password.CLI'
+      - 'AgileBits.1Password.CLI' # winget install 1password-cli --version 2.30.3 --force untill they fix latest zz
       - 'AmN.yasb'
       - 'AngusJohnson.ResourceHacker'
       - 'AutoHotkey.AutoHotkey'

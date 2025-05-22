@@ -2,14 +2,11 @@ if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
   fastfetch
 fi
 
-[ -f "${HOME}/.config/shared/init.sh" ] && source "${HOME}/.config/shared/init.sh"
-
-
-if (( ${+commands[oh-my-posh]} )); then
-	eval "$(oh-my-posh init zsh --config ~/.config/zen.toml)"
-elif (( ${+commands[starship]} )); then
-	eval "$(starship init zsh)"
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+
+[ -f "${HOME}/.config/shared/init.sh" ] && source "${HOME}/.config/shared/init.sh"
 
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -22,7 +19,10 @@ fi
 # Source/Load zinit
 source "${ZINIT_HOME}/zinit.zsh"
 
-zinit snippet ${HOME}/.config/zsh/mocha-syntax.zsh
+#p10k
+zinit ice depth=1; zinit light romkatv/powerlevel10k
+
+zinit snippet ${HOME}/.config/zsh/catppuccin-zsh-syntax-highlighting/themes/catppuccin_mocha-zsh-syntax-highlighting.zsh
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions

@@ -1,8 +1,21 @@
 # 👾 Encoding
 $OutputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
 # 🚌 Tls
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+# 🌐 Env
+$Env:POSH = Split-Path (Get-ChildItem $PSScriptRoot | Where-Object FullName -EQ $PROFILE.CurrentUserAllHosts).Target
+$Env:LIBS = Join-Path -Path "$Env:POSH" -ChildPath "lib"
+
+# 🐶 FastFetch
+if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
+  if ([Environment]::GetCommandLineArgs().Contains("-NonInteractive") -or $Env:TERM_PROGRAM -eq "vscode") {
+    Return
+  }
+  fastfetch
+}
 
 # 📝 Editor
 if (Get-Command code -ErrorAction SilentlyContinue) { $Env:EDITOR = "code" }
@@ -12,7 +25,6 @@ else {
 }
 
 # 🐚 Prompt
-
 function Invoke-Starship-PreCommand {
   $currentPath = $PWD.Path
   $homePath = $HOME
@@ -83,11 +95,3 @@ if (Get-Module -ListAvailable -Name git-aliases -ErrorAction SilentlyContinue) {
 
 # 💤 zoxide
 Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
-
-# 🐶 FastFetch
-if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
-  if ([Environment]::GetCommandLineArgs().Contains("-NonInteractive") -or $Env:TERM_PROGRAM -eq "vscode") {
-    Return
-  }
-  fastfetch
-}

@@ -1,4 +1,27 @@
-# readlines
+#requires -Module PSReadline
+#requires -Module PSFzf
+#requires -Module CompletionPredictor
+
+if (!(Get-Command fzf -ErrorAction SilentlyContinue)) { return }
+if (-not (Get-Module -ListAvailable -Name Catppuccin -ErrorAction SilentlyContinue)) {
+    Write-Host "Installing PowerShell Module Catppuccin..." -ForegroundColor "Green"
+    git clone "https://github.com/catppuccin/powershell.git" "$env:USERPROFILE\Documents\PowerShell\Modules\Catppuccin"
+}
+
+Import-Module Catppuccin
+
+
+$Flavor = $Catppuccin['Mocha']
+$PSStyle.Formatting.Debug = $Flavor.Sky.Foreground()
+$PSStyle.Formatting.Error = $Flavor.Red.Foreground()
+$PSStyle.Formatting.ErrorAccent = $Flavor.Blue.Foreground()
+$PSStyle.Formatting.FormatAccent = $Flavor.Teal.Foreground()
+$PSStyle.Formatting.TableHeader = $Flavor.Rosewater.Foreground()
+$PSStyle.Formatting.Verbose = $Flavor.Yellow.Foreground()
+$PSStyle.Formatting.Warning = $Flavor.Peach.Foreground()
+
+
+
 
 $Colors = @{
 	# Powershell colours
