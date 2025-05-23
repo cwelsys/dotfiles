@@ -41,7 +41,6 @@ zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
 zinit snippet OMZL::git.zsh
-zinit snippet OMZ::plugins/mise/mise.plugin.zsh
 zinit snippet OMZP::rsync
 zinit snippet OMZP::eza
 zinit snippet OMZP::tmux
