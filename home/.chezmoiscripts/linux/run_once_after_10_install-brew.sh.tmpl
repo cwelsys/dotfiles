@@ -1,3 +1,4 @@
+{{- if eq .chezmoi.os "linux" }}
 #!/bin/bash
 set -euo pipefail
 
@@ -60,14 +61,6 @@ else
 	exit 1
 fi
 
-# Install packages from Brewfile if it exists
-BREWFILE="$HOME/.config/shared/Brewfile"
-if [[ -f "$BREWFILE" ]]; then
-	echo -e "${YELLOW}Installing packages from Brewfile...${NC}"
-	brew bundle install --file="$BREWFILE"
-	echo -e "${GREEN}Brewfile installation completed${NC}"
-else
-	echo -e "${YELLOW}No Brewfile found at $BREWFILE. Skipping package installation.${NC}"
-fi
-
 echo -e "${GREEN}Homebrew setup completed successfully!${NC}"
+
+{{- end }}

@@ -1,21 +1,84 @@
-pkgs:
-  linux:
-    common:
-      - 'git'
-      - 'curl'
-      - 'wget'
-      - 'zsh'
-      - 'tmux'
-      - 'neovim'
-      - 'htop'
-      - 'unzip'
-      - 'zip'
-      - 'jq'
-      - 'tree'
-      - 'gnupg'
-      - 'openssl'
-      - 'fzf'
-      - 'ripgrep'
+packages:
+  arch:
+    packages:
+      - git
+      - neovim
+      - python-pip
+      - bpytop
+      - zsh
+      - tmux
+      - copyq
+      - git
+      - lazygit
+      - lazydocker
+      - eza
+      - fzf
+      - bat
+      - fd
+      - lsd
+      - ripgrep
+      - playerctl
+      - pavucontrol
+      - wine
+      - swww
+      - dolphin
+      - zen-browser-bin
+      - compton
+      - openssh
+      - yazi
+      - uv
 
-    laptop_common:
-      - 'tlp'
+  debian:
+    packages:
+      - git
+      - neovim
+      - python3-pip
+      - bpytop
+      - zsh
+      - tmux
+      - fzf
+      - bat
+      - ripgrep
+      - tldr
+
+  fedora:
+    packages:
+      - git
+      - zsh
+      - tmux
+      - ripgrep
+      - tldr
+      - age
+
+  brew:
+    brews:
+      - bat
+      - btop
+      - dua-cli
+      - eza
+      - fd
+      - fzf
+      - gum
+      - jq
+      - oh-my-posh
+      - lazydocker
+      - luarocks
+      - mise
+      - navi
+      - neovim
+      - rich-cli
+      - ripgrep
+      - shellcheck
+      - starship
+      - tealdeer
+      - thefuck
+      - wrk
+      - yazi
+      - yq
+      - zoxide
+      - gh
+      - git-delta
+      - git-extras
+      - git-flow
+      - git-lfs
+      - lazygit

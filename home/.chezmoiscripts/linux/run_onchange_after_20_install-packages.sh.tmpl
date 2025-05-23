@@ -1,0 +1,41 @@
+#!/bin/bash
+set -e
+
+{{- if eq .chezmoi.os "linux" }}
+
+if [ -f /etc/arch-release ]; then
+	echo "Installing packages using yay..."
+	if ! command -v yay &>/dev/null; then
+		echo "❌ yay is not installed. Please install yay first."
+		sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
+		exit 1
+	fi
+	# sudo pacman -Qq aquamarine &>/dev/null && sudo pacman -Rnd --noconfirm aquamarine
+	# sudo pacman -Qq | grep '^hypr' | xargs -r sudo pacman -Rnd --noconfirm
+	yay -S --noconfirm {{ range .packages.arch.packages }}"{{ . }}" {{ end }}
+
+elif [ -f /etc/debian_version ]; then
+	echo "Installing packages using apt..."
+	sudo apt update
+	sudo apt install -y {{ range .packages.debian.packages }}"{{ . }}" {{ end }}
+
+elif [ -f /etc/fedora-release ]; then
+	echo "Installing packages using dnf..."
+	sudo dnf check-update || true # Returns non-zero if updates available
+	sudo dnf install -y {{ range .packages.fedora.packages }}"{{ . }}" {{ end }}
+
+fi
+
+{{- else }}
+# Use macOS/Homebrew approach for any non-Arch system
+echo "Installing packages using Homebrew..."
+brew bundle --file=/dev/stdin <<EOF
+{{- range .packages.brew.brews }}
+brew "{{ . }}"
+{{- end }}
+{{- range .packages.brew.casks }}
+cask "{{ . }}"
+{{- end }}
+EOF
+
+{{- end }}
