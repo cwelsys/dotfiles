@@ -173,7 +173,6 @@ pkgs:
       - 'ps-color-scripts'
       - 'PSScriptTools'
       - 'PSParseHTML'
-      - 'ProfileAsync'
       - 'PSToml'
       - 'Microsoft.PowerShell.SecretManagement'
       - 'Microsoft.PowerShell.SecretStore'
