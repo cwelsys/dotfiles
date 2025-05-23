@@ -4,8 +4,8 @@
 
 if (!(Get-Command fzf -ErrorAction SilentlyContinue)) { return }
 if (-not (Get-Module -ListAvailable -Name Catppuccin -ErrorAction SilentlyContinue)) {
-    Write-Host "Installing PowerShell Module Catppuccin..." -ForegroundColor "Green"
-    git clone "https://github.com/catppuccin/powershell.git" "$env:USERPROFILE\Documents\PowerShell\Modules\Catppuccin"
+	Write-Host "Installing PowerShell Module Catppuccin..." -ForegroundColor "Green"
+	git clone "https://github.com/catppuccin/powershell.git" "$env:USERPROFILE\Documents\PowerShell\Modules\Catppuccin"
 }
 
 Import-Module Catppuccin

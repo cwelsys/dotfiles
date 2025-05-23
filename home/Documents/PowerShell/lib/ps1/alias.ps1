@@ -16,10 +16,20 @@ Set-Alias -Name 'bun-ls' -Value 'Get-BunGlobalPackages'
 Set-Alias -Name 'pnpm-ls' -Value 'Get-PnpmGlobalPackages'
 
 if (Get-Command lazygit -ErrorAction SilentlyContinue) {
-    Set-Alias -Name 'lg' -Value 'lazygit' -Scope Global -Force
+  Set-Alias -Name 'lg' -Value 'lazygit' -Scope Global -Force
 }
 
 # 🏖️ Functions
+function y {
+  $tmp = [System.IO.Path]::GetTempFileName()
+  yazi $args --cwd-file="$tmp"
+  $cwd = Get-Content -Path $tmp -Encoding UTF8
+  if (-not [String]::IsNullOrEmpty($cwd) -and $cwd -ne $PWD.Path) {
+    Set-Location -LiteralPath ([System.IO.Path]::GetFullPath($cwd))
+  }
+  Remove-Item -Path $tmp
+}
+
 function e { Invoke-Item . }
 function dots { Set-Location $env:DOTS }
 function dotp { Set-Location $env:PWSH }
