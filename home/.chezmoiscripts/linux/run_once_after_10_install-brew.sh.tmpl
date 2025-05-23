@@ -2,29 +2,47 @@
 #!/bin/bash
 set -euo pipefail
 
-# Ensure any scripts we run are executable
-if [ -d "${HOME}/.chezmoiscripts" ]; then
-  find "${HOME}/.chezmoiscripts" -type f -name "*.sh" -exec chmod +x {} \;
-fi
-
-# Convert any Windows line endings to Unix
+# Ensure script is executable and has proper line endings
+chmod +x "${BASH_SOURCE[0]}"
 if command -v dos2unix &>/dev/null; then
-  find "${HOME}/.chezmoiscripts" -type f -name "*.sh" -exec dos2unix {} \;
+  dos2unix "${BASH_SOURCE[0]}"
+fi
+
+echo "Checking for Homebrew installation..."
+
+# Check if Homebrew is already installed
+if command -v brew &>/dev/null; then
+  echo "Homebrew is already installed"
 else
-  echo "dos2unix not found, trying to install..."
+  echo "Installing Homebrew..."
+
+  # Install required dependencies
   if command -v apt-get &>/dev/null; then
-    sudo apt-get update && sudo apt-get install -y dos2unix
+    sudo apt-get update
+    sudo apt-get install -y build-essential procps curl file git
   elif command -v dnf &>/dev/null; then
-    sudo dnf install -y dos2unix
+    sudo dnf groupinstall -y 'Development Tools'
+    sudo dnf install -y procps-ng curl file git
   elif command -v pacman &>/dev/null; then
-    sudo pacman -S --noconfirm dos2unix
-  else
-    echo "Warning: Unable to install dos2unix automatically."
+    sudo pacman -Sy --noconfirm base-devel procps-ng curl file git
   fi
 
-  # Try again after installation attempt
-  if command -v dos2unix &>/dev/null; then
-    find "${HOME}/.chezmoiscripts" -type f -name "*.sh" -exec dos2unix {} \;
+  # Run official Homebrew install script
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+  # Check if installation was successful
+  if [ $? -ne 0 ]; then
+    echo "Homebrew installation failed!"
+    exit 1
   fi
 fi
+
+# Set up Homebrew in current session
+if [[ -d /home/linuxbrew/.linuxbrew ]]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+elif [[ -d "$HOME/.linuxbrew" ]]; then
+  eval "$("$HOME/.linuxbrew/bin/brew" shellenv)"
+fi
+
+echo "Homebrew setup completed"
 {{- end -}}
