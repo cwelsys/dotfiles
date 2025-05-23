@@ -1,0 +1,9 @@
+{{ if or (eq .chezmoi.os "linux") -}}
+#!/bin/bash
+{{ 	 else if eq .chezmoi.osRelease.id "debian" }}
+sudo apt-get install build-essential procps curl file git
+{{   else if eq .chezmoi.osRelease.id "fedora" }}
+sudo dnf group install 'Development Tools'
+sudo dnf install procps-ng curl file
+{{   end }}
+

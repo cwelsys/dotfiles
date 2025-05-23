@@ -1,16 +1,19 @@
 {{/* Default static values */}}
 {{ $gpgId := "061DF935B288405FF6B906169496153E284399EF" }}
 {{ $sshId := "~/.ssh/cwel.pub" }}
+{{- $email := "cwel@cwel.sh" -}}
 {{ $themes := list
      "dark"
      "light"
 }}
+
 {{ $catppuccinFlavors := list
      "latte"
      "frappe"
      "macchiato"
      "mocha"
 }}
+
 {{ $catppuccinAccentColors := list
      "blue"
      "flamingo"
@@ -35,28 +38,63 @@
 {{ $catppuccinLightFlavour := "latte" }}
 {{ $catppuccinDarkFlavour := "mocha" }}
 {{ $catppuccinAccentColor := "lavender" }}
+{{- $isCloud := false -}}
+{{- $isContainer := false -}}
+{{- $isWSL := false -}}
+{{- $isHeadless := false -}}
 {{ $isLaptop := false }}
 
-{{/* Pre auto */}}
 
+{{/* Check if its a linux box */}}
 {{ $osId := .chezmoi.os }}
 {{ if (and (eq .chezmoi.os "linux") (hasKey .chezmoi.osRelease "id")) }}
   {{ $osId = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id }}
 {{ end }}
 
+{{/* Check if running in WSL */}}
+{{ if and (eq .chezmoi.os "linux") (or (stat "/proc/sys/fs/binfmt_misc/WSLInterop") (contains "microsoft" (output "uname" "-r" | lower))) }}
+  {{ $isWSL = true }}
+{{ end }}
+
+{{/* Check if system is headless */}}
+{{ if and (eq .chezmoi.os "linux") (not (or (env "DISPLAY") (env "WAYLAND_DISPLAY") (env "XDG_SESSION_TYPE"))) }}
+  {{ $isHeadless = true }}
+{{ end }}
+
+{{/* Check if its a windows box */}}
 {{ if eq $osId "windows" }}
   {{ $shell = "pwsh" }}
 {{ else }}
   {{ $shell = "zsh" }}
 {{ end }}
 
+{{/* Check if running in a container */}}
+{{ if eq .chezmoi.os "linux" }}
+  {{ if or (stat "/.dockerenv") (contains "docker" (output "cat" "/proc/1/cgroup" | lower)) (contains "lxc" (output "cat" "/proc/1/cgroup" | lower)) }}
+    {{ $isContainer = true }}
+  {{ end }}
+{{ end }}
+
+{{/* Check if running in a cloud environment */}}
+{{ if eq .chezmoi.os "linux" }}
+  {{ if or (stat "/var/lib/cloud/instance") (stat "/var/lib/cloud/data") (stat "/proc/xen") (stat "/sys/hypervisor/uuid") }}
+    {{ $isCloud = true }}
+  {{ else if or (stat "/sys/class/dmi/id/product_uuid") (stat "/sys/class/dmi/id/product_name") }}
+    {{ $dmiProduct := (output "cat" "/sys/class/dmi/id/product_name" | lower) }}
+    {{ if or (contains "amazon" $dmiProduct) (contains "google" $dmiProduct) (contains "azure" $dmiProduct) (contains "digitalocean" $dmiProduct) }}
+      {{ $isCloud = true }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+
 {{/* Prompts */}}
 
 {{ if stdinIsATTY }}
-  {{ $theme = promptChoice "Theme" $themes "dark" }}
-  {{ $catppuccinLightFlavour = promptChoice "Catppuccin flavor for light mode" $catppuccinFlavors "latte" }}
-  {{ $catppuccinDarkFlavour = promptChoice "Catppuccin flavor for dark mode" $catppuccinFlavors "mocha" }}
-  {{ $catppuccinAccentColor = promptChoice "Catppuccin accent color" $catppuccinAccentColors "lavender" }}
+  {{/* $theme = promptChoice "Theme" $themes "dark" */}}
+  {{/* $catppuccinLightFlavour = promptChoice "Catppuccin flavor for light mode" $catppuccinFlavors "latte" */}}
+  {{/* $catppuccinDarkFlavour = promptChoice "Catppuccin flavor for dark mode" $catppuccinFlavors "mocha" */}}
+  {{ $catppuccinAccentColor = promptChoice "Accent color" $catppuccinAccentColors "lavender" }}
 {{ end }}
 
 {{/* Semi prompts or auto */}}
@@ -82,8 +120,42 @@
   {{ $catppuccinFlavor = $catppuccinLightFlavour }}
 {{ end }}
 
-encryption = "age" # or gpg
-mode = "file" # file, symlink
+{{/* Set editor tools based on environment */}}
+
+{{ $editCommand := "code" }}
+{{ $editArgs := list "--wait" }}
+{{ $diffCommand := "code" }}
+{{ $diffArgs := list "--wait" "--diff" }}
+{{ $mergeCommand := "bash" }}
+{{ $mergeArgs := list "-c" "cp {{ \"{{\" }} .Target {{ \"}}\" }} {{ \"{{\" }} .Target {{ \"}}\" }}.base && code --new-window --wait --merge {{ \"{{\" }} .Destination {{ \"}}\" }} {{ \"{{\" }} .Target {{ \"}}\" }} {{ \"{{\" }} .Target {{ \"}}\" }}.base {{ \"{{\" }} .Source {{ \"}}\" }}" }}
+
+{{ if $isHeadless $isCloud }}
+  {{ $editCommand = "nvim" }}
+  {{ $editArgs = list }}
+  {{ $diffCommand = "nvim" }}
+  {{ $diffArgs = list "-d" }}
+  {{ $mergeCommand = "nvim" }}
+  {{ $mergeArgs = list "-d" "{{ .Destination }}" "{{ .Source }}" }}
+{{ else if or $isContainer }}
+  {{ $editCommand = "vim" }}
+  {{ $editArgs = list }}
+  {{ $diffCommand = "vimdiff" }}
+  {{ $diffArgs = list }}
+  {{ $mergeCommand = "vim" }}
+  {{ $mergeArgs = list "-d" "{{ .Destination }}" "{{ .Source }}" }}
+{{ end }}
+
+{{ if and $isWSL (not $isHeadless) (not $isContainer) (not $isCloud) }}
+  {{ $editCommand = "code" }}
+  {{ $editArgs = list "--wait" }}
+  {{ $diffCommand = "code" }}
+  {{ $diffArgs = list "--wait" "--diff" }}
+  {{ $mergeCommand = "bash" }}
+  {{ $mergeArgs = list "-c" "cp {{ \"{{\" }} .Target {{ \"}}\" }} {{ \"{{\" }} .Target {{ \"}}\" }}.base && code --new-window --wait --merge {{ \"{{\" }} .Destination {{ \"}}\" }} {{ \"{{\" }} .Target {{ \"}}\" }} {{ \"{{\" }} .Target {{ \"}}\" }}.base {{ \"{{\" }} .Source {{ \"}}\" }}" }}
+{{ end }}
+
+encryption = "age"
+mode = "file" # file or symlink
 progress = true
 
 [data]
@@ -93,10 +165,15 @@ catppuccinDarkFlavour = {{ $catppuccinDarkFlavour | quote }}
 catppuccinFlavor = {{ $catppuccinFlavor | quote }}
 catppuccinFlavorTitle = {{ $catppuccinFlavor | title | quote }}
 catppuccinAccentColor = {{ $catppuccinAccentColor | quote }}
+email = {{ $email | quote }}
 gpgId = {{ $gpgId | quote }}
 sshId = {{ $sshId | quote }}
 osId = {{ $osId | quote }}
 isLaptop = {{ $isLaptop }}
+isWSL = {{ $isWSL }}
+isHeadless = {{ $isHeadless }}
+isCloud = {{ $isCloud }}
+isContainer = {{ $isContainer }}
 
 [data.catppuccin]
 accentColors = [ {{ $catppuccinAccentColors | quoteList | join ", " }} ]
@@ -111,31 +188,28 @@ recipient = {{ $gpgId | quote }}
 args = ["--quiet"]
 
 [git]
-autoAdd = true # Add changes to the source state after any change
+autoAdd = true
 autoCommit = false
 autoPush = false
 
 [cd]
 command = {{ $shell | quote }}
 
-[completion]
-custom = true
-
 [edit]
-command = "code"
-args = ["--wait"]
+command = {{ $editCommand | quote }}
+args = [{{ range $editArgs }}{{ . | quote }}, {{ end }}]
 
 [diff]
-command = "code"
-args = ["--wait", "--diff"]
+command = {{ $diffCommand | quote }}
+args = [{{ range $diffArgs }}{{ . | quote }}, {{ end }}]
 
 [merge]
-command = "bash"
-args = [
-    "-c",
-    "cp {{ "{{" }} .Target {{ "}}" }} {{ "{{" }} .Target {{ "}}" }}.base && code --new-window --wait --merge {{ "{{" }} .Destination {{ "}}" }} {{ "{{" }} .Target {{ "}}" }} {{ "{{" }} .Target {{ "}}" }}.base {{ "{{" }} .Source {{ "}}" }}",
-]
+command = {{ $mergeCommand | quote }}
+args = [{{ range $mergeArgs }}{{ . | quote }}, {{ end }}]
 
 [interpreters.ps1]
     command = "pwsh"
     args = ["-NoLogo"]
+
+[onepassword]
+    mode = "service"

@@ -1,35 +1,6 @@
 packages:
-  arch:
-    packages:
-      - git
-      - neovim
-      - python-pip
-      - bpytop
-      - zsh
-      - tmux
-      - copyq
-      - git
-      - lazygit
-      - lazydocker
-      - eza
-      - fzf
-      - bat
-      - fd
-      - lsd
-      - ripgrep
-      - playerctl
-      - pavucontrol
-      - wine
-      - swww
-      - dolphin
-      - zen-browser-bin
-      - compton
-      - openssh
-      - yazi
-      - uv
-
   debian:
-    packages:
+    apt:
       - git
       - neovim
       - python3-pip
@@ -42,12 +13,9 @@ packages:
       - tldr
 
   fedora:
-    packages:
-      - git
+    dnf:
       - zsh
       - tmux
-      - ripgrep
-      - tldr
       - age
 
   brew:
@@ -82,3 +50,4 @@ packages:
       - git-flow
       - git-lfs
       - lazygit
+    casks:
