@@ -21,7 +21,6 @@ binstall = true
 node = { version = "latest", postinstall = "corepack enable && corepack prepare pnpm@latest --activate" }
 bun = "latest"
 go = { version = "1.24.1", preinstall = "mkdir -p $GOPATH/bin" }
-php = "8.4.5"
 cargo-binstall = "latest"
 rust = { version = "1.85.0", profile = "default" }
 java = "corretto-21"
