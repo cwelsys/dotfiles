@@ -129,14 +129,14 @@
 {{ $mergeCommand := "bash" }}
 {{ $mergeArgs := list "-c" "cp {{ \"{{\" }} .Target {{ \"}}\" }} {{ \"{{\" }} .Target {{ \"}}\" }}.base && code --new-window --wait --merge {{ \"{{\" }} .Destination {{ \"}}\" }} {{ \"{{\" }} .Target {{ \"}}\" }} {{ \"{{\" }} .Target {{ \"}}\" }}.base {{ \"{{\" }} .Source {{ \"}}\" }}" }}
 
-{{ if $isHeadless $isCloud }}
+{{ if $isHeadless }}
   {{ $editCommand = "nvim" }}
   {{ $editArgs = list }}
   {{ $diffCommand = "nvim" }}
   {{ $diffArgs = list "-d" }}
   {{ $mergeCommand = "nvim" }}
   {{ $mergeArgs = list "-d" "{{ .Destination }}" "{{ .Source }}" }}
-{{ else if or $isContainer }}
+{{ else if or $isContainer $isCloud }}
   {{ $editCommand = "vim" }}
   {{ $editArgs = list }}
   {{ $diffCommand = "vimdiff" }}
