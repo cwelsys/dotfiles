@@ -1,0 +1,10 @@
+* text=auto eol=lf
+*.sh text eol=lf
+*dot_zshenv.tmpl text eol=lf
+dot_zshrc.tmpl text eol=lf
+dot_zshrc text eol=lf
+*.sh.tmpl text eol=lf
+*.zsh text eol=lf
+*.tmpl text eol=lf
+*.bash text eol=lf
+*.md text eol=lf
