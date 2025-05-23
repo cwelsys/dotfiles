@@ -1,8 +1,3 @@
-# 🐶 FastFetch
-if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
-  fastfetch
-fi
-
 # if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
 #   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 # fi
@@ -24,9 +19,10 @@ if [ -d "$ZDOTDIR/lib" ]; then
 	done
 	unset file
 fi
-[ -d "${ZDOTDIR}/functions" ] && fpath+=${ZDOTDIR}/functions
-[ -d "${ZDOTDIR}/completions" ] && fpath+=${ZDOTDIR}/completions
+# [ -d "${ZDOTDIR}/functions" ] && fpath+=${ZDOTDIR}/functions
+# [ -d "${ZDOTDIR}/completions" ] && fpath+=${ZDOTDIR}/completions
 
+export ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 # 🚀 zinit
 if [ ! -d "$ZINIT_HOME" ]; then
    mkdir -p "$(dirname $ZINIT_HOME)"
@@ -109,3 +105,8 @@ fi
 if (( ${+commands[mise]} )); then
   eval "$(mise activate zsh)"
 fi
+
+# 🐶 FastFetch
+# if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
+#   fastfetch
+# fi
