@@ -1,12 +1,5 @@
-{{- if eq .chezmoi.os "linux" -}}
 #!/bin/bash
 set -euo pipefail
-
-# Ensure script is executable and has proper line endings
-chmod +x "${BASH_SOURCE[0]}"
-if command -v dos2unix &>/dev/null; then
-  dos2unix "${BASH_SOURCE[0]}"
-fi
 
 echo "Checking for Homebrew installation..."
 
@@ -45,4 +38,3 @@ elif [[ -d "$HOME/.linuxbrew" ]]; then
 fi
 
 echo "Homebrew setup completed"
-{{- end -}}
