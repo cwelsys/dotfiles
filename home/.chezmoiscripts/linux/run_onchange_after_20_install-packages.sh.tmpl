@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-{{- if eq .chezmoi.os "linux" }}
-
 if [ -f /etc/arch-release ]; then
 	echo "Installing packages using yay..."
 	if ! command -v yay &>/dev/null; then
@@ -26,8 +24,8 @@ elif [ -f /etc/fedora-release ]; then
 
 fi
 
-{{- else }}
-# Use macOS/Homebrew approach for any non-Arch system
+else
+
 echo "Installing packages using Homebrew..."
 brew bundle --file=/dev/stdin <<EOF
 {{- range .packages.brew.brews }}
@@ -37,5 +35,3 @@ brew "{{ . }}"
 cask "{{ . }}"
 {{- end }}
 EOF
-
-{{- end }}
