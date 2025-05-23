@@ -3,8 +3,7 @@
 version = 3
 final_space = true
 auto_upgrade = true
-console_title_template = "{{if .Root}} \u26a1 {{end}}{{.Folder | replace \"~\" \"🏚\" }} @ {{.HostName}}"
-
+console_title_template = "{{if .Root}} \u26a1 {{end}}{{ .Segments.Path.Path }}"
 [palette]
 Base = '#1e1e2e'
 Blue = '#89b4fa'
@@ -43,6 +42,17 @@ template = ' {{ if .WSL }} on {{ end }}{{ .Icon }}  '
 foreground = 'p:Lavender'
 type = 'os'
 style = 'plain'
+
+[secondary_prompt]
+template = '❯❯ '
+foreground = 'p:Teal'
+
+[transient_prompt]
+template = '❯ '
+foreground_templates = [
+  '{{if gt .Code 0}}p:Maroon{{end}}',
+  '{{if eq .Code 0}}p:Green{{end}}',
+]
 
 [blocks.segments.properties]
 alpine = ''
