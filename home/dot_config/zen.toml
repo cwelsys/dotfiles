@@ -131,7 +131,7 @@ leading_diamond = ''
 trailing_diamond = ''
 template = '   {{ if ne .Status "stopped" }} {{ .Artist }} - {{ .Track }}{{ end }} '
 foreground = 'p:Green'
-background = 'p:Base'
+background = 'p:Surface0'
 type = 'spotify'
 style = 'diamond'
 

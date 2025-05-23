@@ -1,27 +1,40 @@
+# 🐶 FastFetch
 if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
   fastfetch
 fi
 
+# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# fi
+
+# 🌐 Env
 [ -f "${HOME}/.config/shared/init.sh" ] && source "${HOME}/.config/shared/init.sh"
 
-
+# 🐚 Prompt
 if (( ${+commands[oh-my-posh]} )); then
 	eval "$(oh-my-posh init zsh --config ~/.config/zen.toml)"
 elif (( ${+commands[starship]} )); then
 	eval "$(starship init zsh)"
 fi
 
-ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+# 🚬 source
+if [ -d "$ZDOTDIR/lib" ]; then
+	for file in "$ZDOTDIR/lib/"*.zsh; do
+		source "$file"
+	done
+	unset file
+fi
+[ -d "${ZDOTDIR}/functions" ] && fpath+=${ZDOTDIR}/functions
+[ -d "${ZDOTDIR}/completions" ] && fpath+=${ZDOTDIR}/completions
 
-
+# 🚀 zinit
 if [ ! -d "$ZINIT_HOME" ]; then
    mkdir -p "$(dirname $ZINIT_HOME)"
    git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
-
-# Source/Load zinit
 source "${ZINIT_HOME}/zinit.zsh"
 
+# zinit ice depth=1; zinit light romkatv/powerlevel10k
 zinit snippet ${HOME}/.config/zsh/mocha-syntax.zsh
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
@@ -30,29 +43,44 @@ zinit light Aloxaf/fzf-tab
 zinit snippet OMZL::git.zsh
 zinit snippet OMZP::mise
 zinit snippet OMZP::rsync
+zinit snippet OMZP::eza
 zinit snippet OMZP::tmux
 zinit snippet OMZP::git
 zinit snippet OMZP::sudo
 zinit snippet OMZP::command-not-found
 
-# completions
+
 autoload -Uz compinit && compinit
 
 zinit cdreplay -q
 
-[[ ! -f $ZDOTDIR/.p10k.zsh ]] || source $ZDOTDIR/.p10k.zsh
+# [[ ! -f $ZDOTDIR/.p10k.zsh ]] || source $ZDOTDIR/.p10k.zsh
 
 # Keybindings
 bindkey -e
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
+bindkey ' ' magic-space
+bindkey '^U' backward-kill-line
+bindkey '^[[3;5~' kill-word
+bindkey '^[[3~' delete-char
+bindkey '^[[1;5C' forward-word
+bindkey '^[[1;5D' backward-word
+bindkey '^[[5~' beginning-of-buffer-or-history
+bindkey '^[[6~' end-of-buffer-or-history
+bindkey '^[[H' beginning-of-line
+bindkey '^[[F' end-of-line
+bindkey '^[[Z' undo
 
 # History
 HISTSIZE=5000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
+
+# Options
+setopt autocd
 setopt appendhistory
 setopt sharehistory
 setopt hist_ignore_space
@@ -61,18 +89,15 @@ setopt hist_save_no_dups
 setopt hist_ignore_dups
 setopt hist_find_no_dups
 unsetopt beep
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:*' use-fzf-default-opts yes
-zstyle ':fzf-tab:*' switch-group '<' '>'
-alias ls='ls --color'
-alias vim='nvim'
-alias c='clear'
-eval "$(fzf --zsh)"
-eval "$(zoxide init --cmd cd zsh)"
+
+
+if (( ${+commands[fzf]} )); then
+  eval "$(fzf --zsh)"
+fi
+
+if (( ${+commands[zoxide]} )); then
+	eval "$(zoxide init zsh --cmd cd)"
+fi
 
 if [[ -n "$SSH_CONNECTION" ]]; then
   export DISPLAY=wini:0
@@ -82,6 +107,6 @@ if [ "$VSCODE_INJECTION" = "1" ]; then
   export EDITOR="code --wait"
 fi
 
-if has mise; then
+if (( ${+commands[mise]} )); then
   eval "$(mise activate zsh)"
 fi

@@ -14,6 +14,7 @@ if (Get-Command chezmoi -ErrorAction SilentlyContinue) {
 $Env:PWSH = Split-Path $PROFILE -Parent
 $Env:LIBS = Join-Path -Path $Env:PWSH -ChildPath "lib"
 $env:POWERSHELL_UPDATECHECK = "Off"
+
 # 📝 Editor
 if (Get-Command code -ErrorAction SilentlyContinue) { $Env:EDITOR = "code" }
 else {
@@ -23,7 +24,9 @@ else {
 
 # 🐚 Prompt
 if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
-	oh-my-posh init pwsh --config "$HOME\.config\zen.toml" | Invoke-Expression
+    oh-my-posh init pwsh --config "$HOME\.config\zen.toml" | Invoke-Expression
+} elseif (Get-Command starship -ErrorAction SilentlyContinue) {
+    Invoke-Expression (&starship init powershell)
 }
 
 # 🥣 scoop
