@@ -16,7 +16,6 @@ packages:
     dnf:
       - zsh
       - tmux
-      - age
 
   brew:
     brews:

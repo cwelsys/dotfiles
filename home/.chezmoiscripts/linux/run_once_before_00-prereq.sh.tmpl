@@ -4,8 +4,8 @@
   {{- if eq .chezmoi.osRelease.id "debian" -}}
 sudo apt-get install build-essential procps curl file git
   {{- else if eq .chezmoi.osRelease.id "fedora" -}}
-sudo dnf group install 'Development Tools'
-sudo dnf install procps-ng curl file git
+sudo dnf group install "Development Tools"
+sudo dnf install procps-ng curl file git age
   {{- else -}}
 echo "Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
 exit 1
