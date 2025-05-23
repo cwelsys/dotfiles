@@ -1,66 +1,30 @@
-{{- if eq .chezmoi.os "linux" }}
+{{- if eq .chezmoi.os "linux" -}}
 #!/bin/bash
 set -euo pipefail
 
-# Colors for output
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-RED='\033[0;31m'
-NC='\033[0m'
-
-echo -e "${YELLOW}Checking for Homebrew installation...${NC}"
-
-# Check if Homebrew is already installed
-if command -v brew &>/dev/null; then
-	echo -e "${GREEN}Homebrew is already installed${NC}"
-else
-	echo -e "${YELLOW}Installing Homebrew...${NC}"
-
-	# Install required dependencies for Homebrew
-	if command -v apt-get &>/dev/null; then
-		# Debian/Ubuntu
-		sudo apt-get update
-		sudo apt-get install -y build-essential procps curl file git
-	elif command -v dnf &>/dev/null; then
-		# Fedora/RHEL/CentOS
-		sudo dnf groupinstall -y 'Development Tools'
-		sudo dnf install -y procps-ng curl file git
-	elif command -v pacman &>/dev/null; then
-		# Arch Linux
-		sudo pacman -Sy --noconfirm base-devel procps-ng curl file git
-	elif command -v zypper &>/dev/null; then
-		# openSUSE
-		sudo zypper install -y curl file git
-		sudo zypper install -y -t pattern devel_basis
-	else
-		echo -e "${YELLOW}Unable to automatically install dependencies. Please ensure build tools are installed.${NC}"
-	fi
-
-	# Run official Homebrew install script
-	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-	# Check if installation was successful
-	if [ $? -ne 0 ]; then
-		echo -e "${RED}Homebrew installation failed!${NC}"
-		exit 1
-	fi
-
-	echo -e "${GREEN}Homebrew installation completed${NC}"
+# Ensure any scripts we run are executable
+if [ -d "${HOME}/.chezmoiscripts" ]; then
+  find "${HOME}/.chezmoiscripts" -type f -name "*.sh" -exec chmod +x {} \;
 fi
 
-# Configure Homebrew environment
-echo -e "${YELLOW}Configuring Homebrew environment...${NC}"
-
-# Set up Homebrew environment for the current session
-if [[ -d /home/linuxbrew/.linuxbrew ]]; then
-	eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-elif [[ -d "$HOME/.linuxbrew" ]]; then
-	eval "$("$HOME/.linuxbrew/bin/brew" shellenv)"
+# Convert any Windows line endings to Unix
+if command -v dos2unix &>/dev/null; then
+  find "${HOME}/.chezmoiscripts" -type f -name "*.sh" -exec dos2unix {} \;
 else
-	echo -e "${RED}Homebrew installation directory not found!${NC}"
-	exit 1
+  echo "dos2unix not found, trying to install..."
+  if command -v apt-get &>/dev/null; then
+    sudo apt-get update && sudo apt-get install -y dos2unix
+  elif command -v dnf &>/dev/null; then
+    sudo dnf install -y dos2unix
+  elif command -v pacman &>/dev/null; then
+    sudo pacman -S --noconfirm dos2unix
+  else
+    echo "Warning: Unable to install dos2unix automatically."
+  fi
+
+  # Try again after installation attempt
+  if command -v dos2unix &>/dev/null; then
+    find "${HOME}/.chezmoiscripts" -type f -name "*.sh" -exec dos2unix {} \;
+  fi
 fi
-
-echo -e "${GREEN}Homebrew setup completed successfully!${NC}"
-
-{{- end }}
+{{- end -}}
