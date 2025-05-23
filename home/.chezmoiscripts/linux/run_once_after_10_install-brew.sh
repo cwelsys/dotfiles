@@ -1,4 +1,4 @@
-#!{{ lookPath "bash" }}
+#!bin/bash
 set -euo pipefail
 
 echo "Checking for Homebrew installation..."
