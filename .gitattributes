@@ -1,0 +1,12 @@
+* text=auto
+*.zsh text eol=lf
+*.sh text eol=lf
+dot_zshrc text eol=lf
+dot_zshenv text eol=lf
+dot_bashrc text eol=lf
+dot_bash_* text eol=lf
+**/zsh/** text eol=lf
+**/bash/** text eol=lf
+home/**/bin/* text eol=lf
+*.ps1 text eol=crlf
+*.psm1 text eol=crlf
