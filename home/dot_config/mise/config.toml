@@ -39,7 +39,7 @@ PNPM_HOME = "{{ env.XDG_DATA_HOME }}/pnpm"
 UV_LINK_MODE = { value = "symlink", tools = true }
 MISE_PYTHON_DEFAULT_PACKAGES_FILE = "{{ env.XDG_CONFIG_HOME }}/mise/default-python-packages"
 MISE_GO_DEFAULT_PACKAGES_FILE = "{{ env.XDG_CONFIG_HOME }}/mise/default-go-packages"
-GOPATH = "{{ env.HOME }}/go"
+GOPATH = "{{ env.HOME }}/.go"
 GOBIN = "{{ env.GOPATH }}/bin"
 MISE_RUBY_DEFAULT_PACKAGES_FILE = "{{ env.XDG_CONFIG_HOME }}/mise/default-gems"
 MISE_RUSTUP_HOME = "{{ env.XDG_DATA_HOME }}/rustup"
