@@ -23,6 +23,7 @@ packages:
     brews:
       - bat
       - btop
+      - chezmoi
       - dua-cli
       - eza
       - fd
