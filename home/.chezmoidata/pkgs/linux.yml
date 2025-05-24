@@ -16,6 +16,8 @@ packages:
     dnf:
       - zsh
       - tmux
+      - wget
+      - curl
 
   brew:
     brews:
@@ -30,7 +32,6 @@ packages:
       - oh-my-posh
       - lazydocker
       - luarocks
-      - mise
       - navi
       - neovim
       - rich-cli
