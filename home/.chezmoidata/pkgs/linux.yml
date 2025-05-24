@@ -1,23 +1,11 @@
 packages:
   debian:
     apt:
-      - git
-      - neovim
-      - python3-pip
-      - bpytop
-      - zsh
       - tmux
-      - fzf
-      - bat
-      - ripgrep
-      - tldr
 
   fedora:
     dnf:
-      - zsh
       - tmux
-      - wget
-      - curl
 
   brew:
     brews:
