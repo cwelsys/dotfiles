@@ -38,7 +38,7 @@ alignment = 'left'
 newline = true
 
 [[blocks.segments]]
-template = ' {{ if .WSL }}WSL at {{ end }}{{ .Icon }}  '
+template = ' {{ .Icon }}  '
 foreground = 'p:Lavender'
 type = 'os'
 style = 'plain'
