@@ -40,10 +40,13 @@ hyperlinks-file-link-format = "vscode://file/{path}:{line}"
 [user]
   name = Connor Welsh
   email = cwel@cwel.sh
-  signingkey = ~/.ssh/cwel.pub
+  signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXPGUiiFFBzqutbhNqi5RjykdlwvdFveB/XkSdg0BAM
 
 [github]
   user = cwelsys
+
+[gitea]
+  user = cwel
 
 [core]
   editor = code --wait
@@ -59,7 +62,15 @@ hyperlinks-file-link-format = "vscode://file/{path}:{line}"
   directory = ~/scoop/*
 
 [gpg]
- 	format = ssh
+  format = ssh
+
+{{- if eq .osId "windows" }}
+[gpg "ssh"]
+  program = "C:/Users/cwel/AppData/Local/1Password/app/8/op-ssh-sign.exe"
+{{- else if eq .isWSL "true" }}
+[gpg "ssh"]
+  program = "/mnt/c/Users/cwel/AppData/Local/1Password/app/8/op-ssh-sign-wsl"
+{{- end }}
 
 [commit]
   gpgsign = true
@@ -127,15 +138,14 @@ colorMoved = default
   helper = /usr/local/bin/git-credential-manager
 {{- end }}
 
-; URL shorthands
 [url "git@github.com:"]
   insteadOf = "gh:"
   pushInsteadOf = "github:"
-  pushInsteadOf = "git://github.com/" ; From GIT to SSH
+  pushInsteadOf = "git://github.com/"
 [url "git@gist.github.com:"]
   insteadOf = "gst:"
   pushInsteadOf = "gist:"
-  pushInsteadOf = "git://gist.github.com/" ; From GIT to SSH
-
-[credential "https://git.cwel.sh"]
-	provider = generic
+  pushInsteadOf = "git://gist.github.com/"
+[url "git@git.cwel.sh:"]
+  insteadOf = "gitea:"
+  pushInsteadOf = "git://git.cwel.sh/"
