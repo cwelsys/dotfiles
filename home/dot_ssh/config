@@ -1,5 +1,5 @@
 # vim:ft=sshconfig.chezmoitmpl
-
+Include ~/.ssh/1Password/config
 Host *
 ServerAliveInterval 86400
 ServerAliveCountMax 4

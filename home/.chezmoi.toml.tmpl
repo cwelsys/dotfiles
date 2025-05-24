@@ -126,8 +126,8 @@
 {{ $editArgs := list "--wait" }}
 {{ $diffCommand := "code" }}
 {{ $diffArgs := list "--wait" "--diff" }}
-{{ $mergeCommand := "bash" }}
-{{ $mergeArgs := list "-c" "cp {{ \"{{\" }} .Target {{ \"}}\" }} {{ \"{{\" }} .Target {{ \"}}\" }}.base && code --new-window --wait --merge {{ \"{{\" }} .Destination {{ \"}}\" }} {{ \"{{\" }} .Target {{ \"}}\" }} {{ \"{{\" }} .Target {{ \"}}\" }}.base {{ \"{{\" }} .Source {{ \"}}\" }}" }}
+{{ $mergeCommand := "code" }}
+{{ $mergeArgs := list "--wait" "--merge" "{{ .Destination }}" "{{ .Target }}" "{{ .Source }}" }}
 
 {{ if $isHeadless }}
   {{ $editCommand = "nvim" }}
@@ -150,8 +150,8 @@
   {{ $editArgs = list "--wait" }}
   {{ $diffCommand = "code" }}
   {{ $diffArgs = list "--wait" "--diff" }}
-  {{ $mergeCommand = "bash" }}
-  {{ $mergeArgs = list "-c" "cp {{ \"{{\" }} .Target {{ \"}}\" }} {{ \"{{\" }} .Target {{ \"}}\" }}.base && code --new-window --wait --merge {{ \"{{\" }} .Destination {{ \"}}\" }} {{ \"{{\" }} .Target {{ \"}}\" }} {{ \"{{\" }} .Target {{ \"}}\" }}.base {{ \"{{\" }} .Source {{ \"}}\" }}" }}
+  {{ $mergeCommand = "code" }}
+  {{ $mergeArgs = list "--wait" "--merge" "{{ .Destination }}" "{{ .Target }}" "{{ .Source }}" }}
 {{ end }}
 
 encryption = "age"
