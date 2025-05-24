@@ -2,6 +2,7 @@
 
 # common shared environment variables
 # -------------------------------------------------------------
+export DOTFILES="~/.local/share/chezmoi/home"
 
 # xdg
 export XDG_CONFIG_DIRS="/etc/xdg"

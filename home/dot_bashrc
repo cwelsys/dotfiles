@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+
+export BDOTDIR="${XDG_CONFIG_HOME:-${HOME}/.config}/bash"
+
+if [ -f "$HOME/.config/shared/init.sh" ]; then
+	source "$HOME/.config/shared/init.sh"
+fi
+
+# 🚬 source
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+if [ -d ~/.bashrc.d ]; then
+	for rc in ~/.bashrc.d/*; do
+		if [ -f "$rc" ]; then
+			. "$rc"
+		fi
+	done
+fi
+
+if [ -d "~/.config/git/bash" ]; then
+	for file in ~/.config/git/bash/.bash_*; do
+		source "$file"
+	done
+	unset file
+fi
+
+if [ -d "$BDOTDIR/lib" ]; then
+	for file in "$BDOTDIR/lib/"*.bash; do
+		source "$file"
+	done
+	unset file
+fi
+[ -d "${BDOTDIR}/functions" ] && fpath+=${BDOTDIR}/functions
+[ -d "${BDOTDIR}/completions" ] && fpath+=${BDOTDIR}/completions
+
+# Bash settings
+shopt -s autocd
+shopt -s cdspell
+shopt -s checkwinsize
+shopt -s direxpand dirspell
+shopt -s extglob
+shopt -s globstar
+shopt -s no_empty_cmd_completion
+shopt -s nocaseglob
+
+HISTCONTROL=ignoreboth:erasedups
+HISTIGNORE="&:[bf]g:c:clear:history:exit:q:pwd:* --help"
+HISTFILESIZE=10000
+HISTSIZE=10000
+shopt -s cmdhist
+shopt -s histappend histverify
+
+# 🐚 Prompt
+if command -v oh-my-posh >/dev/null 2>&1; then
+	eval "$(oh-my-posh init bash --config "$HOME/.config/zen.toml")"
+elif command -v starship >/dev/null 2>&1; then
+	eval "$(starship init bash)"
+fi
+
+# fzf
+if command -v fzf >/dev/null 2>&1; then
+	eval "$(fzf --bash)"
+fi
+
+# mise
+if command -v mise >/dev/null 2>&1; then
+	eval "$(mise activate bash)"
+fi
+
+# navi
+if command -v navi >/dev/null 2>&1; then
+	eval "$(navi widget bash)"
+fi
+
+# 💤 zoxide
+if command -v zoxide >/dev/null 2>&1; then
+	eval "$(zoxide init bash --cmd cd)"
+fi
+
+# 🐶 FastFetch
+if command -v fastfetch >/dev/null 2>&1; then
+	fastfetch
+fi

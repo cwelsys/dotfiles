@@ -4,4 +4,4 @@ if [[ "$SHELL" =~ .*zsh$ ]]; then
 	exit 0
 fi
 
-chsh -s "$(which zsh)"
+chsh -s "/bin/zsh"

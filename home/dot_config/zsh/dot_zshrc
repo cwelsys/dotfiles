@@ -24,8 +24,8 @@ if [ -d "$ZDOTDIR/lib" ]; then
 	done
 	unset file
 fi
-# [ -d "${ZDOTDIR}/functions" ] && fpath+=${ZDOTDIR}/functions
-# [ -d "${ZDOTDIR}/completions" ] && fpath+=${ZDOTDIR}/completions
+[ -d "${ZDOTDIR}/functions" ] && fpath+=${ZDOTDIR}/functions
+[ -d "${ZDOTDIR}/completions" ] && fpath+=${ZDOTDIR}/completions
 
 export ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 # 🚀 zinit

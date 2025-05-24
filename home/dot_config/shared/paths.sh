@@ -22,7 +22,6 @@ pathprepend "$HOME/.local/bin"
 pathprepend "/usr/local/sbin"
 pathprepend "/usr/bin"
 
-# vscode (in case user turn off the `interop` settings in WSL)
 if uname -r | grep -q microsoft; then
 	if command_exists code && command_exists wslvar; then
 		windows_user_home="$(wslpath "$(wslvar USERPROFILE)")"
@@ -34,9 +33,6 @@ if uname -r | grep -q microsoft; then
 		unset windows_user_home
 	fi
 fi
-
-# ----------------------
-# add more paths below:
 
 # npm global packages
 pathprepend "$HOME/.npm-global/bin"

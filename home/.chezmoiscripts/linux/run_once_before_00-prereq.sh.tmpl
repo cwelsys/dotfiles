@@ -2,8 +2,10 @@
 
 {{ if eq .chezmoi.os "linux" -}}
   {{- if eq .chezmoi.osRelease.id "debian" -}}
+sudo apt update -y
 sudo apt-get install build-essential procps curl file git
   {{- else if eq .chezmoi.osRelease.id "fedora" -}}
+sudo dnf update -y
 sudo dnf group install "Development Tools"
 sudo dnf install procps-ng curl file git age
   {{- else -}}

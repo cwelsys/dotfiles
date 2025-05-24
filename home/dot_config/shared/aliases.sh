@@ -52,18 +52,10 @@ alias cmra='chezmoi re-add'
 alias t='tmux'
 alias ta='tmux has-session &>/dev/null && tmux attach || tmux new-session'
 alias mkdir='mkdir -p'
+alias reload='exec $SHELL -l'
+alias dots="cd $DOTFILES"
 
 # eza
-# if command -v eza >/dev/null 2>&1; then
-# 	alias ls="eza --icons --color --header --hyperlink --group --git --group-directories-first"
-# 	alias la="ls -al --sort=modified"
-# 	alias lD="ls -lDa --show-symlinks --time-style=relative --grid"
-# 	alias lF="ls -lfa --show-symlinks --time-style=relative --grid"
-# 	alias ll="ls -lbhHigUmuSa --time-style=relative --sort=modified --reverse --grid"
-# 	alias lo="ls --oneline"
-# 	alias tree="ls --tree"
-# fi
-
 if command -v eza >/dev/null 2>&1; then
 	EZA_OPTS=(
 		'--colour=always'
@@ -84,13 +76,3 @@ else
 	alias ls='ls -A --color=auto'
 	alias ll='ls -lAg --color=auto'
 fi
-
-yzcd() {
-	local tmp=$(mktemp)
-	yazi "$@" --cwd-file="$tmp"
-	local cwd=$(<"$tmp")
-	if [[ -n "$cwd" && "$cwd" != "$PWD" ]]; then
-		cd "$cwd"
-	fi
-	rm "$tmp"
-}
