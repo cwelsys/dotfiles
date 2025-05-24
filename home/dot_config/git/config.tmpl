@@ -40,7 +40,7 @@ hyperlinks-file-link-format = "vscode://file/{path}:{line}"
 [user]
   name = Connor Welsh
   email = cwel@cwel.sh
-  signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXPGUiiFFBzqutbhNqi5RjykdlwvdFveB/XkSdg0BAM
+  signingkey = {{ .sshId }}
 
 [github]
   user = cwelsys
@@ -67,6 +67,7 @@ hyperlinks-file-link-format = "vscode://file/{path}:{line}"
 {{- if eq .osId "windows" }}
 [gpg "ssh"]
   program = "C:/Users/cwel/AppData/Local/1Password/app/8/op-ssh-sign.exe"
+
 {{- else if eq .isWSL "true" }}
 [gpg "ssh"]
   program = "/mnt/c/Users/cwel/AppData/Local/1Password/app/8/op-ssh-sign-wsl"

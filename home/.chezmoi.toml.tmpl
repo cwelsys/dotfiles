@@ -1,6 +1,6 @@
 {{/* Default static values */}}
 {{ $gpgId := "061DF935B288405FF6B906169496153E284399EF" }}
-{{ $sshId := "~/.ssh/cwel.pub" }}
+{{ $sshId := "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXPGUiiFFBzqutbhNqi5RjykdlwvdFveB/XkSdg0BAM" }}
 {{- $email := "cwel@cwel.sh" -}}
 {{ $themes := list
      "dark"
@@ -180,7 +180,7 @@ accentColors = [ {{ $catppuccinAccentColors | quoteList | join ", " }} ]
 flavors = [ {{ $catppuccinFlavors | quoteList | join ", " }} ]
 
 [age]
-    identity = "~/.ssh/cwel"
+    identity = {{ $sshId | quote }}
     symmetric = true
 
 [gpg]
