@@ -113,7 +113,7 @@ type = 'rprompt'
 overflow = 'hide'
 
 [[blocks.segments]]
-template = ' {{ round .PhysicalPercentUsed .Precision }}% '
+template = ' {{if .WSL}} {{ end}} {{ round .PhysicalPercentUsed .Precision }}% '
 foreground = 'p:Teal'
 type = 'sysinfo'
 style = 'plain'
