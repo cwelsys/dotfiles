@@ -34,9 +34,10 @@ url = "https://github.com/catppuccin/powershell.git"
 clone.args = ['--depth', '1']
 pull.args = ['--depth', '1']
 
-[".local/bin/ctrl-h.exe"]
-type = "file"
-url = "https://github.com/cwelsys/reggie/raw/refs/heads/main/ctrl-h.exe"
-
+[".local/bin/script"]
+type = "git-repo"
+url = "https://github.com/cwelsys/reggie.git"
+clone.args = ['--depth', '1']
+pull.args = ['--depth', '1']
 
 {{ end }}

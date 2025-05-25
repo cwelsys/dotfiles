@@ -1,0 +1,99 @@
+{{ $config := .config.windows.startup.shortcuts }}
+{{ if $config }}
+
+$ErrorActionPreference = 'Stop'
+
+# Define colors for output
+$colors = @{
+    Info = 'Cyan'
+    Success = 'Green'
+    Error = 'Red'
+    Warning = 'Yellow'
+    Details = 'DarkGray'
+}
+
+Write-Host "`n📌 Creating startup shortcuts..." -ForegroundColor $colors.Info
+
+# Get startup folder path
+$startupFolder = [Environment]::GetFolderPath('Startup')
+Write-Host "Startup folder: $startupFolder" -ForegroundColor $colors.Details
+
+# Function to create a shortcut
+function Create-Shortcut {
+    param (
+        [string]$Name,
+        [string]$Target,
+        [string]$Arguments = "",
+        [string]$WorkingDirectory = "",
+        [string]$Description = "",
+        [string]$IconLocation = "",
+        [int]$WindowStyle = 1  # 1=Normal, 3=Maximized, 7=Minimized
+    )
+
+    # Expand environment variables in paths
+    $Target = [Environment]::ExpandEnvironmentVariables($Target)
+    $Arguments = [Environment]::ExpandEnvironmentVariables($Arguments)
+    $WorkingDirectory = [Environment]::ExpandEnvironmentVariables($WorkingDirectory)
+    $IconLocation = [Environment]::ExpandEnvironmentVariables($IconLocation)
+
+    # Default working directory to target path if not specified
+    if (-not $WorkingDirectory -and $Target) {
+        $WorkingDirectory = Split-Path -Parent $Target
+    }
+
+    $shortcutPath = Join-Path $startupFolder "$Name.lnk"
+
+    try {
+        $WshShell = New-Object -ComObject WScript.Shell
+        $Shortcut = $WshShell.CreateShortcut($shortcutPath)
+        $Shortcut.TargetPath = $Target
+
+        if ($Arguments) { $Shortcut.Arguments = $Arguments }
+        if ($WorkingDirectory) { $Shortcut.WorkingDirectory = $WorkingDirectory }
+        if ($IconLocation) { $Shortcut.IconLocation = $IconLocation }
+        if ($Description) { $Shortcut.Description = $Description }
+        $Shortcut.WindowStyle = $WindowStyle
+
+        $Shortcut.Save()
+
+        Write-Host "✅ Created: $Name" -ForegroundColor $colors.Success
+        Write-Host "  ↳ Target: $Target $Arguments" -ForegroundColor $colors.Details
+        return $true
+    }
+    catch {
+        Write-Host "❌ Failed to create shortcut: $Name" -ForegroundColor $colors.Error
+        Write-Host "  ↳ Error: $_" -ForegroundColor $colors.Error
+        return $false
+    }
+}
+
+# Process shortcuts from config
+$shortcutCount = 0
+$successCount = 0
+
+{{ range $shortcut := $config }}
+Write-Host "`nProcessing: {{ $shortcut.name }}" -ForegroundColor $colors.Info
+$shortcutCount++
+
+$result = Create-Shortcut -Name "{{ $shortcut.name }}" `
+                        -Target "{{ $shortcut.target }}" `
+                        -Arguments "{{ if $shortcut.arguments }}{{ $shortcut.arguments }}{{ end }}" `
+                        -WorkingDirectory "{{ if $shortcut.workingdir }}{{ $shortcut.workingdir }}{{ end }}" `
+                        -Description "{{ if $shortcut.description }}{{ $shortcut.description }}{{ end }}" `
+                        -IconLocation "{{ if $shortcut.icon }}{{ $shortcut.icon }}{{ end }}" `
+                        -WindowStyle {{ if $shortcut.windowstyle }}{{ $shortcut.windowstyle }}{{ else }}1{{ end }}
+
+if ($result) { $successCount++ }
+{{ end }}
+
+# Summary
+Write-Host "`n📋 Summary: Created $successCount of $shortcutCount shortcuts" -ForegroundColor $colors.Info
+if ($successCount -eq $shortcutCount) {
+    Write-Host "✅ All startup shortcuts created successfully!" -ForegroundColor $colors.Success
+} else {
+    Write-Host "⚠️ Some shortcuts failed to create." -ForegroundColor $colors.Warning
+}
+
+{{ else }}
+Write-Host "No startup shortcuts defined in config. Skipping." -ForegroundColor "Yellow"
+{{ end }}

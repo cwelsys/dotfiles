@@ -31,3 +31,12 @@ config:
         - 'NetFx4-AdvSrvs'
       disable:
         - 'MicrosoftWindowsPowerShellV2'
+
+    startup:
+      shortcuts:
+        - name: 'ctrl-h.exe'
+          target: '%USERPROFILE%\.local\bin\ctrl-h.exe'
+
+        - name: 'VcXsrv'
+          target: '%USERPROFILE%\scoop\apps\vcxsrv\current\bin\vcxsrv.exe'
+          args: '-multiwindow -clipboard -wgl -auth "%USERPROFILE%\.Xauthority"'
