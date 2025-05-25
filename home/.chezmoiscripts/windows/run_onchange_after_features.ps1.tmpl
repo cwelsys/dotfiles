@@ -1,7 +1,4 @@
-# Refs:
-# https://github.com/neersighted/dotfiles/blob/3fd327c6d4c263087999ab1c9e0bfd96c806ab5c/home/.chezmoiscripts/run_onchange_after_windows_preferences.ps1
-
-# Self-elevate the script if required
+﻿# Self-elevate
 if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator'))
 {
   if ([int](Get-CimInstance -Class Win32_OperatingSystem | Select-Object -ExpandProperty BuildNumber) -ge 6000)
@@ -19,15 +16,6 @@ Set-ExecutionPolicy Bypass -Scope Process -Force
 Write-Host "Enabling Dev mode..."
 Add-WindowsCapability -Online -Name DeveloperMode
 
-Write-Host 'Allowing long path...'
-Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1
-
-# Show hidden files and folders
-Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name Hidden -Value 1
-# Unhide file ext
-Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name HideFileExt -Value 0
-Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name ShowSuperHidden -Value 0
-
 {{ range $feature := .config.windows.features.enable }}
 Write-Host 'Enable {{ $feature }}...'
 Enable-WindowsOptionalFeature -Online -FeatureName '{{ $feature }}'
@@ -37,7 +25,3 @@ Enable-WindowsOptionalFeature -Online -FeatureName '{{ $feature }}'
 Write-Host 'Disable {{ $feature }}...'
 Disable-WindowsOptionalFeature -Online -FeatureName '{{ $feature }}'
 {{ end }}
-
-# Remove gallery from file explorer
-# reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace_41040327\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}.
-reg delete HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace_41040327\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}
