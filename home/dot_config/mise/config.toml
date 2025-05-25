@@ -26,7 +26,6 @@ rust = { version = "1.85.0", profile = "default" }
 java = "corretto-21"
 maven = "3.9.9"
 uv = "latest"
-pipenv = "latest"
 python = { version = "3.13", postinstall = "pip install --upgrade pip" }
 "pipx:cookiecutter" = "latest"
 "pipx:yamllint" = "latest"

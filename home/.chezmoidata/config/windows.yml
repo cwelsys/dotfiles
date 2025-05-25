@@ -15,7 +15,11 @@ config:
         DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
         GH_DASH_CONFIG: '%USERPROFILE%\.config\gh-dash\config.yml'
         GOPATH: 'C:\Users\cwel\.go'
-        XDF_CONFIG_HOME: '%USERPROFILE%\.config'
+        XDG_CONFIG_HOME: '%USERPROFILE%\.config'
+        XDG_PROJECTS_DIR: '%USERPROFILE%\projects'
+        XDG_CACHE_HOME: '%USERPROFILE%\.cache'
+        XDG_DATA_HOME: '%USERPROFILE%\.local\share'
+        HOME: '%USERPROFILE%'
         DOCKER_HOST: 'tcp://psock:2375'
 
     features:

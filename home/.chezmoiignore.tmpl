@@ -9,6 +9,14 @@ home/.config/rclone/rclone.conf
 home/.config/.key
 {{ end }}
 
+{{ if (joinPath .chezmoi.homeDir ".config/yasb/.env" | lstat) }}
+home/.config/yasb/dot_env.tmpl
+{{ end }}
+
+{{ if (joinPath .chezmoi.homeDir "AppData/Roaming/managarr/config/.env" | lstat) }}
+home/AppData/Roaming/managarr/config/dot_env.tmpl
+{{ end }}
+
 {{ if ne .chezmoi.os "linux" }}
 .chezmoiscripts/linux/**
 {{ end }}
