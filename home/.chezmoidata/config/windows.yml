@@ -34,9 +34,9 @@ config:
 
     startup:
       shortcuts:
-        - name: 'ctrl-h.exe'
-          target: '%USERPROFILE%\.local\bin\ctrl-h.exe'
+        - name: 'ctrl-h'
+          target: '%USERPROFILE%\.local\bin\script\ahk\ctrl-h.exe'
 
         - name: 'VcXsrv'
-          target: '%USERPROFILE%\scoop\apps\vcxsrv\current\bin\vcxsrv.exe'
+          target: '%USERPROFILE%\scoop\apps\vcxsrv\current\vcxsrv.exe'
           args: '-multiwindow -clipboard -wgl -auth "%USERPROFILE%\.Xauthority"'

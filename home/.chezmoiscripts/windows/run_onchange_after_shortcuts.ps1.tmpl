@@ -75,14 +75,44 @@ $successCount = 0
 Write-Host "`nProcessing: {{ $shortcut.name }}" -ForegroundColor $colors.Info
 $shortcutCount++
 
-$result = Create-Shortcut -Name "{{ $shortcut.name }}" `
-                        -Target "{{ $shortcut.target }}" `
-                        -Arguments "{{ if $shortcut.arguments }}{{ $shortcut.arguments }}{{ end }}" `
-                        -WorkingDirectory "{{ if $shortcut.workingdir }}{{ $shortcut.workingdir }}{{ end }}" `
-                        -Description "{{ if $shortcut.description }}{{ $shortcut.description }}{{ end }}" `
-                        -IconLocation "{{ if $shortcut.icon }}{{ $shortcut.icon }}{{ end }}" `
-                        -WindowStyle {{ if $shortcut.windowstyle }}{{ $shortcut.windowstyle }}{{ else }}1{{ end }}
+# Convert shortcut to JSON and parse in PowerShell to safely handle missing fields
+$shortcutJson = @"
+{{ $shortcut | toJson }}
+"@
 
+$shortcutObj = $shortcutJson | ConvertFrom-Json
+
+# Clean up shortcut name (remove .exe if present)
+$shortcutName = $shortcutObj.name -replace '\.exe$', ''
+
+# Create parameter hashtable with required values
+$params = @{
+    Name = $shortcutName
+    Target = $shortcutObj.target
+}
+
+# Handle both 'args' and 'arguments' for flexibility
+if ($shortcutObj.PSObject.Properties.Name -contains 'arguments') {
+    $params.Arguments = $shortcutObj.arguments
+} elseif ($shortcutObj.PSObject.Properties.Name -contains 'args') {
+    $params.Arguments = $shortcutObj.args
+}
+
+# Add other optional parameters only if they exist
+if ($shortcutObj.PSObject.Properties.Name -contains 'workingdir') {
+    $params.WorkingDirectory = $shortcutObj.workingdir
+}
+if ($shortcutObj.PSObject.Properties.Name -contains 'description') {
+    $params.Description = $shortcutObj.description
+}
+if ($shortcutObj.PSObject.Properties.Name -contains 'icon') {
+    $params.IconLocation = $shortcutObj.icon
+}
+if ($shortcutObj.PSObject.Properties.Name -contains 'windowstyle') {
+    $params.WindowStyle = $shortcutObj.windowstyle
+}
+
+$result = Create-Shortcut @params
 if ($result) { $successCount++ }
 {{ end }}
 
