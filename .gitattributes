@@ -1,5 +1,5 @@
 # Plz no more CRLF
-* text=auto eol=lf
+# * text=auto eol=lf
 *.sh text eol=lf
 *dot_zshenv.tmpl text eol=lf
 dot_zshrc.tmpl text eol=lf
@@ -11,10 +11,9 @@ dot_bashrc_* text eol=lf
 *.zsh text eol=lf
 *.tmpl text eol=lf
 *.bash text eol=lf
-*.md text eol=lf
 .chezmoiscripts/windows/** text eol=crlf
 .chezmoiexternals/windows.toml.tmpl text eol=crlf
-dot_config/windows-terminal/settings.json text eol=crlf
+# dot_config/windows-terminal/settings.json text eol=crlf
 
 # Language overrides
 *.exportedUI linguist-language=xsd linguist-detectable

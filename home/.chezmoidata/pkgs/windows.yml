@@ -114,6 +114,7 @@ pkgs:
         - 'sysinternals/autologon'
         - 'main/spicetify-cli'
         - 'extras/silentcmd'
+        - 'extras/vencord-installer'
         - 'extras/winaero-tweaker'
         - 'main/openssl'
         - 'nonportable/k-lite-codec-pack-standard-np'
