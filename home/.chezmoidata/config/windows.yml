@@ -3,7 +3,8 @@ config:
     envs:
       path:
         - '%LOCALAPPDATA%\nvim-data\mason\bin'
-        - '%LOCALAPPDATA%\mise\shims'
+        # - '%LOCALAPPDATA%\mise\shims'
+        - '%USERPROFILE%\.local\share\mise\shims'
         - '%USERPROFILE%\scoop\apps\git\current\usr\bin'
         - '%USERPROFILE%\.local\bin'
       others:

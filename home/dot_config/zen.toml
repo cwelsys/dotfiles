@@ -51,10 +51,12 @@ foreground = 'p:Teal'
 
 [transient_prompt]
 template = '❯ '
+background = 'transparent'
 foreground_templates = [
-  '{{if gt .Code 0}}p:Maroon{{end}}',
+  '{{if gt .Code 0}}p:Red{{end}}',
   '{{if eq .Code 0}}p:Green{{end}}',
 ]
+newline = true
 
 [blocks.segments.properties]
 alpine = ''
@@ -89,7 +91,7 @@ style = 'plain'
 style = 'agnoster_full'
 
 [[blocks.segments]]
-template = '{{ .HEAD }}<p:Peach>{{ if or (.Working.Changed) (.Staging.Changed) }} * {{ end }}</> <p:Red>{{ if gt .Behind 0 }}⇣{{ end }}</><p:Green>{{ if gt .Ahead 0 }}⇡{{ end }}</> '
+template = '{{ .HEAD }}<p:Mauve>{{ if or (.Working.Changed) (.Staging.Changed) }} {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}</><p:Green>{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }}</><p:Peach>  {{ .StashCount }}{{ end }}</> <p:Red>{{ if gt .Behind 0 }}⇣{{ end }}</><p:Green>{{ if gt .Ahead 0 }}⇡{{ end }}</> '
 foreground = 'p:Lavender'
 type = 'git'
 style = 'powerline'
@@ -100,32 +102,35 @@ cherry_pick_icon = ' '
 commit_icon = ' '
 fetch_status = true
 fetch_upstream_icon = false
+fetch_stash_count = true
 merge_icon = ' '
 no_commits_icon = ' '
 rebase_icon = ' '
 revert_icon = ' '
 tag_icon = ' '
+cache_duration = 'none'
 
 [[blocks]]
 type = 'rprompt'
 overflow = 'hide'
 
 [[blocks.segments]]
-template = ' {{if .WSL}} {{ end}} {{ round .PhysicalPercentUsed .Precision }}% '
-foreground = 'p:Teal'
+template = ' {{if .WSL}} {{ end}} ({{ (div ((sub .PhysicalTotalMemory .PhysicalAvailableMemory)|float64) 1073741824.0) }}/{{ (div .PhysicalTotalMemory 1073741824.0) }}GB) '
+foreground = 'p:Subtext0'
 type = 'sysinfo'
 style = 'plain'
 
 [[blocks.segments]]
-template = '{{ .FormattedMs }}'
-foreground = 'p:Peach'
+template = '{{ .FormattedMs }}s'
+foreground = 'p:Sky'
 background = 'transparent'
 type = 'executiontime'
 style = 'plain'
 
 [blocks.segments.properties]
 cache_duration = 'none'
-threshold = 5000
+style = 'dallas'
+threshold = 0
 
 [[blocks]]
 type = 'prompt'
@@ -141,6 +146,7 @@ background = 'p:Surface0'
 type = 'spotify'
 style = 'diamond'
 
+
 [[blocks]]
 type = 'prompt'
 alignment = 'left'
@@ -154,3 +160,13 @@ foreground_templates = [
   '{{ if gt .Code 0 }}p:Red{{ end }}',
   '{{ if eq .Code 0}}p:Mauve{{ end }}',
 ]
+
+# [[blocks.segments]]
+# template = '  {{ .Context }} '
+# foreground = 'p:Sapphire'
+# background = 'transparent'
+# type = 'docker'
+# style = 'accordion'
+
+# [blocks.segments.properties]
+# cache_duration = 'none'
