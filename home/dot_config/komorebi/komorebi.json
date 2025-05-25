@@ -71,7 +71,8 @@
 		{ "kind": "Exe", "id": "qbittorrent.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "Rancher Desktop.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "vncviewer.exe", "matching_strategy": "Equals" },
-		{ "kind": "Exe", "id": "Playnite.DesktopApp.exe", "matching_strategy": "Equals" }
+		{ "kind": "Exe", "id": "Playnite.DesktopApp.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "everything.exe", "matching_strategy": "Equals" }
 	],
 	"manage_rules": [{ "kind": "Exe", "id": "MTGA.exe", "matching_strategy": "Equals" }],
 
