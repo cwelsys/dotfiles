@@ -55,12 +55,6 @@
 
 {{/* Checks */}}
 
-{{ if and $isHeadless stdinIsATTY }}
-  {{ $opType = promptChoice "How are you connecting to 1p" $opTypeChoices "service" }}
-{{ else if $isHeadless }}
-  {{ $opType = "service" }}
-{{ end }}
-
 {{/* if its a linux box */}}
 {{ $osId := .chezmoi.os }}
 {{ if (and (eq .chezmoi.os "linux") (hasKey .chezmoi.osRelease "id")) }}
@@ -128,6 +122,12 @@
   {{/* $catppuccinLightFlavour = promptChoice "Catppuccin flavor for light mode" $catppuccinFlavors "latte" */}}
   {{/* $catppuccinDarkFlavour = promptChoice "Catppuccin flavor for dark mode" $catppuccinFlavors "mocha" */}}
   {{ $catppuccinAccentColor = promptChoice "Accent color" $catppuccinAccentColors "lavender" }}
+{{ end }}
+
+{{ if $isHeadless }}
+  {{ $opType = promptChoice "How are you connecting to 1p" $opTypeChoices "service" }}
+{{ else if $isHeadless }}
+  {{ $opType = "service" }}
 {{ end }}
 
 {{/* Post auto */}}
