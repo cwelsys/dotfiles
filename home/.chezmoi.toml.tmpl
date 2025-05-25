@@ -10,13 +10,13 @@
 {{ $theme := "dark" }}
 {{ $catppuccinLightFlavour := "latte" }}
 {{ $catppuccinDarkFlavour := "mocha" }}
-{{ $catppuccinAccentColor := "lavender" }}
+{{ $catppuccinAccentColor := "teal" }}
 {{- $isCloud := false -}}
 {{- $isContainer := false -}}
 {{- $isWSL := false -}}
 {{- $isHeadless := false -}}
 {{ $isLaptop := false }}
-{{ $opType := "account" }}
+{{ $opType := "service" }}
 
 {{ $themes := list
      "dark"
@@ -113,24 +113,6 @@
 {{ else if stdinIsATTY }}
   {{ $isLaptop = promptBoolOnce . "isLaptop" "Is this a laptop" false }}
 {{ end }}
-
-
-{{/* Prompts */}}
-
-{{ if stdinIsATTY }}
-  {{/* $theme = promptChoice "Theme" $themes "dark" */}}
-  {{/* $catppuccinLightFlavour = promptChoice "Catppuccin flavor for light mode" $catppuccinFlavors "latte" */}}
-  {{/* $catppuccinDarkFlavour = promptChoice "Catppuccin flavor for dark mode" $catppuccinFlavors "mocha" */}}
-  {{ $catppuccinAccentColor = promptChoice "Accent color" $catppuccinAccentColors "lavender" }}
-{{ end }}
-
-{{ if $isHeadless }}
-  {{ $opType = promptChoice "How are you connecting to 1p" $opTypeChoices "service" }}
-{{ else if $isHeadless }}
-  {{ $opType = "service" }}
-{{ end }}
-
-{{/* Post auto */}}
 
 {{ $catppuccinFlavor := "" }}
 {{ if eq $theme "dark" }}
@@ -241,9 +223,6 @@ args = [{{ range $mergeArgs }}{{ . | quote }}, {{ end }}]
 
 [onepassword]
     mode = {{ $opType | quote }}
-{{ if eq .chezmoi.os "windows" }}
-    prompt = false
-{{ end }}
 
 
 
