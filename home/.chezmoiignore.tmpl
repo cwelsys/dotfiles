@@ -5,6 +5,7 @@
 
 {{ if (joinPath .chezmoi.homeDir ".key" | lstat) }}
 home/.config/rclone/rclone.conf
+home/.config/.Xauthority
 {{ end }}
 
 {{ if ne .chezmoi.os "linux" }}
