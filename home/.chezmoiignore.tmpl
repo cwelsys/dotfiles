@@ -3,9 +3,12 @@
 .config/windows-terminal/
 .config/windows-terminal/**
 
+{{ if not (joinPath .chezmoi.homeDir ".config/.key" | lstat) }}
+.config/.Xauthority
+{{ end }}
+
 {{ if (joinPath .chezmoi.homeDir ".key" | lstat) }}
 home/.config/rclone/rclone.conf
-home/.config/.Xauthority
 {{ end }}
 
 {{ if ne .chezmoi.os "linux" }}
