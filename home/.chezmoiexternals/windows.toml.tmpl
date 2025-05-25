@@ -34,11 +34,17 @@ url = "https://github.com/catppuccin/powershell.git"
 clone.args = ['--depth', '1']
 pull.args = ['--depth', '1']
 
-[".local/bin/script"]
-type = "git-repo"
-url = "https://github.com/cwelsys/reggie.git"
-clone.args = ['--depth', '1']
-pull.args = ['--depth', '1']
+[".local/bin/ctrl-h.exe"]
+type = "file"
+url = "https://github.com/cwelsys/reggie/raw/refs/heads/main/ahk/ctrl-h.exe"
+
+[".local/bin/clearthumbs.bat"]
+type = "file"
+url = "https://github.com/cwelsys/reggie/raw/refs/heads/main/bat/ClearThumbCache.bat"
+
+[".local/bin/windhawk-backup.ps1"]
+type = "file"
+url = "https://github.com/cwelsys/reggie/raw/refs/heads/main/pwsh/windhawk-backup.ps1"
 
 [".local/bin/NewOutlookPatcher.exe"]
 type = "file"

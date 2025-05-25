@@ -35,7 +35,7 @@ config:
     startup:
       shortcuts:
         - name: 'ctrl-h'
-          target: '%USERPROFILE%\.local\bin\script\ahk\ctrl-h.exe'
+          target: '%USERPROFILE%\.local\bin\ctrl-h.exe'
 
         - name: 'VcXsrv'
           target: '%USERPROFILE%\scoop\apps\vcxsrv\current\vcxsrv.exe'
