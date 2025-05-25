@@ -68,7 +68,7 @@ hyperlinks-file-link-format = "vscode://file/{path}:{line}"
 [gpg "ssh"]
   program = "C:/Users/cwel/AppData/Local/1Password/app/8/op-ssh-sign.exe"
 
-{{- else if eq .isWSL "true" }}
+{{- else if .isWSL }}
 [gpg "ssh"]
   program = "/mnt/c/Users/cwel/AppData/Local/1Password/app/8/op-ssh-sign-wsl"
 {{- end }}
