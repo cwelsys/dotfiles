@@ -17,10 +17,3 @@ sudo dnf install -y tailscale
 {{ else if and (eq .chezmoi.os "linux") (not .isWSL) }}
 curl -fsSL https://tailscale.com/install.sh | sh
 {{   end }}
-
-{{ if and (eq .chezmoi.os "linux") (not .isWSL) }}
-sudo tailscale up --ssh
-{{   end }}
-{{ if eq .chezmoi.os "darwin" }}
-sudo tailscale up
-{{   end }}
