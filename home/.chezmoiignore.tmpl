@@ -5,7 +5,6 @@
 
 {{ if (joinPath .chezmoi.homeDir ".config/.key" | lstat) }}
 home/.config/.Xauthority
-home/.config/.key
 {{ end }}
 
 {{ if (joinPath .chezmoi.homeDir ".config/yasb/.env" | lstat) }}
