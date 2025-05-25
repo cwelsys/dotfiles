@@ -3,11 +3,8 @@
 .config/windows-terminal/
 .config/windows-terminal/**
 
-{{ if not (joinPath .chezmoi.homeDir ".config/.key" | lstat) }}
-.config/.Xauthority
-{{ end }}
-
-{{ if (joinPath .chezmoi.homeDir ".key" | lstat) }}
+{{ if (joinPath .chezmoi.homeDir ".config/.key" | lstat) }}
+home/.config/.Xauthority
 home/.config/rclone/rclone.conf
 {{ end }}
 
