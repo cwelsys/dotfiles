@@ -1,3 +1,4 @@
+# Plz no more CRLF
 * text=auto eol=lf
 *.sh text eol=lf
 *dot_zshenv.tmpl text eol=lf
@@ -11,3 +12,37 @@ dot_bashrc_* text eol=lf
 *.tmpl text eol=lf
 *.bash text eol=lf
 *.md text eol=lf
+.chezmoiscripts/windows/** text eol=crlf
+.chezmoiexternals/windows.toml.tmpl text eol=crlf
+dot_config/windows-terminal/settings.json text eol=crlf
+
+# Language overrides
+*.exportedUI linguist-language=xsd linguist-detectable
+*config* linguist-language=ini linguist-detectable
+*.json linguist-language=json linguist-detectable
+*.json.tmpl linguist-language=json linguist-detectable
+*.toml linguist-language=toml linguist-detectable
+*.toml.tmpl linguist-language=toml linguist-detectable
+*.yaml linguist-language=yml linguist-detectable
+*.yaml.tmpl linguist-language=yml linguist-detectable
+*.yml linguist-language=yml linguist-detectable
+*.yml.tmpl linguist-language=yml linguist-detectable
+*.lua.tmpl linguist-language=lua linguist-detectable
+*chezmoiignore* linguist-language=gitignore linguist-detectable
+*chezmoiremove* linguist-language=gitignore linguist-detectable
+*gitignore* linguist-language=gitignore linguist-detectable
+*rgignore* linguist-language=gitignore linguist-detectable
+*vimrc linguist-language=vim linguist-detectable
+*vsvimrc linguist-language=vim linguist-detectable
+*.ps1.tmpl linguist-language=pwsh linguist-detectable
+*.sh.tmpl linguist-language=sh linguist-detectable
+*tmux.conf.tmpl linguist-language=sh linguist-detectable
+*zprofile* linguist-language=sh linguist-detectable
+*zshenv* linguist-language=sh linguist-detectable
+*zshrc* linguist-language=sh linguist-detectable
+home/dot_config/komorebi/*.json linguist-language=jsonc linguist-detectable
+home/dot_ssh/config linguist-language=sshconfig linguist-detectable
+home/dot_config/git/config.tmpl linguist-language=gitconfig linguist-detectable
+home/dot_config/git/os.config.tmpl linguist-language=gitconfig linguist-detectable
+home/dot_config/git/global.gitignore linguist-language=ignore linguist-detectable
+home/AppData/Local/Microsoft/PowerToys/** linguist-generated

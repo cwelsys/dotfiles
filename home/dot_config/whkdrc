@@ -1,4 +1,4 @@
-.shell powershell
+.shell pwsh # can be one of cmd | pwsh | powershell
 
 # Reload whkd configuration
 # alt + o                 : taskkill /f /im whkd.exe && start /b whkd # if shell is cmd

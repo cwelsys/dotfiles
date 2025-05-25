@@ -1,12 +1,9 @@
 {{ if eq .chezmoi.os "linux" "darwin" }}
 
-##########################################
-
 [".config/tmux/plugins/tpm"]
 type = "git-repo"
 url = "https://github.com/tmux-plugins/tpm"
-{{ .externalGitArgs }}
-
+clone.args = ['--depth', '1']\npull.args = ['--depth', '1']
 
 [".config/btop/themes"]
 type = "archive"
@@ -14,7 +11,9 @@ url = "https://github.com/catppuccin/btop/archive/refs/heads/main.zip"
 stripComponents = 2
 include = ["btop-main/themes/catppuccin_*.theme"]
 
-
-##########################################
+[".config/zsh/mocha-syntax.zsh"]
+type = "file"
+url = "https://raw.githubusercontent.com/catppuccin/zsh-syntax-highlighting/refs/heads/main/themes/catppuccin_mocha-zsh-syntax-highlighting.zsh"
+clone.args = ['--depth', '1']\npull.args = ['--depth', '1']
 
 {{ end }}

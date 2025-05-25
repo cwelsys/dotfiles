@@ -201,7 +201,7 @@ widgets:
     options:
       label: "<span>\ueba1</span>"
       label_alt: 'Notifications {data}' # {data} return number of unread notification
-      token: env # YASB_GITHUB_TOKEN - GitHub Personal access tokens (classic) https://github.com/settings/tokens
+      token: ${YASB_GITHUB_TOKEN} #  GitHub Personal access tokens (classic) https://github.com/settings/tokens
       max_notification: 20 # Max number of notification displaying in menu max: 50
       only_unread: false # Show only unread or all notifications;
       max_field_size: 54 # Max characters in title before truncation.
@@ -284,7 +284,7 @@ widgets:
     options:
       label: '<span>{icon}</span> {temp}'
       label_alt: '{location}: Min {min_temp}, Max {max_temp}, Humidity {humidity}'
-      api_key: env # Will use YASB_WEATHER_API_KEY environment variable
+      api_key: ${YASB_WEATHER_API_KEY} # Will use YASB_WEATHER_API_KEY environment variable
       update_interval: 600 # Update interval in seconds, Min 600 seconds
       hide_decimal: true
       units: 'imperial'

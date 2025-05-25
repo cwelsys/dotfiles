@@ -1,8 +1,0 @@
-{{ if eq .chezmoi.os "linux" "darwin" }}
-
-[".config/zsh/mocha-syntax.zsh"]
-type = "file"
-url = "https://raw.githubusercontent.com/catppuccin/zsh-syntax-highlighting/refs/heads/main/themes/catppuccin_mocha-zsh-syntax-highlighting.zsh"
-{{ .externalGitArgs }}
-
-{{ end }}

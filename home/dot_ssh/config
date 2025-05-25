@@ -6,6 +6,10 @@ ServerAliveCountMax 4
 Port 22
 IdentityFile ~/.ssh/cwel
 
+Host pbox
+HostName pbox
+user cwel
+
 Host github.com
 User git
 PreferredAuthentications publickey
@@ -14,7 +18,3 @@ Host git.cwel.sh
 HostName git.cwel.sh
 User git
 PreferredAuthentications publickey
-
-Host pbox
-HostName pbox
-user cwel

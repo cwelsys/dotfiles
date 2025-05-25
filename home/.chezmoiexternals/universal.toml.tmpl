@@ -12,11 +12,7 @@ include = ["bat-main/themes/Catppuccin *.tmTheme"]
 type = "file"
 url = "https://raw.githubusercontent.com/catppuccin/delta/refs/heads/main/catppuccin.gitconfig"
 
-{{ if eq .osId "windows" }}
-["AppData/Local/glow/Config/themes"]
-{{ else }}
 [".config/glow/themes"]
-{{ end }}
 type = "archive"
 url = "https://github.com/catppuccin/glamour/archive/refs/heads/main.zip"
 stripComponents = 2

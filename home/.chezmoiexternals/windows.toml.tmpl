@@ -12,9 +12,31 @@ url = "https://raw.githubusercontent.com/catppuccin/flow-launcher/refs/heads/mai
 type = "file"
 url = "https://raw.githubusercontent.com/catppuccin/btop/refs/heads/main/themes/catppuccin_mocha.theme"
 
+["scoop/persist/qbittorrent/profile/qBittorrent/config/themes/catppuccin-mocha.qbtheme"]
+type= "file"
+url = "https://github.com/catppuccin/qbittorrent/releases/download/v2.0.1/catppuccin-mocha.qbtheme"
+
+[".config/clink/clink-gizmos"]
+type = "git-repo"
+url = "https://github.com/chrisant996/clink-gizmos.git"
+clone.args = ['--depth', '1']
+pull.args = ['--depth', '1']
+
+[".config/clink/clink-completions/more-clink-completions"]
+type = "git-repo"
+url = "https://github.com/sebthom/more-clink-completions.git"
+clone.args = ['--depth', '1']
+pull.args = ['--depth', '1']
+
 ["Documents/PowerShell/Modules/Catppuccin"]
 type = "git-repo"
 url = "https://github.com/catppuccin/powershell.git"
-{{ .externalGitArgs }}
+clone.args = ['--depth', '1']
+pull.args = ['--depth', '1']
+
+[".local/bin/ctrl-h.exe"]
+type = "file"
+url = "https://github.com/cwelsys/reggie/raw/refs/heads/main/ctrl-h.exe"
+
 
 {{ end }}

@@ -78,8 +78,8 @@ continuation_prompt = "[❯❯ ](subtext0)"
 palette = "catppuccin_macchiato"
 
 [character]
-success_symbol = "[[󱢺mauve) ❯](green)"
-error_symbol = "[[󱢺mauve) ❯](red)"
+success_symbol = "[󱢺](mauve) [❯](green)"
+error_symbol = "[󱢺](red) [❯](red)"
 vimcmd_symbol = "[[󱢺mauve) ❮](sapphire)"
 
 [battery]

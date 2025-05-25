@@ -1,8 +1,10 @@
 # vim:ft=gitignore.chezmoitmpl
 
-{{ if (joinPath .chezmoi.homeDir ".age-key.txt" | lstat) }}
+.config/windows-terminal/
+.config/windows-terminal/**
+
+{{ if (joinPath .chezmoi.homeDir ".key" | lstat) }}
 home/.config/rclone/rclone.conf
-AppData/Roaming/rclone/rclone.conf
 {{ end }}
 
 {{ if ne .chezmoi.os "linux" }}
@@ -30,19 +32,29 @@ AppData/Roaming/rclone/rclone.conf
 .config/btop/
 .config/bat/
 .config/fd/
+.config/bash/
+.config/bash/**
 .config/gdu/
+.config/shared
+.config/shared/**
+.config/topgrade.toml
 .font/
+.config/tmux/
+.config/tmux/**
 .npm-global/
 .tmux.conf
 .zprofile
 .zshenv
 .zsh_history
+.bashrc
 
 {{ else }}
 
 .config/komorebi/
 .config/git/bash/
 .config/git/bash/**
+.config/sharex/
+.config/sharex/**
 .config/scoop/
 .config/scoop/**
 .config/whkdrc/

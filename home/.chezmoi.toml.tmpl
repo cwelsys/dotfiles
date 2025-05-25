@@ -1,7 +1,23 @@
 {{/* Default static values */}}
 {{ $gpgId := "061DF935B288405FF6B906169496153E284399EF" }}
+{{ $agePubKey := "age1wezwdvug6rdnwedvw8tk7npjm2rlmmewukxdat8v5y5garwvgdeq3ww5m9" }}
 {{ $sshId := "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXPGUiiFFBzqutbhNqi5RjykdlwvdFveB/XkSdg0BAM" }}
-{{- $email := "cwel@cwel.sh" -}}
+{{ $email := "cwel@cwel.sh" -}}
+
+{{/* Default dynamic values */}}
+
+{{ $shell := "" }}
+{{ $theme := "dark" }}
+{{ $catppuccinLightFlavour := "latte" }}
+{{ $catppuccinDarkFlavour := "mocha" }}
+{{ $catppuccinAccentColor := "lavender" }}
+{{- $isCloud := false -}}
+{{- $isContainer := false -}}
+{{- $isWSL := false -}}
+{{- $isHeadless := false -}}
+{{ $isLaptop := false }}
+{{ $opType := "account" }}
+
 {{ $themes := list
      "dark"
      "light"
@@ -31,51 +47,54 @@
      "yellow"
 }}
 
-{{/* Default dynamic values */}}
+{{ $opTypeChoices := list
+      "account"
+      "service"
+      "connect"
+}}
 
-{{ $shell := "" }}
-{{ $theme := "dark" }}
-{{ $catppuccinLightFlavour := "latte" }}
-{{ $catppuccinDarkFlavour := "mocha" }}
-{{ $catppuccinAccentColor := "lavender" }}
-{{- $isCloud := false -}}
-{{- $isContainer := false -}}
-{{- $isWSL := false -}}
-{{- $isHeadless := false -}}
-{{ $isLaptop := false }}
+{{/* Checks */}}
 
+{{ if $isHeadless }}
+  {{ $opType = promptChoice "How are you connecting to 1p" $opTypeChoices "service" }}
+{{ end }}
 
-{{/* Check if its a linux box */}}
+{{/* if its a linux box */}}
 {{ $osId := .chezmoi.os }}
 {{ if (and (eq .chezmoi.os "linux") (hasKey .chezmoi.osRelease "id")) }}
   {{ $osId = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id }}
 {{ end }}
 
-{{/* Check if running in WSL */}}
+{{/* if running in WSL */}}
 {{ if and (eq .chezmoi.os "linux") (or (stat "/proc/sys/fs/binfmt_misc/WSLInterop") (contains "microsoft" (output "uname" "-r" | lower))) }}
   {{ $isWSL = true }}
 {{ end }}
 
-{{/* Check if system is headless */}}
-{{ if and (eq .chezmoi.os "linux") (not (or (env "DISPLAY") (env "WAYLAND_DISPLAY") (env "XDG_SESSION_TYPE"))) }}
+{{/* if system is headless */}}
+{{ if and (eq .chezmoi.os "linux") (or
+     (not (or (env "DISPLAY") (env "WAYLAND_DISPLAY") (env "XDG_SESSION_TYPE")))
+     (eq (env "DISPLAY") "wini:0")
+     (contains "localhost" (env "DISPLAY"))
+     (hasPrefix ":" (env "DISPLAY"))
+   ) }}
   {{ $isHeadless = true }}
 {{ end }}
 
-{{/* Check if its a windows box */}}
+{{/* if its a windows box */}}
 {{ if eq $osId "windows" }}
   {{ $shell = "pwsh" }}
 {{ else }}
   {{ $shell = "zsh" }}
 {{ end }}
 
-{{/* Check if running in a container */}}
+{{/* if running in a container */}}
 {{ if eq .chezmoi.os "linux" }}
   {{ if or (stat "/.dockerenv") (contains "docker" (output "cat" "/proc/1/cgroup" | lower)) (contains "lxc" (output "cat" "/proc/1/cgroup" | lower)) }}
     {{ $isContainer = true }}
   {{ end }}
 {{ end }}
 
-{{/* Check if running in a cloud environment */}}
+{{/* if running in a cloud environment */}}
 {{ if eq .chezmoi.os "linux" }}
   {{ if or (stat "/var/lib/cloud/instance") (stat "/var/lib/cloud/data") (stat "/proc/xen") (stat "/sys/hypervisor/uuid") }}
     {{ $isCloud = true }}
@@ -86,18 +105,6 @@
     {{ end }}
   {{ end }}
 {{ end }}
-
-
-{{/* Prompts */}}
-
-{{ if stdinIsATTY }}
-  {{/* $theme = promptChoice "Theme" $themes "dark" */}}
-  {{/* $catppuccinLightFlavour = promptChoice "Catppuccin flavor for light mode" $catppuccinFlavors "latte" */}}
-  {{/* $catppuccinDarkFlavour = promptChoice "Catppuccin flavor for dark mode" $catppuccinFlavors "mocha" */}}
-  {{ $catppuccinAccentColor = promptChoice "Accent color" $catppuccinAccentColors "lavender" }}
-{{ end }}
-
-{{/* Semi prompts or auto */}}
 
 {{ if lookPath "hostnamectl" }}
   {{ if eq (output "hostnamectl" "chassis") "laptop" }}
@@ -111,6 +118,16 @@
   {{ $isLaptop = promptBoolOnce . "isLaptop" "Is this a laptop" false }}
 {{ end }}
 
+
+{{/* Prompts */}}
+
+{{ if stdinIsATTY }}
+  {{/* $theme = promptChoice "Theme" $themes "dark" */}}
+  {{/* $catppuccinLightFlavour = promptChoice "Catppuccin flavor for light mode" $catppuccinFlavors "latte" */}}
+  {{/* $catppuccinDarkFlavour = promptChoice "Catppuccin flavor for dark mode" $catppuccinFlavors "mocha" */}}
+  {{ $catppuccinAccentColor = promptChoice "Accent color" $catppuccinAccentColors "lavender" }}
+{{ end }}
+
 {{/* Post auto */}}
 
 {{ $catppuccinFlavor := "" }}
@@ -120,14 +137,22 @@
   {{ $catppuccinFlavor = $catppuccinLightFlavour }}
 {{ end }}
 
-{{/* Set editor tools based on environment */}}
+{{/* Set editor based on environment */}}
 
 {{ $editCommand := "code" }}
 {{ $editArgs := list "--wait" }}
 {{ $diffCommand := "code" }}
-{{ $diffArgs := list "--wait" "--diff" }}
-{{ $mergeCommand := "code" }}
-{{ $mergeArgs := list "--wait" "--merge" "{{ .Destination }}" "{{ .Target }}" "{{ .Source }}" }}
+{{ $diffArgs := list "--wait" "--diff" "{{ .Destination }}" "{{ .Target }}" }}
+{{ $mergeCommand := "" }}  {{/* Declare with an initial value */}}
+{{ $mergeArgs := list }}   {{/* Declare with an initial value */}}
+
+{{ if eq .chezmoi.os "windows" }}
+  {{ $mergeCommand = "powershell.exe" }}  {{/* Use = not := */}}
+  {{ $mergeArgs = list "-Command" "Copy-Item -Path '{{ .Target }}' -Destination '{{ .Target }}.base' -Force; code --wait --new-window --merge '{{ .Destination }}' '{{ .Target }}' '{{ .Target }}.base' '{{ .Source }}'" }}
+{{ else }}
+  {{ $mergeCommand = "bash" }}  {{/* Use = not := */}}
+  {{ $mergeArgs = list "-c" "cp '{{ .Target }}' '{{ .Target }}.base' && code --wait --new-window --merge '{{ .Destination }}' '{{ .Target }}' '{{ .Target }}.base' '{{ .Source }}'" }}
+{{ end }}
 
 {{ if $isHeadless }}
   {{ $editCommand = "nvim" }}
@@ -149,13 +174,13 @@
   {{ $editCommand = "code" }}
   {{ $editArgs = list "--wait" }}
   {{ $diffCommand = "code" }}
-  {{ $diffArgs = list "--wait" "--diff" }}
-  {{ $mergeCommand = "code" }}
-  {{ $mergeArgs = list "--wait" "--merge" "{{ .Destination }}" "{{ .Target }}" "{{ .Source }}" }}
+  {{ $diffArgs = list "--wait" "--diff" "{{ .Destination }}" "{{ .Target }}" }}
+  {{ $mergeCommand = "bash" }}
+  {{ $mergeArgs = list "-c" "cp {{ .Target }} {{ .Target }}.base && code --wait --new-window --merge {{ .Destination }} {{ .Target }} {{ .Target }}.base {{ .Source }}" }}
 {{ end }}
 
-encryption = "age"
-mode = "file" # file or symlink
+encryption = "age" # age, rage, gpg
+mode = "file" # file, symlink
 progress = true
 
 [data]
@@ -174,14 +199,15 @@ isWSL = {{ $isWSL }}
 isHeadless = {{ $isHeadless }}
 isCloud = {{ $isCloud }}
 isContainer = {{ $isContainer }}
+opType = {{ $opType | quote }}
 
 [data.catppuccin]
 accentColors = [ {{ $catppuccinAccentColors | quoteList | join ", " }} ]
 flavors = [ {{ $catppuccinFlavors | quoteList | join ", " }} ]
 
 [age]
-    identity = {{ $sshId | quote }}
-    symmetric = true
+    identity = "~/.config/.key"
+    recipient = {{ $agePubKey | quote }}
 
 [gpg]
 recipient = {{ $gpgId | quote }}
@@ -212,4 +238,6 @@ args = [{{ range $mergeArgs }}{{ . | quote }}, {{ end }}]
     args = ["-NoLogo"]
 
 [onepassword]
-    mode = "service"
+    mode = {{ $opType | quote }}
+
+
