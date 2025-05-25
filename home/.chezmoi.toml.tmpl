@@ -241,5 +241,8 @@ args = [{{ range $mergeArgs }}{{ . | quote }}, {{ end }}]
 
 [onepassword]
     mode = {{ $opType | quote }}
+{{ if eq .chezmoi.os "windows" }}
+    prompt = false
+{{ end }}
 
 
