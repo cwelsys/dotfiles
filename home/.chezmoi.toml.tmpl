@@ -55,8 +55,10 @@
 
 {{/* Checks */}}
 
-{{ if $isHeadless }}
+{{ if and $isHeadless stdinIsATTY }}
   {{ $opType = promptChoice "How are you connecting to 1p" $opTypeChoices "service" }}
+{{ else if $isHeadless }}
+  {{ $opType = "service" }}
 {{ end }}
 
 {{/* if its a linux box */}}
