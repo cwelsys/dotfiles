@@ -9,6 +9,7 @@ IdentityFile ~/.ssh/cwel
 Host pbox
 HostName pbox
 user cwel
+ForwardAgent yes
 
 Host github.com
 User git
