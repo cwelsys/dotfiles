@@ -6,6 +6,7 @@
 {{ if (joinPath .chezmoi.homeDir ".config/.key" | lstat) }}
 home/.config/.Xauthority
 home/.config/rclone/rclone.conf
+home/.config/.key
 {{ end }}
 
 {{ if ne .chezmoi.os "linux" }}
@@ -30,6 +31,7 @@ home/.config/rclone/rclone.conf
 
 {{ if eq .osId "windows" }}
 
+.config/atuin/
 .config/btop/
 .config/bat/
 .config/fd/

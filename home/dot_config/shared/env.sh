@@ -17,8 +17,6 @@ if [ ! -w ${XDG_RUNTIME_DIR:="/run/user/$UID"} ]; then
 fi
 export XDG_RUNTIME_DIR
 
-# docker
-
 export CONFIGDIR="/home/cwel/stacks/config"
 export DOCKERM="/opt/docker"
 export TZ="America/New_York"
