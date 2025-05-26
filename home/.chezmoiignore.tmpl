@@ -3,18 +3,6 @@
 .config/windows-terminal/
 .config/windows-terminal/**
 
-{{ if (joinPath .chezmoi.homeDir ".config/.key" | lstat) }}
-home/.config/.Xauthority
-{{ end }}
-
-{{ if (joinPath .chezmoi.homeDir ".config/yasb/.env" | lstat) }}
-home/.config/yasb/dot_env.tmpl
-{{ end }}
-
-{{ if (joinPath .chezmoi.homeDir "AppData/Roaming/managarr/config/.env" | lstat) }}
-home/AppData/Roaming/managarr/config/dot_env.tmpl
-{{ end }}
-
 {{ if ne .chezmoi.os "linux" }}
 .chezmoiscripts/linux/**
 {{ end }}
@@ -41,6 +29,7 @@ home/AppData/Roaming/managarr/config/dot_env.tmpl
 .config/btop/
 .config/bat/
 .config/fd/
+.local/share/gnupg/
 .config/bash/
 .config/bash/**
 .config/gdu/
@@ -51,12 +40,9 @@ home/AppData/Roaming/managarr/config/dot_env.tmpl
 .font/
 .config/tmux/
 .config/tmux/**
-.npm-global/
-.tmux.conf
 .zprofile
 .zshenv
 .zsh_history
-.bashrc
 
 {{ else }}
 
