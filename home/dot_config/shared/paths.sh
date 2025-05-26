@@ -22,6 +22,10 @@ pathprepend "$HOME/.local/bin"
 pathprepend "/usr/local/sbin"
 pathprepend "/usr/bin"
 
+# System bins
+pathprepend "/usr/local/bin"
+pathprepend "/bin"
+
 if uname -r | grep -q microsoft; then
 	if command_exists code && command_exists wslvar; then
 		windows_user_home="$(wslpath "$(wslvar USERPROFILE)")"
@@ -35,7 +39,13 @@ if uname -r | grep -q microsoft; then
 fi
 
 # npm global packages
-pathprepend "$HOME/.npm-global/bin"
+if [ -n "$NPM_CONFIG_INIT_MODULE" ]; then
+	# Use XDG path when environment variables are set
+	pathprepend "$XDG_CONFIG_HOME/npm/bin"
+else
+	# Fallback to traditional path
+	pathprepend "$HOME/.npm-global/bin"
+fi
 
 # Homebrew
 if [ -d "/home/linuxbrew/.linuxbrew" ]; then
@@ -44,11 +54,13 @@ if [ -d "/home/linuxbrew/.linuxbrew" ]; then
 fi
 
 # Rust/Cargo
-pathprepend "$HOME/.cargo/bin"
-
-# System bins
-pathprepend "/usr/local/bin"
-pathprepend "/bin"
+if [ -n "$CARGO_HOME" ]; then
+	# Use XDG path when CARGO_HOME is set
+	pathprepend "$CARGO_HOME/bin"
+else
+	# Fallback to traditional path
+	pathprepend "$HOME/.cargo/bin"
+fi
 
 # Go path
 if command_exists go || [ -d "$HOME/.go" ]; then
