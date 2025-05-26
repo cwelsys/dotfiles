@@ -1,4 +1,3 @@
-# Plz no more CRLF
 # * text=auto eol=lf
 *.sh text eol=lf
 *dot_zshenv.tmpl text eol=lf
