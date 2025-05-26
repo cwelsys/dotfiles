@@ -28,7 +28,7 @@ fi
 
 if [ -d "$BDOTDIR/lib" ]; then
 	for file in "$BDOTDIR/lib/"*.bash; do
-		source "$file"
+		sour "$file"
 	done
 	unset file
 fi
@@ -83,3 +83,34 @@ fi
 if command -v fastfetch >/dev/null 2>&1; then
 	fastfetch
 fi
+
+# If not running interactively, don't do anything
+case $- in
+*i*) ;;
+*) return ;;
+esac
+
+export BASH_IT="/home/cwel/.bash_it"
+
+# Lock and Load a custom theme file.
+# Leave empty to disable theming.
+# location "$BASH_IT"/themes/
+export BASH_IT_THEME=
+
+# Some themes can show whether `sudo` has a current token or not.
+# Set `$THEME_CHECK_SUDO` to `true` to check every prompt:
+#THEME_CHECK_SUDO='true'
+
+export GIT_HOSTING='git@git.cwel.sh'
+
+unset MAILCHECK
+
+export IRC_CLIENT='irssi'
+
+export TODO="t"
+
+BASH_IT_PROJECT_PATHS="${HOME}/projects:/Volumes/work/src"
+
+export SCM_CHECK=true
+
+source "$BASH_IT"/bash_it.sh
