@@ -1,0 +1,108 @@
+﻿# Ensure we're running in PowerShell 7+
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    Write-Host "Relaunching in PowerShell Core..."
+    & "C:\Program Files\PowerShell\7\pwsh.exe" -NoProfile -ExecutionPolicy Bypass -File $MyInvocation.MyCommand.Path
+    exit
+}
+
+# Ensure PSWriteColor is installed
+if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
+    Write-Host "Installing PSWriteColor module..."
+    Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction SilentlyContinue
+}
+Import-Module PSWriteColor -ErrorAction SilentlyContinue
+
+# Check if running as administrator
+$isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
+if (-not $isAdmin) {
+    Write-Color -Text "⚠️ ", "Not running as administrator. Some symbolic links may fail to create." -Color Yellow, Gray
+    Write-Host ""
+}
+
+Write-Host ""
+Write-Color -Text "******************************************" -Color DarkMagenta
+Write-Color -Text "** CREATING SYMBOLIC LINKS **" -Color DarkMagenta
+Write-Color -Text "******************************************" -Color DarkMagenta
+Write-Host ""
+
+$chezmoidir = "$env:USERPROFILE\.local\share\chezmoi"
+$symlinkCount = 0
+$successCount = 0
+
+Write-Color -Text "Processing symbolic links..." -Color DarkMagenta
+
+{{- if .config.windows.symlinks }}
+{{- range $targetPath, $sourcePath := .config.windows.symlinks }}
+$symlinkCount++
+
+try {
+    # Expand environment variables in target path
+    $targetPath = [Environment]::ExpandEnvironmentVariables('{{ $targetPath }}')
+    $sourcePath = "$chezmoidir\{{ $sourcePath }}"
+
+    # Create target directory if it doesn't exist
+    $targetDir = Split-Path -Path $targetPath -Parent
+    if (-not (Test-Path $targetDir)) {
+        New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+        Write-Color -Text "[symlink] ", "Created directory: ", $targetDir -Color Blue, Gray, White
+    }
+
+    # Check if source file exists
+    if (-not (Test-Path $sourcePath)) {
+        Write-Color -Text "[symlink] ", "(error) ", "Source not found: ", $sourcePath -Color Blue, Red, Gray, White
+        continue
+    }
+
+    # Check if target already exists
+    if (Test-Path $targetPath) {
+        $linkType = (Get-Item $targetPath -Force).LinkType
+
+        # If it's already a symlink pointing to the right place, skip
+        if ($linkType -eq "SymbolicLink") {
+            $currentTarget = (Get-Item $targetPath).Target
+            if ($currentTarget -eq $sourcePath) {
+                Write-Color -Text "[symlink] ", "(already exists) ", $targetPath, " → ", $sourcePath -Color Blue, Yellow, White, Gray, White
+                $successCount++
+                continue
+            }
+        }
+
+        # Otherwise, back it up and remove
+        $backupFile = "$targetPath.backup-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+        Copy-Item -Path $targetPath -Destination $backupFile -Force
+        Write-Color -Text "[symlink] ", "Backed up: ", $targetPath, " → ", $backupFile -Color Blue, Gray, White, Gray, White
+        Remove-Item -Path $targetPath -Force -Recurse
+    }
+
+    # Create the symlink
+    New-Item -ItemType SymbolicLink -Path $targetPath -Target $sourcePath -Force | Out-Null
+    Write-Color -Text "[symlink] ", "(success) ", $targetPath, " → ", $sourcePath -Color Blue, Green, White, Gray, White
+    $successCount++
+} catch {
+    Write-Color -Text "[symlink] ", "(failed) ", $targetPath, ": ", $_.Exception.Message -Color Blue, Red, White, Gray, White
+
+    try {
+        # Try alternative method with cmd.exe for better compatibility
+        Write-Color -Text "[symlink] ", "Attempting alternative method..." -Color Blue, Yellow
+        cmd /c mklink "$targetPath" "$sourcePath" | Out-Null
+        if ($LASTEXITCODE -eq 0) {
+            Write-Color -Text "[symlink] ", "(success) ", $targetPath, " → ", $sourcePath -Color Blue, Green, White, Gray, White
+            $successCount++
+        } else {
+            throw "Command failed with exit code $LASTEXITCODE"
+        }
+    } catch {
+        Write-Color -Text "[symlink] ", "(failed) ", "Copying file instead of linking..." -Color Blue, Yellow, Gray
+        Copy-Item -Path $sourcePath -Destination $targetPath -Force
+        Write-Color -Text "[symlink] ", "(fallback) ", "Copied file: ", $targetPath -Color Blue, Cyan, Gray, White
+        $successCount++
+    }
+}
+{{- end }}
+{{- else }}
+Write-Color -Text "No symlinks defined in configuration." -Color Yellow
+{{- end }}
+
+Write-Host ""
+Write-Color -Text "Symlink creation summary: ", "$successCount of $symlinkCount successful" -Color White, $(if ($successCount -eq $symlinkCount) { "Green" } else { "Yellow" })
+Write-Host ""

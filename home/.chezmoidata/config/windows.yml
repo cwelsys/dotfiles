@@ -21,9 +21,13 @@ config:
         YAZI_FILE_ONE: '%USERPROFILE%\scoop\apps\git\current\usr\bin\file.exe'
         KOMOREBI_CONFIG_HOME: '%USERPROFILE%\.config\komorebi'
         EZA_CONFIG_DIR: '%USERPROFILE%\.config\eza'
+        GNUPGHOME: '%USERPROFILE%\.local\share\gnupg'
+        VBOX_USER_HOME: 'C:\Users\cwel\.local\share\virtualbox'
+        VAGRANT_HOME: '%USERPROFILE%\.local\share\vagrant'
         VAGRANT_DEFAULT_PROVIDER: 'virtualbox'
         DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
         GH_DASH_CONFIG: '%USERPROFILE%\.config\gh-dash\config.yml'
+        LESSHISTFILE: '%USERPROFILE%\.cache\.lesshsts'
         CARGO_HOME: '%USERPROFILE%\.local\share\cargo'
         RUSTUP_HOME: '%USERPROFILE%\.local\share\rustup'
         GOPATH: '%USERPROFILE%\.local\share\go'
@@ -48,3 +52,6 @@ config:
         - name: 'VcXsrv'
           target: '%USERPROFILE%\scoop\apps\vcxsrv\current\vcxsrv.exe'
           args: '-multiwindow -clipboard -wgl -auth "%USERPROFILE%\.Xauthority"'
+
+    symlinks:
+      '%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json': 'home\dot_config\windows-terminal\settings.json'
