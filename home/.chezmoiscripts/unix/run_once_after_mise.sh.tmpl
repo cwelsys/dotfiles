@@ -1,6 +1,6 @@
 #!/bin/bash
 {{ if eq .chezmoi.os "darwin" }}
-curl https://mise.run | sh
+curl https://mise.run | MISE_QUIET=1 sh
 {{ else if eq .chezmoi.os "linux" }}
 {{   if eq .chezmoi.osRelease.id "debian" }}
 sudo apt update -y && sudo apt install -y gpg sudo wget curl
@@ -10,8 +10,6 @@ echo "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.gpg arch=amd64] http
 sudo apt update
 sudo apt install -y mise
 {{   else if eq .chezmoi.osRelease.id "fedora" }}
-sudo dnf install -y dnf-plugins-core
-sudo dnf config-manager addrepo --from-repofile=https://mise.jdx.dev/rpm/mise.repo
-sudo dnf install -y mise
+curl https://mise.run | MISE_QUIET=1 sh
 {{   end }}
 {{ end }}
