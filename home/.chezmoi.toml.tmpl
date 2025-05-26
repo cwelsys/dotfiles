@@ -208,6 +208,7 @@ command = {{ $shell | quote }}
 [edit]
 command = {{ $editCommand | quote }}
 args = [{{ range $editArgs }}{{ . | quote }}, {{ end }}]
+watch = true
 
 [diff]
 command = {{ $diffCommand | quote }}

@@ -24,9 +24,9 @@ else {
 
 # 🐚 Prompt
 if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
-    oh-my-posh init pwsh --config "$HOME\.config\zen.toml" | Invoke-Expression
+	oh-my-posh init pwsh --config "$HOME\.config\zen.toml" | Invoke-Expression
 } elseif (Get-Command starship -ErrorAction SilentlyContinue) {
-    Invoke-Expression (&starship init powershell)
+	Invoke-Expression (&starship init powershell)
 }
 
 # 🥣 scoop

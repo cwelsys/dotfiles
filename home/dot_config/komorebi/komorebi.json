@@ -56,7 +56,8 @@
 		{ "kind": "Exe", "id": "xemu.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "shadPS4.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "scummvm.exe", "matching_strategy": "Equals" },
-		{ "kind": "Exe", "id": "retroarch.exe", "matching_strategy": "Equals" }
+		{ "kind": "Exe", "id": "retroarch.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "ResourceHacker.exe", "matching_strategy": "Equals" }
 	],
 	"floating_applications": [
 		{ "kind": "Exe", "id": "explorer.exe", "matching_strategy": "Equals" },
@@ -72,7 +73,10 @@
 		{ "kind": "Exe", "id": "Rancher Desktop.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "vncviewer.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "Playnite.DesktopApp.exe", "matching_strategy": "Equals" },
-		{ "kind": "Exe", "id": "everything.exe", "matching_strategy": "Equals" }
+		{ "kind": "Exe", "id": "everything.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "MTGA.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "TotalReg.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "TotalUninstall.exe", "matching_strategy": "Equals" }
 	],
 	"manage_rules": [{ "kind": "Exe", "id": "MTGA.exe", "matching_strategy": "Equals" }],
 
