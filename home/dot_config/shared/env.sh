@@ -12,10 +12,21 @@ export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_STATE_HOME="$HOME/.local/state"
 export XDG_BIN_HOME="$HOME/.local/bin"
 export XDG_PROJECTS_DIR="$HOME/projects"
+export DOCKER_CONFIG="$XDG_CONFIG_HOME"/docker
+export CARGO_HOME="$XDG_DATA_HOME"/cargo
+export RUSTUP_HOME="$XDG_DATA_HOME"/rustup
+export DOTNET_CLI_HOME="$XDG_DATA_HOME"/dotnet
+export PASSWORD_STORE_DIR="$XDG_DATA_HOME"/pass
+export GNUPGHOME="$XDG_DATA_HOME"/gnupg
+export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc
 if [ ! -w ${XDG_RUNTIME_DIR:="/run/user/$UID"} ]; then
 	XDG_RUNTIME_DIR=/tmp
 fi
 export XDG_RUNTIME_DIR
+
+export NPM_CONFIG_INIT_MODULE="$XDG_CONFIG_HOME"/npm/config/npm-init.js
+export NPM_CONFIG_CACHE="$XDG_CACHE_HOME"/npm
+export NPM_CONFIG_TMP="$XDG_RUNTIME_DIR"/npm
 
 export CONFIGDIR="/home/cwel/stacks/config"
 export DOCKERM="/opt/docker"

@@ -78,8 +78,8 @@ bindkey '^[[F' end-of-line
 bindkey '^[[Z' undo
 
 # History
+export HISTFILE="$XDG_STATE_HOME"/zsh/history
 HISTSIZE=5000
-HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
 

@@ -45,6 +45,7 @@ shopt -s globstar
 shopt -s no_empty_cmd_completion
 shopt -s nocaseglob
 
+export HISTFILE="${XDG_STATE_HOME}"/bash/.bash_history
 HISTCONTROL=ignoreboth:erasedups
 HISTIGNORE="&:[bf]g:c:clear:history:exit:q:pwd:* --help"
 HISTFILESIZE=10000
@@ -83,5 +84,3 @@ fi
 if command -v fastfetch >/dev/null 2>&1; then
 	fastfetch
 fi
-
-#source ~/.local/share/blesh/ble.sh

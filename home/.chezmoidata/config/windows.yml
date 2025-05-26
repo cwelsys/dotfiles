@@ -20,6 +20,7 @@ config:
         XDG_PROJECTS_DIR: '%USERPROFILE%\projects'
         XDG_CACHE_HOME: '%USERPROFILE%\.cache'
         XDG_DATA_HOME: '%USERPROFILE%\.local\share'
+        XDG_STATE_HOME: '%USERPROFILE%\.local\state'
         HOME: '%USERPROFILE%'
         DOCKER_HOST: 'tcp://psock:2375'
 
