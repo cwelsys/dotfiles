@@ -40,3 +40,6 @@ config:
         - name: 'VcXsrv'
           target: '%USERPROFILE%\scoop\apps\vcxsrv\current\vcxsrv.exe'
           args: '-multiwindow -clipboard -wgl -auth "%USERPROFILE%\.Xauthority"'
+
+spicetify:
+  spotifyPath: C:\Users\cwel\scoop\apps\spotify\current
