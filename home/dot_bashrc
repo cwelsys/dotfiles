@@ -113,4 +113,5 @@ BASH_IT_PROJECT_PATHS="${HOME}/projects:/Volumes/work/src"
 
 export SCM_CHECK=true
 
+source ~/.local/share/blesh/ble.sh
 source "$BASH_IT"/bash_it.sh
