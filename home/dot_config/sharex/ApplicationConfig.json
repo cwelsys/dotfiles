@@ -1,6 +1,0 @@
-{{- /* chezmoi:modify-template */ -}}
-{{ $json := fromJson .chezmoi.stdin }}
-{{ $json = $json | setValueAtPath "DefaultTaskSettings.GeneralSettings.CustomCaptureSoundPath" "C:\\Windows\\Media\\Windows Notify.wav" }}
-{{ $json = $json | setValueAtPath "DefaultTaskSettings.GeneralSettings.CustomTaskCompletedSoundPath" "C:\\Windows\\Media\\Windows Notify System Generic.wav" }}
-{{ $json = $json | setValueAtPath "CustomScreenshotsPath" "%USERPROFILE%\\.config\\sharex\\Screenshots" }}
-{{ $json | toPrettyJson }}
