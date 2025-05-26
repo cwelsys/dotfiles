@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-source ~/.local/share/blesh/ble.sh
-
 export BDOTDIR="${XDG_CONFIG_HOME:-${HOME}/.config}/bash"
 
 if [ -f "$HOME/.config/shared/init.sh" ]; then
@@ -85,3 +83,5 @@ fi
 if command -v fastfetch >/dev/null 2>&1; then
 	fastfetch
 fi
+
+source ~/.local/share/blesh/ble.sh
