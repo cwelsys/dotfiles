@@ -84,4 +84,4 @@ if command -v fastfetch >/dev/null 2>&1; then
 	fastfetch
 fi
 
-source ~/.local/share/blesh/ble.sh
+#source ~/.local/share/blesh/ble.sh
