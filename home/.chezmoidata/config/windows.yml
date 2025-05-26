@@ -8,6 +8,14 @@ config:
         - '%USERPROFILE%\scoop\apps\git\current\usr\bin'
         - '%USERPROFILE%\.local\bin'
       others:
+        DOCKER_HOST: 'tcp://psock:2375'
+        HOME: '%USERPROFILE%'
+        XDG_CONFIG_HOME: '%USERPROFILE%\.config'
+        XDG_PROJECTS_DIR: '%USERPROFILE%\projects'
+        XDG_CACHE_HOME: '%USERPROFILE%\.cache'
+        XDG_DATA_HOME: '%USERPROFILE%\.local\share'
+        XDG_STATE_HOME: '%USERPROFILE%\.local\state'
+        XDG_BIN_HOME: '%USERPROFILE%\.local\bin'
         YAZI_CONFIG_HOME: '%USERPROFILE%\.config\yazi'
         YAZI_FILE_ONE: '%USERPROFILE%\scoop\apps\git\current\usr\bin\file.exe'
         KOMOREBI_CONFIG_HOME: '%USERPROFILE%\.config\komorebi'
@@ -15,14 +23,12 @@ config:
         VAGRANT_DEFAULT_PROVIDER: 'virtualbox'
         DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
         GH_DASH_CONFIG: '%USERPROFILE%\.config\gh-dash\config.yml'
-        GOPATH: 'C:\Users\cwel\.go'
-        XDG_CONFIG_HOME: '%USERPROFILE%\.config'
-        XDG_PROJECTS_DIR: '%USERPROFILE%\projects'
-        XDG_CACHE_HOME: '%USERPROFILE%\.cache'
-        XDG_DATA_HOME: '%USERPROFILE%\.local\share'
-        XDG_STATE_HOME: '%USERPROFILE%\.local\state'
-        HOME: '%USERPROFILE%'
-        DOCKER_HOST: 'tcp://psock:2375'
+        CARGO_HOME: '%USERPROFILE%\.local\share\cargo'
+        RUSTUP_HOME: '%USERPROFILE%\.local\share\rustup'
+        GOPATH: '%USERPROFILE%\.local\share\go'
+        NPM_CONFIG_CACHE: '%USERPROFILE%\.cache\npm'
+        YARN_CACHE_FOLDER: '%USERPROFILE%\.cache\npm'
+        PNPM_HOME: '%USERPROFILE%\.local\share\pnpm'
 
     features:
       enable:
@@ -41,6 +47,3 @@ config:
         - name: 'VcXsrv'
           target: '%USERPROFILE%\scoop\apps\vcxsrv\current\vcxsrv.exe'
           args: '-multiwindow -clipboard -wgl -auth "%USERPROFILE%\.Xauthority"'
-
-spicetify:
-  spotifyPath: C:\Users\cwel\scoop\apps\spotify\current
