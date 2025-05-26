@@ -28,7 +28,7 @@ fi
 
 if [ -d "$BDOTDIR/lib" ]; then
 	for file in "$BDOTDIR/lib/"*.bash; do
-		sour "$file"
+		source "$file"
 	done
 	unset file
 fi
