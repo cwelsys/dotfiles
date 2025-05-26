@@ -59,21 +59,42 @@ foreground_templates = [
 newline = true
 
 [blocks.segments.properties]
+almalinux = ''
 alpine = ''
+amazon = ''
+# android = ''
+android = ''
+aosc = ''
 arch = ''
 centos = ''
+coreos = ''
 debian = ''
+deepin = ''
+devuan = ''
 elementary = ''
+endeavouros = ''
 fedora = ''
 gentoo = ''
-linux = ''
-macos = ''
+macos = ''
+mageia = ''
 manjaro = ''
-mint = ''
+mint = ''
+nixos = ''
 opensuse = ''
+suse = ''
 raspbian = ''
-ubuntu = ''
-windows = ''
+redhat = ''
+rocky = ''
+sabayon = ''
+kali = ''
+slackware = ''
+ubuntu = ''
+# ubuntu = ''
+windows = ''
+# windows = '󰨡'
+# windows = ''
+# linux = ''
+linux = '󰌽'
 
 [[blocks.segments]]
 template = ' admin '
@@ -160,13 +181,3 @@ foreground_templates = [
   '{{ if gt .Code 0 }}p:Red{{ end }}',
   '{{ if eq .Code 0}}p:Mauve{{ end }}',
 ]
-
-# [[blocks.segments]]
-# template = '  {{ .Context }} '
-# foreground = 'p:Sapphire'
-# background = 'transparent'
-# type = 'docker'
-# style = 'accordion'
-
-# [blocks.segments.properties]
-# cache_duration = 'none'
