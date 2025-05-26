@@ -16,6 +16,7 @@ config:
         XDG_DATA_HOME: '%USERPROFILE%\.local\share'
         XDG_STATE_HOME: '%USERPROFILE%\.local\state'
         XDG_BIN_HOME: '%USERPROFILE%\.local\bin'
+        XDG_RUNTIME_DIR: '%LOCALAPPDATA%\Temp'
         YAZI_CONFIG_HOME: '%USERPROFILE%\.config\yazi'
         YAZI_FILE_ONE: '%USERPROFILE%\scoop\apps\git\current\usr\bin\file.exe'
         KOMOREBI_CONFIG_HOME: '%USERPROFILE%\.config\komorebi'
