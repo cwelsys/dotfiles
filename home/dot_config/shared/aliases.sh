@@ -15,10 +15,10 @@ alias cls='clear'
 alias csl='clear'
 alias ld='lazydocker'
 alias lg='lazygit'
-alias rl='source ~/.zshrc'
+alias rl='reload'
 alias sv='sudo -E nvim'
 alias v='nvim'
-alias yz='yazi'
+alias vi='nvim'
 
 # package managers
 alias npm-ls="npm list -g"

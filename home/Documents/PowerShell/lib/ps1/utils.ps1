@@ -1,33 +1,81 @@
 # 🔗 Aliases
-Set-Alias -Name 'whic' -Value Get-CommandInfo # intentional typo
+
 Remove-Item Alias:rm -Force -ErrorAction SilentlyContinue
-Set-Alias -Name 'rl' -Value Reload-Profile
-Set-Alias -Name 'rst' -Value restart
-Set-Alias -Name 'vim' -Value nvim
-Set-Alias -Name 'su' -Value gsudo
-Set-Alias -Name 'vi' -Value nvim
-Set-Alias -Name 'c' -Value clear
-Set-Alias -Name 'df' -Value Get-Volume
-Set-Alias -Name 'komorel' -Value Restart-TheThings
-Set-Alias -Name 'spongob' -Value Invoke-Spongebob
-Set-Alias -Name 'ip -g' -Value Get-IPLocation
-Set-Alias -Name 'deltmp' -Value Remove-TempData
-Set-Alias -Name 'aliases' -Value Get-Aliases
-Set-Alias -Name 'npm-ls' -Value 'Get-NpmGlobalPackages'
-Set-Alias -Name 'bun-ls' -Value 'Get-BunGlobalPackages'
-Set-Alias -Name 'pnpm-ls' -Value 'Get-PnpmGlobalPackages'
-Set-Alias -Name 'dots' -Value '$env:DOTS'
+
+Set-Alias -Name 'whic' -Value Get-CommandInfo -Description "Shows command information (intentional typo to avoid conflict with 'which' command)"
+
+Set-Alias -Name 'rl' -Value Reload-Profile -Description "Reloads PowerShell profile"
+
+Set-Alias -Name 'rst' -Value restart -Description "Restarts current PowerShell session"
+
+Set-Alias -Name 'vim' -Value nvim -Description "Opens Neovim editor"
+
+Set-Alias -Name 'su' -Value gsudo -Description "Runs command with admin privileges"
+
+Set-Alias -Name 'vi' -Value nvim -Description "Opens Neovim editor (alternative)"
+
+Set-Alias -Name 'c' -Value clear -Description "Clears the console screen"
+
+Set-Alias -Name 'df' -Value Get-Volume -Description "Displays volume information"
+
+Set-Alias -Name 'komorel' -Value Restart-TheThings -Description "Restarts Komorebi window manager"
+
+Set-Alias -Name 'sarc' -Value Invoke-Sarcastaball -Description "Converts text to Spongebob-case"
+
+Set-Alias -Name 'ip -g' -Value Get-IPLocation -Description "Gets location information for an IP address"
+
+Set-Alias -Name 'deltmp' -Value Remove-TempData -Description "Cleans temporary file directories"
+
+Set-Alias -Name 'aliases' -Value Get-Aliases -Description "Lists all user-defined aliases"
+
+Set-Alias -Name 'npm-ls' -Value Get-NpmGlobalPackages -Description "Lists globally installed NPM packages"
+
+Set-Alias -Name 'bun-ls' -Value Get-BunGlobalPackages -Description "Lists globally installed Bun packages"
+
+Set-Alias -Name 'pnpm-ls' -Value Get-PnpmGlobalPackages -Description "Lists globally installed PNPM packages"
+
+Set-Alias -Name 'dots' -Value '$env:DOTS' -Description "References dotfiles directory"
+
+Set-Alias -Name 'cdc' -Value 'Set-Location ~/.config' -Description "Changes directory to ~/.config"
+
+Set-Alias -Name 'cm' -Value 'chezmoi' -Description "Shortcut for chezmoi dotfiles manager"
+
+Set-Alias -Name 'cmu' -Value Invoke-ChezmoiUpdate -Description "Updates dotfiles with chezmoi"
+
+Set-Alias -Name 'cme' -Value Invoke-ChezmoiEdit -Description "Edits files with chezmoi"
+
+Set-Alias -Name 'cma' -Value Invoke-ChezmoiAdd -Description "Adds files to chezmoi"
+
+Set-Alias -Name 'cmra' -Value Invoke-ChezmoiReAdd -Description "Re-adds files to chezmoi"
+
+Set-Alias -Name 'cdcm' -Value 'Set-Location $env:DOTS' -Description "Changes to chezmoi directory"
+
+Set-Alias -Name 'cmc' -Value Invoke-ChezmoiCommitAndPush -Description "Commit and push chezmoi changes"
+
+Set-Alias -Name 'cms' -Value Invoke-ChezmoiSaveChanges -Description "Save chezmoi changes with fast commit"
+
 Set-Alias -Name "md5" -Value Get-FileHashMD5 -Description "Calculates the MD5 hash of an input."
+
 Set-Alias -Name "sha1" -Value Get-FileHashSHA1 -Description "Calculates the SHA1 hash of an input."
+
 Set-Alias -Name "sha256" -Value Get-FileHashSHA256 -Description "Calculates the SHA256 hash of an input."
+
 Set-Alias -Name "forecast" -Value Get-WeatherForecast -Description "Displays detailed weather and forecast."
+
 Set-Alias -Name "weather" -Value Get-WeatherCurrent -Description "Displays current weather."
+
 Set-Alias -Name "GET" -Value Invoke-RestMethodGet -Description "Sends a GET http request."
+
 Set-Alias -Name "HEAD" -Value Invoke-RestMethodHead -Description "Sends a HEAD http request."
+
 Set-Alias -Name "POST" -Value Invoke-RestMethodPost -Description "Sends a POST http request."
+
 Set-Alias -Name "PUT" -Value Invoke-RestMethodPut -Description "Sends a PUT http request."
+
 Set-Alias -Name "DELETE" -Value Invoke-RestMethodDelete -Description "Sends a DELETE http request."
+
 Set-Alias -Name "TRACE" -Value Invoke-RestMethodTrace -Description "Sends a TRACE http request."
+
 Set-Alias -Name "OPTIONS" -Value Invoke-RestMethodOptions -Description "Sends an OPTIONS http request."
 
 if (Get-Command lazygit -ErrorAction SilentlyContinue) {
@@ -40,6 +88,43 @@ if (Get-Command topgrade -ErrorAction SilentlyContinue) {
 
 # 🏖️ Functions
 
+function export($name, $value) {
+  Set-Item -Path "env:$name" -Value $value
+}
+function lock { Invoke-Command { rundll32.exe user32.dll, LockWorkStation } }
+
+function hibernate { shutdown.exe /h }
+
+function shutdown { Stop-Computer }
+
+function reboot { Restart-Computer }
+
+function HKLM { Set-Location HKLM: }
+
+function HKCU { Set-Location HKCU: }
+
+function envs { Get-ChildItem Env: }
+
+function paths { $env:PATH -Split ';' }
+
+function e { Invoke-Item . }
+
+function fdns { ipconfig /flushdns }
+
+function rdns { ipconfig /release }
+
+function ddns { ipconfig /displaydns }
+
+function sysinfo { if (Get-Command fastfetch -ErrorAction SilentlyContinue) { fastfetch -c all } else { Get-ComputerInfo } }
+
+function profiles { Get-PSProfile { $_.exists -eq "True" } | Format-List }
+
+function restart { Get-Process -Id $PID | Select-Object -ExpandProperty Path | ForEach-Object { Invoke-Command { & "$_" } -NoNewScope } }
+
+function Get-NpmGlobalPackages { (npm ls -g | Select-Object -skip 1).Trim().Split() | ForEach-Object { if ($_ -match [regex]::Escape("@")) { Write-Output $_ } } }
+function Get-BunGlobalPackages { (bun pm ls -g | Select-Object -Skip 1).Trim().Split() | ForEach-Object { if ($_ -match [regex]::Escape("@")) { Write-Output $_ } } }
+function Get-PnpmGlobalPackages { (pnpm ls -g | Select-Object -Skip 5) | ForEach-Object { $name = $_.Split()[0]; $version = $_.Split()[1]; Write-Output "$name@$version" } }
+
 function y {
   $tmp = [System.IO.Path]::GetTempFileName()
   yazi $args --cwd-file="$tmp"
@@ -49,26 +134,33 @@ function y {
   }
   Remove-Item -Path $tmp
 }
-function export($name, $value) {
-  Set-Item -Path "env:$name" -Value $value
-}
-function lock { Invoke-Command { rundll32.exe user32.dll, LockWorkStation } }
-function hibernate { shutdown.exe /h }
-function shutdown { Stop-Computer }
-function reboot { Restart-Computer }
-function HKLM { Set-Location HKLM: }
-function HKCU { Set-Location HKCU: }
-function envs { Get-ChildItem Env: }
-function paths { $env:PATH -Split ';' }
-function e { Invoke-Item . }
-function Get-PubIp {
-  (Invoke-WebRequest http://ifconfig.me/ip ).Content
-}
-function sysinfo { if (Get-Command fastfetch -ErrorAction SilentlyContinue) { fastfetch -c all } else { Get-ComputerInfo } }
+
 function fortune {
   [System.IO.File]::ReadAllText("$Env:PWSH\fortune.txt") -replace "`r`n", "`n" -split "`n%`n" | Get-Random
 }
-function profiles { Get-PSProfile { $_.exists -eq "True" } | Format-List }
+
+function cfortune {
+  <#
+    .SYNOPSIS
+        Displays a random fortune using the cowsay program.
+    .DESCRIPTION
+        Gets a random fortune from the fortune.txt file and passes it
+        to the cowsay program to display in a speech bubble.
+    .EXAMPLE
+        cowfortune
+    .LINK
+        fortune
+    #>
+  [CmdletBinding()]
+  param()
+
+  $fortuneText = fortune
+  $fortuneText | cowsay
+}
+
+function Get-PubIp {
+  (Invoke-WebRequest http://ifconfig.me/ip ).Content
+}
 
 function Get-PSProfile {
   $PROFILE.PSExtended.PSObject.Properties |
@@ -177,10 +269,6 @@ function Remove-TempData {
   Write-ColorText "{Green}Temp data deleted successfully."
 }
 
-function fdns { ipconfig /flushdns }
-function rdns { ipconfig /release }
-function ddns { ipconfig /displaydns }
-
 function Update-Powershell {
   try {
     Write-ColorText "{Cyan}Checking for PowerShell updates..."
@@ -213,11 +301,11 @@ function Update-Powershell {
     Write-ColorText "{Red}Failed to Update Powershell. Error = $_"
   }
 }
+
 function Reload-Profile {
   if (Test-Path -Path $PROFILE) { . $PROFILE }
   elseif (Test-Path -Path $PROFILE.CurrentUserAllHosts) { . $PROFILE.CurrentUserAllHosts }
 }
-function restart { Get-Process -Id $PID | Select-Object -ExpandProperty Path | ForEach-Object { Invoke-Command { & "$_" } -NoNewScope } }
 
 function Get-CommandInfo {
   [CmdletBinding()]
@@ -234,7 +322,7 @@ function Get-CommandInfo {
   }
 }
 
-function Invoke-Spongebob {
+function Invoke-Sarcastaball {
   [cmdletbinding()]
   param(
     [Parameter(HelpMessage = "provide string" , Mandatory = $true)]
@@ -297,9 +385,7 @@ function Restart-TheThings {
     yasbc reload
   }
 }
-function Get-NpmGlobalPackages { (npm ls -g | Select-Object -skip 1).Trim().Split() | ForEach-Object { if ($_ -match [regex]::Escape("@")) { Write-Output $_ } } }
-function Get-BunGlobalPackages { (bun pm ls -g | Select-Object -Skip 1).Trim().Split() | ForEach-Object { if ($_ -match [regex]::Escape("@")) { Write-Output $_ } } }
-function Get-PnpmGlobalPackages { (pnpm ls -g | Select-Object -Skip 5) | ForEach-Object { $name = $_.Split()[0]; $version = $_.Split()[1]; Write-Output "$name@$version" } }
+
 function Get-IPLocation {
   param([string]$IPaddress = "")
 
@@ -430,7 +516,6 @@ function Get-Aliases {
   Format-Table -Property Name, Definition, Version, Source -AutoSize
 }
 
-
 function Get-FileHashMD5 {
   <#
     .SYNOPSIS
@@ -522,4 +607,121 @@ function Get-FileHashSHA256 {
     [string]$Path
   )
   Get-FileHash $Path -Algorithm SHA256
+}
+
+function Invoke-ChezmoiCommitAndPush {
+  <#
+    .SYNOPSIS
+        Commits changes to chezmoi repository and pushes them.
+    .DESCRIPTION
+        Commits changes to chezmoi repository with an optional message and pushes them.
+        If no message is provided, opens the default git commit editor.
+    .PARAMETER Message
+        Optional commit message. If not provided, opens the default git commit editor.
+    .EXAMPLE
+        Invoke-ChezmoiCommitAndPush "Update dotfiles"
+    .EXAMPLE
+        Invoke-ChezmoiCommitAndPush
+    #>
+  [CmdletBinding()]
+  param(
+    [Parameter(Position = 0)]
+    [string]$Message
+  )
+
+  if ([string]::IsNullOrEmpty($Message)) {
+    chezmoi git "commit"
+  } else {
+    chezmoi git "commit -m `"$Message`""
+  }
+
+  if ($LASTEXITCODE -eq 0) {
+    chezmoi git push
+  }
+}
+
+function Invoke-ChezmoiSaveChanges {
+  <#
+    .SYNOPSIS
+        Re-adds files to chezmoi and attempts to use git fast commit.
+    .DESCRIPTION
+        Updates the source state with chezmoi re-add and attempts to use
+        git's "f" alias. If that fails, falls back to regular commit and push.
+    #>
+  [CmdletBinding()]
+  param()
+
+  chezmoi re-add
+
+  try {
+    $output = chezmoi git "f" 2>&1
+    if ($LASTEXITCODE -ne 0) {
+      Write-Warning "No 'f' alias for git!"
+      Invoke-ChezmoiCommitAndPush
+    }
+  } catch {
+    Write-Warning "No 'f' alias for git!"
+    Invoke-ChezmoiCommitAndPush
+  }
+}
+
+# Create functions for chezmoi commands
+function Invoke-ChezmoiAdd {
+  <#
+    .SYNOPSIS
+        Adds files to chezmoi.
+    .DESCRIPTION
+        Adds the named files, directories, or glob patterns to the source state.
+    .EXAMPLE
+        Invoke-ChezmoiAdd ~/.bashrc
+    #>
+  [CmdletBinding()]
+  param(
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$Arguments
+  )
+
+  chezmoi add @Arguments
+}
+
+function Invoke-ChezmoiEdit {
+  <#
+    .SYNOPSIS
+        Edits files in the source state.
+    #>
+  [CmdletBinding()]
+  param(
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$Arguments
+  )
+
+  chezmoi edit @Arguments
+}
+
+function Invoke-ChezmoiUpdate {
+  <#
+    .SYNOPSIS
+        Updates the target state.
+    #>
+  [CmdletBinding()]
+  param(
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$Arguments
+  )
+
+  chezmoi update @Arguments
+}
+
+function Invoke-ChezmoiReAdd {
+  <#
+    .SYNOPSIS
+        Re-adds modified files.
+    #>
+  [CmdletBinding()]
+  param(
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$Arguments
+  )
+
+  chezmoi re-add @Arguments
 }
