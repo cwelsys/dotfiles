@@ -2,7 +2,7 @@
 if vim.loader then
   vim.loader.enable()
 end
-
+require 'nvim-treesitter.install'.prefer_git = false
 -- bootstrap lazy.nvim, LazyVim and your plugins
 require("config.lazy")
 

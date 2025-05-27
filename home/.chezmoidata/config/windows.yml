@@ -2,8 +2,7 @@ config:
   windows:
     envs:
       path:
-        - '%LOCALAPPDATA%\nvim-data\mason\bin'
-        # - '%LOCALAPPDATA%\mise\shims'
+        - 'C:\Users\cwel\.local\share\nvim-data\mason\bin'
         - 'C:\Users\cwel\.local\share\mise\shims'
         - 'C:\Program Files\Git\usr\bin'
         - 'C:\Users\cwel\.local\bin'
@@ -25,11 +24,13 @@ config:
         AWS_SHARED_CREDENTIALS_FILE: 'C:\Users\cwel\.local\share\aws\credentials'
         EZA_CONFIG_DIR: 'C:\Users\cwel\.config\eza'
         GNUPGHOME: 'C:\Users\cwel\.local\share\gnupg'
+        GRADLE_USER_HOME: 'C:\Users\cwel\.local\share\gradle'
         VBOX_USER_HOME: 'C:\Users\cwel\.local\share\virtualbox'
         VAGRANT_HOME: 'C:\Users\cwel\.local\share\vagrant'
         VAGRANT_DEFAULT_PROVIDER: 'virtualbox'
         DOCKER_CONFIG: 'C:\Users\cwel\.config\docker'
         DOTNET_CLI_HOME: 'C:\Users\cwel\.local\share\dotnet'
+        PIPX_GLOBAL_HOME: 'C:\Users\cwel\.local\share\pipx'
         DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
         GH_DASH_CONFIG: 'C:\Users\cwel\.config\gh-dash\config.yml'
         LESSHISTFILE: 'C:\Users\cwel\.cache\.lesshsts'
