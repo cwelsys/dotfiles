@@ -9,7 +9,7 @@ config:
       others:
         DOCKER_HOST: 'tcp://psock:2375'
         HOME: 'C:\Users\cwel'
-        XDG_CONFIG_HOME: 'C:\Users\cwel\.config'
+        XDG_CONFIG_HOME: ':\Users\cwel\.config'
         XDG_PROJECTS_DIR: 'C:\Users\cwel\projects'
         XDG_CACHE_HOME: 'C:\Users\cwel\.cache'
         XDG_DATA_HOME: 'C:\Users\cwel\.local\share'

@@ -70,7 +70,6 @@ return {
         graphql = {
           filetypes = { "graphql", "javascript", "javascriptreact", "typescript", "typescriptreact" },
         },
-        htmx = {},
         html = {},
         cssmodules_ls = {},
         css_variables = {},
@@ -129,7 +128,6 @@ return {
           handlers = ts_error_translator,
         },
         lemminx = {},
-        jinja_lsp = {},
         groovyls = {},
       },
     },
