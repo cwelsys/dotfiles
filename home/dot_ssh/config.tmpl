@@ -6,12 +6,6 @@ ServerAliveCountMax 4
 Port 22
 IdentityFile ~/.ssh/cwel
 
-{{ if ne .chezmoi.os "windows" }}
-Host wini
-HostName 192.168.4.117
-User cwel
-{{ else }}
-
 Host pbox
 HostName pbox
 user cwel
