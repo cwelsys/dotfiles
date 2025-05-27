@@ -57,7 +57,7 @@ config:
 
         - name: 'VcXsrv'
           target: 'C:\Users\cwel\scoop\apps\vcxsrv\current\vcxsrv.exe'
-          args: '-multiwindow -clipboard -wgl -auth "C:\Users\cwel\.Xauthority"'
+          args: '-multiwindow -clipboard -wgl -auth %XAUTHORITY%'
 
     symlinks:
       '%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json': 'home\dot_config\windows-terminal\settings.json'
