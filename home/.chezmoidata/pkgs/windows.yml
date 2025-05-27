@@ -75,7 +75,6 @@ pkgs:
         - 'main/gh'
         - 'main/glow'
         - 'main/gzip'
-        - 'main/gow'
         - 'main/termusic'
         - 'main/speedtest-cli'
         - 'main/shfmt'

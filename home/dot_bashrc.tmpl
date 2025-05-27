@@ -60,22 +60,24 @@ elif command -v starship >/dev/null 2>&1; then
 	eval "$(starship init bash)"
 fi
 
+{{ if eq .chezmoi.os "linux" }}
+
 # fzf
 if command -v fzf >/dev/null 2>&1; then
 	eval "$(fzf --bash)"
 fi
 
-{{ if eq .chezmoi.os "linux" }}
 # mise
 if command -v mise >/dev/null 2>&1; then
 	eval "$(mise activate bash)"
 fi
-{{ end }}
 
 # navi
 if command -v navi >/dev/null 2>&1; then
 	eval "$(navi widget bash)"
 fi
+
+{{ end }}
 
 # 💤 zoxide
 if command -v zoxide >/dev/null 2>&1; then
@@ -86,3 +88,10 @@ fi
 if command -v fastfetch >/dev/null 2>&1; then
 	fastfetch
 fi
+
+if [ ! -d "~/.local/share/blesh" ]; then
+	git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git
+	make -C ble.sh install PREFIX=~/.local
+fi
+
+source ~/.local/share/blesh/ble.sh
