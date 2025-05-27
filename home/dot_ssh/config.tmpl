@@ -4,13 +4,13 @@ Host *
 ServerAliveInterval 86400
 ServerAliveCountMax 4
 Port 22
-ForwardX11 yes
 IdentityFile ~/.ssh/cwel
 
 Host pbox
 HostName pbox
 user cwel
 ForwardAgent yes
+ForwardX11 yes
 
 Host github.com
 User git
