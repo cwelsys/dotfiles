@@ -40,10 +40,8 @@ fi
 
 # npm global packages
 if [ -n "$NPM_CONFIG_INIT_MODULE" ]; then
-	# Use XDG path when environment variables are set
 	pathprepend "$XDG_CONFIG_HOME/npm/bin"
 else
-	# Fallback to traditional path
 	pathprepend "$HOME/.npm-global/bin"
 fi
 
@@ -55,16 +53,13 @@ fi
 
 # Rust/Cargo
 if [ -n "$CARGO_HOME" ]; then
-	# Use XDG path when CARGO_HOME is set
 	pathprepend "$CARGO_HOME/bin"
 else
-	# Fallback to traditional path
 	pathprepend "$HOME/.cargo/bin"
 fi
 
 # Go path
 if command_exists go || [ -d "$HOME/.go" ]; then
-	export GOPATH="$HOME/.go"
 	pathprepend "$GOPATH/bin"
 fi
 
