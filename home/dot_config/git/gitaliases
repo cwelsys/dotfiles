@@ -696,7 +696,6 @@
   log-of-week-of-year-and-count  = "!f() { git log-of-format-and-count-with-date \"%ad\" \"%V\" \"$@\"; }; f"
   log-of-count-and-week-of-year  = "!f() { git log-of-count-and-format-with-date \"%ad\" \"%V\" \"$@\"; }; f"
 
-  # TODO
   log-refs = log --all --graph --decorate --oneline --simplify-by-decoration --no-merges
   log-timeline = log --format='%h %an %ar - %s'
   log-local = log --oneline origin..HEAD
@@ -714,8 +713,6 @@
   #     ....1.......1.3.3.22.2 eve@example.com
   #
   # The chart rows are the authors.
-  # TODO: sort the rows meaningfully,
-  # such as alphabetically, or by count.
   #
   # The chart columns are the days.
   # The chart column prints one character per day.
@@ -1164,14 +1161,11 @@
   #
   #     git config pull.rebase preserve
   #
-  # TODO: handle tags, and delete superfluous branches, and add error handing.
   #
   get = !git fetch --prune && git pull --rebase && git submodule update --init --recursive
   put = !git commit --all && git push
 
   # Do everything we can to make the local repo like the main branch.
-  #
-  # TODO: handle tags, and delete superfluous branches, and add error handling.
   #
   mainly = "!git checkout \"$(git default-branch)\" && git fetch origin --prune && git reset --hard \"origin/$(git default-branch)\""
 
@@ -1716,7 +1710,7 @@
   };f"
 
   topic-end = topic-finish
-  
+
   # Update the current topic branch by synchronizing changes.
   #
   # Example:

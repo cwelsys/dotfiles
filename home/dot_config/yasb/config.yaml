@@ -113,7 +113,7 @@ widgets:
       label_no_window: ''
       label_icon: true
       label_icon_size: 16
-      #TODO: add callbacks
+      # callbacks ?
       max_length: 56
       max_length_ellipsis: '...'
       monitor_exclusive: true
@@ -181,8 +181,8 @@ widgets:
         label_alt: 30
       callbacks:
         on_left: 'toggle_label'
-        on_middle: 'do_nothing' #TODO: write script to launch/focus application where active media is playing
-        on_right: 'do_nothing' #TODO: launch sound panel ?
+        on_middle: 'do_nothing'
+        on_right: 'do_nothing'
       show_thumbnail: false
       controls_only: false
       controls_left: true
