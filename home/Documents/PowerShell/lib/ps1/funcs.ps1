@@ -7,12 +7,32 @@
     }
     Remove-Item -Path $tmp
 }
+function export($name, $value) {
+    Set-Item -Path "env:$name" -Value $value
+}
+
+function lock { Invoke-Command { rundll32.exe user32.dll, LockWorkStation } }
+function hibernate { shutdown.exe /h }
+function shutdown { Stop-Computer }
+function reboot { Restart-Computer }
 function HKLM { Set-Location HKLM: }
 function HKCU { Set-Location HKCU: }
 function lsenv { Get-ChildItem Env: }
 function lspath { $env:PATH -Split ';' }
 function e { Invoke-Item . }
+function Get-PubIp {
+  (Invoke-WebRequest http://ifconfig.me/ip ).Content
+}
 function sysinfo { if (Get-Command fastfetch -ErrorAction SilentlyContinue) { fastfetch -c all } else { Get-ComputerInfo } }
+function fortune {
+    [System.IO.File]::ReadAllText("$Env:PWSH\fortune.txt") -replace "`r`n", "`n" -split "`n%`n" | Get-Random
+}
+function profiles { Get-PSProfile { $_.exists -eq "True" } | Format-List }
+
+function Get-PSProfile {
+    $PROFILE.PSExtended.PSObject.Properties |
+    Select-Object Name, Value, @{Name = 'IsExist'; Expression = { Test-Path -Path $_.Value -PathType Leaf } }
+}
 
 function Get-Weather {
     <#
@@ -99,4 +119,19 @@ function Get-WeatherCurrent {
     param()
 
     Get-Weather 'format=%l:+(%C)+%c++%t+[%h,+%w]'
+}
+
+function deltmp {
+    Write-ColorText "{Gray}Deleting temp data..."
+
+    $path1 = "C" + ":\Windows\Temp"
+    Get-ChildItem $path1 -Force -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+
+    $path2 = "C" + ":\Windows\Prefetch"
+    Get-ChildItem $path2 -Force -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+
+    $path3 = "C" + ":\Users\*\AppData\Local\Temp"
+    Get-ChildItem $path3 -Force -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+
+    Write-ColorText "{Green}Temp data deleted successfully."
 }
