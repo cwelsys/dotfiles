@@ -89,9 +89,13 @@ if command -v fastfetch >/dev/null 2>&1; then
 	fastfetch
 fi
 
-if [ ! -d "~/.local/share/blesh" ]; then
+{{ if eq .chezmoi.os "linux" }}
+
+if [ ! -d "$HOME/.local/share/blesh" ]; then
 	git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git
 	make -C ble.sh install PREFIX=~/.local
 fi
 
 source ~/.local/share/blesh/ble.sh
+
+{{ end }}
