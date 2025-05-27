@@ -65,10 +65,12 @@ if command -v fzf >/dev/null 2>&1; then
 	eval "$(fzf --bash)"
 fi
 
+{{ if eq chezmoi.os "linux" }}
 # mise
 if command -v mise >/dev/null 2>&1; then
 	eval "$(mise activate bash)"
 fi
+{{ end }}
 
 # navi
 if command -v navi >/dev/null 2>&1; then

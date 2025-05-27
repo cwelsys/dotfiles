@@ -5,7 +5,7 @@ config:
         - '%LOCALAPPDATA%\nvim-data\mason\bin'
         # - '%LOCALAPPDATA%\mise\shims'
         - 'C:\Users\cwel\.local\share\mise\shims'
-        - 'C:\Users\cwel\scoop\apps\git\current\usr\bin'
+        - 'C:\Program Files\Git\usr\bin'
         - 'C:\Users\cwel\.local\bin'
       others:
         DOCKER_HOST: 'tcp://psock:2375'
@@ -18,7 +18,7 @@ config:
         XDG_BIN_HOME: 'C:\Users\cwel\.local\bin'
         XDG_RUNTIME_DIR: 'C:\Users\cwel\AppData\Local\Temp'
         YAZI_CONFIG_HOME: 'C:\Users\cwel\.config\yazi'
-        YAZI_FILE_ONE: 'C:\Users\cwel\scoop\apps\git\current\usr\bin\file.exe'
+        YAZI_FILE_ONE: 'C:\Program Files\Git\usr\bin\file.exe'
         KOMOREBI_CONFIG_HOME: 'C:\Users\cwel\.config\komorebi'
         AWS_CONFIG_FILE: 'C:\Users\cwel\.local\share\aws\config'
         AWS_DATA_PATH: 'C:\Users\cwel\.local\share\aws'
