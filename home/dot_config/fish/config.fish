@@ -29,7 +29,7 @@ end
 # 🐚 Prompt
 if type -q oh-my-posh
     oh-my-posh init fish --config ~/.config/zen.toml | source
-elif type -q starship
+else if type -q starship
     starship init fish | source
 end
 
