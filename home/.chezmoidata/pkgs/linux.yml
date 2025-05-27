@@ -6,6 +6,7 @@ packages:
   fedora:
     dnf:
       - tmux
+      - fish
 
   brew:
     brews:

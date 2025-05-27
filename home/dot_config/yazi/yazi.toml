@@ -84,9 +84,9 @@ max_width = 1200
 max_height = 1800
 
 [plugin]
-prepend_fetchers = [
-	{ id = "git", name = "*", run = "git" },
-	{ id = "git", name = "*/", run = "git" },
+fetchers = [
+	{ id = "git", name = "*", run = "git", prio = "normal" },
+	{ id = "git", name = "*/", run = "git", prio = "normal" },
 ]
 
 prepend_previewers = [
