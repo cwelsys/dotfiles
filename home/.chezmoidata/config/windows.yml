@@ -39,6 +39,7 @@ config:
         NPM_CONFIG_CACHE: 'C:\Users\cwel\.cache\npm'
         YARN_CACHE_FOLDER: 'C:\Users\cwel\.cache\npm'
         PNPM_HOME: 'C:\Users\cwel\.local\share\pnpm'
+        XAUTHORITY: 'C:\Users\cwel\.local\state\.Xauthority'
 
     features:
       enable:
