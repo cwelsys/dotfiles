@@ -2,4 +2,8 @@
 #!/bin/bash
 sudo dnf copr enable lilay/topgrade -y
 sudo dnf install topgrade -y
+
+if command -v cargo >/dev/null 2>&1; then
+	cargo install cargo-update
+fi
 {{ end -}}
