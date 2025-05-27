@@ -105,9 +105,9 @@ if (( ${+commands[zoxide]} )); then
 	eval "$(zoxide init zsh --cmd cd)"
 fi
 
-if [[ -n "$SSH_CONNECTION" ]]; then
-  export DISPLAY=wini:0
-fi
+
+export DISPLAY=100.73.123.3:0
+
 
 if [ "$VSCODE_INJECTION" = "1" ]; then
   export EDITOR="code --wait"
