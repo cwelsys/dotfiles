@@ -1,7 +1,7 @@
 ﻿if (!(Get-Process -Name komorebi -ErrorAction SilentlyContinue)) {
-	Start-Process "powershell.exe" -ArgumentList "komorebic.exe", "enable-autostart", "--whkd" -WindowStyle Hidden -Wait
+	komorebic enable-autostart --whkd
 }
 
 if (!(Get-Process -Name yasb -ErrorAction SilentlyContinue)) {
-	Start-Process "powershell.exe" -ArgumentList "yasbc.exe", "enable-autostart", "--task" -WindowStyle Hidden -Wait
+	yasbc.exe enable-autostart --task
 }
