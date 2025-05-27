@@ -131,10 +131,6 @@ colorMoved = default
 {{- if eq .osId "windows" }}
 [credential "helperselector"]
   selected = manager
-{{- else }}
-[credential]
-  credentialStore = gpg
-  helper = /usr/local/bin/git-credential-manager
 {{- end }}
 
 [url "git@github.com:"]
