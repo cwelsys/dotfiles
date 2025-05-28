@@ -50,6 +50,8 @@ Set-Alias -Name 'cma' -Value Invoke-ChezmoiAdd -Description "Adds files to chezm
 
 Set-Alias -Name 'cmra' -Value Invoke-ChezmoiReAdd -Description "Re-adds files to chezmoi"
 
+Set-Alias -Name 'cmapl' -Value 'chezmoi apply' -Description "Applies changes with chezmoi"
+
 Set-Alias -Name 'cdcm' -Value 'Set-Location $env:DOTS' -Description "Changes to chezmoi directory"
 
 Set-Alias -Name 'cmc' -Value Invoke-ChezmoiCommitAndPush -Description "Commit and push chezmoi changes"

@@ -10,7 +10,6 @@ if (-not (Get-Module -ListAvailable -Name Catppuccin -ErrorAction SilentlyContin
 
 Import-Module Catppuccin
 
-
 $Flavor = $Catppuccin['Mocha']
 $PSStyle.Formatting.Debug = $Flavor.Sky.Foreground()
 $PSStyle.Formatting.Error = $Flavor.Red.Foreground()
@@ -19,9 +18,6 @@ $PSStyle.Formatting.FormatAccent = $Flavor.Teal.Foreground()
 $PSStyle.Formatting.TableHeader = $Flavor.Rosewater.Foreground()
 $PSStyle.Formatting.Verbose = $Flavor.Yellow.Foreground()
 $PSStyle.Formatting.Warning = $Flavor.Peach.Foreground()
-
-
-
 
 $Colors = @{
 	# Powershell colours
@@ -64,29 +60,19 @@ Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 
 # fzf
-
-$env:FZF_DEFAULT_OPTS = @"
---color=fg:#cad3f5,fg+:#d0d0d0,bg:-1,bg+:#262626
---color=hl:#ed8796,hl+:#5fd7ff,info:#94e2d5,marker:#AAE682
---color=prompt:#94e2d5,spinner:#f4dbd6,pointer:#f4dbd6,header:#ed8796
---color=border:#585b70,label:#aeaeae,query:#d9d9d9
---layout=reverse --cycle --height=~80% --border="rounded"
---prompt=" " --marker="" --padding=1
---separator="─" --scrollbar="│"
---bind alt-w:toggle-preview-wrap
---bind ctrl-e:toggle-preview
-"@
+$env:FZF_DEFAULT_OPTS = "--color=fg:#cad3f5,fg+:#d0d0d0,bg:-1,bg+:#262626 --color=hl:#ed8796,hl+:#5fd7ff,info:#94e2d5,marker:#AAE682 --color=prompt:#94e2d5,spinner:#f4dbd6,pointer:#f4dbd6,header:#ed8796 --color=border:#585b70,label:#aeaeae,query:#d9d9d9 --layout=reverse --cycle --height=~80% --border=rounded --bind=alt-w:toggle-preview-wrap --bind=ctrl-e:toggle-preview"
 
 $env:_PSFZF_FZF_DEFAULT_OPTS = $env:FZF_DEFAULT_OPTS
 
+# Directory navigation
 $env:FZF_ALT_C_COMMAND = "fd --type d --hidden --follow --exclude .git --fixed-strings --strip-cwd-prefix --color always"
-$env:FZF_ALT_C_OPTS = @"
---prompt='Directory  '
---preview="eza --tree --level=1 --color=always --icons=always {}"
---preview-window=right:50%:border-left
-"@
+$env:FZF_ALT_C_OPTS = "--prompt='Directory  ' --preview='eza --tree --level=1 --color=always --icons=always {}' --preview-window=right:50%:border-left"
 
-$commandOverride = [ScriptBlock] { param($Location) cd $Location }
+# File selection
+$env:FZF_CTRL_T_COMMAND = "fd --type f --hidden --follow --exclude .git --strip-cwd-prefix --color always"
+$env:FZF_CTRL_T_OPTS = "--prompt='File  ' --preview='bat --style=numbers --color=always --line-range :500 {}' --preview-window=right:60%:border-left"
+
+$commandOverride = [ScriptBlock] { param($Location) Set-Location $Location }
 Set-PsFzfOption -AltCCommand $commandOverride
 
 Set-PSReadlineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
