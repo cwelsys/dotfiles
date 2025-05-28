@@ -13,18 +13,18 @@ fi
 typeset -aU path
 
 # 🐚 Prompt
-if (( ${+commands[oh-my-posh]} )); then
-	eval "$(oh-my-posh init zsh --config ~/.config/zen.toml)"
-elif (( ${+commands[starship]} )); then
-	eval "$(starship init zsh)"
+if (($ + commands[oh - my - posh])); then
+  eval "$(oh-my-posh init zsh --config $HOME/.config/zen.toml)"
+elif (($ + commands[starship])); then
+  eval "$(starship init zsh)"
 fi
 
 # 🚬 source
 if [ -d "$ZDOTDIR/lib" ]; then
-	for file in "$ZDOTDIR/lib/"*.zsh; do
-		source "$file"
-	done
-	unset file
+  for file in "$ZDOTDIR/lib/"*.zsh; do
+    source "$file"
+  done
+  unset file
 fi
 [ -d "${ZDOTDIR}/functions" ] && fpath+=${ZDOTDIR}/functions
 [ -d "${ZDOTDIR}/completions" ] && fpath+=${ZDOTDIR}/completions
@@ -32,8 +32,8 @@ fi
 export ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 # 🚀 zinit
 if [ ! -d "$ZINIT_HOME" ]; then
-   mkdir -p "$(dirname $ZINIT_HOME)"
-   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+  mkdir -p "$(dirname $ZINIT_HOME)"
+  git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
 source "${ZINIT_HOME}/zinit.zsh"
 
@@ -44,8 +44,8 @@ zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
 zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
-    atclone"./atuin init zsh > init.zsh --disable-up-arrow --disable-ctrl-r; ./atuin gen-completions --shell zsh > _atuin" \
-    atpull"%atclone" src"init.zsh"
+  atclone"./atuin init zsh > init.zsh --disable-up-arrow --disable-ctrl-r; ./atuin gen-completions --shell zsh > _atuin" \
+  atpull"%atclone" src"init.zsh"
 zinit light atuinsh/atuin
 zinit snippet OMZL::git.zsh
 zinit snippet OMZP::rsync
@@ -55,37 +55,18 @@ zinit snippet OMZP::git
 zinit snippet OMZP::sudo
 zinit snippet OMZP::command-not-found
 
-
 autoload -Uz compinit && compinit
 
 zinit cdreplay -q
 
 # [[ ! -f $ZDOTDIR/.p10k.zsh ]] || source $ZDOTDIR/.p10k.zsh
 
-# Keybindings
-bindkey -e
-bindkey '^p' history-search-backward
-bindkey '^n' history-search-forward
-bindkey '^[w' kill-region
-bindkey ' ' magic-space
-bindkey '^U' backward-kill-line
-bindkey '^[[3;5~' kill-word
-bindkey '^[[3~' delete-char
-bindkey '^[[1;5C' forward-word
-bindkey '^[[1;5D' backward-word
-bindkey '^[[5~' beginning-of-buffer-or-history
-bindkey '^[[6~' end-of-buffer-or-history
-bindkey '^[[H' beginning-of-line
-bindkey '^[[F' end-of-line
-bindkey '^[[Z' undo
-
-# History
+# zsh options
 export HISTFILE="$XDG_STATE_HOME"/zsh/history
 HISTSIZE=5000
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
 
-# Options
 setopt autocd
 setopt appendhistory
 setopt sharehistory
@@ -96,13 +77,12 @@ setopt hist_ignore_dups
 setopt hist_find_no_dups
 unsetopt beep
 
-
-if (( ${+commands[fzf]} )); then
+if (($ + commands[fzf])); then
   eval "$(fzf --zsh)"
 fi
 
-if (( ${+commands[zoxide]} )); then
-	eval "$(zoxide init zsh --cmd cd)"
+if (($ + commands[zoxide])); then
+  eval "$(zoxide init zsh --cmd cd)"
 fi
 
 if [[ -n "$SSH_CONNECTION" ]]; then
@@ -113,6 +93,6 @@ if [ "$VSCODE_INJECTION" = "1" ]; then
   export EDITOR="code --wait"
 fi
 
-if (( ${+commands[mise]} )); then
+if (($ + commands[mise])); then
   eval "$(mise activate zsh)"
 fi
