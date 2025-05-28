@@ -106,7 +106,7 @@ if (( ${+commands[zoxide]} )); then
 fi
 
 if [[ -n "$SSH_CONNECTION" ]]; then
-  export DISPLAY=100.73.123.3:0
+  export DISPLAY=wini:0
 fi
 
 if [ "$VSCODE_INJECTION" = "1" ]; then
