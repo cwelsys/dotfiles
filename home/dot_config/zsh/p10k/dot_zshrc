@@ -4,10 +4,8 @@ if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
 fi
 
 # 🐚 Prompt
-if [[ -v commands['oh-my-posh'] ]]; then
-  eval "$(oh-my-posh init zsh --config $HOME/.config/zen.toml)"
-elif [[ -v commands[starship] ]]; then
-  eval "$(starship init zsh)"
+if [[ -r "$HOME/.cache}/p10k-instant-prompt-$USER.zsh" ]]; then
+  source "$HOME/.cache}/p10k-instant-prompt-$USER.zsh"
 fi
 
 # 🚬 source
@@ -25,7 +23,6 @@ fi
 typeset -aU path
 
 # 🚀 zinit
-
 export ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [ ! -d "$ZINIT_HOME" ]; then
   mkdir -p "$(dirname $ZINIT_HOME)"
@@ -33,6 +30,8 @@ if [ ! -d "$ZINIT_HOME" ]; then
 fi
 source "${ZINIT_HOME}/zinit.zsh"
 
+zinit ice depth=1
+zinit light romkatv/powerlevel10k
 zinit snippet ${ZDOTDIR}/mocha-syntax.zsh
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
@@ -54,13 +53,14 @@ autoload -Uz compinit && compinit
 
 zinit cdreplay -q
 
-# history
+[[ ! -f $ZDOTDIR/p10k/.p10k.zsh ]] || source $ZDOTDIR/p10k/.p10k.zsh
+
+# zsh options
 export HISTFILE="$XDG_STATE_HOME"/zsh/history
 HISTSIZE=4096
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
 
-# options
 setopt autocd
 setopt appendhistory
 setopt sharehistory
@@ -70,42 +70,6 @@ setopt hist_save_no_dups
 setopt hist_ignore_dups
 setopt hist_find_no_dups
 unsetopt beep
-
-# stoyles
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
-zstyle ':completion:*' list-colors '${LS_COLORS}'
-zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:*' use-fzf-default-opts yes
-zstyle ':fzf-tab:*' switch-group '<' '>'
-autoload -U up-line-or-beginning-search
-autoload -U down-line-or-beginning-search
-zle -N up-line-or-beginning-search
-zle -N down-line-or-beginning-search
-
-# keybinds
-bindkey -e
-bindkey '^f' fdz-widget
-bindkey '^g' rgz-widget
-bindkey '^p' history-search-backward
-bindkey '^n' history-search-forward
-bindkey '^[w' kill-region
-bindkey ' ' magic-space
-bindkey '^U' backward-kill-line
-bindkey '^[[3;5~' kill-word
-bindkey '^[[3~' delete-char
-bindkey '^[[1;5C' forward-word
-bindkey '^[[1;5D' backward-word
-bindkey '^[[5~' beginning-of-buffer-or-history
-bindkey '^[[6~' end-of-buffer-or-history
-bindkey '^[[H' beginning-of-line
-bindkey '^[[F' end-of-line
-bindkey '^[[Z' undo
-bindkey '^[[A' up-line-or-beginning-search
-bindkey '^[[B' down-line-or-beginning-search
-
-# hooks
 
 if [[ -v commands[fzf] ]]; then
   eval "$(fzf --zsh)"

@@ -21,8 +21,8 @@ Import-Module Catppuccin
 $Flavor = $Catppuccin['Mocha']
 
 #PSStyle
-$PSStyle.Formatting.TableHeader = $Flavor.Mauve.Foreground()
-$PSStyle.Formatting.CustomTableHeaderLabel = $Flavor.Mauve.Background() + $Flavor.Base.Foreground()
+$PSStyle.Formatting.TableHeader = $Flavor.Teal.Foreground()
+$PSStyle.Formatting.CustomTableHeaderLabel = $Flavor.Teal.Background() + $Flavor.Base.Foreground()
 $PSStyle.Formatting.Debug = $Flavor.Peach.Foreground()
 $PSStyle.Formatting.Verbose = $Flavor.Lavender.Foreground()
 $PSStyle.Formatting.FeedbackText = $Flavor.Sky.Foreground()

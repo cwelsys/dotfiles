@@ -1,3 +1,19 @@
+function cdl() {
+	cd "$@" && ls -la
+}
+
+fdz-widget() {
+	BUFFER="fdz"
+	zle accept-line
+}
+zle -N fdz-widget
+
+rgz-widget() {
+	BUFFER="rgz"
+	zle accept-line
+}
+zle -N rgz-widget
+
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"
