@@ -3,13 +3,6 @@ if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
   fastfetch
 fi
 
-# 🐚 Prompt
-if [[ -v commands['oh-my-posh'] ]]; then
-  eval "$(oh-my-posh init zsh --config $HOME/.config/zen.toml)"
-elif [[ -v commands[starship] ]]; then
-  eval "$(starship init zsh)"
-fi
-
 # 🚬 source
 [ -f "${HOME}/.config/shared/init.sh" ] && source "${HOME}/.config/shared/init.sh"
 
@@ -23,6 +16,13 @@ fi
 [ -d "${ZDOTDIR}/completions" ] && fpath+=${ZDOTDIR}/completions
 
 typeset -aU path
+
+# 🐚 Prompt
+if [[ -v commands['oh-my-posh'] ]]; then
+  eval "$(oh-my-posh init zsh --config $HOME/.config/zen.toml)"
+elif [[ -v commands[starship] ]]; then
+  eval "$(starship init zsh)"
+fi
 
 # 🚀 zinit
 
