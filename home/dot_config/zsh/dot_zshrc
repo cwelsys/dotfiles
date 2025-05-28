@@ -39,11 +39,11 @@ zinit snippet ${ZDOTDIR}/mocha-syntax.zsh
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
+zinit light Aloxaf/fzf-tab
 zinit light atuinsh/atuin
 zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
   atclone"./atuin init zsh > init.zsh --disable-up-arrow --disable-ctrl-r; ./atuin gen-completions --shell zsh > _atuin" \
   atpull"%atclone" src"init.zsh"
-zinit light Aloxaf/fzf-tab
 zinit snippet OMZL::git.zsh
 zinit snippet OMZP::rsync
 zinit snippet OMZP::eza
