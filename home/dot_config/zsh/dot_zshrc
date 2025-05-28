@@ -13,9 +13,9 @@ fi
 typeset -aU path
 
 # 🐚 Prompt
-if (($ + commands['oh-my-posh'])); then
+if [[ -v commands['oh-my-posh'] ]]; then
   eval "$(oh-my-posh init zsh --config $HOME/.config/zen.toml)"
-elif (($ + commands[starship])); then
+elif [[ -v commands[starship] ]]; then
   eval "$(starship init zsh)"
 fi
 
@@ -77,11 +77,11 @@ setopt hist_ignore_dups
 setopt hist_find_no_dups
 unsetopt beep
 
-if (($ + commands[fzf])); then
+if [[ -v commands[fzf] ]]; then
   eval "$(fzf --zsh)"
 fi
 
-if (($ + commands[zoxide])); then
+if [[ -v commands[zoxide] ]]; then
   eval "$(zoxide init zsh --cmd cd)"
 fi
 
@@ -93,6 +93,6 @@ if [ "$VSCODE_INJECTION" = "1" ]; then
   export EDITOR="code --wait"
 fi
 
-if (($ + commands[mise])); then
+if [[ -v commands[mise] ]]; then
   eval "$(mise activate zsh)"
 fi
