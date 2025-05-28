@@ -24,6 +24,8 @@ Set-Alias -Name 'sarc' -Value Invoke-Sarcastaball -Description "Converts text to
 
 Set-Alias -Name 'ip -g' -Value Get-IPLocation -Description "Gets location information for an IP address"
 
+Set-Alias -Name 'mg' -Value magick -Description "Shortcut for ImageMagick's magick command"
+
 Set-Alias -Name 'deltmp' -Value Remove-TempData -Description "Cleans temporary file directories"
 
 Set-Alias -Name 'aliases' -Value Get-Aliases -Description "Lists all user-defined aliases"
