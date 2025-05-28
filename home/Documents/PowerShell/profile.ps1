@@ -15,14 +15,6 @@ $env:DOTFILES = $env:DOTS
 $Env:PWSH = Split-Path $PROFILE -Parent
 $Env:LIBS = Join-Path -Path $Env:PWSH -ChildPath "lib"
 
-# 🐶 FastFetch
-if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
-    if ([Environment]::GetCommandLineArgs().Contains("-NonInteractive")) {
-        Return
-    }
-    fastfetch
-}
-
 # 📝 Editor
 if (Get-Command code -ErrorAction SilentlyContinue) { $Env:EDITOR = "code" }
 else {
@@ -59,4 +51,12 @@ if (Test-Path "$env:LIBS\completions\init.ps1" -PathType Leaf) {
 if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 	$Env:_ZO_DATA_DIR = "$Env:PWSH"
 	Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
+}
+
+# 🐶 FastFetch
+if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
+	if ([Environment]::GetCommandLineArgs().Contains("-NonInteractive") -or $Env:TERM_PROGRAM -eq "vscode") {
+		Return
+	}
+	fastfetch
 }
