@@ -394,15 +394,3 @@ Set-PSReadLineKeyHandler -Key "Ctrl+g" -ScriptBlock {
     [Microsoft.PowerShell.PSConsoleReadLine]::Insert("rgz")
     [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
 }
-
-# $env:FZF_ALT_C_COMMAND = "fd --type d --hidden --follow --exclude .git --fixed-strings --strip-cwd-prefix --color always"
-# $env:FZF_ALT_C_OPTS = "--prompt='Directory  ' --preview='eza --tree --level=1 --color=always --icons=always {}' --preview-window=right:50%:border-left"
-# $env:FZF_CTRL_T_COMMAND = "fd --type f --hidden --follow --exclude .git --strip-cwd-prefix --color always"
-# $env:FZF_CTRL_T_OPTS = "--prompt='File  ' --preview='bat --style=numbers --color=always --line-range :500 {}' --preview-window=right:60%:border-left"
-
-# $commandOverride = [ScriptBlock] { param($Location) Set-Location $Location }
-# Set-PsFzfOption -AltCCommand $commandOverride
-
-# Set-PsFzfOption -PSReadlineChordProvider "Ctrl+t" -PSReadlineChordReverseHistory "Ctrl+r" -PSReadlineChordReverseHistoryArgs "Alt+a"
-# Set-PsFzfOption -GitKeyBindings -EnableAliasFuzzyGitStatus -EnableAliasFuzzyEdit -EnableAliasFuzzyKillProcess -EnableAliasFuzzyScoop -EnableFd
-# Set-PsFzfOption -TabExpansion
