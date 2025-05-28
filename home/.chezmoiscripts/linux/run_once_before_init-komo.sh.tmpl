@@ -1,4 +1,0 @@
-{{ if or (eq .chezmoi.os "linux") and (lookPath "docker") -}}
-#!/bin/bash
-curl -sSL https://raw.githubusercontent.com/moghtech/komodo/main/scripts/setup-periphery.py | python3 - --user
-{{ end -}}
