@@ -3,6 +3,8 @@ if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
   fastfetch
 fi
 
+export ATUIN_NOBIND="true"
+
 # 🚬 source
 [ -f "${HOME}/.config/shared/init.sh" ] && source "${HOME}/.config/shared/init.sh"
 
@@ -37,11 +39,11 @@ zinit snippet ${ZDOTDIR}/mocha-syntax.zsh
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
-zinit light Aloxaf/fzf-tab
+zinit light atuinsh/atuin
 zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
   atclone"./atuin init zsh > init.zsh --disable-up-arrow --disable-ctrl-r; ./atuin gen-completions --shell zsh > _atuin" \
   atpull"%atclone" src"init.zsh"
-zinit light atuinsh/atuin
+zinit light Aloxaf/fzf-tab
 zinit snippet OMZL::git.zsh
 zinit snippet OMZP::rsync
 zinit snippet OMZP::eza
@@ -79,10 +81,6 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
 zstyle ':fzf-tab:*' switch-group '<' '>'
-autoload -U up-line-or-beginning-search
-autoload -U down-line-or-beginning-search
-zle -N up-line-or-beginning-search
-zle -N down-line-or-beginning-search
 
 # keybinds
 bindkey -e
@@ -102,8 +100,10 @@ bindkey '^[[6~' end-of-buffer-or-history
 bindkey '^[[H' beginning-of-line
 bindkey '^[[F' end-of-line
 bindkey '^[[Z' undo
-bindkey '^[[A' up-line-or-beginning-search
-bindkey '^[[B' down-line-or-beginning-search
+bindkey '^[[A' history-search-up
+bindkey '^[OA' history-search-up
+bindkey '^[[B' history-search-down
+bindkey '^[OB' history-search-down
 
 # hooks
 
