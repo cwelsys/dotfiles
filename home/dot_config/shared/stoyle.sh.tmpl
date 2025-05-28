@@ -12,9 +12,9 @@ fdz() {
   file=$(fd --type file --follow --hidden --exclude .git | fzf \
     --prompt="Files> " \
     --header="CTRL-T: Switch between Files/Directories" \
-    --bind="ctrl-t:transform:if not echo \$FZF_PROMPT | grep -q 'Files> '; then \
-      echo change-prompt\\(Files\\> \\)+reload\\(fd --type file\\); \
-      else echo change-prompt\\(Directory\\> \\)+reload\\(fd --type directory\\); fi" \
+    --bind="ctrl-t:transform:[[ \$FZF_PROMPT == *Directory* ]] && \
+  echo change-prompt\\(Files\\> \\)+reload\\(fd --type file\\) || \
+  echo change-prompt\\(Directory\\> \\)+reload\\(fd --type directory\\)" \
     --preview="if echo \$FZF_PROMPT | grep -q 'Files> '; then \
       bat --color=always {} --style=plain; \
       else eza -T --colour=always --icons=always {}; fi")
