@@ -42,6 +42,7 @@ config:
         YARN_CACHE_FOLDER: 'C:\Users\cwel\.cache\npm'
         PNPM_HOME: 'C:\Users\cwel\.local\share\pnpm'
         XAUTHORITY: 'C:\Users\cwel\.local\state\.Xauthority'
+        RCLONE_CONFIG_DIR: 'C:\Users\cwel\.config\rclone'
 
     features:
       enable:
@@ -60,6 +61,15 @@ config:
         - name: 'VcXsrv'
           target: 'C:\Users\cwel\scoop\apps\vcxsrv\current\vcxsrv.exe'
           args: '-multiwindow -clipboard -wgl -auth %XAUTHORITY%'
+
+        - name: 'apple'
+          target: 'C:\Users\cwel\.local\bin\rclone-apple.bat'
+
+        - name: 'proton'
+          target: 'C:\Users\cwel\.local\bin\rclone-proton.bat'
+
+        - name: 'google'
+          target: 'C:\Users\cwel\.local\bin\rclone-google.bat'
 
     symlinks:
       '%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json': 'home\dot_config\windows-terminal\settings.json'
