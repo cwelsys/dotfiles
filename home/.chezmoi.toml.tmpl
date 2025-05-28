@@ -184,6 +184,12 @@ isHeadless = {{ $isHeadless }}
 isCloud = {{ $isCloud }}
 isContainer = {{ $isContainer }}
 opType = {{ $opType | quote }}
+{{ if eq .chezmoi.os "windows" }}
+radarr = {{ onepasswordRead "op://Secrets/Radarr/api" | quote }}
+sonarr = {{ onepasswordRead "op://Secrets/Sonarr/api" | quote }}
+wapi = {{ onepasswordRead "op://Secrets/Yasb/wapi" | quote}}
+gpat = {{ onepasswordRead "op://Secrets/Yasb/gpat" | quote }}
+{{ end }}
 
 [data.catppuccin]
 accentColors = [ {{ $catppuccinAccentColors | quoteList | join ", " }} ]
@@ -224,7 +230,5 @@ args = [{{ range $mergeArgs }}{{ . | quote }}, {{ end }}]
 
 [onepassword]
     mode = {{ $opType | quote }}
-
-
 
 
