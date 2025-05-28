@@ -10,9 +10,9 @@ rgz-widget() {
 }
 zle -N rgz-widget
 
+bindkey -e
 bindkey '^f' fdz-widget
 bindkey '^g' rgz-widget
-bindkey -e
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
