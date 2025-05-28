@@ -50,6 +50,7 @@ cms() {
 alias cm='chezmoi'
 alias cma='chezmoi add'
 alias cme='chezmoi edit'
+alias cmu='chezmoi update'
 alias cmra='chezmoi re-add'
 alias t='tmux'
 alias ta='tmux has-session &>/dev/null && tmux attach || tmux new-session'
