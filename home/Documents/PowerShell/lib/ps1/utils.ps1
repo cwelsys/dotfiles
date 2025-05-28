@@ -84,6 +84,11 @@ Set-Alias -Name "OPTIONS" -Value Invoke-RestMethodOptions -Description "Sends an
 
 if (Get-Command lazygit -ErrorAction SilentlyContinue) {
   Set-Alias -Name 'lg' -Value 'lazygit' -Scope Global -Force
+  Set-Alias -Name 'lzg' -Value 'lazygit'
+}
+
+if (Get-Command lazydocker -ErrorAction SilentlyContinue) {
+  Set-Alias -Name 'lzg' -Value 'lazygit' -Scope Global -Force
 }
 
 if (Get-Command topgrade -ErrorAction SilentlyContinue) {
