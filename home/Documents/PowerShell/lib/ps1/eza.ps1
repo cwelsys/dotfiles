@@ -1,61 +1,66 @@
-﻿
-# eza
-# ----------------------------------------------------------------------------------- #
+﻿# eza
 if (!(Get-Command eza -ErrorAction SilentlyContinue)) { return }
 
+$ezaParams = @(
+    '--icons'
+    '--header'
+    '--hyperlink'
+    '--group'
+    '--git'
+    '-I=*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv'
+    '--group-directories-first'
+)
+
 function Invoke-Eza {
-	[alias('ls')]
-	param(
-		[Parameter(ValueFromRemainingArguments = $true)]
-		[string[]]$Path
-	)
-	eza.exe --icons --header --hyperlink --group --git -I='*NTUSER.DAT*|*ntuser.dat*' --group-directories-first @Path
+    [alias('ls')]
+    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Path)
+    eza.exe $ezaParams @Path
 }
-function Invoke-EzaAll {
-	[alias('la')]
-	param(
-		[Parameter(ValueFromRemainingArguments = $true)]
-		[string[]]$Path
-	)
-	eza.exe --icons --header --hyperlink --group --git -I='*NTUSER.DAT*|*ntuser.dat*' --group-directories-first -al --sort=modified @Path
+
+function Invoke-EzaGitIgnore {
+    [alias('l')]
+    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Path)
+    eza.exe $ezaParams --git-ignore @Path
 }
+
 function Invoke-EzaDir {
-	[alias('lD')]
-	param(
-		[Parameter(ValueFromRemainingArguments = $true)]
-		[string[]]$Path
-	)
-	eza.exe --icons --header --hyperlink --group --git -I='*NTUSER.DAT*|*ntuser.dat*' --group-directories-first -lDa --show-symlinks --time-style=relative @Path
+    [alias('ld')]
+    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Path)
+    eza.exe $ezaParams -lDa --show-symlinks --time-style=relative @Path
 }
+
 function Invoke-EzaFile {
-	[alias('lF')]
-	param(
-		[Parameter(ValueFromRemainingArguments = $true)]
-		[string[]]$Path
-	)
-	eza.exe --icons --header --hyperlink --group --git -I='*NTUSER.DAT*|*ntuser.dat*' --group-directories-first -lfa --show-symlinks --time-style=relative @Path
+    [alias('lf')]
+    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Path)
+    eza.exe $ezaParams -lfa --show-symlinks --time-style=relative @Path
 }
+
 function Invoke-EzaList {
-	[alias('ll')]
-	param(
-		[Parameter(ValueFromRemainingArguments = $true)]
-		[string[]]$Path
-	)
-	eza.exe --icons --header --hyperlink --group --git -I='*NTUSER.DAT*|*ntuser.dat*' --group-directories-first -lbhHigUmuSa --time-style=relative --sort=modified --reverse @Path
+    [alias('ll')]
+    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Path)
+    eza.exe $ezaParams -la --time-style=relative --sort=modified @Path
 }
+
+function Invoke-EzaAll {
+    [alias('la')]
+    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Path)
+    eza.exe $ezaParams -la @Path
+}
+
 function Invoke-EzaOneline {
-	[alias('lo')]
-	param(
-		[Parameter(ValueFromRemainingArguments = $true)]
-		[string[]]$Path
-	)
-	eza.exe --icons --header --hyperlink --group --git -I='*NTUSER.DAT*|*ntuser.dat*' --group-directories-first --oneline @Path
+    [alias('lo')]
+    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Path)
+    eza.exe $ezaParams --oneline @Path
 }
+
+function Invoke-EzaExtended {
+    [alias('lx')]
+    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Path)
+    eza.exe $ezaParams -la --extended @Path
+}
+
 function Invoke-EzaTree {
-	[alias('tree')]
-	param(
-		[Parameter(ValueFromRemainingArguments = $true)]
-		[string[]]$Path
-	)
-	eza.exe --icons --header --hyperlink --group --git -I='*NTUSER.DAT*|*ntuser.dat*' --group-directories-first --tree @Path
+    [alias('lt', 'tree')]
+    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Path)
+    eza.exe $ezaParams --tree @Path
 }
