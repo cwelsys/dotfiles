@@ -62,14 +62,14 @@ config:
           target: 'C:\Users\cwel\scoop\apps\vcxsrv\current\vcxsrv.exe'
           args: '-multiwindow -clipboard -wgl -auth %XAUTHORITY%'
 
-        - name: 'apple'
-          target: 'C:\Users\cwel\.local\bin\rclone-apple.bat'
+        # - name: 'apple'
+        #   target: 'C:\Users\cwel\.local\bin\rclone-apple.bat'
 
-        - name: 'proton'
-          target: 'C:\Users\cwel\.local\bin\rclone-proton.bat'
+        # - name: 'proton'
+        #   target: 'C:\Users\cwel\.local\bin\rclone-proton.bat'
 
-        - name: 'google'
-          target: 'C:\Users\cwel\.local\bin\rclone-google.bat'
+        # - name: 'google'
+        #   target: 'C:\Users\cwel\.local\bin\rclone-google.bat'
 
     symlinks:
       '%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json': 'home\dot_config\windows-terminal\settings.json'
