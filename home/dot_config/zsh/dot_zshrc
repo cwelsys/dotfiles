@@ -3,8 +3,6 @@ if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
   fastfetch
 fi
 
-export ATUIN_NOBIND="true"
-
 # 🚬 source
 [ -f "${HOME}/.config/shared/init.sh" ] && source "${HOME}/.config/shared/init.sh"
 
@@ -14,102 +12,221 @@ if [ -d "$ZDOTDIR/lib" ]; then
   done
   unset file
 fi
-[ -d "${ZDOTDIR}/functions" ] && fpath+=${ZDOTDIR}/functions
-[ -d "${ZDOTDIR}/completions" ] && fpath+=${ZDOTDIR}/completions
 
-typeset -aU path
-
-# 🐚 Prompt
-if [[ -v commands['oh-my-posh'] ]]; then
-  eval "$(oh-my-posh init zsh --config $HOME/.config/zen.toml)"
-elif [[ -v commands[starship] ]]; then
-  eval "$(starship init zsh)"
-fi
 
 # 🚀 zinit
-
-export ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
-if [ ! -d "$ZINIT_HOME" ]; then
-  mkdir -p "$(dirname $ZINIT_HOME)"
-  git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
+    print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
+    command mkdir -p "$HOME/.local/share/zinit" && command chmod g-rwX "$HOME/.local/share/zinit"
+    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.local/share/zinit/zinit.git" && \
+        print -P "%F{33} %F{34}Installation successful.%f%b" || \
+        print -P "%F{160} The clone has failed.%f%b"
 fi
-source "${ZINIT_HOME}/zinit.zsh"
 
-zinit snippet ${ZDOTDIR}/mocha-syntax.zsh
-zinit light zsh-users/zsh-syntax-highlighting
-zinit light zsh-users/zsh-completions
-zinit light zsh-users/zsh-autosuggestions
-zinit light Aloxaf/fzf-tab
-zinit light atuinsh/atuin
+source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+
+zinit light-mode for \
+    zdharma-continuum/zinit-annex-as-monitor \
+    zdharma-continuum/zinit-annex-bin-gem-node \
+    zdharma-continuum/zinit-annex-patch-dl \
+    zdharma-continuum/zinit-annex-rust
+
+_fix-omz-plugin() {
+  if [[ ! -f ._zinit/teleid ]] then return 0; fi
+  if [[ ! $(cat ._zinit/teleid) =~ "^OMZP::.*" ]] then return 0; fi
+  local OMZP_NAME=$(cat ._zinit/teleid | sed -n 's/OMZP:://p')
+  git clone --quiet --no-checkout --depth=1 --filter=tree:0 https://github.com/ohmyzsh/ohmyzsh
+  cd ohmyzsh
+  git sparse-checkout set --no-cone plugins/$OMZP_NAME
+  git checkout --quiet
+  cd ..
+  local OMZP_PATH="ohmyzsh/plugins/$OMZP_NAME"
+  local file
+  for file in ohmyzsh/plugins/$OMZP_NAME/*~(.gitignore|*.plugin.zsh)(D); do
+    local filename="${file:t}"
+    echo "Copying $file to $(pwd)/$filename..."
+    cp -r $file $filename
+  done
+  rm -rf ohmyzsh
+}
+
+function omzPlugin() {
+  zinit ice atpull"%atclone" atclone"_fix-omz-plugin" lucid $2
+  zinit snippet OMZP::$1
+}
+
+function omzLib() {
+  zinit wait'!' lucid for OMZL::$1
+}
+
+omzLib completion.zsh
+omzLib correction.zsh
+omzLib directories.zsh
+omzLib clipboard.zsh
+omzLib git.zsh
+omzLib grep.zsh
+omzLib history.zsh
+omzLib key-bindings.zsh
+omzLib completion.zsh
+
+if [[ `uname` == "Darwin" ]]; then
+    omzPlugin macos
+fi
+
+omzPlugin iterm2
+omzPlugin ssh-agent
+omzPlugin sudo
+omzPlugin cp
+omzPlugin rsync wait"1"
+omzPlugin gpg-agent
+omzPlugin git
+omzPlugin eza
+omzPlugin rsync
+omzPlugin systemd
+omzPlugin git-flow wait"1"
+omzPlugin github wait"1"
+omzPlugin 1password wait"1"
+omzPlugin z
+omzPlugin fasd
+omzPlugin fzf
+omzPlugin mise
+omzPlugin docker wait"1"
+omzPlugin command-not-found wait"1"
+omzPlugin common-aliases
+omzPlugin compleat wait"1"
+omzPlugin colorize wait"1"
+
+# git-extras
+zinit ice as"program" pick"$ZPFX/bin/git-*" make"PREFIX=$ZPFX"
+zinit light tj/git-extras
+
+# direnv
+zinit ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
+    atpull'%atclone' pick"direnv" src"zhook.zsh"
+zinit light direnv/direnv
+
+# enhancd
+zinit ice as"program" pick"init.zsh" wait"2" lucid
+zinit light b4b4r07/enhancd
+
+# diff-so-fancy
+zinit ice as"program" pick"bin/git-dsf" wait"2" lucid
+zinit light zdharma-continuum/zsh-diff-so-fancy
+
+# pyenv
+zplugin lucid as'command' pick'bin/pyenv' atinit'export PYENV_ROOT="$PWD"' \
+    atclone'PYENV_ROOT="$PWD" ./libexec/pyenv init - > zpyenv.zsh' \
+    atpull"%atclone" src"zpyenv.zsh" nocompile'!' for \
+        pyenv/pyenv
+
+# poetry
+zinit ice pick'poetry.zsh' wait"2" lucid
+zinit light darvid/zsh-poetry
+
+# fzf-fasd
+zinit ice wait"1" lucid
+zinit light wookayin/fzf-fasd
+
+# navi
+zinit ice wait"1" lucid
+zinit light denisidoro/navi
+
+# thefuck
+zinit ice wait"1" lucid
+zinit light laggardkernel/zsh-thefuck
+
+# Docker completions
+zinit wait lucid as"completion" for \
+    OMZP::docker/completions/_docker \
+    OMZP::docker-compose/_docker-compose
+
 zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
   atclone"./atuin init zsh > init.zsh --disable-up-arrow --disable-ctrl-r; ./atuin gen-completions --shell zsh > _atuin" \
   atpull"%atclone" src"init.zsh"
-zinit snippet OMZL::git.zsh
-zinit snippet OMZP::rsync
-zinit snippet OMZP::eza
-zinit snippet OMZP::tmux
-zinit snippet OMZP::git
-zinit snippet OMZP::sudo
-zinit snippet OMZP::command-not-found
+zinit light atuinsh/atuin
 
-autoload -Uz compinit && compinit
+zinit wait lucid light-mode for \
+  atinit"zicompinit; zicdreplay" \
+      z-shell/F-Sy-H \
+  atload"_zsh_autosuggest_start" \
+      zsh-users/zsh-autosuggestions \
+  blockf atpull'zinit creinstall -q .' \
+      zsh-users/zsh-completions
 
-zinit cdreplay -q
+zinit light zsh-users/zsh-history-substring-search
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
 
-# history
-export HISTFILE="$XDG_STATE_HOME"/zsh/history
-HISTSIZE=4096
+zinit ice wait"1" lucid
+zinit load zdharma-continuum/history-search-multi-word
+
+zinit ice lucid wait'0c' multisrc'shell/{completion,key-bindings}.zsh' id-as'junegunn/fzf_completions' pick'/dev/null'
+zinit light junegunn/fzf
+zinit ice wait'1' lucid
+zinit light Aloxaf/fzf-tab
+zinit light hlissner/zsh-autopair
+
+autoload -Uz compinit
+compinit
+zicompinit
+zinit cdreplay -q # <- execute compdefs provided by rest of plugins
+zinit cdlist # look at gathered compdefs
+
+
+autoload -Uz is-at-least
+# ls colors
+autoload -U colors && colors
+
+export LSCOLORS="Gxfxcxdxbxegedabagacad"
+
+setopt hist_ignore_all_dups # remove older duplicate entries from history
+setopt hist_reduce_blanks # remove superfluous blanks from history items
+setopt inc_append_history # save history entries as soon as they are entered
+setopt share_history # share history between different instances of the shell
+setopt auto_list # automatically list choices on ambiguous completion
+setopt auto_menu # automatically use menu completion
+setopt auto_cd
+setopt multios
+setopt completealiases
+setopt prompt_subst
+unsetopt correct_all
+setopt interactive_comments # allow comments in interactive shells
+unsetopt beep
+
+ZSH_AUTOSUGGEST_USE_ASYNC=true
+MATCH_PREV_CM=true
+COMPLETION_WAITING_DOTS="true"
+
+if [[ `uname` == "Darwin" ]]; then
+  # 1Password
+  OP_BIOMETRIC_UNLOCK_ENABLED=true
+fi
+
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*:git-checkout:*' sort false
+zstyle ':completion:*:descriptions' format '[%d]'
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' menu no
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
+zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
+zstyle ':fzf-tab:*' use-fzf-default-opts yes
+zstyle ':fzf-tab:*' switch-group ',' '.'
+zstyle ':completion:*:eza' file-sort modification
+zstyle ':completion:*:eza' sort false
+zstyle ':completion:*' completer _expand _complete _ignored _approximate
+
+
+[ -z "$HISTFILE" ] && HISTFILE="$XDG_STATE_HOME"/zsh/history
+HISTSIZE=290000
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
 
-# options
-setopt autocd
-setopt appendhistory
-setopt sharehistory
-setopt hist_ignore_space
-setopt hist_ignore_all_dups
-setopt hist_save_no_dups
-setopt hist_ignore_dups
-setopt hist_find_no_dups
-unsetopt beep
 
-# stoyles
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
-zstyle ':completion:*' list-colors '${LS_COLORS}'
-zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:*' use-fzf-default-opts yes
-zstyle ':fzf-tab:*' switch-group '<' '>'
+[ -d "${ZDOTDIR}/functions" ] && fpath+=${ZDOTDIR}/functions
+[ -d "${ZDOTDIR}/completions" ] && fpath+=${ZDOTDIR}/completions
 
-# keybinds
-bindkey -e
-bindkey '^f' fdz-widget
-bindkey '^g' rgz-widget
-bindkey '^p' history-search-backward
-bindkey '^n' history-search-forward
-bindkey '^[w' kill-region
-bindkey ' ' magic-space
-bindkey '^U' backward-kill-line
-bindkey '^[[3;5~' kill-word
-bindkey '^[[3~' delete-char
-bindkey '^[[1;5C' forward-word
-bindkey '^[[1;5D' backward-word
-bindkey '^[[5~' beginning-of-buffer-or-history
-bindkey '^[[6~' end-of-buffer-or-history
-bindkey '^[[H' beginning-of-line
-bindkey '^[[F' end-of-line
-bindkey '^[[Z' undo
-bindkey '^[[A' history-search-up
-bindkey '^[OA' history-search-up
-bindkey '^[[B' history-search-down
-bindkey '^[OB' history-search-down
-
-# hooks
-
-if [[ -v commands[fzf] ]]; then
-  eval "$(fzf --zsh)"
-fi
 
 if [[ -v commands[zoxide] ]]; then
   eval "$(zoxide init zsh --cmd cd)"
@@ -125,4 +242,11 @@ fi
 
 if [[ -v commands[mise] ]]; then
   eval "$(mise activate zsh)"
+fi
+
+# 🐚 Prompt
+if [[ -v commands['oh-my-posh'] ]]; then
+  eval "$(oh-my-posh init zsh --config $HOME/.config/zen.toml)"
+elif [[ -v commands[starship] ]]; then
+  eval "$(starship init zsh)"
 fi

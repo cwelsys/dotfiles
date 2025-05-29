@@ -14,19 +14,23 @@ rgz-widget() {
 }
 zle -N rgz-widget
 
-history-search-up() {
-	zle set-local-history 1
-	zle history-beginning-search-backward
-	zle set-local-history 0
+function fg-fzf() {
+  job="$(jobs | fzf -0 -1 | sed -E 's/\[(.+)\].*/\1/')" && echo '' && fg %$job
 }
-zle -N history-search-up
+function fancy-ctrl-z () {
+  if [[ $#BUFFER -eq 0 ]]; then
+    BUFFER=" fg-fzf"
+    zle accept-line -w
+  else
+    zle push-input -w
+    zle clear-screen -w
+  fi
+}
+zle -N fancy-ctrl-z
+bindkey '^Z' fancy-ctrl-z
 
-history-search-down() {
-	zle set-local-history 1
-	zle history-beginning-search-forward
-	zle set-local-history 0
-}
-zle -N history-search-down
+export _ZO_FZF_OPTS=$FZF_DEFAULT_OPTS'
+--height=7'
 
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
@@ -36,3 +40,12 @@ function y() {
 	fi
 	rm -f -- "$tmp"
 }
+
+function do-nothing() {
+}
+zle -N do-nothing
+
+# Bind F13 to the no-op function
+bindkey '^[[25~' do-nothing
+bindkey '^[[1;2P' do-nothing
+bindkey '^[[[E' do-nothing

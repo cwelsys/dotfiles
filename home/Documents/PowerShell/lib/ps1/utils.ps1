@@ -734,3 +734,15 @@ function Invoke-ChezmoiReAdd {
 
   chezmoi re-add @Arguments
 }
+
+function Void-KeyPress {
+    # This function intentionally does nothing
+    [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
+    [Microsoft.PowerShell.PSConsoleReadLine]::Insert("")
+}
+
+if (Get-Module -Name PSReadLine) {
+    Set-PSReadLineKeyBinding -Chord 'F13' -ScriptBlock ${function:Void-KeyPress}
+    Set-PSReadLineKeyBinding -Chord 'Shift+F1' -ScriptBlock ${function:Void-KeyPress}
+    Set-PSReadLineKeyBinding -Chord 'Ctrl+Shift+F1' -ScriptBlock ${function:Void-KeyPress}
+}
