@@ -737,12 +737,45 @@ function Invoke-ChezmoiReAdd {
 
 function Void-KeyPress {
     # This function intentionally does nothing
-    [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
-    [Microsoft.PowerShell.PSConsoleReadLine]::Insert("")
 }
 
-if (Get-Module -Name PSReadLine) {
-    Set-PSReadLineKeyBinding -Chord 'F13' -ScriptBlock ${function:Void-KeyPress}
-    Set-PSReadLineKeyBinding -Chord 'Shift+F1' -ScriptBlock ${function:Void-KeyPress}
-    Set-PSReadLineKeyBinding -Chord 'Ctrl+Shift+F1' -ScriptBlock ${function:Void-KeyPress}
+try {
+    # Import PSReadLine if available
+    if (Get-Module -ListAvailable -Name PSReadLine) {
+        Import-Module PSReadLine -Force -ErrorAction Stop
+
+        # Display the module version for diagnostics
+        $psrlVersion = (Get-Module PSReadLine).Version
+        Write-Host "PSReadLine version: $psrlVersion" -ForegroundColor Cyan
+
+        # Try to use the cmdlet approach first
+        try {
+            # Register the function as a scriptblock
+            Set-PSReadLineKeyHandler -Key F13 -ScriptBlock ${function:Void-KeyPress} -ErrorAction Stop
+            Set-PSReadLineKeyHandler -Key "Shift+F1" -ScriptBlock ${function:Void-KeyPress} -ErrorAction Stop
+            Write-Host "F13 key binding configured successfully" -ForegroundColor Green
+        }
+        catch {
+            Write-Warning "Could not bind F13 key with cmdlet: $_"
+
+            # Fall back to the .NET method if the cmdlet isn't available
+            try {
+                $null = [Microsoft.PowerShell.PSConsoleReadLine]::AddKeyHandler(
+                    [System.ConsoleKey]::F13,
+                    $null,
+                    [System.Management.Automation.ScriptBlock]::Create(${function:Void-KeyPress})
+                )
+                Write-Host "F13 key bound via .NET method" -ForegroundColor Green
+            }
+            catch {
+                Write-Warning "All F13 binding methods failed: $_"
+            }
+        }
+    }
+    else {
+        Write-Warning "PSReadLine module not found. Cannot bind F13 key."
+    }
+}
+catch {
+    Write-Warning "Error configuring PSReadLine: $_"
 }
