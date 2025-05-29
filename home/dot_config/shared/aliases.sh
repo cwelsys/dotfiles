@@ -47,6 +47,7 @@ cms() {
 		cmc
 	}
 }
+alias tg='topgrade'
 alias cm='chezmoi'
 alias cma='chezmoi add'
 alias cme='chezmoi edit'

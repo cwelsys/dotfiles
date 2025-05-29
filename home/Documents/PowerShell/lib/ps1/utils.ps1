@@ -4,7 +4,7 @@ Remove-Item Alias:rm -Force -ErrorAction SilentlyContinue
 
 Set-Alias -Name 'whic' -Value Get-CommandInfo -Description "Shows command information (intentional typo to avoid conflict with 'which' command)"
 
-Set-Alias -Name 'rl' -Value Reload-Profile -Description "Reloads PowerShell profile"
+Set-Alias -Name 'rl' -Value Import-Profile -Description "Reloads PowerShell profile"
 
 Set-Alias -Name 'rst' -Value restart -Description "Restarts current PowerShell session"
 
@@ -18,7 +18,7 @@ Set-Alias -Name 'c' -Value clear -Description "Clears the console screen"
 
 Set-Alias -Name 'df' -Value Get-Volume -Description "Displays volume information"
 
-Set-Alias -Name 'komorel' -Value Restart-TheThings -Description "Restarts Komorebi window manager"
+Set-Alias -Name 'komorel' -Value Invoke-Komorebirl -Description "Restarts Komorebi window manager"
 
 Set-Alias -Name 'sarc' -Value Invoke-Sarcastaball -Description "Converts text to Spongebob-case"
 
@@ -50,7 +50,7 @@ Set-Alias -Name 'cma' -Value Invoke-ChezmoiAdd -Description "Adds files to chezm
 
 Set-Alias -Name 'cmra' -Value Invoke-ChezmoiReAdd -Description "Re-adds files to chezmoi"
 
-Set-Alias -Name 'cmapl' -Value 'chezmoi apply' -Description "Applies changes with chezmoi"
+Set-Alias -Name 'cmapl' -Value Invoke-ChezmoiApply -Description "Applies changes with chezmoi"
 
 Set-Alias -Name 'cdcm' -Value 'Set-Location $env:DOTS' -Description "Changes to chezmoi directory"
 
@@ -264,7 +264,7 @@ function Get-WeatherCurrent {
 }
 
 function Remove-TempData {
-  Write-ColorText "{Gray}Deleting temp data..."
+  Write-Color "Deleting temp data..." -Color Gray
 
   $path1 = "C" + ":\Windows\Temp"
   Get-ChildItem $path1 -Force -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
@@ -275,43 +275,34 @@ function Remove-TempData {
   $path3 = "C" + ":\Users\*\AppData\Local\Temp"
   Get-ChildItem $path3 -Force -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
 
-  Write-ColorText "{Green}Temp data deleted successfully."
+  Write-Color "Temp data deleted successfully." -Color Green
 }
 
-function Update-Powershell {
-  try {
-    Write-ColorText "{Cyan}Checking for PowerShell updates..."
+function Update-PowerShell {
+    try {
+        Write-Host "Checking for PowerShell updates..." -ForegroundColor Cyan
+        $updateNeeded = $false
+        $currentVersion = $PSVersionTable.PSVersion.ToString()
+        $gitHubApiUrl = "https://api.github.com/repos/PowerShell/PowerShell/releases/latest"
+        $latestReleaseInfo = Invoke-RestMethod -Uri $gitHubApiUrl
+        $latestVersion = $latestReleaseInfo.tag_name.Trim('v')
+        if ($currentVersion -lt $latestVersion) {
+            $updateNeeded = $true
+        }
 
-    # Check internet connection to GitHub dynamically
-    $githubTest = Test-Connection -ComputerName "github.com" -Count 1 -Quiet
-    if (-not $githubTest) {
-      Write-ColorText "{Yellow}Cannot connect to GitHub. Please check your internet connection."
-      return
+        if ($updateNeeded) {
+            Write-Host "Updating PowerShell..." -ForegroundColor Yellow
+            Start-Process powershell.exe -ArgumentList "-NoProfile -Command winget upgrade Microsoft.PowerShell --accept-source-agreements --accept-package-agreements" -Wait -NoNewWindow
+            Write-Host "PowerShell has been updated. Please restart your shell to reflect changes" -ForegroundColor Magenta
+        } else {
+            Write-Host "Your PowerShell is up to date." -ForegroundColor Green
+        }
+    } catch {
+        Write-Error "Failed to update PowerShell. Error: $_"
     }
-
-    $updateNeeded = $false
-    $currentVersion = $PSVersionTable.PSVersion.ToString()
-    $githubAPIurl = "https://api.github.com/repos/PowerShell/PowerShell/releases/latest"
-    $latestRelease = Invoke-RestMethod -Uri $githubAPIurl
-    $latestVersion = $latestRelease.tag_name.Trim('v')
-
-    if ($currentVersion -lt $latestVersion) {
-      $updateNeeded = $true
-    }
-
-    if ($updateNeeded) {
-      Write-ColorText "{Yellow}Updating PowerShell..."
-      winget upgrade "Microsoft.PowerShell" --accept-source-agreements --accept-package-agreements
-      Write-ColorText "{Magenta}PowerShell has been updated. Please restart your terminal"
-    } else {
-      Write-ColorText "{Green}PowerShell is up to date."
-    }
-  } catch {
-    Write-ColorText "{Red}Failed to Update Powershell. Error = $_"
-  }
 }
 
-function Reload-Profile {
+function Import-Profile {
   if (Test-Path -Path $PROFILE) { . $PROFILE }
   elseif (Test-Path -Path $PROFILE.CurrentUserAllHosts) { . $PROFILE.CurrentUserAllHosts }
 }
@@ -354,43 +345,24 @@ function Invoke-Sarcastaball {
   $output = $null
 }
 
-function Write-ColorText {
-  param ([string]$Text, [switch]$NoNewLine)
-
-  $hostColor = $Host.UI.RawUI.ForegroundColor
-
-  $Text.Split( [char]"{", [char]"}" ) | ForEach-Object { $i = 0; } {
-    if ($i % 2 -eq 0) {	Write-Host $_ -NoNewline }
-    else {
-      if ($_ -in [enum]::GetNames("ConsoleColor")) {
-        $Host.UI.RawUI.ForegroundColor = ($_ -as [System.ConsoleColor])
-      }
-    }
-    $i++
-  }
-
-  if (!$NoNewLine) { Write-Host }
-  $Host.UI.RawUI.ForegroundColor = $hostColor
-}
-
-function Restart-TheThings {
+function Invoke-Komorebirl {
   param(
     [switch]$Bar,
     [switch]$Yasb
   )
 
-  Write-ColorText "{Magenta}Stopping Komorebi & whkd..."
+  Write-Color "Stopping Komorebi & whkd..." -Color Magenta
   komorebic stop --whkd | Out-Null
 
-  Write-ColorText "{Blue}Starting Komorebi & whkd..."
+  Write-Color "Starting Komorebi & whkd..." -Color Blue
   if ($Bar) {
     komorebic start --whkd --bar | Out-Null
   } else {
     komorebic start --whkd | Out-Null
   }
-  Write-ColorText "{Gray}Komorebi (with whkd) has been restarted successfully."
+  Write-Color "Komorebi (with whkd) has been restarted successfully." -Color Gray
   if ($Yasb) {
-    Write-ColorText "{Gray}Reloading Yasb..."
+    Write-Color "Reloading Yasb..." -Color Gray
     yasbc reload
   }
 }
@@ -663,7 +635,7 @@ function Invoke-ChezmoiSaveChanges {
   chezmoi re-add
 
   try {
-    $output = chezmoi git "f" 2>&1
+    chezmoi git "f" 2>&1
     if ($LASTEXITCODE -ne 0) {
       Write-Warning "No 'f' alias for git!"
       Invoke-ChezmoiCommitAndPush
@@ -735,47 +707,14 @@ function Invoke-ChezmoiReAdd {
   chezmoi re-add @Arguments
 }
 
-function Void-KeyPress {
-    # This function intentionally does nothing
-}
-
-try {
-    # Import PSReadLine if available
-    if (Get-Module -ListAvailable -Name PSReadLine) {
-        Import-Module PSReadLine -Force -ErrorAction Stop
-
-        # Display the module version for diagnostics
-        $psrlVersion = (Get-Module PSReadLine).Version
-        Write-Host "PSReadLine version: $psrlVersion" -ForegroundColor Cyan
-
-        # Try to use the cmdlet approach first
-        try {
-            # Register the function as a scriptblock
-            Set-PSReadLineKeyHandler -Key F13 -ScriptBlock ${function:Void-KeyPress} -ErrorAction Stop
-            Set-PSReadLineKeyHandler -Key "Shift+F1" -ScriptBlock ${function:Void-KeyPress} -ErrorAction Stop
-            Write-Host "F13 key binding configured successfully" -ForegroundColor Green
-        }
-        catch {
-            Write-Warning "Could not bind F13 key with cmdlet: $_"
-
-            # Fall back to the .NET method if the cmdlet isn't available
-            try {
-                $null = [Microsoft.PowerShell.PSConsoleReadLine]::AddKeyHandler(
-                    [System.ConsoleKey]::F13,
-                    $null,
-                    [System.Management.Automation.ScriptBlock]::Create(${function:Void-KeyPress})
-                )
-                Write-Host "F13 key bound via .NET method" -ForegroundColor Green
-            }
-            catch {
-                Write-Warning "All F13 binding methods failed: $_"
-            }
-        }
-    }
-    else {
-        Write-Warning "PSReadLine module not found. Cannot bind F13 key."
-    }
-}
-catch {
-    Write-Warning "Error configuring PSReadLine: $_"
+function Invoke-ChezmoiApply {
+  <#
+    .SYNOPSIS
+        Applies changes with chezmoi.
+    #>
+  [CmdletBinding()]
+  param(
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$Arguments
+  )
 }
