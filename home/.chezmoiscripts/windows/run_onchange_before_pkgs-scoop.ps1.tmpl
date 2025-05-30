@@ -118,6 +118,45 @@ $allDesiredScoopPkgs = $allDesiredScoopPkgs | Where-Object { $_ -ne "" }
 if ($allDesiredScoopPkgs.Count -eq 0) {
     Write-Color -Text "ℹ️ No Scoop packages specified for installation." -Color Green
 } else {
+    # Track installed packages to avoid reinstalling them in future runs
+    $installedPackagesPath = Join-Path $env:USERPROFILE ".config\chezmoi\installed_scoop_packages.json"
+    $previouslyInstalledPackages = @()
+
+    # Load previously installed packages if the file exists
+    if (Test-Path $installedPackagesPath) {
+        try {
+            $previouslyInstalledPackages = Get-Content $installedPackagesPath -Raw | ConvertFrom-Json -ErrorAction Stop
+            Write-Color -Text "ℹ️ Found record of ", $previouslyInstalledPackages.Count, " previously installed packages" -Color Blue, Yellow, Blue
+        } catch {
+            Write-Color -Text "⚠️ Error reading installed packages file. Will rebuild it." -Color Yellow
+            $previouslyInstalledPackages = @()
+        }
+    }
+
+    # Get currently installed packages from scoop
+    $currentlyInstalledPackages = @()
+    try {
+        $scoopList = scoop list
+        foreach ($line in $scoopList) {
+            if ($line -match '^(\S+)\s+') {
+                $packageName = $matches[1]
+                $currentlyInstalledPackages += $packageName
+            }
+        }
+    } catch {
+        Write-Color -Text "⚠️ Could not get list of installed packages from scoop. Will install all specified packages." -Color Yellow
+    }
+
+    # Track all packages we've installed (previously + new this run)
+    $allInstalledPackages = New-Object System.Collections.ArrayList
+    $previouslyInstalledPackages | ForEach-Object { $allInstalledPackages.Add($_) | Out-Null }
+    $currentlyInstalledPackages | ForEach-Object {
+        if (-not $allInstalledPackages.Contains($_)) {
+            $allInstalledPackages.Add($_) | Out-Null
+        }
+    }
+
+    # Install new packages
     foreach ($pkgToInstallRaw in $allDesiredScoopPkgs) {
         $pkgToInstallFullName = $pkgToInstallRaw.Trim() # This might be 'bucket/app' or 'app'
         if ([string]::IsNullOrWhiteSpace($pkgToInstallFullName)) {
@@ -126,49 +165,72 @@ if ($allDesiredScoopPkgs.Count -eq 0) {
 
         $pkgNameToQuery = $pkgToInstallFullName.Split('/')[-1]
 
+        # Check if already installed (either from our tracking or by querying scoop)
         $isInstalled = $false
-        $info = $null
+
+        # First check our tracking list
+        if ($allInstalledPackages.Contains($pkgNameToQuery)) {
+            $isInstalled = $true
+            Write-Color -Text "[package] ", "scoop: ", "(exists) ", $pkgToInstallFullName -Color Blue, DarkGreen, Yellow, Gray
+            continue
+        }
+
+        # If not in our list, verify with scoop directly
         try {
-            # Call scoop info without PowerShell-specific parameters like -ErrorAction
             $info = scoop info $pkgNameToQuery
 
-            # Check if $info is not null and has an 'Installed' property that is true
             if ($null -ne $info -and $info.PSObject.Properties.Name -contains 'Installed' -and $info.Installed) {
                 $isInstalled = $true
             }
-            # Some versions/outputs of scoop info might use a 'Status' property
             elseif ($null -ne $info -and $info.PSObject.Properties.Name -contains 'Status' -and $info.Status -match 'installed') {
-                 $isInstalled = $true
+                $isInstalled = $true
             }
-
         } catch {
-            # This catch block is for errors during the execution of 'scoop info' itself
-            # or property access, not for 'scoop info' failing to find a package (which usually results in $null or specific status).
             Write-Color -Text "⚠️ ", "scoop: ", "Exception while checking status for '$pkgNameToQuery': $($_.Exception.Message)" -Color Yellow, DarkGreen, Red, Gray
         }
 
         if ($isInstalled) {
             Write-Color -Text "[package] ", "scoop: ", "(exists) ", $pkgToInstallFullName -Color Blue, DarkGreen, Yellow, Gray
+            # Add to our tracking list if not already there
+            if (-not $allInstalledPackages.Contains($pkgNameToQuery)) {
+                $allInstalledPackages.Add($pkgNameToQuery) | Out-Null
+            }
         } else {
             Write-Color -Text "[package] ", "scoop: ", "Installing ", $pkgToInstallFullName -Color Blue, DarkGreen, White, Gray
             scoop install $pkgToInstallFullName
             if ($LASTEXITCODE -eq 0) {
-                # Check again if it's *really* installed successfully, as scoop install might return 0 even if it only warns.
+                # Verify installation
                 $verifyInfo = $null
-                try { $verifyInfo = scoop info $pkgNameToQuery } catch {} # Suppress errors for verification
+                try { $verifyInfo = scoop info $pkgNameToQuery } catch {}
+
+                $installSuccess = $false
                 if ($null -ne $verifyInfo -and $verifyInfo.PSObject.Properties.Name -contains 'Installed' -and $verifyInfo.Installed) {
-                    Write-Color -Text "[package] ", "scoop: ", "(success) ", $pkgToInstallFullName -Color Blue, DarkGreen, Green, Gray
+                    $installSuccess = $true
                 } elseif ($null -ne $verifyInfo -and $verifyInfo.PSObject.Properties.Name -contains 'Status' -and $verifyInfo.Status -match 'installed') {
+                    $installSuccess = $true
+                }
+
+                if ($installSuccess) {
                     Write-Color -Text "[package] ", "scoop: ", "(success) ", $pkgToInstallFullName -Color Blue, DarkGreen, Green, Gray
+                    # Add to our tracking list
+                    if (-not $allInstalledPackages.Contains($pkgNameToQuery)) {
+                        $allInstalledPackages.Add($pkgNameToQuery) | Out-Null
+                    }
                 } else {
-                     # This case can happen if 'scoop install' said success (exit 0) but the app isn't actually 'Installed' according to 'scoop info'
-                     # Or if it was a warning like "already installed"
                     Write-Color -Text "[package] ", "scoop: ", "(finished with warning/no change) ", $pkgToInstallFullName -Color Blue, DarkGreen, Yellow, Gray
                 }
             } else {
                 Write-Color -Text "[package] ", "scoop: ", "(failed) ", $pkgToInstallFullName -Color Blue, DarkGreen, Red, Gray
             }
         }
+    }
+
+    # Save the updated list of installed packages
+    try {
+        $allInstalledPackages | ConvertTo-Json | Set-Content -Path $installedPackagesPath -Force
+        Write-Color -Text "ℹ️ Updated installed packages list with ", $allInstalledPackages.Count, " packages" -Color Blue, Yellow, Blue
+    } catch {
+        Write-Color -Text "⚠️ Failed to save installed packages list: $($_.Exception.Message)" -Color Yellow
     }
 }
 Write-Host ""
