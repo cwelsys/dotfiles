@@ -195,17 +195,6 @@ autoload -Uz is-at-least
 # ls colors
 autoload -U colors && colors
 
-bindkey -v
-
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
-bindkey "\e[1~" beginning-of-line
-bindkey "\e[H" beginning-of-line
-bindkey "\e[7~" beginning-of-line
-bindkey "\e[4~" end-of-line
-bindkey "\e[F" end-of-line
-bindkey "\e[8~" end-of-line
-bindkey "\e[3~" delete-char
 
 zstyle ":completion:*" menu select=2
 zstyle ":completion:*" auto-description "specify: %d"
@@ -228,6 +217,18 @@ zstyle ':fzf-tab:*' switch-group ',' '.'
 zstyle ':completion:*:eza' file-sort modification
 zstyle ':completion:*:eza' sort false
 zstyle ':completion:*' completer _expand _complete _ignored _approximate
+
+bindkey -v
+
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+bindkey "\e[1~" beginning-of-line
+bindkey "\e[H" beginning-of-line
+bindkey "\e[7~" beginning-of-line
+bindkey "\e[4~" end-of-line
+bindkey "\e[F" end-of-line
+bindkey "\e[8~" end-of-line
+bindkey "\e[3~" delete-char
 
 
 export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
