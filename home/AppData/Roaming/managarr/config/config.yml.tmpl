@@ -1,10 +1,10 @@
 theme: catppuccin-mocha
 radarr:
   - uri: https://radarr.cwel.sh
-    api_token: ${RADARR_API_KEY}
+    api_token: {{ .radarr }}
 sonarr:
   - uri: https://sonarr.cwel.sh
-    api_token: ${SONARR_API_KEY}
+    api_token: {{ .sonarr }}
 # readarr:
 #   - uri: https://readarr.cwel.sh
 #     api_token: ${READARR_API_KEY}

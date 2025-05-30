@@ -77,6 +77,7 @@ pkgs:
         - 'main/gzip'
         - 'main/termusic'
         - 'main/speedtest-cli'
+        - 'extras/nextcloud'
         - 'main/shfmt'
         - 'main/jq'
         - 'main/lazydocker'
