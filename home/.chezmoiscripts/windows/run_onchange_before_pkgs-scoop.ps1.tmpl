@@ -126,6 +126,11 @@ if ($allDesiredScoopPkgs.Count -eq 0) {
     if (Test-Path $installedPackagesPath) {
         try {
             $previouslyInstalledPackages = Get-Content $installedPackagesPath -Raw | ConvertFrom-Json -ErrorAction Stop
+
+            # Clean the loaded list - filter out any items that aren't proper package names
+            $previouslyInstalledPackages = $previouslyInstalledPackages |
+                Where-Object { $_ -and -not $_.ToString().StartsWith('@{') }
+
             Write-Color -Text "ℹ️ Found record of ", $previouslyInstalledPackages.Count, " previously installed packages" -Color Blue, Yellow, Blue
         } catch {
             Write-Color -Text "⚠️ Error reading installed packages file. Will rebuild it." -Color Yellow
@@ -227,8 +232,12 @@ if ($allDesiredScoopPkgs.Count -eq 0) {
 
     # Save the updated list of installed packages
     try {
-        $allInstalledPackages | ConvertTo-Json | Set-Content -Path $installedPackagesPath -Force
-        Write-Color -Text "ℹ️ Updated installed packages list with ", $allInstalledPackages.Count, " packages" -Color Blue, Yellow, Blue
+        # Clean the list before saving - filter out any items that start with @{ which are invalid
+        $cleanInstalledPackages = $allInstalledPackages | Where-Object { -not $_.StartsWith('@{') }
+
+        # Convert to JSON and save
+        $cleanInstalledPackages | ConvertTo-Json | Set-Content -Path $installedPackagesPath -Force
+        Write-Color -Text "ℹ️ Updated installed packages list with ", $cleanInstalledPackages.Count, " packages" -Color Blue, Yellow, Blue
     } catch {
         Write-Color -Text "⚠️ Failed to save installed packages list: $($_.Exception.Message)" -Color Yellow
     }
