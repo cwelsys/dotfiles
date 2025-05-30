@@ -40,10 +40,6 @@ Set-Alias -Name 'bun-ls' -Value Get-BunGlobalPackages -Description "Lists global
 
 Set-Alias -Name 'pnpm-ls' -Value Get-PnpmGlobalPackages -Description "Lists globally installed PNPM packages"
 
-Set-Alias -Name 'dots' -Value '$env:DOTS' -Description "References dotfiles directory"
-
-Set-Alias -Name 'cdc' -Value 'Set-Location ~/.config' -Description "Changes directory to ~/.config"
-
 Set-Alias -Name 'cm' -Value 'chezmoi' -Description "Shortcut for chezmoi dotfiles manager"
 
 Set-Alias -Name 'cmu' -Value Invoke-ChezmoiUpdate -Description "Updates dotfiles with chezmoi"
@@ -55,8 +51,6 @@ Set-Alias -Name 'cma' -Value Invoke-ChezmoiAdd -Description "Adds files to chezm
 Set-Alias -Name 'cmra' -Value Invoke-ChezmoiReAdd -Description "Re-adds files to chezmoi"
 
 Set-Alias -Name 'cmapl' -Value Invoke-ChezmoiApply -Description "Applies changes with chezmoi"
-
-Set-Alias -Name 'cdcm' -Value 'Set-Location $env:DOTS' -Description "Changes to chezmoi directory"
 
 Set-Alias -Name 'cmc' -Value Invoke-ChezmoiCommitAndPush -Description "Commit and push chezmoi changes"
 
@@ -100,6 +94,12 @@ if (Get-Command topgrade -ErrorAction SilentlyContinue) {
 }
 
 # 🏖️ Functions
+
+function dots { Set-Location $env:DOTFILES }
+
+function cdcm { Set-Location $env:DOTFILES }
+
+function cdc { Set-Location $env:XDG_CONFIG_HOME }
 
 function export($name, $value) {
   Set-Item -Path "env:$name" -Value $value
