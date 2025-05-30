@@ -40,4 +40,5 @@ packages:
       - git-flow
       - git-lfs
       - lazygit
+      - bat-extras
     casks:

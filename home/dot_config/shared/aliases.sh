@@ -48,6 +48,24 @@ cms() {
 		cmc
 	}
 }
+# bat
+if [[ -x "$(command -v bat)" ]]; then
+  if [[ ! -d $HOME/.cache/bat ]]; then
+    bat cache --build
+  fi
+
+  export BAT_THEME='Catppuccin Mocha'
+  export BATDIFF_USE_DELTA=true
+  alias -- 'cat'='bat --paging=never --style=plain'
+  [[ -x "$(command -v batgrep)" ]] && alias -- 'ripgrep'='batgrep'
+  [[ -x "$(command -v batman)" ]] && alias -- 'man'='batman'
+  [[ -x "$(command -v batwatch)" ]] && alias -- 'watch'='batwatch'
+  [[ -x "$(command -v batdiff)" ]] && alias -- 'diff'='batdiff'
+
+  alias -g -- '-h'='-h 2>&1 | bat --language=help --style=plain'
+  alias -g -- '--help'='--help 2>&1 | bat --language=help --style=plain'
+fi
+
 alias tg='topgrade'
 alias cm='chezmoi'
 alias cma='chezmoi add'
@@ -60,6 +78,18 @@ alias ta='tmux has-session &>/dev/null && tmux attach || tmux new-session'
 alias mkdir='mkdir -p'
 alias reload='exec $SHELL -l'
 alias dots="cd $DOTFILES"
+
+if [[ -x "$(command -v rsync)" ]]; then
+  alias -- 'cp'='rsync -ah --info=progress2 --inplace --no-whole-file'
+  alias -- 'mv'='rsync -ah --info=progress2 --inplace --no-whole-file --remove-source-files'
+fi
+
+if [[ -x "$(command -v trash)" ]]; then
+  if [[ "$(whence -w rm 2>/dev/null)" == "rm: alias" ]]; then
+    unalias rm
+  fi
+  alias -- 'rm'='trash'
+fi
 
 # eza
 if command -v eza >/dev/null 2>&1; then
