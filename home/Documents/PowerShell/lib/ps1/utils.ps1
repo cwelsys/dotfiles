@@ -18,6 +18,8 @@ Set-Alias -Name 'c' -Value clear -Description "Clears the console screen"
 
 Set-Alias -Name 'df' -Value Get-Volume -Description "Displays volume information"
 
+Set-Alias -Name 'cat' -Value Invoke-Bat -Option AllScope -Force -Description "Uses bat as cat replacement with options"
+
 Set-Alias -Name 'komorel' -Value Invoke-Komorebirl -Description "Restarts Komorebi window manager"
 
 Set-Alias -Name 'sarc' -Value Invoke-Sarcastaball -Description "Converts text to Spongebob-case"
@@ -718,3 +720,11 @@ function Invoke-ChezmoiApply {
     [string[]]$Arguments
   )
 }
+
+function Invoke-Bat {
+        param([Parameter(ValueFromRemainingArguments = $true)]$args)
+        & (Get-Command bat).Source --paging=never --style=plain @args
+}
+
+
+
