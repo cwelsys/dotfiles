@@ -18,6 +18,8 @@ Set-Alias -Name 'c' -Value clear -Description "Clears the console screen"
 
 Set-Alias -Name 'df' -Value Get-Volume -Description "Displays volume information"
 
+Set-Alias -Name 'qq' -Value 'exit' -Description "Exits the session"
+
 Set-Alias -Name 'cat' -Value Invoke-Bat -Option AllScope -Force -Description "Uses bat as cat replacement with options"
 
 Set-Alias -Name 'komorel' -Value Invoke-Komorebirl -Description "Restarts Komorebi window manager"

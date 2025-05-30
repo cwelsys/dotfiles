@@ -77,6 +77,7 @@ alias t='tmux'
 alias ta='tmux has-session &>/dev/null && tmux attach || tmux new-session'
 alias mkdir='mkdir -p'
 alias reload='exec $SHELL -l'
+alias qq='exit'
 alias dots="cd $DOTFILES"
 
 if [[ -x "$(command -v rsync)" ]]; then
