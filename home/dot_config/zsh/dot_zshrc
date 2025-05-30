@@ -175,7 +175,7 @@ autoload -Uz compinit
 compinit
 zicompinit
 zinit cdreplay -q # <- execute compdefs provided by rest of plugins
-zinit cdlist # look at gathered compdefs
+#zinit cdlist # look at gathered compdefs
 
 
 autoload -Uz is-at-least
