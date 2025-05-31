@@ -4,13 +4,8 @@ export FZF_DEFAULT_OPTS="--color=bg+:{{ .catppuccin.palettes.mocha.surface0 }},b
 --color=fg+:{{ .catppuccin.palettes.mocha.text }},prompt:{{ .catppuccin.palettes.mocha.teal }},hl+:{{ .catppuccin.palettes.mocha.red }}
 --color=border:{{ .catppuccin.palettes.mocha.surface2 }}
 --layout=reverse --cycle --height=~80% --border=rounded --info=right
---header-first
---preview-label='Preview'
 --bind=alt-w:toggle-preview-wrap
 --bind=ctrl-e:toggle-preview"
-
-export FZF_CTRL_T_OPTS="--preview 'bat --color=always {} --style=plain || eza -T --colour=always --icons=always {}'"
-export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind 'ctrl-y:execute-silent(echo -n {2..} | clip.exe)+abort' --color header:italic --header 'Press CTRL-Y to copy command into clipboard'"
 
 fdz() {
   local file
