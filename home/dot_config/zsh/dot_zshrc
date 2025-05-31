@@ -155,7 +155,6 @@ setopt prompt_subst
 setopt interactive_comments # allow comments in interactive shells
 unsetopt beep
 
-bindkey -e
 bindkey ' ' magic-space
 bindkey '^[[3~' delete-char
 bindkey "^A" beginning-of-line
