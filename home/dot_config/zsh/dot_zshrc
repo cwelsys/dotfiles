@@ -7,22 +7,6 @@ then
   zmodload zsh/zprof
 fi
 
-setopt hist_ignore_all_dups # remove older duplicate entries from history
-setopt hist_reduce_blanks # remove superfluous blanks from history items
-setopt inc_append_history # save history entries as soon as they are entered
-setopt share_history # share history between different instances of the shell
-setopt auto_list # automatically list choices on ambiguous completion
-setopt auto_menu # automatically use menu completion
-setopt hist_verify # verify history expansion before executing
-setopt auto_cd
-setopt multios
-setopt menu_complete
-setopt completealiases
-setopt no_nomatch
-setopt prompt_subst
-setopt interactive_comments # allow comments in interactive shells
-unsetopt beep
-
 # 🚀 zinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -138,6 +122,22 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=247
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 ZSH_AUTOSUGGEST_USE_ASYNC=true
 MATCH_PREV_CM=true
+
+setopt hist_ignore_all_dups # remove older duplicate entries from history
+setopt hist_reduce_blanks # remove superfluous blanks from history items
+setopt inc_append_history # save history entries as soon as they are entered
+setopt share_history # share history between different instances of the shell
+setopt auto_list # automatically list choices on ambiguous completion
+setopt auto_menu # automatically use menu completion
+setopt hist_verify # verify history expansion before executing
+setopt auto_cd
+setopt multios
+setopt menu_complete
+setopt completealiases
+setopt no_nomatch
+setopt prompt_subst
+setopt interactive_comments # allow comments in interactive shells
+unsetopt beep
 
 if [[ `uname` == "Darwin" ]]; then
   # 1Password
