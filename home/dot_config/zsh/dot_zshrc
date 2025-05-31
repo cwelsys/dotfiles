@@ -43,24 +43,15 @@ if [ -d "$ZDOTDIR/lib" ]; then
   unset file
 fi
 
-if [ -z "$HISTFILE" ]; then
-  HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history"
+if [ ! -d "$XDG_STATE_HOME/zsh" ]; then
+  mkdir -p "$XDG_STATE_HOME/zsh"
 fi
 
-if [ -f "$_legacy_zsh_history_path" ] && [ "$_legacy_zsh_history_path" != "$HISTFILE" ]; then
-  if [ ! -e "$HISTFILE" ]; then
-    mkdir -p "$(dirname "$HISTFILE")"
-    if mv -n "$_legacy_zsh_history_path" "$HISTFILE"; then
-      echo "Zsh history: Moved '$_legacy_zsh_history_path' to '$HISTFILE'"
-    else
-      echo "Zsh history: Error moving '$_legacy_zsh_history_path' to '$HISTFILE'" >&2
-    fi
-  else
-    echo "Zsh history: Target '$HISTFILE' already exists. Legacy '$_legacy_zsh_history_path' not moved."
-  fi
+if [ -f "$HOME/.zsh_history" ] && [ ! -f "$XDG_STATE_HOME/zsh/history" ]; then
+  mv "$HOME/.zsh_history" "$XDG_STATE_HOME/zsh/history"
 fi
-unset _legacy_zsh_history_path
 
+[ -z "$HISTFILE" ] && HISTFILE="$XDG_STATE_HOME/zsh/history"
 
 HISTSIZE=290000
 SAVEHIST=$HISTSIZE
