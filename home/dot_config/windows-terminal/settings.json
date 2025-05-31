@@ -141,6 +141,13 @@
 				"source": "Microsoft.WSL"
 			},
 			{
+				"commandline": "ssh pstick",
+				"guid": "{2ae3b604-62be-446d-85ae-1edf201283bb}",
+				"hidden": false,
+				"icon": "C:\\Users\\cwel\\Pictures\\icons\\pihole.png",
+				"name": "pstick"
+			},
+			{
 				"commandline": "ssh nova",
 				"guid": "{2226497c-8934-4dc8-8c98-aa7c27ed7652}",
 				"hidden": false,
@@ -149,13 +156,13 @@
 			},
 			{
 				"guid": "{569ceebf-d5f4-5d7f-875d-4043b4464b0e}",
-				"hidden": false,
+				"hidden": true,
 				"name": "Developer Command Prompt for VS 2022 (2)",
 				"source": "Windows.Terminal.VisualStudio"
 			},
 			{
 				"guid": "{587c3b91-83b0-5c15-aa77-a6b93b9ac2c6}",
-				"hidden": false,
+				"hidden": true,
 				"name": "Developer PowerShell for VS 2022 (2)",
 				"source": "Windows.Terminal.VisualStudio"
 			}
