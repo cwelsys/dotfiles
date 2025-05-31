@@ -6,7 +6,7 @@ sudo apt update -y
 sudo apt-get install build-essential procps wget curl file git zsh age -y
   {{- else if eq .chezmoi.osRelease.id "fedora" -}}
 sudo dnf update -y
-sudo dnf group install "Development Tools"
+sudo dnf group install development-tools -y
 sudo dnf install procps-ng wget curl file git age zsh  -y
   {{- else -}}
 echo "Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
