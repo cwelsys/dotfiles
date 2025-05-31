@@ -106,6 +106,12 @@ zinit wait lucid as"completion" for \
     OMZP::docker/completions/_docker \
     OMZP::docker-compose/_docker-compose
 
+# fzf
+zinit ice lucid wait"0" atclone"sed -ie 's/fc -rl 1/fc -rli 1/' shell/key-bindings.zsh" \
+  atpull"%atclone" multisrc"shell/{completion,key-bindings}.zsh" id-as junegunn/fzf_completions \
+  pick"/dev/null"
+zinit light junegunn/fzf
+
 zinit snippet https://raw.githubusercontent.com/catppuccin/zsh-syntax-highlighting/main/themes/catppuccin_mocha-zsh-syntax-highlighting.zsh
 zinit light Aloxaf/fzf-tab
 zinit light zsh-users/zsh-autosuggestions
@@ -144,7 +150,7 @@ if [[ `uname` == "Darwin" ]]; then
   OP_BIOMETRIC_UNLOCK_ENABLED=true
 fi
 
-[[ -x "$(command -v fzf)" ]] && eval "$(fzf --zsh)"
+# [[ -x "$(command -v fzf)" ]] && eval "$(fzf --zsh)"
 [[ -x "$(command -v zoxide)" ]] && eval "$(zoxide init zsh --cmd=cd)"
 
 if [[ -n "$SSH_CONNECTION" ]]; then
