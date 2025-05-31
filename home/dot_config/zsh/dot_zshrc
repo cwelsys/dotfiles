@@ -161,6 +161,7 @@ bindkey "^A" beginning-of-line
 bindkey "^E" end-of-line
 bindkey "^N" insert-last-word
 bindkey '^[w' kill-region
+
 if [[ `uname` == "Darwin" ]]; then
   # 1Password
   OP_BIOMETRIC_UNLOCK_ENABLED=true
