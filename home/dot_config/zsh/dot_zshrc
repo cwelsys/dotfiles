@@ -102,7 +102,6 @@ omzPlugin common-aliases
 zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
     atclone"./atuin init zsh > init.zsh; ./atuin gen-completions --shell zsh > _atuin" \
     atpull"%atclone" src"init.zsh"
-export ATUIN_NOBIND=true
 zinit light atuinsh/atuin
 
 # direnv

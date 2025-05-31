@@ -7,12 +7,14 @@ fdz-widget() {
 	zle accept-line
 }
 zle -N fdz-widget
+bindkey '^F' fdz-widget
 
 rgz-widget() {
 	BUFFER="rgz"
 	zle accept-line
 }
 zle -N rgz-widget
+bindkey '^G' rgz-widget
 
 function fg-fzf() {
   job="$(jobs | fzf -0 -1 | sed -E 's/\[(.+)\].*/\1/')" && echo '' && fg %$job
