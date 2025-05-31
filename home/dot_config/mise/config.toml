@@ -4,6 +4,7 @@ pin = true
 trusted_config_paths = ["{{ env.XDG_PROJECTS_DIR }}"]
 go_set_gobin = false
 go_set_goroot = true
+windows_shim_mode = "symlink"
 
 [settings.npm]
 bun = true
