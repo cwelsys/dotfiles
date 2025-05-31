@@ -201,8 +201,12 @@ if ($allDesiredScoopPkgs.Count -eq 0) {
                 $allInstalledPackages.Add($pkgNameToQuery) | Out-Null
             }
         } else {
-            Write-Color -Text "[package] ", "scoop: ", "Installing ", $pkgToInstallFullName -Color Blue, DarkGreen, White, Gray
-            scoop install $pkgToInstallFullName
+            # support inline version (e.g. 'chezmoi@2.40.0') or extra flags
+            $parts     = $pkgToInstallFullName -split '\s+'
+            $nameVer   = $parts[0]
+            $extraArgs = if ($parts.Count -gt 1) { $parts[1..($parts.Count-1)] } else { @() }
+            Write-Color -Text "[package] ", "scoop: ", "Installing ", $nameVer -Color Blue, DarkGreen, White, Gray
+            scoop install $nameVer @extraArgs
             if ($LASTEXITCODE -eq 0) {
                 # Verify installation
                 $verifyInfo = $null
@@ -225,7 +229,7 @@ if ($allDesiredScoopPkgs.Count -eq 0) {
                     Write-Color -Text "[package] ", "scoop: ", "(finished with warning/no change) ", $pkgToInstallFullName -Color Blue, DarkGreen, Yellow, Gray
                 }
             } else {
-                Write-Color -Text "[package] ", "scoop: ", "(failed) ", $pkgToInstallFullName -Color Blue, DarkGreen, Red, Gray
+                Write-Color -Text "[package] ", "scoop: ", "(failed)  ", $pkgToInstallFullName -Color Blue, DarkGreen, Red, Gray
             }
         }
     }

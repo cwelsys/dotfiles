@@ -138,6 +138,20 @@ function Get-NpmGlobalPackages { (npm ls -g | Select-Object -skip 1).Trim().Spli
 function Get-BunGlobalPackages { (bun pm ls -g | Select-Object -Skip 1).Trim().Split() | ForEach-Object { if ($_ -match [regex]::Escape("@")) { Write-Output $_ } } }
 function Get-PnpmGlobalPackages { (pnpm ls -g | Select-Object -Skip 5) | ForEach-Object { $name = $_.Split()[0]; $version = $_.Split()[1]; Write-Output "$name@$version" } }
 
+function cmpack {
+    [CmdletBinding(DefaultParameterSetName='Args')]
+    param(
+        [Parameter(ValueFromRemainingArguments=$true)]
+        $Args
+    )
+    $scriptPath = Join-Path $env:PWSH 'update-manifest.ps1'
+    if (Test-Path $scriptPath) {
+        & $scriptPath @Args
+    } else {
+        Write-Error "Script not found: $scriptPath"
+    }
+}
+
 function y {
   $tmp = [System.IO.Path]::GetTempFileName()
   yazi $args --cwd-file="$tmp"
