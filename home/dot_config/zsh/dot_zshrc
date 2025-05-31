@@ -119,7 +119,6 @@ zinit light junegunn/fzf
 zinit ice lucid wait'0'
 zinit light joshskidmore/zsh-fzf-history-search
 
-ZSH_FZF_HISTORY_SEARCH_FZF_ARGS="+s +m --layout=reverse --height=40% --border=rounded --preview 'echo {}' --preview-window=down:3:hidden:wrap"
 ZSH_FZF_HISTORY_SEARCH_END_OF_LINE=1
 ZSH_FZF_HISTORY_SEARCH_EVENT_NUMBERS=1
 ZSH_FZF_HISTORY_SEARCH_DATES_IN_SEARCH=0
