@@ -161,7 +161,6 @@ bindkey "^A" beginning-of-line
 bindkey "^E" end-of-line
 bindkey "^N" insert-last-word
 bindkey '^[w' kill-region
-bindkey -r '^T'
 bindkey '^T' fdz-widget
 
 if [[ `uname` == "Darwin" ]]; then
