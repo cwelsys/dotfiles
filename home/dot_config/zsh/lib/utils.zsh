@@ -16,6 +16,10 @@ rgz-widget() {
 zle -N rgz-widget
 bindkey '^G' rgz-widget
 
+fzf-file-widget() {
+  fdz-widget
+}
+
 function fg-fzf() {
   job="$(jobs | fzf -0 -1 | sed -E 's/\[(.+)\].*/\1/')" && echo '' && fg %$job
 }
