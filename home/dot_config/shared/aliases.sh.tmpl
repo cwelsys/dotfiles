@@ -48,7 +48,8 @@ cms() {
 		cmc
 	}
 }
-# bat
+
+{{ if eq .chezmoi.os "linux" }}
 if [[ -x "$(command -v bat)" ]]; then
   if [[ ! -d $HOME/.cache/bat ]]; then
     bat cache --build
@@ -65,7 +66,9 @@ if [[ -x "$(command -v bat)" ]]; then
   alias -g -- '-h'='-h 2>&1 | bat --language=help --style=plain'
   alias -g -- '--help'='--help 2>&1 | bat --language=help --style=plain'
 fi
-
+{{ else }}
+alias -- 'cat'='bat --paging=never --style=plain'
+{{ end }}
 alias tg='topgrade'
 alias cm='chezmoi'
 alias cma='chezmoi add'
