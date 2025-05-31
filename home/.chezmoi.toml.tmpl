@@ -195,15 +195,10 @@ gpat = {{ onepasswordRead "op://Secrets/Yasb/gpat" | quote }}
 accentColors = [ {{ $catppuccinAccentColors | quoteList | join ", " }} ]
 flavors = [ {{ $catppuccinFlavors | quoteList | join ", " }} ]
 
-{{ if .isWSL }}
-[age]
-    identity = "mnt/c/users/cwel/.config/.key"
-    recipient = {{ $agePubKey | quote }}
-{{ else }}
 [age]
     identity = "~/.config/.key"
     recipient = {{ $agePubKey | quote }}
-{{ end }}
+
 [gpg]
 recipient = {{ $gpgId | quote }}
 args = ["--quiet"]
