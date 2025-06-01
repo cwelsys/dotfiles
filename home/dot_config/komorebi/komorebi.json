@@ -78,7 +78,8 @@
 		{ "kind": "Exe", "id": "TotalReg.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "TotalUninstall.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "slack.exe", "matching_strategy": "Equals" },
-		{ "kind": "Exe", "id": "Obsidian.exe", "matching_strategy": "Equals" }
+		{ "kind": "Exe", "id": "Obsidian.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "nextcloud.exe", "matching_strategy": "Equals" }
 	],
 	"manage_rules": [{ "kind": "Exe", "id": "MTGA.exe", "matching_strategy": "Equals" }],
 
