@@ -26,7 +26,7 @@ Set-Alias -Name 'komorel' -Value Invoke-Komorebirl -Description "Restarts Komore
 
 Set-Alias -Name 'sarc' -Value Invoke-Sarcastaball -Description "Converts text to Spongebob-case"
 
-Set-Alias -Name 'ip -g' -Value Get-IPLocation -Description "Gets location information for an IP address"
+Set-Alias -Name 'ipg' -Value Get-IPLocation -Description "Gets location information for an IP address"
 
 Set-Alias -Name 'mg' -Value magick -Description "Shortcut for ImageMagick's magick command"
 
