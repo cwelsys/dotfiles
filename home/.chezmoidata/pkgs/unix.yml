@@ -8,8 +8,9 @@ packages:
       - tmux
       - fish
 
-  brew:
+  unv:
     brews:
+      - age
       - bat
       - btop
       - chezmoi
@@ -42,3 +43,19 @@ packages:
       - lazygit
       - bat-extras
     casks:
+
+  darwin:
+    brews:
+      - git
+      - gnupg
+      - dockutil
+      - pkg-config
+      - pinentry-mac
+    casks:
+      - 1password-cli
+      - spotify
+      - tailscale
+      - battery
+      - vagrant
+      - visual-studio-code
+      - vlc
