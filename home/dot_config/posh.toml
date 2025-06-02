@@ -3,18 +3,16 @@ auto_upgrade = true
 final_space = true
 console_title_template = "{{if .Root}} \u26a1 {{end}}{{ .Segments.Path.Path }}"
 
-
 [secondary_prompt]
 template = '❯❯ '
 foreground = 'p:peach'
 
 [transient_prompt]
 template = '❯ '
-foreground = ''
 background = 'transparent'
 foreground_templates = [
   '{{if gt .Code 0}}p:red{{end}}',
-  '{{if eq .Code 0}}p:peach{{end}}',
+  '{{if eq .Code 0}}p:teal{{end}}',
 ]
 
 [[blocks]]
