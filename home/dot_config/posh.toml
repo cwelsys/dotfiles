@@ -12,7 +12,7 @@ template = '❯ '
 background = 'transparent'
 foreground_templates = [
   '{{if gt .Code 0}}p:red{{end}}',
-  '{{if eq .Code 0}}p:teal{{end}}',
+  '{{if eq .Code 0}}p:peach{{end}}',
 ]
 
 [[blocks]]
