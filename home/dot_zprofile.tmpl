@@ -1,0 +1,7 @@
+{{ if stat "/opt/homebrew/bin/brew" -}}
+fpath+=("{{ output "/opt/homebrew/bin/brew" "--prefix" | trim }}")
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
+{{ end -}}

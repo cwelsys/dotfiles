@@ -1,10 +1,20 @@
-# vim:ft=sshconfig.chezmoitmpl
+HashKnownHosts no
+
+{{- if eq .chezmoi.os "darwin" }}
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/cwel
+{{- end }}
+
+{{- if eq .chezmoi.os "windows" }}
 Include ~/.ssh/1Password/config
 Host *
 ServerAliveInterval 86400
 ServerAliveCountMax 4
 Port 22
 IdentityFile ~/.ssh/cwel
+{{- end }}
 
 Host pbox
 HostName pbox
@@ -17,6 +27,11 @@ HostName pstick
 User cwel
 ForwardAgent yes
 ForwardX11 yes
+
+Host mbook
+HostName mbook
+User cwel
+ForwardAgent yes
 
 Host github.com
 User git

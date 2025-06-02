@@ -20,6 +20,8 @@ home/.config/rclone/rclone.conf
 
 {{ if ne .osId "darwin" }}
 .chezmoiscripts/darwin/**
+.zprofile
+.config/homebrew/
 {{ end }}
 
 {{ if eq .osId "windows" }}
