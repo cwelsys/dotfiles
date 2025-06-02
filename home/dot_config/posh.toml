@@ -1,0 +1,224 @@
+version = 3
+auto_upgrade = true
+final_space = true
+console_title_template = "{{if .Root}} \u26a1 {{end}}{{ .Segments.Path.Path }}"
+
+
+[secondary_prompt]
+template = '❯❯ '
+foreground = 'p:peach'
+
+[transient_prompt]
+template = '❯ '
+foreground = ''
+background = 'transparent'
+foreground_templates = [
+  '{{if gt .Code 0}}p:red{{end}}',
+  '{{if eq .Code 0}}p:peach{{end}}',
+]
+
+[[blocks]]
+type = 'prompt'
+alignment = 'left'
+
+[[blocks.segments]]
+template = '{{ .Icon }}  '
+foreground = 'p:lavender'
+type = 'os'
+style = 'plain'
+
+[blocks.segments.properties]
+almalinux = ''
+alpine = ''
+amazon = ''
+android = ''
+aosc = ''
+arch = ''
+artix = '󰣇'
+centos = ''
+coreos = ''
+debian = ''
+deepin = ''
+devuan = ''
+elementary = ''
+endeavouros = ''
+fedora = ''
+gentoo = ''
+macos = ''
+mageia = ''
+manjaro = ''
+mint = ''
+nixos = ''
+opensuse = ''
+suse = ''
+raspbian = ''
+redhat = ''
+redhatenterprise = ''
+rocky = ''
+sabayon = ''
+kali = ''
+slackware = ''
+ubuntu = ''
+windows = ''
+linux = '󰌽'
+
+[[blocks.segments]]
+template = '{{ .Path }} '
+foreground = 'p:blue'
+type = 'path'
+style = 'plain'
+
+[blocks.segments.properties]
+style = 'agnoster_short'
+max_depth = 2
+
+[[blocks.segments]]
+template = '{{ .HEAD }}{{ if or (.Working.Changed) (.Staging.Changed) }}*{{ end }} <cyan>{{ if gt .Behind 0 }}⇣{{ end }}{{ if gt .Ahead 0 }}⇡{{ end }}</>'
+foreground = 'p:overlay2'
+type = 'git'
+style = 'plain'
+
+[blocks.segments.properties]
+branch_icon = ' '
+cache_duration = 'none'
+cherry_pick_icon = ' '
+commit_icon = ' '
+fetch_status = true
+fetch_upstream_icon = false
+merge_icon = ' '
+no_commits_icon = ' '
+rebase_icon = ' '
+revert_icon = ' '
+tag_icon = ' '
+
+[[blocks.segments]]
+template = ' admin '
+type = 'root'
+style = 'plain'
+foreground = 'p:overlay0'
+
+[[blocks.segments]]
+type = 'text'
+style = 'plain'
+template = '❯'
+foreground = ''
+background = 'transparent'
+foreground_templates = [
+  '{{if gt .Code 0}}p:red{{end}}',
+  '{{if eq .Code 0}}p:peach{{end}}',
+]
+
+[[blocks]]
+type = 'rprompt'
+overflow = 'hidden'
+
+[[blocks.segments]]
+type = 'node'
+style = 'powerline'
+template = '  {{ .Major }}.{{ .Minor }} '
+foreground = 'p:green'
+background = ''
+
+[[blocks.segments]]
+type = 'php'
+style = 'powerline'
+template = '  {{ .Major }}.{{ .Minor }} '
+foreground = 'p:blue'
+background = ''
+
+[[blocks.segments]]
+type = "bun"
+style = "plain"
+foreground = "p:blue"
+template = " 🥟 {{ .Full }} "
+
+[[blocks.segments]]
+type = "deno"
+style = "plain"
+foreground = "p:blue"
+template = "  {{ .Full }} "
+
+[[blocks.segments]]
+type = "cmake"
+style = "powerline"
+foreground = "p:text"
+background = "p:green"
+template = "  {{ .Full }} "
+
+[[blocks.segments]]
+type = "mvn"
+style = "powerline"
+foreground = "p:mauve"
+template = "  {{ .Full }} "
+
+[[blocks.segments]]
+type = "lua"
+style = "plain"
+foreground = "p:blue"
+template = "  {{ .Major }}.{{ .Minor }} "
+
+[[blocks.segments]]
+type = "go"
+style = "powerline"
+foreground = "p:sky"
+template = "  {{ .Full }} "
+
+[[blocks.segments]]
+type = "python"
+style = "powerline"
+foreground = "p:yellow"
+template = "  {{ .Full }} "
+
+[[blocks.segments]]
+type = "rust"
+style = "powerline"
+template = " 🦀 {{ .Full }} "
+
+[[blocks.segments]]
+type = "spotify"
+style = "powerline"
+foreground = "p:green"
+template = '   {{ if ne .Status "stopped" }} {{ .Artist }}/{{ .Track }}{{ end }} '
+
+[[blocks.segments]]
+type = "project"
+style = "powerline"
+foreground = "p:lavendar"
+template = " {{ if .Error }}{{ .Error }}{{ else }}{{ if .Version }} {{.Version}}{{ end }} {{ if .Name }}{{ .Name }}{{ end }}{{ end }} "
+
+[[blocks.segments]]
+type = 'executiontime'
+style = 'plain'
+template = ' {{ .FormattedMs }} '
+foreground = 'p:yellow'
+
+[blocks.segments.properties]
+threshold = 5000
+
+[palette]
+rosewater = "#f5e0dc"
+flamingo = "#f2cdcd"
+pink = "#f5c2e7"
+mauve = "#cba6f7"
+red = "#f38ba8"
+maroon = "#eba0ac"
+peach = "#fab387"
+yellow = "#f9e2af"
+green = "#a6e3a1"
+teal = "#94e2d5"
+sky = "#89dceb"
+sapphire = "#74c7ec"
+blue = "#89b4fa"
+lavender = "#b4befe"
+text = "#cdd6f4"
+subtext1 = "#bac2de"
+subtext0 = "#a6adc8"
+overlay2 = "#9399b2"
+overlay1 = "#7f849c"
+overlay0 = "#6c7086"
+surface2 = "#585b70"
+surface1 = "#45475a"
+surface0 = "#313244"
+base = "#1e1e2e"
+mantle = "#181825"
+crust = "#11111b"

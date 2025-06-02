@@ -83,7 +83,7 @@ disabled = false
 
 [character]
 success_symbol = "[❯](peach)"
-error_symbol = "[❯](peach)"
+error_symbol = "[](peach)"
 vimcmd_symbol = "[❮](subtext1)"
 
 [battery]
@@ -241,7 +241,7 @@ Gentoo = " "
 HardenedBSD = "󰞌 "
 Illumos = "󰈸 "
 Kali = " "
-Linux = " "
+Linux = "󰌽 "
 Mabox = " "
 Macos = " "
 Manjaro = " "
@@ -255,8 +255,8 @@ openSUSE = " "
 OracleLinux = "󰌷 "
 Pop = " "
 Raspbian = " "
-Redhat = " "
-RedHatEnterprise = " "
+Redhat = " "
+RedHatEnterprise = " "
 RockyLinux = " "
 Redox = "󰀘 "
 Solus = "󰠳 "
@@ -303,7 +303,6 @@ symbol = " "
 [gradle]
 symbol = " "
 
-# Palette definitions
 [palettes.catppuccin_latte]
 rosewater = "#dc8a78"
 flamingo = "#dd7878"

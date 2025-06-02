@@ -28,7 +28,7 @@ end
 
 # 🐚 Prompt
 if type -q oh-my-posh
-    oh-my-posh init fish --config ~/.config/zen.toml | source
+    oh-my-posh init fish --config ~/.config/posh.toml | source
 else if type -q starship
     starship init fish | source
 end

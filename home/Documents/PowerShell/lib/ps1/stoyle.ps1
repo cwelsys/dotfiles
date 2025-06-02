@@ -27,14 +27,14 @@ $PSStyle.Formatting.Debug = $Flavor.Peach.Foreground()
 $PSStyle.Formatting.Verbose = $Flavor.Lavender.Foreground()
 $PSStyle.Formatting.FeedbackText = $Flavor.Sky.Foreground()
 $PSStyle.FileInfo.SymbolicLink = $Flavor.Blue.Foreground()
-$PSStyle.Progress.Style = $Flavor.Blue.Background() + $Flavor.Base.Foreground()
+$PSStyle.Progress.Style = $Flavor.Teal.Background() + $Flavor.Base.Foreground()
 
 # PSReadline
 # ----------------------------------------------------------------
 $PSReadLineOptions = @{
     BellStyle                     = "None"
     Colors                        = @{
-        Command                = $Flavor.Blue.Foreground()
+        Command                = $Flavor.Teal.Foreground()
         Comment                = $Flavor.Overlay0.Foreground()
         ContinuationPrompt     = $Flavor.Teal.Foreground()
         Default                = $Flavor.Text.Foreground()
