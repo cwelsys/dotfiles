@@ -3,7 +3,6 @@
 {{ $agePubKey := "age1wezwdvug6rdnwedvw8tk7npjm2rlmmewukxdat8v5y5garwvgdeq3ww5m9" }}
 {{ $sshId := "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXPGUiiFFBzqutbhNqi5RjykdlwvdFveB/XkSdg0BAM" }}
 {{ $email := "cwel@cwel.sh" -}}
-{{ $ghuser:= "cwelsys" -}}
 
 {{/* Default dynamic values */}}
 
@@ -185,7 +184,7 @@ isHeadless = {{ $isHeadless }}
 isCloud = {{ $isCloud }}
 isContainer = {{ $isContainer }}
 opType = {{ $opType | quote }}
-githubUsername = {{ .ghuser | quote }}
+githubUsername = cwelsys
 {{ if eq .chezmoi.os "windows" }}
 radarr = {{ onepasswordRead "op://Secrets/Radarr/api" | quote }}
 sonarr = {{ onepasswordRead "op://Secrets/Sonarr/api" | quote }}
