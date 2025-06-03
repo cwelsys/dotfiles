@@ -161,6 +161,7 @@ pkgs:
         - 'main/zig'
         - 'nonportable/winfsp-np'
         - 'main/1password-cli'
+        - 'main/traefik'
 
       importRegistry:
         - '$env:USERPROFILE\scoop\apps\7zip\current\install-context.reg'
@@ -258,3 +259,4 @@ pkgs:
           - 'Link-/gh-token'
           - 'yusukebe/gh-markdown-preview'
           - 'Shresht7/gh-license'
+
