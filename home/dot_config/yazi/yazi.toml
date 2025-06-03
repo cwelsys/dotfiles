@@ -1,85 +1,15 @@
+# A TOML linter such as https://taplo.tamasfe.dev/ can use this schema to validate your config.
+# If you encounter any issues, please make an issue at https://github.com/yazi-rs/schemas.
 "$schema" = "https://yazi-rs.github.io/schemas/yazi.json"
 
-[manager]
+[mgr]
 ratio = [1, 3, 4]
-sort_by = "alphabetical"
-sort_dir_first = true
 linemode = "size"
-show_hidden = false
-show_symlink = false
-scrolloff = 5
+show_symlink = true
 mouse_events = ["click", "scroll", "touch", "move", "drag"]
-
-[opener]
-folder = [
-	{ run = 'nvim "$@"', block = true, desc = "neovim", for = "linux" },
-	{ run = 'explorer "%1"', orphan = true, desc = "Explorer", for = "windows" },
-]
-
-text = [
-	{ run = 'nvim "$@"', block = true, desc = "$EDITOR", for = "linux" },
-	{ run = 'nvim "$@"', block = true, desc = "neovim", for = "linux" },
-	{ run = 'code "%1"', orphan = true, desc = "VS Code", for = "windows" },
-	{ run = 'notepad "%1"', orphan = true, desc = "Notepad", for = "windows" },
-]
-
-document = [
-	{ run = 'wslview "$@"', orphan = true, desc = "wslview", for = "linux" },
-	{ run = 'libreoffice "$@"', orphan = true, desc = "libreoffice", for = "linux" },
-	{ run = 'start "" "%1"', orphan = true, desc = "Open", for = "windows" },
-]
-
-image = [
-	{ run = 'wslview "$@"', orphan = true, desc = "wslview", for = "linux" },
-	{ run = 'start "" "%1"', orphan = true, desc = "Open", for = "windows" },
-]
-
-video = [
-	{ run = 'wslview "$@"', orphan = true, desc = "wslview", for = "linux" },
-	{ run = 'start "" "%1"', orphan = true, desc = "Open", for = "windows" },
-]
-
-audio = [
-	{ run = 'wslview "$@"', orphan = true, desc = "wslview", for = "linux" },
-	{ run = 'start "" "%1"', orphan = true, desc = "Open", for = "windows" },
-]
-
-archive = [
-	{ run = 'start "" "%1"', orphan = true, desc = "Open", for = "windows" },
-]
-
-fallback = [
-	{ run = 'wslview "$@"', orphan = true, desc = "wslview", for = "linux" },
-	{ run = 'start "" "%1"', orphan = true, desc = "Open", for = "windows" },
-]
-
-[open]
-rules = [
-	{ name = "*/", use = "folder" },
-
-	{ mime = "text/*", use = "text" },
-	{ mime = "image/*", use = "image" },
-	{ mime = "video/*", use = "video" },
-	{ mime = "application/octet-stream", use = "video" },
-	{ mime = "audio/*", use = "audio" },
-	{ mime = "inode/x-empty", use = "text" },
-	{ mime = "application/json", use = "text" },
-	{ mime = "application/zip", use = "archive" },
-	{ mime = "application/gzip", use = "archive" },
-	{ mime = "application/x-bzip", use = "archive" },
-	{ mime = "application/x-bzip2", use = "archive" },
-	{ mime = "application/x-tar", use = "archive" },
-	{ mime = "application/x-7z-compressed", use = "archive" },
-	{ mime = "application/x-rar", use = "archive" },
-	{ mime = "application/pdf", use = "document" },
-	{ mime = "application/epub+zip", use = "document" },
-	{ mime = "application/x-mobipocket-ebook", use = "document" },
-	{ mime = "*", use = "fallback" },
-]
 
 [preview]
 wrap = "yes"
-tab_size = 2
 max_width = 1200
 max_height = 1800
 
@@ -90,5 +20,4 @@ prepend_previewers = [
 	{ name = "*.rst", run = "rich-preview" },   # for restructured text (.rst) files
 	{ name = "*.ipynb", run = "rich-preview" }, # for jupyter notebooks (.ipynb)
 	{ name = "*.json", run = "rich-preview" },  # for json (.json) files
-	#    { name = "*.lang_type", run = "rich-preview"} # for particular language files eg. .py, .go., .lua, etc.
 ]
