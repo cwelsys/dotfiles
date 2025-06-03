@@ -1,19 +1,19 @@
 #!/bin/sh
 
 pathappend() {
-	if ! echo "$PATH" | /bin/grep -Eq "(^|:)$1($|:)" && [ -d "$1" ]; then
-		export PATH="$PATH:$1"
-	fi
+    if ! echo "$PATH" | grep -Eq "(^|:)$1($|:)" && [ -d "$1" ]; then
+        export PATH="$PATH:$1"
+    fi
 }
 
 pathprepend() {
-	if ! echo "$PATH" | /bin/grep -Eq "(^|:)$1($|:)" && [ -d "$1" ]; then
-		export PATH="$1:$PATH"
-	fi
+    if ! echo "$PATH" | grep -Eq "(^|:)$1($|:)" && [ -d "$1" ]; then
+        export PATH="$1:$PATH"
+    fi
 }
 
 command_exists() {
-	command -v "$@" >/dev/null 2>&1
+    command -v "$@" >/dev/null 2>&1
 }
 
 # Main bin
