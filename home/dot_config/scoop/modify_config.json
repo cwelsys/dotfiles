@@ -1,0 +1,8 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- $json := fromJson .chezmoi.stdin -}}
+
+{{- $_ := set $json "aria2-warning-enabled" false -}}
+{{- $_ := set $json "aria2-enabled" false -}}
+{{- $_ := set $json "gh_token" (onepasswordRead "op://Secrets/Git/Github/classic") -}}
+
+{{- $json | toPrettyJson -}}
