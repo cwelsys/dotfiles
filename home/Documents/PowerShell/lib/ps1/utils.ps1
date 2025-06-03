@@ -144,7 +144,7 @@ function cmpack {
         [Parameter(ValueFromRemainingArguments=$true)]
         $Args
     )
-    $scriptPath = Join-Path $env:PWSH 'update-manifest.ps1'
+    $scriptPath = Join-Path $env:XDG_BIN_HOME 'update-manifest.ps1'
     if (Test-Path $scriptPath) {
         & $scriptPath @Args
     } else {

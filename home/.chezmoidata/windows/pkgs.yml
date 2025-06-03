@@ -10,7 +10,7 @@ pkgs:
         - 'nerd-fonts'
         - 'versions'
         - 'games'
-      pkgs:
+      apps:
         - 'main/chezmoi' # target specific version w/ 'bucket/app@2.40.0'
         - 'main/aria2'
         - 'main/cacert'
@@ -258,5 +258,3 @@ pkgs:
           - 'Link-/gh-token'
           - 'yusukebe/gh-markdown-preview'
           - 'Shresht7/gh-license'
-
-

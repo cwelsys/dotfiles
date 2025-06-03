@@ -2,22 +2,22 @@
 #!/bin/bash
 
 brew bundle --file=/dev/stdin <<EOF
-{{- range .packages.unv.brews }}
+{{- range .pkgs.shared.brews }}
 brew {{ . | quote }}
 {{- end }}
 
 {{- if eq .chezmoi.os "darwin" }}
-{{- range .packages.darwin.brews }}
+{{- range .pkgs.darwin.brews }}
 brew {{ . | quote }}
 {{- end }}
 {{- end }}
 
-{{- range .packages.unv.casks }}
+{{- range .pkgs.shared.casks }}
 cask {{ . | quote }}
 {{- end }}
 
 {{- if eq .chezmoi.os "darwin" }}
-{{- range .packages.darwin.casks }}
+{{- range .pkgs.darwin.casks }}
 cask {{ . | quote }}
 {{- end }}
 {{- end }}

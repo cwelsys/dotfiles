@@ -2,10 +2,10 @@
 #!/bin/bash
 
 {{   if eq .chezmoi.osRelease.id "debian" }}
-{{ $pkgs := .packages.debian.apt }}
+{{ $pkgs := .pkgs.debian.apt }}
 sudo apt install {{ $pkgs | quoteList | join " " }} -y
 {{   else if eq .chezmoi.osRelease.id "fedora" }}
-{{ $pkgs := .packages.fedora.dnf }}
+{{ $pkgs := .pkgs.fedora.dnf }}
 sudo dnf install {{ $pkgs | quoteList | join " " }} -y
 {{   end }}
 {{ end }}

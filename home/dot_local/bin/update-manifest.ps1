@@ -1,38 +1,32 @@
 ﻿#!/usr/bin/env pwsh
 
-# Ensure we're running in PowerShell 7+
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Host "Relaunching in PowerShell Core..."
     & "C:\Program Files\PowerShell\7\pwsh.exe" -NoProfile -ExecutionPolicy Bypass -File $MyInvocation.MyCommand.Path
     exit
 }
 
-# Set up environment
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
-# Ensure PSWriteColor is installed
 if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
     Write-Host "Installing PSWriteColor module..."
     Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction SilentlyContinue
 }
 Import-Module PSWriteColor -ErrorAction SilentlyContinue
 
-# Path to the windows.yml file
-$yamlFilePath = Join-Path $env:USERPROFILE ".local\share\chezmoi\home\.chezmoidata\pkgs\windows.yml"
+$yamlFilePath = Join-Path $env:USERPROFILE ".local\share\chezmoi\home\.chezmoidata\windows\pkgs.yml"
 
 if (-not (Test-Path $yamlFilePath)) {
     Write-Color -Text "❌ Manifest file not found at: $yamlFilePath" -Color Red
     exit 1
 }
 
-# Read the current manifest
 $manifestContent = Get-Content -Path $yamlFilePath -Raw
 if (-not $manifestContent) {
     Write-Color -Text "❌ Failed to read manifest file or file is empty" -Color Red
     exit 1
 }
 
-# Parse the YAML to extract current packages
 $currentPackages = @()
 $registryPaths = @()  # NEW: Track registry paths separately
 $inScoopSection = $false
@@ -49,26 +43,22 @@ $packageIndentation = "        " # Default indentation
 foreach ($i in 0..($manifestLines.Count-1)) {
     $line = $manifestLines[$i]
 
-    # Check for scoop: section first
     if ($line -match '^\s*scoop:\s*$') {
         $inScoopSection = $true
         continue
     }
 
-    # Look for buckets: section inside scoop:
     if ($inScoopSection -and $line -match '^\s*buckets:\s*$') {
         $inBucketsSection = $true
         $inPkgsSection = $false
         continue
     }
 
-    # Look for pkgs: section inside scoop:
-    if ($inScoopSection -and $line -match '^\s*pkgs:\s*$') {
+    if ($inScoopSection -and $line -match '^\s*apps:\s*$') {
         $inBucketsSection = $false
         $inPkgsSection = $true
         $scoopPkgsStartIndex = $i
 
-        # Find the indentation level from the next line if available
         if ($i+1 -lt $manifestLines.Count) {
             $nextLine = $manifestLines[$i+1]
             if ($nextLine -match '^(\s+)-\s+') {
@@ -78,7 +68,6 @@ foreach ($i in 0..($manifestLines.Count-1)) {
         continue
     }
 
-    # Add this case for importRegistry section
     if ($inScoopSection -and $line -match '^\s*importRegistry:\s*$') {
         $inBucketsSection = $false
         $inPkgsSection = $false
@@ -86,12 +75,9 @@ foreach ($i in 0..($manifestLines.Count-1)) {
         continue
     }
 
-    # Capture package entries - ONLY in the pkgs section, not in buckets
     if ($inPkgsSection -and $line -match '^\s*-\s+''([^'']+)''') {
         $pkg = $Matches[1]
         $currentPackages += $pkg
-
-        # This is the last package line so far
         $scoopPkgsEndIndex = $i
     }
     elseif ($inRegistrySection -and $line -match '^\s*-\s+''([^'']+)''') {
@@ -99,9 +85,8 @@ foreach ($i in 0..($manifestLines.Count-1)) {
         $registryPaths += $regPath  # NEW: Store registry paths separately
     }
 
-    # End of scoop section detection
     if ($inScoopSection -and
-        ($line -match '^\s*\w+:\s*$' -and $line -notmatch '^\s*pkgs:\s*$' -and $line -notmatch '^\s*buckets:\s*$' -and $line -notmatch '^\s*importRegistry:\s*$') ||
+        ($line -match '^\s*\w+:\s*$' -and $line -notmatch '^\s*apps:\s*$' -and $line -notmatch '^\s*buckets:\s*$' -and $line -notmatch '^\s*importRegistry:\s*$') ||
         ($line -match '^\s*winget:\s*$')) {
         $inScoopSection = $false
         $inBucketsSection = $false
@@ -122,8 +107,6 @@ $wingetIndentation = "      " # Default indentation
 
 foreach ($i in 0..($manifestLines.Count-1)) {
     $line = $manifestLines[$i]
-
-    # Check for winget: section
     if ($line -match '^\s*winget:\s*$') {
         $inWingetSection = $true
         $wingetPkgsStartIndex = $i
@@ -163,7 +146,7 @@ $backupDir = Join-Path $env:USERPROFILE ".config\chezmoi\backups"
 if (-not (Test-Path $backupDir)) {
     New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
 }
-$backupPath = Join-Path $backupDir "windows.yml.bak.$timestamp"
+$backupPath = Join-Path $backupDir "win_pkgs.yml.bak.$timestamp"
 Copy-Item -Path $yamlFilePath -Destination $backupPath -Force
 Write-Color -Text "💾 Created backup at $backupPath" -Color Gray
 

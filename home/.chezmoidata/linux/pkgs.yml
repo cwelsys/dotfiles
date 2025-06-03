@@ -1,4 +1,4 @@
-packages:
+pkgs:
   debian:
     apt:
       - tmux
@@ -8,7 +8,7 @@ packages:
       - tmux
       - fish
 
-  unv:
+  shared:
     brews:
       - age
       - bat
@@ -43,19 +43,3 @@ packages:
       - lazygit
       - bat-extras
     casks:
-
-  darwin:
-    brews:
-      - git
-      - gnupg
-      - dockutil
-      - pkg-config
-      - pinentry-mac
-    casks:
-      - 1password-cli
-      - spotify
-      - tailscale
-      - battery
-      - vagrant
-      - visual-studio-code
-      - vlc

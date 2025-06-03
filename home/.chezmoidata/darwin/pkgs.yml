@@ -1,0 +1,16 @@
+pkgs:
+  darwin:
+    brews:
+      - git
+      - gnupg
+      - dockutil
+      - pkg-config
+      - pinentry-mac
+    casks:
+      - 1password-cli
+      - spotify
+      - tailscale
+      - battery
+      - vagrant
+      - visual-studio-code
+      - vlc
