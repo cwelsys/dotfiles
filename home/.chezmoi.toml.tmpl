@@ -16,7 +16,6 @@
 {{- $isWSL := false -}}
 {{- $isHeadless := false -}}
 {{ $isLaptop := false }}
-{{ $opType := "service" }}
 
 {{ $themes := list
      "dark"
@@ -55,7 +54,6 @@
 
 {{/* Checks */}}
 
-{{/* if its a linux box */}}
 {{ $osId := .chezmoi.os }}
 {{ if (and (eq .chezmoi.os "linux") (hasKey .chezmoi.osRelease "id")) }}
   {{ $osId = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id }}
@@ -102,6 +100,18 @@
   {{ end }}
 {{ end }}
 
+{{- $hostname := .chezmoi.hostname -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   $computerName := output "scutil" "--get" "ComputerName" | trim -}}
+{{-   if eq $computerName "Connor’s Laptop" -}}
+{{-     $hostname = "cwel-lap" -}}
+{{-   else if eq $computerName "Connor's MacBook Air" -}}
+{{-     $hostname = "cwel-mba" -}}
+{{-   else -}}
+{{-     $hostname = $computerName -}}
+{{-   end -}}
+{{- end -}}
+
 {{ if lookPath "hostnamectl" }}
   {{ if eq (output "hostnamectl" "chassis") "laptop" }}
     {{ $isLaptop = true }}
@@ -111,7 +121,7 @@
     {{ $isLaptop = true }}
   {{ end }}
 {{ else if stdinIsATTY }}
-  {{ $isLaptop = promptBoolOnce . "isLaptop" "Is this a laptop" false }}
+  {{ $isLaptop = promptBoolOnce . "isLaptop" "laptop" false }}
 {{ end }}
 
 {{ $catppuccinFlavor := "" }}
@@ -121,47 +131,16 @@
   {{ $catppuccinFlavor = $catppuccinLightFlavour }}
 {{ end }}
 
-{{/* Set editor based on environment */}}
-
-{{ $editCommand := "code" }}
-{{ $editArgs := list "--wait" }}
-{{ $diffCommand := "code" }}
-{{ $diffArgs := list "--wait" "--diff" "{{ .Destination }}" "{{ .Target }}" }}
-{{ $mergeCommand := "" }}  {{/* Declare with an initial value */}}
-{{ $mergeArgs := list }}   {{/* Declare with an initial value */}}
-
-{{ if eq .chezmoi.os "windows" }}
-  {{ $mergeCommand = "powershell.exe" }}  {{/* Use = not := */}}
-  {{ $mergeArgs = list "-Command" "Copy-Item -Path '{{ .Target }}' -Destination '{{ .Target }}.base' -Force; code --wait --new-window --merge '{{ .Destination }}' '{{ .Target }}' '{{ .Target }}.base' '{{ .Source }}'" }}
-{{ else }}
-  {{ $mergeCommand = "bash" }}  {{/* Use = not := */}}
-  {{ $mergeArgs = list "-c" "cp '{{ .Target }}' '{{ .Target }}.base' && code --wait --new-window --merge '{{ .Destination }}' '{{ .Target }}' '{{ .Target }}.base' '{{ .Source }}'" }}
-{{ end }}
-
-{{ if $isHeadless }}
-  {{ $editCommand = "nvim" }}
-  {{ $editArgs = list }}
-  {{ $diffCommand = "nvim" }}
-  {{ $diffArgs = list "-d" }}
-  {{ $mergeCommand = "nvim" }}
-  {{ $mergeArgs = list "-d" "{{ .Destination }}" "{{ .Source }}" }}
-{{ else if or $isContainer $isCloud }}
-  {{ $editCommand = "vim" }}
-  {{ $editArgs = list }}
-  {{ $diffCommand = "vimdiff" }}
-  {{ $diffArgs = list }}
-  {{ $mergeCommand = "vim" }}
-  {{ $mergeArgs = list "-d" "{{ .Destination }}" "{{ .Source }}" }}
-{{ end }}
-
-{{ if and $isWSL (not $isHeadless) (not $isContainer) (not $isCloud) }}
-  {{ $editCommand = "code" }}
-  {{ $editArgs = list "--wait" }}
-  {{ $diffCommand = "code" }}
-  {{ $diffArgs = list "--wait" "--diff" "{{ .Destination }}" "{{ .Target }}" }}
-  {{ $mergeCommand = "bash" }}
-  {{ $mergeArgs = list "-c" "cp {{ .Target }} {{ .Target }}.base && code --wait --new-window --merge {{ .Destination }} {{ .Target }} {{ .Target }}.base {{ .Source }}" }}
-{{ end }}
+{{- $opType := "account" -}}
+{{-   if eq $hostname "pbox" -}}
+{{-     $opType = "service" -}}
+{{-   else if .isWSL -}}
+{{-     $opType = "service" -}}
+{{-   else if .isContainer -}}
+{{-     $opType = "service" -}}
+{{-   else if .isCloud -}}
+{{-     $opType = promptBoolOnce . "op connection?" "service" -}}
+{{-   end -}}
 
 encryption = "age" # age, rage, gpg
 mode = "file" # file, symlink
@@ -184,13 +163,7 @@ isHeadless = {{ $isHeadless }}
 isCloud = {{ $isCloud }}
 isContainer = {{ $isContainer }}
 opType = {{ $opType | quote }}
-githubUsername = "cwelsys"
-{{ if eq .chezmoi.os "windows" }}
-radarr = {{ onepasswordRead "op://Secrets/Radarr/api" | quote }}
-sonarr = {{ onepasswordRead "op://Secrets/Sonarr/api" | quote }}
-wapi = {{ onepasswordRead "op://Secrets/Yasb/wapi" | quote}}
-gpat = {{ onepasswordRead "op://Secrets/Yasb/gpat" | quote }}
-{{ end }}
+hostname = {{ $hostname | quote }}
 
 [data.catppuccin]
 accentColors = [ {{ $catppuccinAccentColors | quoteList | join ", " }} ]
@@ -212,24 +185,39 @@ autoPush = false
 [cd]
 command = {{ $shell | quote }}
 
-[edit]
-command = {{ $editCommand | quote }}
-args = [{{ range $editArgs }}{{ . | quote }}, {{ end }}]
-watch = true
-
-[diff]
-command = {{ $diffCommand | quote }}
-args = [{{ range $diffArgs }}{{ . | quote }}, {{ end }}]
-
-[merge]
-command = {{ $mergeCommand | quote }}
-args = [{{ range $mergeArgs }}{{ . | quote }}, {{ end }}]
+[onepassword]
+    mode = {{ $opType | quote }}
 
 [interpreters.ps1]
     command = "pwsh"
     args = ["-NoLogo"]
+[edit]
+watch = true
 
-[onepassword]
-    mode = {{ $opType | quote }}
+{{ if eq .chezmoi.os "windows" "darwin" }}
+[merge]
+command = code
+args = [
+    "--wait",
+    "--merge",
+    "{{ .Destination }}",
+    "{{ .Target }}",
+    "{{ .Source }}",
+    "{{ .Source }}"
+]
+
+[diff]
+command = code
+args = [
+    "--wait",
+    "--diff",
+    "{{ .Destination }}",
+    "{{ .Target }}"
+]
+{{ end }}
+
+
+
+
 
 

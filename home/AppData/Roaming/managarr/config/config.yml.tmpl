@@ -1,25 +1,7 @@
 theme: catppuccin-mocha
 radarr:
-  - uri: https://radarr.cwel.sh
-    api_token: {{ .radarr }}
+  - uri: https://radarr.cwel.casa
+    api_token: {{ onepasswordRead "op://Secrets/Radarr/api" | quote }}
 sonarr:
-  - uri: https://sonarr.cwel.sh
-    api_token: {{ .sonarr }}
-# readarr:
-#   - uri: https://readarr.cwel.sh
-#     api_token: ${READARR_API_KEY}
-# lidarr:
-#   - uri: https://sonarr.cwel.sh
-#     api_token: ${LIDARR_API_KEY}
-# whisparr:
-#   - uri: https://whisparr.cwel.sh
-#     api_token: ${WHISPARR_API_KEY}
-# bazarr:
-#   - uri: https://bazarr.cwel.sh
-#     api_token: ${BAZARR_API_KEY}
-# prowlarr:
-#   - uri: https://prowlarr.cwel.sh
-#     api_token: ${PROWLARR_API_KEY}
-# tautulli:
-#   - uri: https://tautulli.cwel.sh
-#     api_token: ${TAUTULLI_API_KEY}
+  - uri: https://sonarr.cwel.casa
+    api_token: {{ onepasswordRead "op://Secrets/Sonarr/api" | quote }}

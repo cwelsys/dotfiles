@@ -1,2 +1,2 @@
-YASB_WEATHER_API_KEY={{ .wapi }}
-YASB_GITHUB_TOKEN={{ .gpat }}
+YASB_WEATHER_API_KEY={{ onepasswordRead "op://Secrets/Yasb/wapi" | quote}}
+YASB_GITHUB_TOKEN={{ onepasswordRead "op://Secrets/Yasb/gpat" | quote }}

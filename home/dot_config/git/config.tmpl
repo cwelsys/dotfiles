@@ -37,8 +37,13 @@ hyperlinks-file-link-format = "vscode://file/{path}:{line}"
 
 [user]
   name = Connor Welsh
-  email = cwel@cwel.sh
+  email = {{ .email }}
   signingkey = {{ .sshId }}
+
+[advice]
+	addEmptyPathspec = false
+	pushNonFastForward = false
+	statusHints = false
 
 [github]
   user = cwelsys
@@ -56,9 +61,14 @@ hyperlinks-file-link-format = "vscode://file/{path}:{line}"
   ui = always
   interactive = always
 
+{{ if eq .chezmoi.os "windows" -}}
 [safe]
+	directory = {{ .chezmoi.workingTree }}
   directory = ~/scoop/*
+{{ else if eq .chezmoi.os "linux" "darwin" -}}
+[safe]
   directory =  /opt/docker/*
+{{ end -}}
 
 [gpg]
   format = ssh
@@ -90,12 +100,18 @@ hyperlinks-file-link-format = "vscode://file/{path}:{line}"
 
 [push]
   autoSetupRemote = true
+  default = current
 
 [pull]
   rebase = true
 
 [rebase]
-  autoStash = true
+	autoSquash = true
+	autoStash = true
+	updateRefs = true
+
+[receive]
+	fsckobjects = true
 
 [rerere]
   enabled = true
@@ -124,6 +140,11 @@ colorMoved = default
 [submodule]
   fetchJobs = 8
 
+[fetch]
+	all = true
+	fsckobjects = false
+	prune = true
+
 [remote]
   pushDefault = origin
 
@@ -133,11 +154,6 @@ colorMoved = default
   smudge = git-lfs smudge -- %f
   process = git-lfs filter-process
 
-{{- if eq .osId "windows" }}
-[credential "helperselector"]
-  selected = manager
-{{- end }}
-
 [url "git@github.com:"]
   insteadOf = "gh:"
   pushInsteadOf = "github:"
@@ -146,9 +162,15 @@ colorMoved = default
   insteadOf = "gst:"
   pushInsteadOf = "gist:"
   pushInsteadOf = "git://gist.github.com/"
-[url "git@git.cwel.sh:"]
+[url "git@git.cwel.casa:"]
   insteadOf = "gitea:"
-  pushInsteadOf = "git://git.cwel.sh/"
+  pushInsteadOf = "git://git.cwel.casa/"
 
-[credential "https://git.cwel.sh"]
+{{- if eq .osId "windows" }}
+[credential "helperselector"]
+  selected = manager
+{{- else }} }}
+[credential "https://git.cwel.casa"]
   provider = generic
+{{- end }}
+{{/* vim: set filetype=gitconfig: */}}
