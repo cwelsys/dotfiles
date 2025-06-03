@@ -3,6 +3,7 @@
 {{ $agePubKey := "age1wezwdvug6rdnwedvw8tk7npjm2rlmmewukxdat8v5y5garwvgdeq3ww5m9" }}
 {{ $sshId := "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXPGUiiFFBzqutbhNqi5RjykdlwvdFveB/XkSdg0BAM" }}
 {{ $email := "cwel@cwel.sh" -}}
+{{ $opType := "account" }}
 
 {{/* Default dynamic values */}}
 
@@ -44,12 +45,6 @@
      "sky"
      "teal"
      "yellow"
-}}
-
-{{ $opTypeChoices := list
-      "account"
-      "service"
-      "connect"
 }}
 
 {{/* Checks */}}
@@ -131,16 +126,16 @@
   {{ $catppuccinFlavor = $catppuccinLightFlavour }}
 {{ end }}
 
-{{- $opType := "account" -}}
-{{-   if eq $hostname "pbox" -}}
-{{-     $opType = "service" -}}
-{{-   else if .isWSL -}}
-{{-     $opType = "service" -}}
-{{-   else if .isContainer -}}
-{{-     $opType = "service" -}}
-{{-   else if .isCloud -}}
-{{-     $opType = promptBoolOnce . "op connection?" "service" -}}
-{{-   end -}}
+{{- $choices := list "account" "service" "connect" -}}
+{{- if eq $hostname "pbox" -}}
+{{-   $opType = "service" -}}
+{{- else if $isWSL -}}
+{{-   $opType = "service" -}}
+{{- else if $isContainer -}}
+{{-   $opType = "service" -}}
+{{- else -}}
+{{-   $opType = promptChoice "1Password connection type" $choices -}}
+{{- end -}}
 
 encryption = "age" # age, rage, gpg
 mode = "file" # file, symlink
