@@ -1,21 +1,15 @@
 HashKnownHosts no
-
-{{- if eq .chezmoi.os "darwin" }}
-Host *
-  AddKeysToAgent yes
-  UseKeychain yes
-  IdentityFile ~/.ssh/cwel
-{{- end }}
-
-{{- if eq .chezmoi.os "windows" }}
+{{- if eq .chezmoi.os "windows" "darwin" }}
 Include ~/.ssh/1Password/config
+{{- end }}
 Host *
 ServerAliveInterval 86400
 ServerAliveCountMax 4
 Port 22
 IdentityFile ~/.ssh/cwel
+{{- if eq .chezmoi.os "darwin" }}
+IdentityAgent ~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 {{- end }}
-
 Host pbox
 HostName pbox
 user cwel

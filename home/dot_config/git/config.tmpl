@@ -70,6 +70,10 @@ hyperlinks-file-link-format = "vscode://file/{path}:{line}"
 {{- else if .isWSL }}
 [gpg "ssh"]
   program = "/mnt/c/Users/cwel/AppData/Local/1Password/app/8/op-ssh-sign-wsl"
+
+{{- else if .osId "darwin" }}
+[gpg "ssh"]
+  program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
 {{- end }}
 
 [commit]

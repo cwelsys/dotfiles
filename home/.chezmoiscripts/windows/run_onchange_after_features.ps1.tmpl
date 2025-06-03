@@ -13,6 +13,16 @@ Import-Module Microsoft.PowerShell.Security
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
 Set-ExecutionPolicy Bypass -Scope Process -Force
 
+Write-Host "Enabling OpenSSH Server..."
+Add-WindowsCapability -Online -Name OpenSSH.Server*
+Start-Service sshd
+Set-Service -Name sshd -StartupType 'Automatic'
+Write-Host "Configuring OpenSSH Server..."
+Get-NetFirewallRule -Name OpenSSH-Server-In-TCP |Enable-NetFirewallRule
+New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Program Files\PowerShell\7\pwsh.exe" -PropertyType String -Force
+Write-Host "‼️You might need to e %programdata%\ssh\sshd_config and comment out the 'Match Group administrators' block at the end of the file."
+Get-Service sshd| Restart-Service –force
+
 Write-Host "Enabling Dev mode..."
 Add-WindowsCapability -Online -Name DeveloperMode
 
