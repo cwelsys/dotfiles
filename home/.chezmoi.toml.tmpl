@@ -194,27 +194,7 @@ command = {{ $shell | quote }}
 [edit]
 watch = true
 
-{{ if eq .chezmoi.os "windows" "darwin" }}
-[merge]
-command = code
-args = [
-    "--wait",
-    "--merge",
-    "{{`{{ .Destination }}`}}",
-    "{{`{{ .Target }}`}}",
-    "{{`{{ .Source }}`}}",
-    "{{`{{ .Source }}`}}"
-]
 
-[diff]
-command = code
-args = [
-    "--wait",
-    "--diff",
-    "{{`{{ .Destination }}`}}",
-    "{{`{{ .Target }}`}}"
-]
-{{ end }}
 
 
 
