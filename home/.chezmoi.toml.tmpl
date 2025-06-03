@@ -184,7 +184,7 @@ isHeadless = {{ $isHeadless }}
 isCloud = {{ $isCloud }}
 isContainer = {{ $isContainer }}
 opType = {{ $opType | quote }}
-githubUsername = cwelsys
+githubUsername = "cwelsys"
 {{ if eq .chezmoi.os "windows" }}
 radarr = {{ onepasswordRead "op://Secrets/Radarr/api" | quote }}
 sonarr = {{ onepasswordRead "op://Secrets/Sonarr/api" | quote }}
