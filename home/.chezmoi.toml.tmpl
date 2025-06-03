@@ -200,10 +200,10 @@ command = code
 args = [
     "--wait",
     "--merge",
-    "{{ .Destination }}",
-    "{{ .Target }}",
-    "{{ .Source }}",
-    "{{ .Source }}"
+    "{{`{{ .Destination }}`}}",
+    "{{`{{ .Target }}`}}",
+    "{{`{{ .Source }}`}}",
+    "{{`{{ .Source }}`}}"
 ]
 
 [diff]
@@ -211,8 +211,8 @@ command = code
 args = [
     "--wait",
     "--diff",
-    "{{ .Destination }}",
-    "{{ .Target }}"
+    "{{`{{ .Destination }}`}}",
+    "{{`{{ .Target }}`}}"
 ]
 {{ end }}
 
