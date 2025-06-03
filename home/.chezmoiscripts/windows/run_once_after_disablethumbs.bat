@@ -1,10 +1,5 @@
 @echo off
 
-:: Created by: Shawn Brink
-:: Created on: October 3, 2022
-:: Tutorial: https://www.elevenforum.com/t/disable-folder-thumbnail-previews-without-disabling-file-thumbnail-previews-in-windows-11.9415/
-
-
 echo.
 taskkill /f /im explorer.exe
 timeout 2 /nobreak>nul

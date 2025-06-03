@@ -1,11 +1,6 @@
-﻿# Yazi Plugin Installation Script
-# This script installs/updates plugins for the Yazi file manager
-
-# Error handling setup
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 $ProgressPreference = "Continue"
 
-# Function to install a plugin with error handling and feedback
 function Install-YaziPlugin {
     param(
         [Parameter(Mandatory = $true)][string]$PluginPath,
