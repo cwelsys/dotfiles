@@ -62,10 +62,6 @@ omzLib grep.zsh
 omzLib history.zsh
 
 # 🔌 plugs
-if [[ `uname` == "Darwin" ]]; then
-    omzPlugin macos
-fi
-
 omzPlugin sudo
 omzPlugin cp
 omzPlugin rsync
@@ -73,13 +69,22 @@ omzPlugin gpg-agent
 omzPlugin git
 omzPlugin eza
 omzPlugin mise
-omzPlugin systemd
 omzPlugin git-flow wait"1"
 omzPlugin github wait"1"
 omzPlugin 1password wait"1"
 omzPlugin docker wait"1"
 omzPlugin command-not-found wait"1"
 omzPlugin common-aliases
+
+if [[ `uname` == "Darwin" ]]; then
+    omzPlugin macos
+fi
+
+if [[ `uname` != "Darwin" ]]; then
+    omzPlugin systemd
+fi
+
+omzPlugin systemd
 
 # atuin
 zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
