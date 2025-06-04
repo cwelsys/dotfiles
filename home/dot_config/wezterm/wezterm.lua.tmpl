@@ -251,20 +251,34 @@ config.mouse_bindings = {
 -- Keys
 config.leader = { key = "a", mods = "CTRL", timeout_milliseconds = 3000 }
 config.keys = {
-	{ key = "phys:Space", mods = "LEADER", action = act.ActivateCommandPalette },
+    { key = "phys:Space", mods = "LEADER", action = act.ActivateCommandPalette },
 
-	-- Remove default bindings
-	{ key = "n", mods = "CTRL", action = wezterm.action.DisableDefaultAssignment },
-	{ key = "t", mods = "CTRL | SHIFT", action = wezterm.action.DisableDefaultAssignment },
-	{ key = "w", mods = "CTRL | SHIFT", action = wezterm.action.DisableDefaultAssignment },
+    -- Remove default bindings
+    { key = "n", mods = "CTRL", action = wezterm.action.DisableDefaultAssignment },
+    { key = "t", mods = "CTRL | SHIFT", action = wezterm.action.DisableDefaultAssignment },
+    { key = "w", mods = "CTRL | SHIFT", action = wezterm.action.DisableDefaultAssignment },
 
-	-- Copy and paste
-	{ key = "c", mods = "CTRL | SHIFT", action = act.CopyTo("ClipboardAndPrimarySelection") },
-	{ key = "v", mods = "CTRL | SHIFT", action = act.PasteFrom("Clipboard") },
+    -- Copy and paste
+    { key = "c", mods = "CTRL | SHIFT", action = act.CopyTo("ClipboardAndPrimarySelection") },
+    { key = "v", mods = "CTRL | SHIFT", action = act.PasteFrom("Clipboard") },
 
-	-- Font Size
-	{ key = "=", mods = "CTRL", action = wezterm.action.IncreaseFontSize },
-	{ key = "-", mods = "CTRL", action = wezterm.action.DecreaseFontSize },
+    {
+        key = "c",
+        mods = "CTRL",
+        action = wezterm.action_callback(function(window, pane)
+            local has_selection = window:get_selection_text_for_pane(pane) ~= ""
+            if has_selection then
+                window:perform_action(act.CopyTo("ClipboardAndPrimarySelection"), pane)
+                window:perform_action(act.ClearSelection, pane)
+            else
+                window:perform_action(act.SendKey({ key = "c", mods = "CTRL" }), pane)
+            end
+        end),
+    },
+
+    -- Font Size
+    { key = "=", mods = "CTRL", action = wezterm.action.IncreaseFontSize },
+    { key = "-", mods = "CTRL", action = wezterm.action.DecreaseFontSize },
 
 	-- Window
 	{ key = "F11", mods = "", action = wezterm.action.ToggleFullScreen },
