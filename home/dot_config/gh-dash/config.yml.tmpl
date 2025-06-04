@@ -49,7 +49,9 @@ defaults:
 keybindings:
   issues: []
   prs: []
-repoPaths: {}
+repoPaths:
+  /*: ~/projects/*
+  dots: {{ .chezmoi.sourceDir }}
 theme:
   ui:
     table:
