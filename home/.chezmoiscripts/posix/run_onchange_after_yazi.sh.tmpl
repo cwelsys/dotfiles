@@ -4,26 +4,30 @@ set -e
 
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'
+YELLOW='\033[0;33m'
+RED='\033[0;31m'
 NC='\033[0m'
 
 install_plugin() {
-	local plugin="$1"
-	echo -e "${CYAN}Installing plugin: ${plugin}${NC}"
-	if ya pkg -a "$plugin"; then
-		echo -e "${GREEN}  Success!${NC}"
-	else
-		echo "  Failed to install plugin: $plugin"
-		return 1
-	fi
+    local plugin="$1"
+    echo -e "${CYAN}Installing plugin: ${plugin}${NC}"
+
+    # Use || true to prevent script from exiting on plugin install failure
+    if ya pkg add "$plugin" || true; then
+        echo -e "${GREEN}  Success!${NC}"
+    else
+        echo -e "${RED}  Failed to install plugin: $plugin${NC}"
+        # Don't return error to allow other plugins to install
+    fi
 }
 
-echo "=== Installing yazi plugins ==="
+echo -e "${YELLOW}=== Installing yazi plugins ===${NC}"
 
 {{ range .yazi.plugins -}}
 install_plugin '{{ . }}'
 {{ end }}
 
-echo "=== Listing installed plugins ==="
-ya pkg list
+echo -e "${YELLOW}=== Listing installed plugins ===${NC}"
+ya pkg list || true
 
-echo "=== Done ==="
+echo -e "${GREEN}=== Done ===${NC}"

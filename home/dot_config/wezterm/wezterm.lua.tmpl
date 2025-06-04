@@ -222,20 +222,29 @@ if wezterm.target_triple == "x86_64-pc-windows-msvc" then
   end
 end
 
--- Mouse: Middle to paste
--- Ref: https://www.reddit.com/r/wezterm/comments/10jda7o/is_there_a_way_not_to_open_urls_on_simple_click/
 config.mouse_bindings = {
-	-- Disable the default click behavior
 	{
 		event = { Up = { streak = 1, button = "Left" } },
 		mods = "NONE",
 		action = wezterm.action.DisableDefaultAssignment,
 	},
-	-- Ctrl-click will open the link under the mouse cursor
 	{
 		event = { Down = { streak = 1, button = "Left" } },
 		mods = "CTRL",
 		action = wezterm.action.OpenLinkAtMouseCursor,
+	},
+	{
+		event = { Down = { streak = 1, button = "Right" } },
+		mods = "NONE",
+		action = wezterm.action_callback(function(window, pane)
+			local has_selection = window:get_selection_text_for_pane(pane) ~= ""
+			if has_selection then
+				window:perform_action(act.CopyTo("ClipboardAndPrimarySelection"), pane)
+				window:perform_action(act.ClearSelection, pane)
+			else
+				window:perform_action(act.PasteFrom("Clipboard"), pane)
+			end
+		end),
 	},
 }
 
