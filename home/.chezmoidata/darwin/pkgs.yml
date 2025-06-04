@@ -26,6 +26,7 @@ pkgs:
       - karabiner-elements
       - vlc
       - wezterm
+      - hammerspoon
       - zed
       - discord
       - obsidian
