@@ -46,9 +46,58 @@ defaults:
         width: 20
         hidden: false
   refetchIntervalMinutes: 30
+
 keybindings:
-  issues: []
-  prs: []
+  universal:
+    - name: lazygit
+      key: g
+      command: >
+        cd {{"{{"}}.RepoPath{{"}}"}} && lazygit
+
+  prs:
+    - name: add
+      key: A
+      command: >
+        cd {{"{{"}}.RepoPath{{"}}"}} && git add -A && lazygit
+    - name: diff
+      key: d
+      command: >
+        cd {{"{{"}}.RepoPath{{"}}"}} && gh pr checkout {{"{{"}}.PrNumber{{"}}"}} && nvim -c ":DiffviewOpen {{"{{"}}.BaseRefName{{"}}"}}...{{"{{"}}.HeadRefName{{"}}"}}"
+    - name: open in Octo
+      key: O
+      command: >
+        cd {{"{{"}}.RepoPath{{"}}"}} && nvim -c ":silent Octo pr edit {{"{{"}}.PrNumber{{"}}"}}"
+    - name: open in vscode
+      key: V
+      command: >
+        cd {{"{{"}}.RepoPath{{"}}"}} && gh pr checkout {{"{{"}}.PrNumber{{"}}"}} && code .
+    - name: approve
+      key: v
+      command: >
+        gh pr review --repo {{"{{"}}.RepoName{{"}}"}} --approve --body "$(gum input --prompt='Approve Comment: ')" {{"{{"}}.PrNumber{{"}}"}}"
+    - name: merge
+      key: m
+      command: >
+        gh pr merge --repo {{"{{"}}.RepoName{{"}}"}} {{"{{"}}.PrNumber{{"}}"}} --delete-branch
+
+  issues:
+    - name: pin
+      key: p
+      command: >
+        gh issue pin {{"{{"}}.IssueNumber{{"}}"}} --repo {{"{{"}}.RepoName{{"}}"}}"
+    - name: close
+      key: x
+      command: >
+        gh issue close {{"{{"}}.IssueNumber{{"}}"}} --repo {{"{{"}}.RepoName{{"}}"}}"
+    - name: open in Octo
+      key: O
+      command: >
+        cd {{"{{"}}.RepoPath{{"}}"}} && nvim -c ":Octo issue edit {{"{{"}}.IssueNumber{{"}}"}}"
+    - name: develop
+      key: d
+      command: >
+        cd {{"{{"}}.RepoPath{{"}}"}} && gh issue develop -c {{"{{"}}.IssueNumber{{"}}"}} --checkout && nvim
+
 repoPaths:
   /*: ~/projects/*
   dots: {{ .chezmoi.sourceDir }}
