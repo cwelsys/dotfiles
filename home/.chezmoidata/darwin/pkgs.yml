@@ -23,6 +23,7 @@ pkgs:
       - transmission
       - visual-studio-code
       - moonlight
+      - karabiner-elements
       - vlc
       - wezterm
       - zed
