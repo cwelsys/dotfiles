@@ -134,7 +134,47 @@ return {
   },
   {
     "nvim-java/nvim-java",
-    opts = {},
+    dependencies = {
+      "nvim-java/lua-async-await",
+      "nvim-java/nvim-java-core",
+      "nvim-java/nvim-java-test",
+      "nvim-java/nvim-java-dap",
+      "MunifTanjim/nui.nvim",
+      "neovim/nvim-lspconfig",
+      "mfussenegger/nvim-dap",
+      {
+        "williamboman/mason.nvim",
+        opts = {
+          registries = {
+            "github:nvim-java/mason-registry",
+            "github:mason-org/mason-registry",
+          },
+        },
+      },
+    },
+    config = function()
+      -- Ensure Mason registry is fully initialized before configuring nvim-java
+      vim.defer_fn(function()
+        require("mason-registry").refresh(function()
+          -- Now safely configure Java
+          require("java").setup({
+            settings = {
+              java = {
+                configuration = {
+                  runtimes = {
+                    {
+                      name = "JavaSE-17",
+                      path = "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home",
+                      default = true,
+                    },
+                  },
+                },
+              },
+            },
+          })
+        end)
+      end, 100)  -- Small delay to ensure Mason is ready
+    end,
   },
   {
     "dnlhc/glance.nvim",
