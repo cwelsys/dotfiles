@@ -12,6 +12,7 @@ tag
 # Darwin
 
 .DS\*Store
+.DS_Store
 .AppleDouble
 .LSOverride
 Icon
@@ -45,3 +46,14 @@ $RECYCLE.BIN/
 \_.msm
 \*.msp
 \*.lnk
+
+# General
+.Python
+.envrc
+.idea
+.*.sw*
+*.pyc
+.pc
+.svn
+.vscode
+/tmp
