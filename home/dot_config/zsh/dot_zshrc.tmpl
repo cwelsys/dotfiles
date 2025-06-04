@@ -42,8 +42,6 @@ SAVEHIST=$HISTSIZE
 HISTDUP=erase
 
 
-zinit light zsh-users/zsh-completions
-
 zstyle ":completion:*" matcher-list "" "m:{a-z}={A-Z}" "m:{a-zA-Z}={A-Za-z}" "r:|[._-]=* r:|=* l:|=*"
 zstyle ':completion:*:git-checkout:*' sort false
 zstyle ':completion:*:descriptions' format '[%d]'
@@ -62,6 +60,11 @@ omzLib grep.zsh
 omzLib history.zsh
 
 # 🔌 plugs
+{{ if eq .chezmoi.os "darwin" }}
+omzPlugin macos
+{{ else if eq .chezmoi.os "linux" }}
+omzPlugin systemd
+{{ end }}
 omzPlugin sudo
 omzPlugin cp
 omzPlugin rsync
@@ -75,14 +78,6 @@ omzPlugin 1password wait"1"
 omzPlugin docker wait"1"
 omzPlugin command-not-found wait"1"
 omzPlugin common-aliases
-
-if [[ `uname` == "Darwin" ]]; then
-    omzPlugin macos
-fi
-
-if [[ `uname` != "Darwin" ]]; then
-    omzPlugin systemd
-fi
 
 # atuin
 zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
@@ -129,6 +124,7 @@ zinit light catppuccin/zsh-syntax-highlighting
 zinit light Aloxaf/fzf-tab
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-syntax-highlighting
+zinit light zsh-users/zsh-completions
 
 autoload -Uz compinit && compinit
 zinit cdreplay -q
@@ -164,10 +160,6 @@ bindkey "^E" end-of-line
 bindkey "^N" insert-last-word
 bindkey '^[w' kill-region
 
-if [[ `uname` == "Darwin" ]]; then
-  # 1Password
-  OP_BIOMETRIC_UNLOCK_ENABLED=true
-fi
 
 [[ -x "$(command -v zoxide)" ]] && eval "$(zoxide init zsh --cmd=cd)"
 

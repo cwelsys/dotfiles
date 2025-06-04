@@ -1,0 +1,59 @@
+[settings]
+experimental = true
+pin = true
+trusted_config_paths = ["{{ env "XDG_PROJECTS_DIR" }}"]
+go_set_gobin = false
+go_set_goroot = true
+windows_shim_mode = "symlink"
+legacy_version_file = true
+verbose = false
+
+[settings.npm]
+bun = true
+
+[settings.python]
+uv_venv_auto = true
+
+[settings.pipx]
+uvx = true
+
+[settings.cargo]
+binstall = true
+
+[tools]
+node = { version = "20.10.0", postinstall = "corepack enable && corepack prepare pnpm@latest --activate" }
+bun = "latest"
+go = { version = "1.24.1", preinstall = "mkdir -p {{ env "XDG_DATA_HOME" }}/go/bin" }
+cargo-binstall = "latest"
+
+rust = { version = "1.85.0", profile = "default" }
+java = "corretto-21"
+maven = "latest"
+uv = "latest"
+python = { version = "3.13", postinstall = "pip install --upgrade pip" }
+"pipx:cookiecutter" = "latest"
+"pipx:yamllint" = "latest"
+
+[env]
+npm_config_init_module = "{{ env "XDG_CONFIG_HOME" }}/npm/config/npm-init.js"
+npm_config_cache = "{{ env "XDG_CACHE_HOME" }}/npm"
+YARN_CACHE_FOLDER = "{{ env "XDG_CACHE_HOME" }}/npm"
+PNPM_HOME = "{{ env "XDG_DATA_HOME" }}/pnpm"
+UV_LINK_MODE = { value = "symlink", tools = true }
+MISE_PYTHON_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" }}/mise/default-python-packages"
+MISE_GO_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" }}/mise/default-go-packages"
+GOPATH = "{{ env "XDG_DATA_HOME" }}/go"
+GOBIN = "{{ env "GOPATH" }}/bin"
+
+MISE_RUBY_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" }}/mise/default-gems"
+MISE_RUSTUP_HOME = "{{ env "XDG_DATA_HOME" }}/rustup"
+MISE_CARGO_HOME = "{{ env "XDG_DATA_HOME" }}/cargo"
+_.path = ["{{ env "PNPM_HOME" }}", "{{ env "GOBIN" }}"]
+
+{{ if eq .chezmoi.os "darwin" }}
+npm_config_tmp = "{{ .chezmoi.homeDir }}/Library/Caches/npm"
+{{ else if eq .chezmoi.os "windows" }}
+npm_config_tmp = "{{ .chezmoi.homeDir }}\\AppData\\Local\\Temp\\npm"
+{{ else }}
+npm_config_tmp = "{{ env "XDG_RUNTIME_DIR" }}/npm"
+{{ end }}
