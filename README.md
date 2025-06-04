@@ -16,4 +16,4 @@ Login to 1Password with:
 $ eval $(op signin)
 ```
 
-> This is for personal use, as it contains encrypted files. If for some reason you wish to use them anyways, run chezmoi apply with the `--exclude=encrypted`
+> This is for personal use, as it contains encrypted files. If for some reason you wish to proceed anyways, run chezmoi apply with `--exclude=encrypted`

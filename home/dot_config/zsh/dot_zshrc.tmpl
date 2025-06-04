@@ -106,6 +106,10 @@ zinit wait lucid as"completion" for \
     OMZP::docker/completions/_docker \
     OMZP::docker-compose/_docker-compose
 
+# git-open
+zinit ice wait"1" lucid
+zinit light paulirish/git-open
+
 # fzf
 zinit ice lucid wait"0" atclone"sed -ie 's/fc -rl 1/fc -rli 1/' shell/key-bindings.zsh" \
   atpull"%atclone" multisrc"shell/{completion,key-bindings}.zsh" id-as junegunn/fzf_completions \
