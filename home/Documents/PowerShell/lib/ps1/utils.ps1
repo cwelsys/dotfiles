@@ -185,6 +185,19 @@ function cfortune {
   $fortuneText | cowsay
 }
 
+function getnf {
+    [CmdletBinding()]
+    param()
+    try {
+        $scriptContent = (Invoke-WebRequest -Uri 'https://to.loredo.me/Install-NerdFont.ps1' -UseBasicParsing).Content
+        $scriptBlock = [scriptblock]::Create($scriptContent)
+        & $scriptBlock -Scope CurrentUser -Confirm:$False
+    }
+    catch {
+        Write-Error "Failed to download or execute Nerd Font installer: $_"
+    }
+}
+
 function Get-PubIp {
   (Invoke-WebRequest http://ifconfig.me/ip ).Content
 }

@@ -114,14 +114,18 @@ bar.apply_to_config(config, {
 -- UI
 config.color_scheme = scheme_for_appearance(wezterm.gui.get_appearance())
 config.font = wezterm.font_with_fallback({
-	{family = "FantasqueSansM Nerd Font", scale = 1.0},
-	"Liga SFMono Nerd Font",
-	"Apple Color Emoji",
+		{ family = "CaskaydiaCove NF", weight = "DemiBold", harfbuzz_features = {"calt=1", "clig=1", "liga=1"} },
+		{ family = "JetBrainsMono Nerd Font", weight = "Regular", },
+    { family = "FantasqueSansM Nerd Font Propo", scale = 1.2 },
+		"Apple Color Emoji",
+		emoji_font,
 })
+{{ if eq .chezmoi.os "windows" }}
+config.font_size = 12
+{{ else }}
 config.font_size = 15
+{{ end }}
 config.line_height = 1.2
-config.prefer_egl = true
-config.adjust_window_size_when_changing_font_size = false
 config.window_decorations = "TITLE | RESIZE" -- INTEGRATED_BUTTONS, RESIZE, TITLE, NONE
 config.window_padding = {
 	left = 5,
@@ -143,7 +147,11 @@ config.inactive_pane_hsb = {
 }
 
 -- Engine
+{{ if eq .chezmoi.os "windows" }}
+config.default_prog = {"pwsh", "-NoLogo", "-NoProfileLoadTime" }
+{{ else }}
 config.default_prog = shell
+{{ end }}
 config.automatically_reload_config = true
 config.max_fps = 120
 config.enable_wayland = false
@@ -179,22 +187,24 @@ config.launch_menu = {
     args = { "ssh", "pbox" },
     -- icon = "file:///path/to/icon.png",
   },
+	{{ if eq .chezmoi.os "darwin" "linux" }}
   {
     label = "wini",
     args = { "ssh", "wini" },
   }
+	{{ else }}
+	{
+		label = "mbook",
+		args = { "ssh", "mbook" },
+	}
+	{{ end }}
 }
 
 -- Windows-specific entries
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
-  -- Keep your existing Windows entries
   table.insert(config.launch_menu, {
-    label = "PowerShell 7",
-    args = { "pwsh.exe" },
-  })
-  table.insert(config.launch_menu, {
-    label = "PowerShell",
-    args = { "powershell.exe", "-NoLogo" },
+    label = "pwsh",
+    args = { "pwsh.exe", "-NoLogo", "-NoProfileLoadTime" },
   })
 
   -- Find installed visual studio version(s) and add their compilation
