@@ -1,0 +1,17 @@
+yazi:
+  plugins:
+    - 'yazi-rs/plugins:chmod'
+    - 'yazi-rs/plugins:diff'
+    - 'yazi-rs/plugins:hide-preview'
+    - 'yazi-rs/plugins:max-preview'
+    - 'yazi-rs/plugins:smart-filter'
+    - 'yazi-rs/plugins:smart-enter'
+    - 'Reledia/glow'
+    - 'KKV9/command'
+    - 'pirafrank/what-size'
+    - 'Ape/open-with-cmd'
+    - 'yazi-rs/plugins:git'
+    - 'AnirudhG07/custom-shell'
+    - 'yazi-rs/flavors:catppuccin-mocha'
+    - 'yazi-rs/flavors:catppuccin-latte'
+    - 'yazi-rs/flavors:tokyo-night.yazi'

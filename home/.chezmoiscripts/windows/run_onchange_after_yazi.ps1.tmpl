@@ -1,0 +1,34 @@
+﻿$ErrorActionPreference = "Stop"
+$ProgressPreference = "Continue"
+
+function Install-YaziPlugin {
+    param(
+        [Parameter(Mandatory = $true)][string]$PluginPath,
+        [Parameter(Mandatory = $false)][string]$Description
+    )
+
+    Write-Host "Installing $PluginPath..." -ForegroundColor Cyan
+    if ($Description) {
+        Write-Host "  Description: $Description" -ForegroundColor Gray
+    }
+
+    try {
+        ya pkg -a $PluginPath
+        Write-Host "  Success!" -ForegroundColor Green
+    }
+    catch {
+        Write-Host "  Failed to install $PluginPath" -ForegroundColor Red
+        Write-Host "  Error: $_" -ForegroundColor Red
+    }
+}
+
+Write-Host "=== Installing Yazi Plugins ===" -ForegroundColor Cyan
+
+{{ range .yazi.plugins -}}
+Install-YaziPlugin "{{ . }}"
+{{ end }}
+
+Write-Host "`n=== Yazi Plugin Installation Complete ===" -ForegroundColor Cyan
+ya pkg list
+
+Write-Host "=== Done ===" -ForegroundColor Green

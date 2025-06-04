@@ -1,3 +1,17 @@
+# General
+
+.Python
+.envrc
+.idea
+.*.sw*
+*.pyc
+.pc
+.svn
+*.bak
+*.log
+.vscode
+/tmp
+
 # Linux
 
 kls\*database.db
@@ -46,14 +60,3 @@ $RECYCLE.BIN/
 \_.msm
 \*.msp
 \*.lnk
-
-# General
-.Python
-.envrc
-.idea
-.*.sw*
-*.pyc
-.pc
-.svn
-.vscode
-/tmp

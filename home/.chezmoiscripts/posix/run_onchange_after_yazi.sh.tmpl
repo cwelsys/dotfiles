@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+install_plugin() {
+	local plugin="$1"
+	echo -e "${CYAN}Installing plugin: ${plugin}${NC}"
+	if ya pkg -a "$plugin"; then
+		echo -e "${GREEN}  Success!${NC}"
+	else
+		echo "  Failed to install plugin: $plugin"
+		return 1
+	fi
+}
+
+echo "=== Installing yazi plugins ==="
+
+{{ range .yazi.plugins -}}
+install_plugin '{{ . }}'
+{{ end }}
+
+echo "=== Listing installed plugins ==="
+ya pkg list
+
+echo "=== Done ==="
