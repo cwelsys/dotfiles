@@ -30,6 +30,7 @@ pkgs:
       - shellcheck
       - starship
       - tealdeer
+      - git-cliff
       - thefuck
       - wrk
       - yazi
