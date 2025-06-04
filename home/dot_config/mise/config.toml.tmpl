@@ -26,7 +26,7 @@ bun = "latest"
 go = { version = "1.24.1", preinstall = "mkdir -p {{ env "XDG_DATA_HOME" }}/go/bin" }
 cargo-binstall = "latest"
 
-rust = { version = "1.85.0", profile = "default" }
+rust = { version = "latest", profile = "default" }
 java = "corretto-21"
 maven = "latest"
 uv = "latest"
@@ -42,6 +42,7 @@ PNPM_HOME = "{{ env "XDG_DATA_HOME" }}/pnpm"
 UV_LINK_MODE = { value = "symlink", tools = true }
 MISE_PYTHON_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" }}/mise/default-python-packages"
 MISE_GO_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" }}/mise/default-go-packages"
+MISE_NODE_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" }}/mise/default-npm-packages"
 GOPATH = "{{ env "XDG_DATA_HOME" }}/go"
 GOBIN = "{{ env "GOPATH" }}/bin"
 
