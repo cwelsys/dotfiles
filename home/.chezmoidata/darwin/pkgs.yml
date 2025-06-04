@@ -6,11 +6,19 @@ pkgs:
       - dockutil
       - pkg-config
       - pinentry-mac
+      - spicetify-cli
+      - fish
+      - topgrade
+      - fastfetch
     casks:
       - 1password-cli
       - spotify
       - tailscale
-      - battery
       - vagrant
       - visual-studio-code
       - vlc
+      - wezterm
+      - discord
+      - obsidian
+      - slack
+      - steam

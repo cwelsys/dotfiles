@@ -79,8 +79,6 @@ return {
             vendorPrefix = "ignore",
             unknownVendorSpecificProperties = "ignore",
 
-            -- unknownProperties = "ignore", -- duplicate with stylelint
-
             duplicateProperties = "warning",
             emptyRules = "warning",
             importStatement = "warning",
@@ -133,50 +131,6 @@ return {
     },
   },
   {
-    "nvim-java/nvim-java",
-    dependencies = {
-      "nvim-java/lua-async-await",
-      "nvim-java/nvim-java-core",
-      "nvim-java/nvim-java-test",
-      "nvim-java/nvim-java-dap",
-      "MunifTanjim/nui.nvim",
-      "neovim/nvim-lspconfig",
-      "mfussenegger/nvim-dap",
-      {
-        "williamboman/mason.nvim",
-        opts = {
-          registries = {
-            "github:nvim-java/mason-registry",
-            "github:mason-org/mason-registry",
-          },
-        },
-      },
-    },
-    config = function()
-      -- Ensure Mason registry is fully initialized before configuring nvim-java
-      vim.defer_fn(function()
-        require("mason-registry").refresh(function()
-          -- Now safely configure Java
-          require("java").setup({
-            settings = {
-              java = {
-                configuration = {
-                  runtimes = {
-                    {
-                      name = "JavaSE-17",
-                      path = "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home",
-                      default = true,
-                    },
-                  },
-                },
-              },
-            },
-          })
-        end)
-      end, 100)  -- Small delay to ensure Mason is ready
-    end,
-  },
-  {
     "dnlhc/glance.nvim",
     cmd = { "Glance" },
     event = "LspAttach",
@@ -208,7 +162,7 @@ return {
     event = "LspAttach",
     opts = {
       autocmd = { enabled = true },
-      sign = { enabled = true, text = "" },
+      sign = { enabled = true, text = "" },
       action_kinds = { "quickfix", "refactor" },
       ignore = {
         actions_without_kind = true,
@@ -233,8 +187,8 @@ return {
       local function text_format(symbol)
         local res = {}
 
-        local round_start = { "", "SymbolUsageRounding" }
-        local round_end = { "", "SymbolUsageRounding" }
+        local round_start = { "", "SymbolUsageRounding" }
+        local round_end = { "", "SymbolUsageRounding" }
 
         -- Indicator that shows if there are any other symbols in the same line
         local stacked_functions_content = symbol.stacked_count > 0 and ("+%s"):format(symbol.stacked_count) or ""
@@ -273,7 +227,7 @@ return {
             table.insert(res, { " ", "NonText" })
           end
           table.insert(res, round_start)
-          table.insert(res, { " ", "SymbolUsageImpl" })
+          table.insert(res, { " ", "SymbolUsageImpl" })
           table.insert(res, { stacked_functions_content, "SymbolUsageContent" })
           table.insert(res, round_end)
         end
@@ -290,7 +244,7 @@ return {
     "folke/which-key.nvim",
     opts = {
       spec = {
-        { "<leader>cl", group = "lsp", icon = " " },
+        { "<leader>cl", group = "lsp", icon = " " },
       },
     },
   },
