@@ -84,8 +84,6 @@ if [[ `uname` != "Darwin" ]]; then
     omzPlugin systemd
 fi
 
-omzPlugin systemd
-
 # atuin
 zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
     atclone"./atuin init zsh > init.zsh; ./atuin gen-completions --shell zsh > _atuin" \
