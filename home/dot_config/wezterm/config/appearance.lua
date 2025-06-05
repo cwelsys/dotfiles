@@ -87,7 +87,7 @@ Config.skip_close_confirmation_for_processes_named = {
   "pwsh.exe",
   "powershell.exe",
 }
-Config.window_close_confirmation = "NeverPrompt"
+Config.window_close_confirmation = "AlwaysPrompt"
 
 color.set_tab_button(Config, theme)
 
