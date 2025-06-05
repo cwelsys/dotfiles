@@ -88,10 +88,6 @@ local mac_mappings = {
   { "<W-w>", act.CloseCurrentTab({ confirm = true }), "close tab (⌘W)" },
   { "<W-q>", act.QuitApplication, "quit (⌘Q)" },
   { "<W-f>", act.Search("CurrentSelectionOrEmptyString"), "find (⌘F)" },
-  { "<W-a>", act.action_callback(function(window, pane)
-                local selected = pane:get_lines_as_text(pane:get_dimensions().scrollback_rows)
-                window:copy_to_clipboard(selected, 'Clipboard')
-            end) },
 }
 
 for _, map in ipairs(mac_mappings) do
