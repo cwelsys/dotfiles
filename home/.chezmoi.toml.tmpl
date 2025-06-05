@@ -3,7 +3,7 @@
 {{ $agePubKey := "age1wezwdvug6rdnwedvw8tk7npjm2rlmmewukxdat8v5y5garwvgdeq3ww5m9" }}
 {{ $sshId := "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXPGUiiFFBzqutbhNqi5RjykdlwvdFveB/XkSdg0BAM" }}
 {{ $email := "cwel@cwel.sh" -}}
-{{ $opType := "account" }}
+{{ $opType := "connect" }}
 
 {{/* Default dynamic values */}}
 
@@ -128,11 +128,11 @@
 
 {{- $choices := list "account" "service" "connect" -}}
 {{- if eq $hostname "pbox" -}}
-{{-   $opType = "service" -}}
+{{-   $opType = "connect" -}}
 {{- else if $isWSL -}}
-{{-   $opType = "service" -}}
+{{-   $opType = "account" -}}
 {{- else if $isContainer -}}
-{{-   $opType = "service" -}}
+{{-   $opType = "connect" -}}
 {{- else -}}
 {{-   $opType = promptChoice "1Password connection type" $choices -}}
 {{- end -}}
