@@ -62,6 +62,10 @@ config:
           target: 'C:\Users\cwel\scoop\apps\vcxsrv\current\vcxsrv.exe'
           args: '-multiwindow -clipboard -wgl -auth %XAUTHORITY%'
 
+        - name: 'syncthing'
+          target: 'C:\Users\cwel\scoop\apps\syncthing\current\syncthing.exe'
+          args: '--no-console --no-browser'
+
         # - name: 'apple'
         #   target: 'C:\Users\cwel\.local\bin\rclone-apple.bat'
 

@@ -23,6 +23,11 @@
 			"key": "│           │\u001b[11D\u001b[36m user",
 			"type": "title"
 		},
+		// {
+		// 	"key": "│           │\u001b[11D\u001b[os",
+		// 	"type": "os",
+		// 	"format": "{name} {version}"
+		// },
 		{
 			"key": "│           │\u001b[11D\u001b[31m󰅐 uptime",
 			"type": "uptime"

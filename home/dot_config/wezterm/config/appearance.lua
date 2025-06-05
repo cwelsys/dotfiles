@@ -8,7 +8,6 @@ local Config = {}
 Config.color_schemes = color.get_schemes()
 Config.color_scheme = color.get_scheme()
 G.opacity = .85
-Config.win32_system_backdrop = "Acrylic"
 local theme = Config.color_schemes[Config.color_scheme]
 
 Config.background = {
@@ -20,6 +19,7 @@ Config.background = {
   },
 }
 
+Config.win32_system_backdrop = "Tabbed"
 Config.bold_brightens_ansi_colors = "BrightAndBold"
 
 ---char select and command palette
