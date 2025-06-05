@@ -61,6 +61,7 @@
 	],
 	"floating_applications": [
 		{ "kind": "Exe", "id": "explorer.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "ImageGlass.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "WinRAR.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "foobar2000.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "VirtualBox.exe", "matching_strategy": "Equals" },

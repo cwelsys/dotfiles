@@ -20,29 +20,29 @@
 		},
 		{
 			// draw borders first to make colors of left and right border consistant
-			"key": "│           │\u001b[11D\u001b[31m user",
-			"type": "title",
-			"format": "{1}"
+			"key": "│           │\u001b[11D\u001b[36m user",
+			"type": "title"
 		},
 		{
-			"key": "│           │\u001b[11D\u001b[32m󰇅 host",
-			"type": "title",
-			"format": "{2}"
-		},
-		{
-			"key": "│           │\u001b[11D\u001b[33m󰅐 uptime",
+			"key": "│           │\u001b[11D\u001b[31m󰅐 uptime",
 			"type": "uptime"
 		},
 		{
-			"key": "│           │\u001b[11D\u001b[34m term",
-			"type": "terminal"
+			"key": "│           │\u001b[11D\u001b[32m term",
+			"type": "terminal",
+			"format": "{5}"
 		},
 		{
-			"key": "│           │\u001b[11D\u001b[35m shell",
+			"key": "│           │\u001b[11D\u001b[33m shell",
 			"type": "shell"
 		},
 		{
-			"key": "│           │\u001b[11D\u001b[36m apps",
+			"key": "│           │\u001b[11D{#34}󰍛 cpu",
+			"type": "cpu",
+			"format": "{1}"
+		},
+		{
+			"key": "│           │\u001b[11D\u001b[37m pkgs",
 			"type": "packages"
 		},
 		{
@@ -50,8 +50,9 @@
 			"type": "custom"
 		},
 		{
-			"key": "│           │\u001b[11D\u001b[m colors",
-			"type": "colors",
+			"key": "│           │\u001b[11D\u001b[m󰩟 network",
+			"type": "localip",
+			"format": "{1} ({4})",
 			"symbol": "circle"
 		},
 		{
