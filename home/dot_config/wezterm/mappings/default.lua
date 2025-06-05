@@ -6,6 +6,7 @@
 local act = require("wezterm").action
 local key = require("utils.fn").key
 
+
 local Config = {}
 
 Config.disable_default_key_bindings = true
@@ -76,6 +77,22 @@ local mappings = {
 for i = 1, 24 do
   mappings[#mappings + 1] =
     { "<S-F" .. i .. ">", act.ActivateTab(i - 1), "activate tab " .. i }
+end
+
+local mac_mappings = {
+  { "<W-v>", act.PasteFrom("Clipboard"), "paste (⌘V)" },
+  { "<W-c>", act.CopyTo("Clipboard"), "copy (⌘C)" },
+  { "<W-x>", act.Cut("Clipboard"), "cut (⌘X)" },
+  { "<W-a>", act.SelectAll, "select all (⌘A)" },
+  { "<W-n>", act.SpawnWindow, "new window (⌘N)" },
+  { "<W-t>", act.SpawnTab("CurrentPaneDomain"), "new tab (⌘T)" },
+  { "<W-w>", act.CloseCurrentTab({ confirm = true }), "close tab (⌘W)" },
+  { "<W-q>", act.QuitApplication, "quit (⌘Q)" },
+  { "<W-f>", act.Search("CurrentSelectionOrEmptyString"), "find (⌘F)" },
+}
+
+for _, map in ipairs(mac_mappings) do
+  table.insert(mappings, map)
 end
 
 Config.keys = {}
