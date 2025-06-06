@@ -201,7 +201,6 @@ pkgs:
       - 'Discord.Discord'
       - 'ClassicOldSong.Apollo'
       - 'Git.Git'
-      - 'Mozilla.Firefox'
       - 'KurtZimmermann.RegCool'
       - 'TigerVNC.TigerVNC'
       - 'Google.Chrome'
@@ -259,4 +258,3 @@ pkgs:
           - 'Link-/gh-token'
           - 'yusukebe/gh-markdown-preview'
           - 'Shresht7/gh-license'
-
