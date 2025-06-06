@@ -57,6 +57,9 @@ local grid = {
   leftFourthQuarter = '0,9 6x3',
 }
 
+--
+-- Key bindings.
+--
 
 function moveFrontmostWindow(where)
   return function()
@@ -83,23 +86,24 @@ function moveFocusedWindowToScreen()
   local screen = window:screen()
   window:move(window:frame():toUnitRect(screen:frame()), screen:next(), true, 0)
 end
-
 local bindings = {
   [{'alt', 'cmd', 'ctrl', 'shift'}] = {
+    q = launchOrFocus('Zen'),
     w = launchOrFocus('WezTerm'),
-    a = moveFrontmostWindow(grid.leftHalf),
-    d = moveFrontmostWindow(grid.rightHalf),
+    e = launchOrFocus('Finder'),
+    r = launchOrFocus('Visual Studio Code'),
 
-    q = moveFrontmostWindow(grid.topLeftQuarter),
-    e = moveFrontmostWindow(grid.topRightQuarter),
-    n = moveFrontmostWindow(grid.bottomLeftQuarter),
-     = moveFrontmostWindow(grid.bottomRightQuarter),
+    y = moveFrontmostWindow(grid.leftTopHalf),
+    u = moveFrontmostWindow(grid.rightTopHalf),
+    i = moveFrontmostWindow(grid.leftBottomHalf),
+    p = moveFrontmostWindow(grid.rightBottomHalf),
 
     h = moveFrontmostWindow(grid.leftHalf),
     j = moveFrontmostWindow(grid.bottomHalf),
     k = moveFrontmostWindow(grid.topHalf),
     l = moveFrontmostWindow(grid.rightHalf),
-
+    a = moveFrontmostWindow(grid.leftHalf),
+    d = moveFrontmostWindow(grid.rightHalf),
     ['f'] = moveFrontmostWindow(grid.fullScreen),
     ['space'] = moveFrontmostWindow(grid.tenTwelfes),
     ['return'] = moveFrontmostWindow(grid.fullScreen),
