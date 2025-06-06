@@ -57,9 +57,6 @@ local grid = {
   leftFourthQuarter = '0,9 6x3',
 }
 
---
--- Key bindings.
---
 
 function moveFrontmostWindow(where)
   return function()
@@ -88,76 +85,24 @@ function moveFocusedWindowToScreen()
 end
 
 local bindings = {
-  [{'alt', 'ctrl'}] = {
-    [1] = moveFrontmostWindow(grid.rightTopHalf),
-    [2] = moveFrontmostWindow(grid.rightBottomHalf),
+  [{'alt', 'cmd', 'ctrl', 'shift'}] = {
+    w = launchOrFocus('WezTerm'),
+    a = moveFrontmostWindow(grid.leftHalf),
+    d = moveFrontmostWindow(grid.rightHalf),
 
-    [3] = moveFrontmostWindow(grid.rightTopThird),
-    [4] = moveFrontmostWindow(grid.rightMiddleThird),
-    [5] = moveFrontmostWindow(grid.rightBottomThird),
-
-    [6] = moveFrontmostWindow(grid.rightFirstQuarter),
-    [7] = moveFrontmostWindow(grid.rightSecondQuarter),
-    [8] = moveFrontmostWindow(grid.rightThirdQuarter),
-    [9] = moveFrontmostWindow(grid.rightFourthQuarter),
-
-    q = moveFrontmostWindow(grid.leftThirdTopHalf),
-    w = moveFrontmostWindow(grid.leftTwoThirdsTopHalf),
-    e = moveFrontmostWindow(grid.middleThirdTopHalf),
-    r = moveFrontmostWindow(grid.rightTwoThirdsTopHalf),
-    t = moveFrontmostWindow(grid.rightThirdTopHalf),
-
-    a = moveFrontmostWindow(grid.leftThird),
-    s = moveFrontmostWindow(grid.leftTwoThirds),
-    d = moveFrontmostWindow(grid.middleThird),
-    f = moveFrontmostWindow(grid.rightTwoThirds),
-    g = moveFrontmostWindow(grid.rightThird),
-
-    z = moveFrontmostWindow(grid.leftThirdBottomHalf),
-    x = moveFrontmostWindow(grid.leftTwoThirdsBottomHalf),
-    c = moveFrontmostWindow(grid.middleThirdBottomHalf),
-    v = moveFrontmostWindow(grid.rightTwoThirdsBottomHalf),
-    b = moveFrontmostWindow(grid.rightThirdBottomHalf),
-
-    y = moveFrontmostWindow(grid.leftQuarter),
-    u = moveFrontmostWindow(grid.middleHalf),
-    i = moveFrontmostWindow(grid.rightQuarter),
+    q = moveFrontmostWindow(grid.topLeftQuarter),
+    e = moveFrontmostWindow(grid.topRightQuarter),
+    n = moveFrontmostWindow(grid.bottomLeftQuarter),
+     = moveFrontmostWindow(grid.bottomRightQuarter),
 
     h = moveFrontmostWindow(grid.leftHalf),
     j = moveFrontmostWindow(grid.bottomHalf),
     k = moveFrontmostWindow(grid.topHalf),
     l = moveFrontmostWindow(grid.rightHalf),
 
+    ['f'] = moveFrontmostWindow(grid.fullScreen),
     ['space'] = moveFrontmostWindow(grid.tenTwelfes),
     ['return'] = moveFrontmostWindow(grid.fullScreen),
-    ['\\'] = moveFocusedWindowToScreen,
-  },
-
-  [{'alt', 'cmd', 'ctrl'}] = {
-    [1] = moveFrontmostWindow(grid.leftTopHalf),
-    [2] = moveFrontmostWindow(grid.leftBottomHalf),
-
-    [3] = moveFrontmostWindow(grid.leftTopThird),
-    [4] = moveFrontmostWindow(grid.leftMiddleThird),
-    [5] = moveFrontmostWindow(grid.leftBottomThird),
-
-    [7] = moveFrontmostWindow(grid.leftSecondQuarter),
-    [8] = moveFrontmostWindow(grid.leftThirdQuarter),
-    [9] = moveFrontmostWindow(grid.leftFourthQuarter),
-  },
-
-  [{'alt', 'cmd', 'ctrl', 'shift'}] = {
-    c = launchOrFocus('Zen'),
-    f = launchOrFocus('Finder'),
-    i = launchOrFocus('Visual Studio Code'),
-    l = launchOrFocus('Discord'),
-    -- j = runCommand(os.getenv('HOME') .. '/.local/bin/forge-gui'),
-    o = launchOrFocus('1Password'),
-    s = launchOrFocus('Slack'),
-    t = launchOrFocus('Wezterm'),
-    w = launchOrFocus('Messages'),
-    y = launchOrFocus('System Preferences'),
-    z = launchOrFocus('zoom.us'),
   },
 }
 
@@ -167,10 +112,6 @@ for modifier, keyActions in pairs(bindings) do
   end
 end
 
---
--- Auto-reload config on change.
---
-
 function reloadConfig(files)
   for _, file in pairs(files) do
     if file:sub(-4) == '.lua' then
@@ -179,4 +120,4 @@ function reloadConfig(files)
   end
 end
 
-hs.pathwatcher.new(os.getenv('HOME') .. '/hammerspoon/', reloadConfig):start()
+hs.pathwatcher.new(os.getenv('HOME') .. '/.hammerspoon/', reloadConfig):start()
