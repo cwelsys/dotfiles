@@ -1,94 +1,67 @@
-local Utils = require "utils"
-local color = Utils.fn.color
+local gpu_adapters = require('utils.gpu-adapter')
+local colors = require('colors.custom')
 
----@diagnostic disable-next-line: undefined-field
-local G = require("wezterm").GLOBAL
+return {
+   max_fps = 120,
+   front_end = 'WebGpu',
+   webgpu_power_preference = 'HighPerformance',
+   webgpu_preferred_adapter = gpu_adapters:pick_best(),
+   -- webgpu_preferred_adapter = gpu_adapters:pick_manual('Dx12', 'IntegratedGpu'),
+   -- webgpu_preferred_adapter = gpu_adapters:pick_manual('Gl', 'Other'),
+   underline_thickness = '1.5pt',
 
-local Config = {}
-Config.color_schemes = color.get_schemes()
-Config.color_scheme = color.get_scheme()
-G.opacity = .85
-local theme = Config.color_schemes[Config.color_scheme]
+   -- cursor
+   animation_fps = 120,
+   cursor_blink_ease_in = 'EaseOut',
+   cursor_blink_ease_out = 'EaseOut',
+   default_cursor_style = 'BlinkingBlock',
+   cursor_blink_rate = 650,
 
-Config.background = {
-  {
-    source = { Color = theme.background },
-    width = "100%",
-    height = "100%",
-    opacity = G.opacity or 1,
-  },
+   -- color scheme
+   colors = colors,
+
+   -- background
+   -- background = backdrops:initial_options(false),
+
+   -- scrollbar
+   enable_scroll_bar = true,
+
+   -- tab bar
+   enable_tab_bar = true,
+   hide_tab_bar_if_only_one_tab = false,
+   use_fancy_tab_bar = false,
+   tab_max_width = 25,
+   show_tab_index_in_tab_bar = false,
+   switch_to_last_active_tab_when_closing_tab = true,
+
+   -- window
+   window_padding = {
+      left = 0,
+      right = 0,
+      top = 10,
+      bottom = 7.5,
+   },
+   adjust_window_size_when_changing_font_size = false,
+   window_close_confirmation = 'NeverPrompt',
+   window_frame = {
+      active_titlebar_bg = '#090909',
+      -- font = fonts.font,
+      -- font_size = fonts.font_size,
+   },
+   -- inactive_pane_hsb = {
+   --    saturation = 0.9,
+   --    brightness = 0.65,
+   -- },
+   inactive_pane_hsb = {
+      saturation = 1,
+      brightness = 1,
+   },
+
+   visual_bell = {
+      fade_in_function = 'EaseIn',
+      fade_in_duration_ms = 250,
+      fade_out_function = 'EaseOut',
+      fade_out_duration_ms = 250,
+      target = 'CursorColor',
+   },
 }
-
-Config.win32_system_backdrop = "Tabbed"
-Config.bold_brightens_ansi_colors = "BrightAndBold"
-
----char select and command palette
-Config.char_select_bg_color = theme.brights[6]
-Config.char_select_fg_color = theme.background
-Config.char_select_font_size = 14
-Config.command_palette_bg_color = theme.brights[6]
-Config.command_palette_fg_color = theme.background
-Config.command_palette_font_size = 16
-Config.command_palette_rows = 20
-
----cursor
-Config.cursor_blink_ease_in = "EaseOut"
-Config.cursor_blink_ease_out = "EaseOut"
-Config.cursor_blink_rate = 690
-Config.default_cursor_style = "BlinkingUnderline"
-Config.cursor_thickness = 1.5
-Config.force_reverse_video_cursor = true
-Config.enable_scroll_bar = true
-Config.hide_mouse_cursor_when_typing = true
-Config.max_fps = 120
-Config.animation_fps = 60
-
-
----text blink
-Config.text_blink_ease_in = "EaseIn"
-Config.text_blink_ease_out = "EaseOut"
-Config.text_blink_rapid_ease_in = "Linear"
-Config.text_blink_rapid_ease_out = "Linear"
-Config.text_blink_rate = 500
-Config.text_blink_rate_rapid = 250
-
----visual bell
-Config.audible_bell = "SystemBeep"
-Config.visual_bell = {
-  fade_in_function = "EaseOut",
-  fade_in_duration_ms = 200,
-  fade_out_function = "EaseIn",
-  fade_out_duration_ms = 200,
-}
-
----window appearance
-Config.window_decorations = "RESIZE"  --"INTEGRATED_BUTTONS|RESIZE"
-Config.window_padding = { left = 2, right = 2, top = 2, bottom = 1 }
-Config.integrated_title_button_alignment = "Right"
--- Config.integrated_title_button_style = "Gnome"
--- Config.integrated_title_button_color = "auto"
-Config.integrated_title_buttons = { "Hide", "Maximize", "Close" }
-Config.initial_cols = 100
-Config.initial_rows = 32
-
-
----exit behavior
-Config.clean_exit_codes = { 130 }
-Config.exit_behavior = "CloseOnCleanExit"
-Config.exit_behavior_messaging = "Verbose"
-Config.skip_close_confirmation_for_processes_named = {
-  "bash",
-  "sh",
-  "zsh",
-  "fish",
-  "tmux",
-  "nu",
-  "cmd.exe",
-  "pwsh.exe",
-  "powershell.exe",
-}
-Config.window_close_confirmation = "AlwaysPrompt"
-
-color.set_tab_button(Config, theme)
-
-return Config
