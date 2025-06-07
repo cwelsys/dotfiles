@@ -79,7 +79,8 @@
 		{ "kind": "Exe", "id": "slack.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "Obsidian.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "nextcloud.exe", "matching_strategy": "Equals" },
-		{ "kind": "Exe", "id": "ProtonVPN.Client.exe", "matching_strategy": "Equals" }
+		{ "kind": "Exe", "id": "ProtonVPN.Client.exe", "matching_strategy": "Equals" },
+		{ "kind": "Exe", "id": "VIA.exe", "matching_strategy": "Equals" }
 	],
 	"manage_rules": [{ "kind": "Exe", "id": "MTGA.exe", "matching_strategy": "Equals" }],
 
