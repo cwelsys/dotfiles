@@ -55,8 +55,11 @@ config:
 
     startup:
       shortcuts:
-        - name: 'ctrl-h'
-          target: 'C:\Users\cwel\.local\bin\ctrl-h.exe'
+        - name: 'dothide'
+          target: 'C:\Users\cwel\.local\bin\dothide.ahk'
+
+        - name: 'hyper'
+          target: 'C:\Users\cwel\.local\bin\hyper.ahk'
 
         - name: 'VcXsrv'
           target: 'C:\Users\cwel\scoop\apps\vcxsrv\current\vcxsrv.exe'
