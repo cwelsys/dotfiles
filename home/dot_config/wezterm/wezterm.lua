@@ -1,14 +1,45 @@
-local Config = require('config')
+local wez = require('wezterm')
+local style = require('cfg.style')
+local remotes = require('cfg.remotes')
+local keys = require('cfg.keys')
+local shells = require('cfg.shells')
+local session = require('utils.session')
+local nvim = require('utils.nvim')
+local bar = wez.plugin.require('https://github.com/adriankarlen/bar.wezterm')
+local launch = require('utils.launch').setup()
 
-require('events.left-status').setup()
-require('events.right-status').setup({ date_format = '%a %H:%M:%S' })
-require('events.tab-title').setup({ hide_active_tab_unseen = false, unseen_icon = 'circle' })
-require('events.new-tab-button').setup()
+local c = {}
 
-return Config:init()
-   :append(require('config.appearance'))
-   :append(require('config.bindings'))
-   :append(require('config.domains'))
-   :append(require('config.fonts'))
-   :append(require('config.general'))
-   :append(require('config.launch')).options
+if wez.config_builder then
+  c = wez.config_builder()
+end
+
+c.automatically_reload_config = true
+c.switch_to_last_active_tab_when_closing_tab = true
+
+remotes.apply_to_config(c)
+keys.apply_to_config(c)
+shells.apply_to_config(c)
+session.apply_to_config(c)
+nvim.apply_to_config(c)
+style.apply_to_config(c)
+
+-- bar
+c.enable_scroll_bar = false
+c.enable_tab_bar = true
+c.hide_tab_bar_if_only_one_tab = false
+c.use_fancy_tab_bar = false
+c.show_tab_index_in_tab_bar = false
+bar.apply_to_config(c, {
+  position = "top",
+  modules = {
+    clock = {
+      enabled = true,
+    },
+    username = {
+      icon = "",
+    }
+  },
+})
+
+return c

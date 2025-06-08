@@ -139,7 +139,7 @@ pkgs:
         - 'main/make'
         - 'nerd-fonts/Maple-Mono'
         - 'main/mariadb'
-        - 'extras/micaforeveryone'
+        # - 'extras/micaforeveryone'
         - 'main/neo-cowsay'
         - 'main/perl'
         - 'extras/protonmail-bridge'

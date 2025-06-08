@@ -55,11 +55,8 @@ config:
 
     startup:
       shortcuts:
-        - name: 'dothide'
-          target: 'C:\Users\cwel\.local\bin\dothide.ahk'
-
-        - name: 'hyper'
-          target: 'C:\Users\cwel\.local\bin\hyper.ahk'
+        - name: 'kb'
+          target: 'C:\Users\cwel\.local\bin\kb.ahk'
 
         - name: 'VcXsrv'
           target: 'C:\Users\cwel\scoop\apps\vcxsrv\current\vcxsrv.exe'

@@ -18,8 +18,6 @@ Set-Alias -Name 'c' -Value clear -Description "Clears the console screen"
 
 Set-Alias -Name 'df' -Value Get-Volume -Description "Displays volume information"
 
-Set-Alias -Name 'qq' -Value 'exit' -Description "Exits the session"
-
 Set-Alias -Name 'cat' -Value Invoke-Bat -Option AllScope -Force -Description "Uses bat as cat replacement with options"
 
 Set-Alias -Name 'komorel' -Value Invoke-Komorebirl -Description "Restarts Komorebi window manager"
@@ -97,6 +95,8 @@ if (Get-Command topgrade -ErrorAction SilentlyContinue) {
 
 function dots { Set-Location $env:DOTFILES }
 
+function qq { exit }
+
 function cdcm { Set-Location $env:DOTFILES }
 
 function cdc { Set-Location $env:XDG_CONFIG_HOME }
@@ -139,17 +139,17 @@ function Get-BunGlobalPackages { (bun pm ls -g | Select-Object -Skip 1).Trim().S
 function Get-PnpmGlobalPackages { (pnpm ls -g | Select-Object -Skip 5) | ForEach-Object { $name = $_.Split()[0]; $version = $_.Split()[1]; Write-Output "$name@$version" } }
 
 function cmpack {
-    [CmdletBinding(DefaultParameterSetName='Args')]
-    param(
-        [Parameter(ValueFromRemainingArguments=$true)]
-        $Args
-    )
-    $scriptPath = Join-Path $env:XDG_BIN_HOME 'update-manifest.ps1'
-    if (Test-Path $scriptPath) {
-        & $scriptPath @Args
-    } else {
-        Write-Error "Script not found: $scriptPath"
-    }
+  [CmdletBinding(DefaultParameterSetName = 'Args')]
+  param(
+    [Parameter(ValueFromRemainingArguments = $true)]
+    $Args
+  )
+  $scriptPath = Join-Path $env:XDG_BIN_HOME 'update-manifest.ps1'
+  if (Test-Path $scriptPath) {
+    & $scriptPath @Args
+  } else {
+    Write-Error "Script not found: $scriptPath"
+  }
 }
 
 function y {
@@ -186,16 +186,15 @@ function cfortune {
 }
 
 function getnf {
-    [CmdletBinding()]
-    param()
-    try {
-        $scriptContent = (Invoke-WebRequest -Uri 'https://to.loredo.me/Install-NerdFont.ps1' -UseBasicParsing).Content
-        $scriptBlock = [scriptblock]::Create($scriptContent)
-        & $scriptBlock -Scope CurrentUser -Confirm:$False
-    }
-    catch {
-        Write-Error "Failed to download or execute Nerd Font installer: $_"
-    }
+  [CmdletBinding()]
+  param()
+  try {
+    $scriptContent = (Invoke-WebRequest -Uri 'https://to.loredo.me/Install-NerdFont.ps1' -UseBasicParsing).Content
+    $scriptBlock = [scriptblock]::Create($scriptContent)
+    & $scriptBlock -Scope CurrentUser -Confirm:$False
+  } catch {
+    Write-Error "Failed to download or execute Nerd Font installer: $_"
+  }
 }
 
 function Get-PubIp {
@@ -310,27 +309,27 @@ function Remove-TempData {
 }
 
 function Update-PowerShell {
-    try {
-        Write-Host "Checking for PowerShell updates..." -ForegroundColor Cyan
-        $updateNeeded = $false
-        $currentVersion = $PSVersionTable.PSVersion.ToString()
-        $gitHubApiUrl = "https://api.github.com/repos/PowerShell/PowerShell/releases/latest"
-        $latestReleaseInfo = Invoke-RestMethod -Uri $gitHubApiUrl
-        $latestVersion = $latestReleaseInfo.tag_name.Trim('v')
-        if ($currentVersion -lt $latestVersion) {
-            $updateNeeded = $true
-        }
-
-        if ($updateNeeded) {
-            Write-Host "Updating PowerShell..." -ForegroundColor Yellow
-            Start-Process powershell.exe -ArgumentList "-NoProfile -Command winget upgrade Microsoft.PowerShell --accept-source-agreements --accept-package-agreements" -Wait -NoNewWindow
-            Write-Host "PowerShell has been updated. Please restart your shell to reflect changes" -ForegroundColor Magenta
-        } else {
-            Write-Host "Your PowerShell is up to date." -ForegroundColor Green
-        }
-    } catch {
-        Write-Error "Failed to update PowerShell. Error: $_"
+  try {
+    Write-Host "Checking for PowerShell updates..." -ForegroundColor Cyan
+    $updateNeeded = $false
+    $currentVersion = $PSVersionTable.PSVersion.ToString()
+    $gitHubApiUrl = "https://api.github.com/repos/PowerShell/PowerShell/releases/latest"
+    $latestReleaseInfo = Invoke-RestMethod -Uri $gitHubApiUrl
+    $latestVersion = $latestReleaseInfo.tag_name.Trim('v')
+    if ($currentVersion -lt $latestVersion) {
+      $updateNeeded = $true
     }
+
+    if ($updateNeeded) {
+      Write-Host "Updating PowerShell..." -ForegroundColor Yellow
+      Start-Process powershell.exe -ArgumentList "-NoProfile -Command winget upgrade Microsoft.PowerShell --accept-source-agreements --accept-package-agreements" -Wait -NoNewWindow
+      Write-Host "PowerShell has been updated. Please restart your shell to reflect changes" -ForegroundColor Magenta
+    } else {
+      Write-Host "Your PowerShell is up to date." -ForegroundColor Green
+    }
+  } catch {
+    Write-Error "Failed to update PowerShell. Error: $_"
+  }
 }
 
 function Import-Profile {
@@ -751,8 +750,8 @@ function Invoke-ChezmoiApply {
 }
 
 function Invoke-Bat {
-        param([Parameter(ValueFromRemainingArguments = $true)]$args)
-        & (Get-Command bat).Source --paging=never --style=plain @args
+  param([Parameter(ValueFromRemainingArguments = $true)]$args)
+  & (Get-Command bat).Source --paging=never --style=plain @args
 }
 
 
