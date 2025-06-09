@@ -8,8 +8,8 @@ M.ssh_domains = {
       multiplexing = 'None'
    },
    {
-      name = 'mbook',
-      remote_address = 'mbook',
+      name = 'mba',
+      remote_address = 'mba',
       multiplexing = 'None'
    },
    {
