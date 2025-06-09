@@ -11,8 +11,8 @@ local function find_vim_pane(tab)
 	end
 end
 
-M.apply_to_config = function(config)
-	smart_splits.apply_to_config(config)
+M.apply_to_config = function(c)
+	smart_splits.apply_to_config(c)
 end
 
 return M
