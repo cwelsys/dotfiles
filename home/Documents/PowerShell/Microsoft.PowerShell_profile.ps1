@@ -11,7 +11,8 @@ $env:DOTFILES = $env:DOTS
 $Env:PWSH = Split-Path $PROFILE -Parent
 $Env:LIBS = Join-Path -Path $Env:PWSH -ChildPath "lib"
 $Env:PYTHONIOENCODING = "utf-8"
-$env:CARAPACE_BRIDGES = 'inshellisense'
+$env:CARAPACE_BRIDGES = "powershell,inshellisense"
+$env:CARAPACE_LENIENT = "1"
 
 # 📝 Editor
 if (Get-Command code -ErrorAction SilentlyContinue) { $Env:EDITOR = "code" }

@@ -44,6 +44,7 @@ M.apply_to_config = function(c)
    c.wsl_domains = M.wsl_domains
    else
    c.wsl_domains = {}
+   end
 end
 
 return M
