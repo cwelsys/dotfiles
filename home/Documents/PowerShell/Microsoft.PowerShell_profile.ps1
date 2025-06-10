@@ -12,7 +12,7 @@ $Env:PWSH = Split-Path $PROFILE -Parent
 $Env:LIBS = Join-Path -Path $Env:PWSH -ChildPath "lib"
 $Env:PYTHONIOENCODING = "utf-8"
 $env:CARAPACE_BRIDGES = "powershell,inshellisense"
-$env:CARAPACE_LENIENT = "1"
+$env:CARAPACE_NOSPACE = "*"
 
 # 📝 Editor
 if (Get-Command code -ErrorAction SilentlyContinue) { $Env:EDITOR = "code" }
