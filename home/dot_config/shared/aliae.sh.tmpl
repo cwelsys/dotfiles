@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+
+has() {
+	command -v $1 >/dev/null
+}
+
+if has rsync; then
+	alias rcp='rsync --recursive --times --progress --stats --human-readable'
+	alias rmv='rsync --recursive --times --progress --stats --human-readable --remove-source-files'
+fi
+
+# Others
+alias c='clear'
+alias lzd='lazydocker'
+alias lzg='lazygit'
+alias lg='lazygit'
+alias rl='reload'
+alias sv='sudo -E nvim'
+alias v='nvim'
+alias vi='nvim'
+
+# package managers
+alias npm-ls="npm list -g"
+alias pnpm-ls="pnpm list -g"
+alias bun-ls="bun pm ls -g"
+alias gems="gem list"
+alias go-ls="go-global-update --dry-run"
+alias dnf="sudo dnf"
+alias apt="sudo apt"
+alias apt-get="sudo apt-get"
+alias ..='cd ..'
+alias ...='cd ../..'
+alias .3='cd ../../..'
+alias .4='cd ../../../..'
+alias .5='cd ../../../../..'
+alias cdc='cd ~/.config/'
+alias cdcm='cd ~/.local/share/chezmoi/'
+
+cmc() {
+	{ [ -n "$1" ] && chezmoi git "commit -m \"$1\"" || chezmoi git "commit"; } && chezmoi git push
+}
+cms() {
+	chezmoi re-add
+	chezmoi git "f" || {
+		echo 'No "f" alias for git!'
+		cmc
+	}
+}
+
+{{ if eq .chezmoi.os "linux" }}
+if [[ -x "$(command -v bat)" ]]; then
+  if [[ ! -d $HOME/.cache/bat ]]; then
+    bat cache --build
+  fi
+
+  export BAT_THEME='Catppuccin Mocha'
+  export BATDIFF_USE_DELTA=true
+  alias -- 'cat'='bat --paging=never --style=plain'
+  [[ -x "$(command -v batgrep)" ]] && alias -- 'ripgrep'='batgrep'
+  [[ -x "$(command -v batman)" ]] && alias -- 'man'='batman'
+  [[ -x "$(command -v batwatch)" ]] && alias -- 'watch'='batwatch'
+  [[ -x "$(command -v batdiff)" ]] && alias -- 'diff'='batdiff'
+
+  alias -g -- '-h'='-h 2>&1 | bat --language=help --style=plain'
+  alias -g -- '--help'='--help 2>&1 | bat --language=help --style=plain'
+fi
+{{ else }}
+alias -- 'cat'='bat --paging=never --style=plain'
+{{ end }}
+alias tg='topgrade'
+alias cm='chezmoi'
+alias cma='chezmoi add'
+alias cme='chezmoi edit'
+alias cmu='chezmoi update'
+alias cmapl='chezmoi apply'
+alias cmra='chezmoi re-add'
+alias t='tmux'
+alias ta='tmux has-session &>/dev/null && tmux attach || tmux new-session'
+alias mkdir='mkdir -p'
+alias reload='exec $SHELL -l'
+alias qq='exit'
+alias dots="cd $DOTFILES"
+
+if [[ -x "$(command -v rsync)" ]]; then
+  alias -- 'cp'='rsync -ah --info=progress2 --inplace --no-whole-file'
+  alias -- 'mv'='rsync -ah --info=progress2 --inplace --no-whole-file --remove-source-files'
+fi
+
+if [[ -x "$(command -v trash)" ]]; then
+  if [[ "$(whence -w rm 2>/dev/null)" == "rm: alias" ]]; then
+    unalias rm
+  fi
+  alias -- 'rm'='trash'
+fi
+
+# eza
+if command -v eza >/dev/null 2>&1; then
+	eza_params=(
+		'--icons=auto'
+		'--group-directories-first'
+		'--color=always'
+		'--ignore-glob=".DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv|*NTUSER.DAT*|*ntuser.dat*"'
+	)
+	alias ls='eza ${eza_params[@]}'
+	alias l='eza --git-ignore ${eza_params[@]}'
+	alias ld='eza --all --only-dirs ${eza_params[@]}'
+	alias lf='eza --all --only-files ${eza_params[@]}'
+	alias ll='eza --all --header --long --time-style=relative --sort=modified ${eza_params[@]}'
+	alias la='eza --all --header --long ${eza_params[@]}'
+	alias lo='eza --oneline ${eza_params[@]}'
+	alias lx='eza --all --header --long --extended ${eza_params[@]}'
+	alias lt='eza --tree ${eza_params[@]}'
+	alias tree='eza --tree ${eza_params[@]}'
+fi
