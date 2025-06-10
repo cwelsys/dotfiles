@@ -39,9 +39,9 @@ M.apply_to_config = function(c)
    if platform.is_win then
       c.default_prog = { 'pwsh', '-NoLogo' }
    elseif platform.is_mac then
-      c.default_prog = { 'zsh', '-l' }
+      c.default_prog = { 'zsh' }
    elseif platform.is_linux then
-      c.default_prog = { 'zsh', '-l' }
+      c.default_prog = { 'zsh' }
    end
 
    c.launch_menu = M.launch_menu
