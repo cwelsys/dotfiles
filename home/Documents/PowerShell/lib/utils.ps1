@@ -1,5 +1,3 @@
-# 🔗 Aliases
-
 Remove-Item Alias:rm -Force -ErrorAction SilentlyContinue
 
 Set-Alias -Name 'whic' -Value Get-CommandInfo -Description "Shows command information (intentional typo to avoid conflict with 'which' command)"
@@ -30,39 +28,19 @@ Set-Alias -Name 'mg' -Value magick -Description "Shortcut for ImageMagick's magi
 
 Set-Alias -Name 'deltmp' -Value Remove-TempData -Description "Cleans temporary file directories"
 
-Set-Alias -Name 'aliases' -Value Get-Aliases -Description "Lists all user-defined aliases"
-
 Set-Alias -Name 'npm-ls' -Value Get-NpmGlobalPackages -Description "Lists globally installed NPM packages"
 
 Set-Alias -Name 'bun-ls' -Value Get-BunGlobalPackages -Description "Lists globally installed Bun packages"
 
 Set-Alias -Name 'pnpm-ls' -Value Get-PnpmGlobalPackages -Description "Lists globally installed PNPM packages"
 
-Set-Alias -Name 'cm' -Value 'chezmoi' -Description "Shortcut for chezmoi dotfiles manager"
-
-Set-Alias -Name 'cmu' -Value Invoke-ChezmoiUpdate -Description "Updates dotfiles with chezmoi"
-
-Set-Alias -Name 'cme' -Value Invoke-ChezmoiEdit -Description "Edits files with chezmoi"
-
-Set-Alias -Name 'cma' -Value Invoke-ChezmoiAdd -Description "Adds files to chezmoi"
-
-Set-Alias -Name 'cmra' -Value Invoke-ChezmoiReAdd -Description "Re-adds files to chezmoi"
-
-Set-Alias -Name 'cmapl' -Value Invoke-ChezmoiApply -Description "Applies changes with chezmoi"
-
-Set-Alias -Name 'cmc' -Value Invoke-ChezmoiCommitAndPush -Description "Commit and push chezmoi changes"
-
-Set-Alias -Name 'cms' -Value Invoke-ChezmoiSaveChanges -Description "Save chezmoi changes with fast commit"
+Set-Alias -Name 'cm' -Value chezmoi -Description "Shortcut for chezmoi dotfiles manager"
 
 Set-Alias -Name "md5" -Value Get-FileHashMD5 -Description "Calculates the MD5 hash of an input."
 
 Set-Alias -Name "sha1" -Value Get-FileHashSHA1 -Description "Calculates the SHA1 hash of an input."
 
 Set-Alias -Name "sha256" -Value Get-FileHashSHA256 -Description "Calculates the SHA256 hash of an input."
-
-Set-Alias -Name "forecast" -Value Get-WeatherForecast -Description "Displays detailed weather and forecast."
-
-Set-Alias -Name "weather" -Value Get-WeatherCurrent -Description "Displays current weather."
 
 Set-Alias -Name "GET" -Value Invoke-RestMethodGet -Description "Sends a GET http request."
 
@@ -78,66 +56,43 @@ Set-Alias -Name "TRACE" -Value Invoke-RestMethodTrace -Description "Sends a TRAC
 
 Set-Alias -Name "OPTIONS" -Value Invoke-RestMethodOptions -Description "Sends an OPTIONS http request."
 
-if (Get-Command lazygit -ErrorAction SilentlyContinue) {
-  Set-Alias -Name 'lg' -Value 'lazygit' -Scope Global -Force
-  Set-Alias -Name 'lzg' -Value 'lazygit'
-}
+Set-Alias -Name "keys" -value Get-PSReadLineKeyHandler
 
-if (Get-Command lazydocker -ErrorAction SilentlyContinue) {
-  Set-Alias -Name 'lzg' -Value 'lazygit' -Scope Global -Force
-}
+Set-Alias -Name 'lg' -Value lazygit
 
-if (Get-Command topgrade -ErrorAction SilentlyContinue) {
-  Set-Alias -Name 'tg' -Value 'topgrade'
-}
+Set-Alias -Name 'lzd' -Value lazydocker
 
-# 🏖️ Functions
-
+Set-Alias -Name 'tg' -Value topgrade
 function dots { Set-Location $env:DOTFILES }
-
 function qq { exit }
-
 function cdcm { Set-Location $env:DOTFILES }
-
 function cdc { Set-Location $env:XDG_CONFIG_HOME }
-
 function export($name, $value) {
   Set-Item -Path "env:$name" -Value $value
 }
 function lock { Invoke-Command { rundll32.exe user32.dll, LockWorkStation } }
-
 function hibernate { shutdown.exe /h }
-
 function shutdown { Stop-Computer }
-
 function reboot { Restart-Computer }
-
 function HKLM { Set-Location HKLM: }
-
 function HKCU { Set-Location HKCU: }
-
 function envs { Get-ChildItem Env: }
-
 function paths { $env:PATH -Split ';' }
-
 function e { Invoke-Item . }
-
 function fdns { ipconfig /flushdns }
-
 function rdns { ipconfig /release }
-
 function ddns { ipconfig /displaydns }
-
 function sysinfo { if (Get-Command fastfetch -ErrorAction SilentlyContinue) { fastfetch -c all } else { Get-ComputerInfo } }
-
 function profiles { Get-PSProfile { $_.exists -eq "True" } | Format-List }
-
 function restart { Get-Process -Id $PID | Select-Object -ExpandProperty Path | ForEach-Object { Invoke-Command { & "$_" } -NoNewScope } }
-
+function getnf { Invoke-NerdFontInstaller }
+function Invoke-Bat {
+  param([Parameter(ValueFromRemainingArguments = $true)]$args)
+  & (Get-Command bat).Source --paging=never --style=plain @args
+}
 function Get-NpmGlobalPackages { (npm ls -g | Select-Object -skip 1).Trim().Split() | ForEach-Object { if ($_ -match [regex]::Escape("@")) { Write-Output $_ } } }
 function Get-BunGlobalPackages { (bun pm ls -g | Select-Object -Skip 1).Trim().Split() | ForEach-Object { if ($_ -match [regex]::Escape("@")) { Write-Output $_ } } }
 function Get-PnpmGlobalPackages { (pnpm ls -g | Select-Object -Skip 5) | ForEach-Object { $name = $_.Split()[0]; $version = $_.Split()[1]; Write-Output "$name@$version" } }
-
 function cmpack {
   [CmdletBinding(DefaultParameterSetName = 'Args')]
   param(
@@ -151,7 +106,6 @@ function cmpack {
     Write-Error "Script not found: $scriptPath"
   }
 }
-
 function y {
   $tmp = [System.IO.Path]::GetTempFileName()
   yazi $args --cwd-file="$tmp"
@@ -167,17 +121,6 @@ function fortune {
 }
 
 function cfortune {
-  <#
-    .SYNOPSIS
-        Displays a random fortune using the cowsay program.
-    .DESCRIPTION
-        Gets a random fortune from the fortune.txt file and passes it
-        to the cowsay program to display in a speech bubble.
-    .EXAMPLE
-        cowfortune
-    .LINK
-        fortune
-    #>
   [CmdletBinding()]
   param()
 
@@ -185,112 +128,9 @@ function cfortune {
   $fortuneText | cowsay
 }
 
-function getnf {
-  [CmdletBinding()]
-  param()
-  try {
-    $scriptContent = (Invoke-WebRequest -Uri 'https://to.loredo.me/Install-NerdFont.ps1' -UseBasicParsing).Content
-    $scriptBlock = [scriptblock]::Create($scriptContent)
-    & $scriptBlock -Scope CurrentUser -Confirm:$False
-  } catch {
-    Write-Error "Failed to download or execute Nerd Font installer: $_"
-  }
-}
-
-function Get-PubIp {
-  (Invoke-WebRequest http://ifconfig.me/ip ).Content
-}
-
 function Get-PSProfile {
   $PROFILE.PSExtended.PSObject.Properties |
   Select-Object Name, Value, @{Name = 'IsExist'; Expression = { Test-Path -Path $_.Value -PathType Leaf } }
-}
-
-function Get-Weather {
-  <#
-    .SYNOP
-        Display the current weather and forecast.
-    .DESCRIPTION
-        Fetches the weather information from https://wttr.in for terminal
-        display.
-    .PARAMETER Request
-        The full URL to the wttr request.
-    .PARAMETER Timeout
-        The number of seconds to wait for a response.
-    .EXAMPLE
-        Get-Weather nF 10
-    .INPUTS
-        System.String
-    .OUTPUTS
-        System.String
-    .LINK
-        https://github.com/chubin/wttr.in
-    .LINK
-        https://wttr.in
-    #>
-  [CmdletBinding()]
-  param(
-    [Parameter(
-      Mandatory = $false,
-      ValueFromPipeline = $true
-    )]
-    [string]$Request,
-
-    [Parameter(Mandatory = $false)]
-    [PSDefaultValue(Help = '10')]
-    [int]$Timeout = 10
-  )
-
-  begin {
-    if ($Request) {
-      $Request = '?' + $Request
-    }
-    $Request = 'https://wttr.in' + $Request
-  }
-
-  process {
-    $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-    $headers.Add("Content-Encoding", 'deflate, gzip')
-        (Invoke-WebRequest -Uri "$Request" -UserAgent "curl" -Headers $headers -UseBasicParsing -TimeoutSec "$Timeout").content
-  }
-}
-
-function Get-WeatherForecast {
-  <#
-    .SYNOPSIS
-        Displays detailed weather and forecast.
-    .DESCRIPTION
-        Fetches the weather information from wttr.in for terminal display.
-    .INPUTS
-        None
-    .OUTPUTS
-        System.String
-    .LINK
-        https://wttr.in
-    #>
-  [CmdletBinding()]
-  param()
-
-  Get-Weather 'F'
-}
-
-function Get-WeatherCurrent {
-  <#
-    .SYNOPSIS
-        Displays current weather.
-    .DESCRIPTION
-        Fetches the weather information from wttr.in for terminal display.
-    .INPUTS
-        None
-    .OUTPUTS
-        System.String
-    .LINK
-        https://wttr.in
-    #>
-  [CmdletBinding()]
-  param()
-
-  Get-Weather 'format=%l:+(%C)+%c++%t+[%h,+%w]'
 }
 
 function Remove-TempData {
@@ -397,21 +237,6 @@ function Invoke-Komorebirl {
   }
 }
 
-function Get-IPLocation {
-  param([string]$IPaddress = "")
-
-  try {
-    if ($IPaddress -eq "" ) { $IPaddress = read-host "Enter IP address to locate" }
-
-    $result = Invoke-RestMethod -Method Get -Uri "http://ip-api.com/json/$IPaddress"
-    write-output $result
-    return $result
-  } catch {
-    "⚠️ Error in line $($_.InvocationInfo.ScriptLineNumber): $($Error[0])"
-    throw
-  }
-}
-
 function Invoke-RestMethodGet {
   <#
     .SYNOPSIS
@@ -513,20 +338,6 @@ function Invoke-RestMethodOptions {
   Invoke-RestMethod -Method OPTIONS @args
 }
 
-function Get-Aliases {
-  <#
-    .SYNOPSIS
-        Show information of user's defined aliases. Alias: aliases
-    #>
-  [CmdletBinding()]
-  param()
-
-  #requires -Module PSScriptTools
-  Get-MyAlias |
-  Sort-Object Source, Name |
-  Format-Table -Property Name, Definition, Version, Source -AutoSize
-}
-
 function Get-FileHashMD5 {
   <#
     .SYNOPSIS
@@ -619,140 +430,5 @@ function Get-FileHashSHA256 {
   )
   Get-FileHash $Path -Algorithm SHA256
 }
-
-function Invoke-ChezmoiCommitAndPush {
-  <#
-    .SYNOPSIS
-        Commits changes to chezmoi repository and pushes them.
-    .DESCRIPTION
-        Commits changes to chezmoi repository with an optional message and pushes them.
-        If no message is provided, opens the default git commit editor.
-    .PARAMETER Message
-        Optional commit message. If not provided, opens the default git commit editor.
-    .EXAMPLE
-        Invoke-ChezmoiCommitAndPush "Update dotfiles"
-    .EXAMPLE
-        Invoke-ChezmoiCommitAndPush
-    #>
-  [CmdletBinding()]
-  param(
-    [Parameter(Position = 0)]
-    [string]$Message
-  )
-
-  if ([string]::IsNullOrEmpty($Message)) {
-    chezmoi git "commit"
-  } else {
-    chezmoi git "commit -m `"$Message`""
-  }
-
-  if ($LASTEXITCODE -eq 0) {
-    chezmoi git push
-  }
-}
-
-function Invoke-ChezmoiSaveChanges {
-  <#
-    .SYNOPSIS
-        Re-adds files to chezmoi and attempts to use git fast commit.
-    .DESCRIPTION
-        Updates the source state with chezmoi re-add and attempts to use
-        git's "f" alias. If that fails, falls back to regular commit and push.
-    #>
-  [CmdletBinding()]
-  param()
-
-  chezmoi re-add
-
-  try {
-    chezmoi git "f" 2>&1
-    if ($LASTEXITCODE -ne 0) {
-      Write-Warning "No 'f' alias for git!"
-      Invoke-ChezmoiCommitAndPush
-    }
-  } catch {
-    Write-Warning "No 'f' alias for git!"
-    Invoke-ChezmoiCommitAndPush
-  }
-}
-
-# Create functions for chezmoi commands
-function Invoke-ChezmoiAdd {
-  <#
-    .SYNOPSIS
-        Adds files to chezmoi.
-    .DESCRIPTION
-        Adds the named files, directories, or glob patterns to the source state.
-    .EXAMPLE
-        Invoke-ChezmoiAdd ~/.bashrc
-    #>
-  [CmdletBinding()]
-  param(
-    [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$Arguments
-  )
-
-  chezmoi add @Arguments
-}
-
-function Invoke-ChezmoiEdit {
-  <#
-    .SYNOPSIS
-        Edits files in the source state.
-    #>
-  [CmdletBinding()]
-  param(
-    [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$Arguments
-  )
-
-  chezmoi edit @Arguments
-}
-
-function Invoke-ChezmoiUpdate {
-  <#
-    .SYNOPSIS
-        Updates the target state.
-    #>
-  [CmdletBinding()]
-  param(
-    [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$Arguments
-  )
-
-  chezmoi update @Arguments
-}
-
-function Invoke-ChezmoiReAdd {
-  <#
-    .SYNOPSIS
-        Re-adds modified files.
-    #>
-  [CmdletBinding()]
-  param(
-    [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$Arguments
-  )
-
-  chezmoi re-add @Arguments
-}
-
-function Invoke-ChezmoiApply {
-  <#
-    .SYNOPSIS
-        Applies changes with chezmoi.
-    #>
-  [CmdletBinding()]
-  param(
-    [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$Arguments
-  )
-}
-
-function Invoke-Bat {
-  param([Parameter(ValueFromRemainingArguments = $true)]$args)
-  & (Get-Command bat).Source --paging=never --style=plain @args
-}
-
 
 

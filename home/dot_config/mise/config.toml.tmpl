@@ -30,9 +30,10 @@ rust = { version = "1.87.0", profile = "default" }
 java = "corretto-21"
 maven = "latest"
 uv = "latest"
-python = { version = "3.13", postinstall = "pip install --upgrade pip" }
+python = { version = "3.11", postinstall = "-m pip install --upgrade pip" }
 "pipx:cookiecutter" = "latest"
 "pipx:yamllint" = "latest"
+
 
 [env]
 npm_config_init_module = "{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/npm/config/npm-init.js"

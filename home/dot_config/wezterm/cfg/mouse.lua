@@ -17,8 +17,21 @@ function M.setup(c)
       mods = keys.mod,
       action = wez.action.CompleteSelectionOrOpenLinkAtMouseCursor("ClipboardAndPrimarySelection"),
     },
+    -- Right-click to copy selection or paste
+    {
+      event = { Down = { streak = 1, button = "Right" } },
+      mods = "NONE",
+      action = wez.action_callback(function(window, pane)
+        local has_selection = window:get_selection_text_for_pane(pane) ~= ""
+        if has_selection then
+          window:perform_action(wez.action.CopyTo("ClipboardAndPrimarySelection"), pane)
+          window:perform_action(wez.action.ClearSelection, pane)
+        else
+          window:perform_action(wez.action({ PasteFrom = "Clipboard" }), pane)
+        end
+      end),
+    },
   }
-
 end
 
 return M

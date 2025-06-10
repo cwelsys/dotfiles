@@ -6,14 +6,12 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 # 🌐 Env
-if (Get-Command chezmoi -ErrorAction SilentlyContinue) {
-	$env:DOTS = & chezmoi source-path
-} else {
-	$env:DOTS = {{ .chezmoi.sourceDir | quote}}
-}
+$env:DOTS = & chezmoi source-path
 $env:DOTFILES = $env:DOTS
 $Env:PWSH = Split-Path $PROFILE -Parent
 $Env:LIBS = Join-Path -Path $Env:PWSH -ChildPath "lib"
+$Env:PYTHONIOENCODING = "utf-8"
+$env:CARAPACE_BRIDGES = 'inshellisense'
 
 # 📝 Editor
 if (Get-Command code -ErrorAction SilentlyContinue) { $Env:EDITOR = "code" }
@@ -22,19 +20,11 @@ else {
 	else { $Env:EDITOR = "notepad" }
 }
 
-# 🚬 source
-$psmPath = "$env:LIBS\psm"
-if (Test-Path -Path $psmPath) {
-    foreach ($module in $((Get-ChildItem -Path "$psmPath\*" -Include *.psm1 -ErrorAction SilentlyContinue).FullName)) {
-        Import-Module "$module" -Global
-    }
+foreach ($module in $((Get-ChildItem -Path "$env:LIBS\psm\*" -Include *.psm1).FullName )) {
+	Import-Module "$module" -Global
 }
-
-$ps1Path = "$env:LIBS\ps1"
-if (Test-Path -Path $ps1Path) {
-    foreach ($file in $((Get-ChildItem -Path "$ps1Path\*" -Include *.ps1 -ErrorAction SilentlyContinue).FullName)) {
-        . "$file"
-    }
+foreach ($file in $((Get-ChildItem -Path "$env:LIBS\*" -Include *.ps1).FullName)) {
+	. "$file"
 }
 
 # 🐚 Prompt
@@ -44,25 +34,17 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 	Invoke-Expression (&starship init powershell)
 }
 
-# 🥣 scoop
-if (Get-Command scoop -ErrorAction SilentlyContinue) {
-	Invoke-Expression (&scoop-search --hook)
-}
-
-# 🐢 completions
-# if (Test-Path "$env:LIBS\completions\init.ps1" -PathType Leaf) {
-# 	. "$env:LIBS\completions\init.ps1"
-# }
-
 # 💤 zoxide
 if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 	$Env:_ZO_DATA_DIR = "$Env:PWSH"
 	Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
 }
 
+carapace _carapace | Out-String | Invoke-Expression
+
 # 🐶 FastFetch
 if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
-	if ([Environment]::GetCommandLineArgs().Contains("-NonInteractive") -or $Env:TERM_PROGRAM -eq "vscode") {
+	if ([Environment]::GetCommandLineArgs().Contains("-NonInteractive")) {
 		Return
 	}
 	fastfetch

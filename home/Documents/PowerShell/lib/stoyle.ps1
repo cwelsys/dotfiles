@@ -12,8 +12,8 @@
 if (!(Get-Command fzf -ErrorAction SilentlyContinue)) { return }
 
 if (-not (Get-Module -ListAvailable -Name Catppuccin -ErrorAction SilentlyContinue)) {
-	Write-Host "Installing PowerShell Module Catppuccin..." -ForegroundColor "Green"
-	git clone "https://github.com/catppuccin/powershell.git" "$env:USERPROFILE\Documents\PowerShell\Modules\Catppuccin"
+    Write-Host "Installing PowerShell Module Catppuccin..." -ForegroundColor "Green"
+    git clone "https://github.com/catppuccin/powershell.git" "$env:USERPROFILE\Documents\PowerShell\Modules\Catppuccin"
 }
 
 Import-Module Catppuccin
@@ -135,47 +135,10 @@ $parameters1 = @{
 }
 Set-PSReadLineKeyHandler @parameters1
 
-# This key handler shows the entire or filtered history using Out-GridView. The
-# typed text is used as the substring pattern for filtering. A selected command
-# is inserted to the command line without invoking. Multiple command selection
-# is supported, e.g. selected by Ctrl + Click.
-$parameters2 = @{
-    Key              = "F7"
-    BriefDescription = "Toggle History"
-    LongDescription  = "Show Command History"
-    ScriptBlock      = {
-        $pattern = $null
-        [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$pattern, [ref]$null)
-        if ($pattern) { $pattern = [regex]::Escape($pattern) }
-
-        $history = [System.Collections.ArrayList]@(
-            $last = ''
-            $lines = ''
-            foreach ($line in [System.IO.File]::ReadLines((Get-PSReadLineOption).HistorySavePath)) {
-                if ($line.EndsWith('`')) {
-                    $line = $line.Substring(0, $line.Length - 1)
-                    $lines = if ($lines) { "$lines`n$line" } else { $line }
-                    continue
-                }
-                if ($lines) { $line = "$lines`n$line"; $lines = '' }
-                if (($line -cne $last) -and (!$pattern -or ($line -match $pattern))) { $last = $line; $line }
-            }
-        )
-        $history.Reverse()
-
-        $command = $history | Out-GridView -Title History -PassThru
-        if ($command) {
-            [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
-            [Microsoft.PowerShell.PSConsoleReadLine]::Insert(($command -join "`n"))
-        }
-    }
-}
-Set-PSReadLineKeyHandler @parameters2
-
 # Sometimes you want to get a property of invoke a member on what you've entered so far
 # but you need parens to do that.  This binding will help by putting parens around the current selection,
 # or if nothing is selected, the whole line.
-$parameters3 = @{
+$parameters2 = @{
     Key              = 'Alt+('
     BriefDescription = "Parenthesize Selection"
     LongDescription  = "Put parenthesis around the selection or entire line and move the cursor to after the closing parenthesis"
@@ -197,12 +160,12 @@ $parameters3 = @{
         }
     }
 }
-Set-PSReadLineKeyHandler @parameters3
+Set-PSReadLineKeyHandler @parameters2
 
 # Each time you press Alt+', this key handler will change the token
 # under or before the cursor.  It will cycle through single quotes, double quotes, or
 # no quotes each time it is invoked.
-$parameters4 = @{
+$parameters3 = @{
     Key              = "Alt+'"
     BriefDescription = "Toggle Quote Argument"
     LongDescription  = "Toggle quotes on the argument under the cursor"
@@ -254,11 +217,11 @@ $parameters4 = @{
         }
     }
 }
-Set-PSReadLineKeyHandler @parameters4
+Set-PSReadLineKeyHandler @parameters3
 
 # This example will replace any aliases on the command line with the resolved commands.
-$parameters5 = @{
-    Key              = "Alt+%"
+$parameters4 = @{
+    Key              = "F7"
     BriefDescription = "Expand Aliases"
     LongDescription  = "Replace any aliases on the command line with the resolved commands"
     ScriptBlock      = {
@@ -293,7 +256,7 @@ $parameters5 = @{
         }
     }
 }
-Set-PSReadLineKeyHandler @parameters5
+Set-PSReadLineKeyHandler @parameters4
 
 # PSFzf
 # ----------------------------------------------------------------
