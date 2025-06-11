@@ -143,6 +143,11 @@ widgets:
         left: 8
         bottom: 0
         right: 8
+      label_shadow:
+        enabled: true
+        color: 'black'
+        radius: 3
+        offset: [1, 1]
 
   microphone:
     type: 'yasb.microphone.MicrophoneWidget'
