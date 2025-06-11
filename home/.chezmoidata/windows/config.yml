@@ -44,6 +44,11 @@ config:
         PNPM_HOME: 'C:\Users\cwel\.local\share\pnpm'
         XAUTHORITY: 'C:\Users\cwel\.local\state\.Xauthority'
         RCLONE_CONFIG_DIR: 'C:\Users\cwel\.config\rclone'
+        MISE_NODE_DEFAULT_PACKAGES_FILE: 'C:\Users\cwel\.config\mise\default-npm-packages'
+        MISE_GO_DEFAULT_PACKAGES_FILE: 'C:\Users\cwel\.config\mise\default-npm-packages'
+        MISE_PYTHON_DEFAULT_PACKAGES_FILE: 'C:\Users\cwel\.config\mise\default-python-packages'
+        MISE_RUBY_DEFAULT_PACKAGES_FILE: 'C:\Users\cwel\.config\mise\default-gems'
+        PYTHON_HISTORY: 'C:\Users\cwel\.local\share\python\history'
 
     features:
       enable:

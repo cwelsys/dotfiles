@@ -35,17 +35,15 @@ python = { version = "3.11", postinstall = "python -m pip install --upgrade pip"
 
 
 [env]
-npm_config_init_module = "{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/npm/config/npm-init.js"
+npm_config_init_module = '{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/npm/config/npm-init.js'
 npm_config_cache = "{{ env "XDG_CACHE_HOME" | replace "\\" "/" }}/npm"
 YARN_CACHE_FOLDER = "{{ env "XDG_CACHE_HOME" | replace "\\" "/" }}/npm"
 PNPM_HOME = "{{ env "XDG_DATA_HOME" | replace "\\" "/" }}/pnpm"
-UV_LINK_MODE = { value = "symlink", tools = true }
 MISE_PYTHON_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/mise/default-python-packages"
 MISE_GO_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/mise/default-go-packages"
 MISE_NODE_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/mise/default-npm-packages"
 GOPATH = "{{ env "XDG_DATA_HOME" | replace "\\" "/" }}/go"
 GOBIN = "{{ env "GOPATH" | replace "\\" "/" }}/bin"
-
 MISE_RUBY_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/mise/default-gems"
 MISE_RUSTUP_HOME = "{{ env "XDG_DATA_HOME" | replace "\\" "/" }}/rustup"
 MISE_CARGO_HOME = "{{ env "XDG_DATA_HOME" | replace "\\" "/" }}/cargo"
@@ -54,7 +52,7 @@ _.path = ["{{ env "PNPM_HOME" | replace "\\" "/" }}", "{{ env "GOBIN" | replace 
 {{ if eq .chezmoi.os "darwin" }}
 npm_config_tmp = "{{ .chezmoi.homeDir }}/Library/Caches/npm"
 {{ else if eq .chezmoi.os "windows" }}
-npm_config_tmp = "{{ .chezmoi.homeDir }}\\AppData\\Local\\Temp\\npm"
+npm_config_tmp = "{{ .chezmoi.homeDir }}/AppData/Local/Temp/npm"
 {{ else }}
 npm_config_tmp = "{{ env "XDG_RUNTIME_DIR" }}/npm"
 {{ end }}
