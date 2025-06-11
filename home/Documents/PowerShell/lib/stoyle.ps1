@@ -20,6 +20,8 @@ Import-Module Catppuccin
 
 $Flavor = $Catppuccin['Mocha']
 
+$Env:GLOW_STYLE = "$HOME/.config/glow/catppuccin-mocha.json"
+
 #PSStyle
 $PSStyle.Formatting.TableHeader = $Flavor.Teal.Foreground()
 $PSStyle.Formatting.CustomTableHeaderLabel = $Flavor.Teal.Background() + $Flavor.Base.Foreground()

@@ -1,3 +1,4 @@
+{{ $themePath := "" }}
 {{ $themePath = printf "%s/.config/glow/themes/catppuccin-%s.json" .chezmoi.homeDir .catppuccinFlavor }}
 # style name or JSON path (default "auto")
 style: {{ $themePath }}
