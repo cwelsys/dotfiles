@@ -133,11 +133,11 @@ widgets:
       label: "<span>\uf476</span> {count}"
       label_alt: '{count} notifications'
       hide_empty: false
-      tooltip: false
+      tooltip: true
       callbacks:
         on_left: 'toggle_notification'
-        on_right: 'do_nothing'
-        on_middle: 'toggle_label'
+        on_right: 'clear_notifications'
+        on_middle: 'clear_notifications'
       container_padding:
         top: 0
         left: 8
