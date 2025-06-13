@@ -62,6 +62,8 @@ Set-Alias -Name 'lg' -Value lazygit
 
 Set-Alias -Name 'lzd' -Value lazydocker
 
+Set-Alias -name 'lj' -Value lazyjournal
+
 Set-Alias -Name 'tg' -Value topgrade
 function dots { Set-Location $env:DOTFILES }
 function qq { exit }
@@ -71,14 +73,14 @@ function export($name, $value) {
   Set-Item -Path "env:$name" -Value $value
 }
 function pip {
-    $pythonPath = (mise exec -- python -c "import sys; print(sys.executable)")
-    $pipPath = [System.IO.Path]::GetDirectoryName($pythonPath) + "\Scripts\pip.exe"
+  $pythonPath = (mise exec -- python -c "import sys; print(sys.executable)")
+  $pipPath = [System.IO.Path]::GetDirectoryName($pythonPath) + "\Scripts\pip.exe"
 
-    if (Test-Path $pipPath) {
-        & $pipPath $args
-    } else {
-        mise exec -- python -m pip $args
-    }
+  if (Test-Path $pipPath) {
+    & $pipPath $args
+  } else {
+    mise exec -- python -m pip $args
+  }
 }
 function lock { Invoke-Command { rundll32.exe user32.dll, LockWorkStation } }
 function hibernate { shutdown.exe /h }
