@@ -1,24 +1,53 @@
+local wez = require('wezterm')
 local platform = require('utils.platform')
 local M = {}
 
 -- Domain configuration
-M.ssh_domains = {
-   {
-      name = 'pbox',
-      remote_address = 'pbox',
-      multiplexing = 'None'
-   },
-   {
-      name = 'mba',
-      remote_address = 'mba',
-      multiplexing = 'None'
-   },
-   {
-      name = 'wini',
-      remote_address = 'wini',
-      multiplexing = 'None'
+if platform.is_win then
+   M.ssh_domains = {
+      {
+         name = 'pbox',
+         remote_address = 'pbox',
+         multiplexing = 'None',
+         assume_shell = "Posix"
+      },
+      {
+         name = 'mba',
+         remote_address = 'mba',
+         multiplexing = 'None',
+         assume_shell = "Posix"
+      },
    }
-}
+elseif platform.is_mac then
+   M.ssh_domains = {
+      {
+         name = 'pbox',
+         remote_address = 'pbox',
+         multiplexing = 'None',
+         assume_shell = "Posix"
+      },
+      {
+         name = 'wini',
+         remote_address = 'wini',
+         multiplexing = 'None'
+      }
+   }
+elseif platform.is_linux then
+   M.ssh_domains = {
+      {
+         name = 'mba',
+         remote_address = 'mba',
+         multiplexing = 'None',
+         assume_shell = "Posix"
+      },
+      {
+         name = 'wini',
+         remote_address = 'wini',
+         multiplexing = 'None'
+      }
+   }
+end
+-- M.ssh_domains = wez.default_ssh_domains()
 
 M.unix_domains = {}
 

@@ -1,21 +1,25 @@
 local wez = require('wezterm')
+local c = wez.config_builder()
+
+require("utils.tabs")(c)
 wez.log_info("reloading")
 
-if wez.config_builder then
-  c = wez.config_builder()
-end
+require('events.launch').setup()
+-- require('events.lstatus').setup()
+-- require('events.rstatus').setup({ date_format = '%a %I:%M:%p' })
+-- require('events.tabs').setup({ hide_active_tab_unseen = false, unseen_icon = 'circle' })
+-- require('events.launch').setup()
 
-local c = {}
-
+-- config
 require('cfg.style').apply_to_config(c)
 require('cfg.mouse').setup(c)
 require('cfg.links').setup(c)
 require('cfg.keys').apply_to_config(c)
 require('cfg.remotes').apply_to_config(c)
 require('cfg.shells').apply_to_config(c)
-require('utils.nvim').apply_to_config(c)
-require('utils.tabs').setup(c)
-require('utils.launch').setup()
+-- require('cfg.nvim').apply_to_config(c)
+-- require('utils.launch').setup()
+-- require("utils.status").set_status()
 -- require('utils.bar').apply_to_config(c)
 
 c.exit_behavior = "CloseOnCleanExit"

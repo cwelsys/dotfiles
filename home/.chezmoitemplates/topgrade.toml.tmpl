@@ -75,14 +75,15 @@ no_self_update = true
 {{ if eq .chezmoi.os "windows" }}
 # Commands to run before anything
 [pre_commands]
-"Stop Komorebi" = "cmd /C komorebic stop --whkd"
+"Stop Komorebi" = "komorebic stop --whkd"
 # Commands to run after anything
 [post_commands]
-"Start Komorebi" = "cmd /C komorebic start --whkd"
+"Start Komorebi" = "komorebic start --whkd"
+"Reload Yasb" = "yasbc reload"
 
 # Custom commands
 [commands]
-"Fetch Komorebi" = "cmd /C komorebic fetch-asc"
+"Fetch Komorebi" = "komorebic fetch-asc"
 
 {{ else }}
 # Commands to run before anything
