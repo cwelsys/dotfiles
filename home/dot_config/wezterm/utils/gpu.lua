@@ -1,5 +1,5 @@
 local wez = require('wezterm')
-local platform = require('utils.platform')
+local os = require('utils.os')
 
 ---@alias WeztermGPUBackend 'Vulkan'|'Metal'|'Gl'|'Dx12'
 ---@alias WeztermGPUDeviceType 'DiscreteGpu'|'IntegratedGpu'|'Cpu'|'Other'
@@ -26,7 +26,7 @@ local platform = require('utils.platform')
 local GpuAdapters = {}
 GpuAdapters.__index = GpuAdapters
 
----See `https://github.com/gfx-rs/wgpu#supported-platforms` for more info on available backends
+---See `https://github.com/gfx-rs/wgpu#supported-oss` for more info on available backends
 GpuAdapters.AVAILABLE_BACKENDS = {
    windows = { 'Dx12', 'Vulkan', 'Gl' },
    linux = { 'Vulkan', 'Gl' },
@@ -40,8 +40,8 @@ GpuAdapters.ENUMERATED_GPUS = wez.gui.enumerate_gpus()
 ---@private
 function GpuAdapters:init()
    local initial = {
-      __backends = self.AVAILABLE_BACKENDS[platform.os],
-      __preferred_backend = self.AVAILABLE_BACKENDS[platform.os][1],
+      __backends = self.AVAILABLE_BACKENDS[os.os],
+      __preferred_backend = self.AVAILABLE_BACKENDS[os.os][1],
       DiscreteGpu = nil,
       IntegratedGpu = nil,
       Cpu = nil,
@@ -65,7 +65,7 @@ end
 ---   1. Best GPU available (Discrete > Integrated > Other (for wgpu's OpenGl implementation on Discrete GPU) > Cpu)
 ---   2. Best graphics API available (based off my very scientific scroll a big log file in neovim test 😁)
 ---
----Graphics API choices are based on the platform:
+---Graphics API choices are based on the os:
 ---   - Windows: Dx12 > Vulkan > OpenGl
 ---   - Linux: Vulkan > OpenGl
 ---   - Mac: Metal
