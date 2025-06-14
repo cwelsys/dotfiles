@@ -1,0 +1,54 @@
+﻿# 👾 Encoding
+$OutputEncoding = [System.Text.Encoding]::UTF8
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+# 🚌 Tls
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+# 🌐 Env (wt nightly overrides SSH_AUTH_SOCK)
+$env:SSH_AUTH_SOCK = '\\.\pipe\openssh-ssh-agent'
+$env:DOTS = & chezmoi source-path
+$env:DOTFILES = $env:DOTS
+$Env:PWSH = Split-Path $PROFILE -Parent
+$Env:LIBS = Join-Path -Path $Env:PWSH -ChildPath 'lib'
+$Env:PYTHONIOENCODING = 'utf-8'
+$env:CARAPACE_BRIDGES = 'powershell,inshellisense'
+$env:CARAPACE_NOSPACE = '*'
+
+# 📝 Editor
+if (Get-Command code -ErrorAction SilentlyContinue) { $Env:EDITOR = 'code' }
+else {
+	if (Get-Command nvim -ErrorAction SilentlyContinue) { $Env:EDITOR = 'nvim' }
+	else { $Env:EDITOR = 'notepad' }
+}
+
+foreach ($module in $((Get-ChildItem -Path "$env:LIBS\psm\*" -Include *.psm1).FullName )) {
+	Import-Module "$module" -Global
+}
+foreach ($file in $((Get-ChildItem -Path "$env:LIBS\*" -Include *.ps1).FullName)) {
+	. "$file"
+}
+
+# 🐚 Prompt
+if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
+	oh-my-posh init pwsh --config "$HOME\.config\posh.toml" | Invoke-Expression
+}
+elseif (Get-Command starship -ErrorAction SilentlyContinue) {
+	Invoke-Expression (&starship init powershell)
+}
+
+# 💤 zoxide
+if (Get-Command zoxide -ErrorAction SilentlyContinue) {
+	$Env:_ZO_DATA_DIR = "$Env:PWSH"
+	Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
+}
+
+carapace _carapace | Out-String | Invoke-Expression
+
+# 🐶 FastFetch
+if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
+	if ([Environment]::GetCommandLineArgs().Contains('-NonInteractive')) {
+		Return
+	}
+	fastfetch
+}
