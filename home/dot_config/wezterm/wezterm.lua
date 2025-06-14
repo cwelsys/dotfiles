@@ -1,8 +1,7 @@
 local wez = require('wezterm')
 local c = wez.config_builder()
-
-require("utils.tabs")(c)
 wez.log_info("reloading")
+require("utils.tabs")(c)
 
 require('events.launch').setup()
 -- require('events.lstatus').setup()

@@ -1,16 +1,18 @@
 local wez = require("wezterm")
+-- Make sure we get the nerdfonts properly
 local nf = wez.nerdfonts
+
 local tabline = wez.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
 
 local process_custom_icons = {
-	["brew"] = " ",
-	["curl"] = nf.md_arrow_down_box,
-	["gitui"] = nf.dev_github_badge,
-	["kubectl"] = nf.md_kubernetes,
-	["kuberlr"] = nf.md_kubernetes,
-	["python"] = { nf.md_language_python },
-	["taskwarrior"] = { " " },
-	["tmux"] = nf.cod_terminal_tmux,
+    ["brew"] = " ",
+    ["curl"] = nf.md_arrow_down_box,
+    ["gitui"] = nf.dev_github_badge,
+    ["kubectl"] = nf.md_kubernetes,
+    ["kuberlr"] = nf.md_kubernetes,
+    ["python"] = nf.md_language_python,
+    ["taskwarrior"] = " ",
+    ["tmux"] = nf.cod_terminal_tmux,
 }
 
 local function tabs(c)
@@ -34,14 +36,8 @@ local function tabs(c)
         },
         window_mode = {
           a = { fg = '#181825', bg = '#cba6f7' },
-          b = { fg = '#cba6f7', bg = '#313244' },
           c = { fg = '#cdd6f4', bg = '#1e1e2e' },
         },
-        tab = {
-          active = { fg = '#89b4fa', bg = '#313244' },
-          inactive = { fg = '#cdd6f4', bg = '#181825' },
-          inactive_hover = { fg = '#f5c2e7', bg = '#1e1e2e' },
-        }
       },
       icons_enabled = true,
       theme = c.color_scheme,
@@ -60,7 +56,7 @@ local function tabs(c)
       }
     },
     sections = {
-      tabline_a = 	{ {
+      tabline_a = { {
         "mode",
         padding = { left = 1, right = 1 },
         fmt = function(mode, window)
@@ -81,18 +77,15 @@ local function tabs(c)
       } },
       tabline_b = {},
       tabline_c = {},
-      tab_active = {           local process = pane:get_foreground_process_name()
-          local process_name = process:match("([^/\\]+)$") or process
-          process_name = process_name:gsub("%.exe$", "")
-      ' ',
-      { 'zoomed',  padding = 0 },
-      -- { 'index',   padding = 0 },
-      { 'process', padding = 0 },
-      '|',
-      { 'cwd', padding = 0 },
-      ' '
-    },
-      tab_inactive = { "TEST INACTIVE" },
+      tab_active = {
+        ' ',
+        { 'zoomed',  padding = 0 },
+        -- { 'index',   padding = 0 },
+        { 'process', padding = 0 },
+        '|',
+        { 'cwd', padding = 0 },
+        ' '
+      },
       tabline_x = { "battery", "datetime" },
       tabline_y = { "ram", "cpu" },
       tabline_z = { { "domain", padding = 0, icons_only = true }, "hostname" },
