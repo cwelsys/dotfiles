@@ -81,7 +81,7 @@ local function tabs(c)
         ' ',
         { 'zoomed',  padding = 0 },
         -- { 'index',   padding = 0 },
-        { 'process', padding = 0 },
+        { 'title', padding = 0 },
         '|',
         { 'cwd', padding = 0 },
         ' '
