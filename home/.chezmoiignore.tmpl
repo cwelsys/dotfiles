@@ -2,7 +2,6 @@
 
 .config/windows-terminal/
 .config/windows-terminal/**
-.config/wezterm/
 {{ if (joinPath .chezmoi.homeDir ".config/.key" | lstat) }}
 .config/rclone/rclone.conf
 {{ end }}
