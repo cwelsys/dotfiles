@@ -106,13 +106,9 @@ c.font_rules = {
 }
 
 c.front_end = 'OpenGL'
-if os.is_win then
-  -- c.win32_system_backdrop = "Tabbed"
-  c.window_background_opacity = .8969
-elseif os.is_mac then
-  c.macos_window_background_blur = 60
-  c.window_background_opacity = 1.0
-end
+c.window_background_opacity = .8969
+c.macos_window_background_blur = 60
+-- c.win32_system_backdrop = "Tabbed"
 
 c.animation_fps = 120
 c.cursor_blink_ease_in = 'EaseOut'
