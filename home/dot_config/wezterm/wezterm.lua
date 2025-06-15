@@ -107,7 +107,7 @@ c.font_rules = {
 
 c.front_end = 'OpenGL'
 c.window_background_opacity = .8969
-c.macos_window_background_blur = 60
+c.macos_window_background_blur = 10
 -- c.win32_system_backdrop = "Tabbed"
 
 c.animation_fps = 120
