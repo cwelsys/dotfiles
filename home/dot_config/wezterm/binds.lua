@@ -125,7 +125,6 @@ local setup_mouse = function(c)
    }
 end
 
--- Apply all configurations
 M.apply = function(c)
    c.treat_left_ctrlalt_as_altgr = true
    c.leader = leader

@@ -56,13 +56,13 @@ if os.is_win then
 	}
 	wsl_domains = {
 		{
-			name = 'WSL:Fedora',
+			name = 'Fedora',
 			distribution = 'FedoraLinux-42',
 			username = 'cwel',
 			default_cwd = '~',
 		},
 		{
-			name = 'WSL:Arch',
+			name = 'Arch',
 			distribution = 'archlinux',
 			username = 'cwel',
 			default_cwd = '~',
