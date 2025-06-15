@@ -2,9 +2,17 @@ if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
   fastfetch
 fi
 
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 if [ "$ZSH_PROFILING" = 1 ];
 then
   zmodload zsh/zprof
+fi
+
+if [[ -f "/opt/homebrew/bin/brew" ]] then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
 # 🚀 zinit
@@ -58,6 +66,8 @@ omzLib clipboard.zsh
 omzLib git.zsh
 omzLib grep.zsh
 omzLib history.zsh
+
+zinit ice depth=1; zinit light romkatv/powerlevel10k
 
 # 🔌 plugs
 {{ if eq .chezmoi.os "darwin" }}
@@ -164,8 +174,13 @@ bindkey "^E" end-of-line
 bindkey "^N" insert-last-word
 bindkey '^[w' kill-region
 
-
-[[ -x "$(command -v zoxide)" ]] && eval "$(zoxide init zsh --cmd=cd)"
+# 🐚 Prompt
+[[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
+# if [[ -v commands['oh-my-posh'] ]]; then
+#  eval "$(oh-my-posh init zsh --config $HOME/.config/posh.toml)"
+# elif [[ -v commands[starship] ]]; then
+#  eval "$(starship init zsh)"
+# fi
 
 if [[ -n "$SSH_CONNECTION" ]]; then
   export DISPLAY=wini:0
@@ -179,9 +194,4 @@ if [[ -v commands[mise] ]]; then
   eval "$(mise activate zsh)"
 fi
 
-# 🐚 Prompt
-if [[ -v commands['oh-my-posh'] ]]; then
-  eval "$(oh-my-posh init zsh --config $HOME/.config/posh.toml)"
-elif [[ -v commands[starship] ]]; then
-  eval "$(starship init zsh)"
-fi
+[[ -x "$(command -v zoxide)" ]] && eval "$(zoxide init zsh --cmd=cd)"
