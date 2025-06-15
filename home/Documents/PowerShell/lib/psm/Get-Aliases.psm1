@@ -5,8 +5,6 @@
     #>
 	[CmdletBinding()]
 	param()
-
-	#requires -Module PSScriptTools
 	Get-MyAlias |
 	Sort-Object Source, Name |
 	Format-Table -Property Name, Definition, Version, Source -AutoSize
