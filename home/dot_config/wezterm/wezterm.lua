@@ -48,11 +48,20 @@ splits.apply_to_config(c)
 
 -- color
 c.color_scheme = "Catppuccin Mocha"
-c.colors = {
-  tab_bar = {
-    background = "#1e1e2e"
-  }
-}
+-- c.colors = {
+--   tab_bar = {
+--     background = "#1e1e2e",
+-- new_tab = {
+--   bg_color = '#1e1e2e',
+--   fg_color = '#cdd6f4',
+-- },
+-- new_tab_hover = {
+--   bg_color = '#89b4fa',
+--   fg_color = '#1e1e2e',
+--   italic = true,
+-- }
+-- }
+-- }
 
 -- font
 c.font = wez.font("FantasqueSansM Nerd Font", { weight = "Medium" })
@@ -136,44 +145,92 @@ c.hyperlink_rules = {
 }
 
 -- tabline
+-- tabline.setup({
+--   options = {
+--     icons_enabled = true,
+--     theme = c.color_scheme,
+--     tabs_enabled = true,
+--     component_separators = {
+--       left = '',
+--       right = '',
+--     },
+--     section_separators = {
+--       right = nf.ple_left_half_circle_thick,
+--       left = nf.ple_right_half_circle_thick,
+--     },
+--     tab_separators = {
+--       left = nf.ple_right_half_circle_thick,
+--       right = nf.ple_left_half_circle_thick,
+--     }
+--   },
+--   sections = {
+-- tabline_a = { {
+--   "mode",
+--   padding = { left = 1, right = 1 },
+--   fmt = function(mode, window)
+--     if window:leader_is_active() then
+--       return wez.format({
+--         { Foreground = { Color = "#fab387" } },
+--         { Text = nf.oct_rocket },
+--       })
+--     elseif mode == "NORMAL" then
+--       return wez.format({
+--         { Foreground = { Color = "#cdd6f4" } },
+--         { Text = nf.oct_terminal },
+--       })
+--     elseif mode == "COPY" then
+--       return nf.md_scissors_cutting
+--     elseif mode == "SEARCH" then
+--       return nf.oct_search
+--     end
+--     return mode
+--   end,
+-- } },
+--     tabline_b = {},
+--     tabline_c = {},
+--     tab_active = {
+--       ' ',
+--       { 'zoomed', padding = 0 },
+--       { 'cwd',    padding = 0 },
+--       ' '
+--     },
+--     tabline_x = { "battery", "datetime" },
+--     tabline_y = { "ram", "cpu" },
+--     tabline_z = { { "domain", padding = 0, icons_only = true }, "hostname" },
+--   },
+-- extensions = {
+--   "resurrect",
+--   "smart_workspace_switcher",
+--   "quick_domains",
+--   "presentation",
+-- }
+-- })
+
+local function clean_title(title)
+  if not title then return "" end
+  title = title:gsub('^Administrator: ', '')
+  title = title:gsub(' %(Admin%)', '')
+  title = title:gsub('.*[/\\]([^/\\]+)$', '%1')
+  title = title:gsub('%.exe$', '')
+  title = title:gsub('%.EXE$', '')
+  return title
+end
+
 tabline.setup({
   options = {
-    theme_overrides = {
-      normal_mode = {
-        a = { fg = '#89b4fa', bg = '#1e1e2e' },
-        b = { fg = '#89b4fa', bg = '#313244' },
-        c = { fg = '#cdd6f4', bg = '#1e1e2e' },
-      },
-      copy_mode = {
-        a = { fg = '#181825', bg = '#f9e2af' },
-        b = { fg = '#f9e2af', bg = '#313244' },
-        c = { fg = '#cdd6f4', bg = '#1e1e2e' },
-      },
-      search_mode = {
-        a = { fg = '#181825', bg = '#a6e3a1' },
-        b = { fg = '#a6e3a1', bg = '#313244' },
-        c = { fg = '#cdd6f4', bg = '#1e1e2e' },
-      },
-      window_mode = {
-        a = { fg = '#181825', bg = '#cba6f7' },
-        c = { fg = '#cdd6f4', bg = '#1e1e2e' },
-      }
-    },
     icons_enabled = true,
-    theme = c.color_scheme,
-    tabs_enabled = true,
+    section_separators = {
+      left = nf.ple_right_half_circle_thick,
+      right = nf.ple_left_half_circle_thick,
+    },
     component_separators = {
       left = '',
       right = '',
     },
-    section_separators = {
-      right = nf.ple_left_half_circle_thick,
-      left = nf.ple_right_half_circle_thick,
-    },
     tab_separators = {
-      left = nf.ple_right_half_circle_thick,
+      left = nf.ple_right_half_circle_thick .. ' ',
       right = nf.ple_left_half_circle_thick,
-    }
+    },
   },
   sections = {
     tabline_a = { {
@@ -181,15 +238,9 @@ tabline.setup({
       padding = { left = 1, right = 1 },
       fmt = function(mode, window)
         if window:leader_is_active() then
-          return wez.format({
-            { Foreground = { Color = "#fab387" } },
-            { Text = nf.oct_rocket },
-          })
+          return "🦀"
         elseif mode == "NORMAL" then
-          return wez.format({
-            { Foreground = { Color = "#cdd6f4" } },
-            { Text = nf.oct_terminal },
-          })
+          return "🐼"
         elseif mode == "COPY" then
           return nf.md_scissors_cutting
         elseif mode == "SEARCH" then
@@ -199,16 +250,77 @@ tabline.setup({
       end,
     } },
     tabline_b = {},
-    tabline_c = {},
-    tab_active = {
-      ' ',
-      { 'zoomed', padding = 0 },
-      { 'cwd',    padding = 0 },
-      ' '
+    tabline_c = { " " },
+    tabline_x = {
+      function(window)
+        local metadata = window:active_pane():get_metadata()
+        if not metadata then
+          return ""
+        end
+
+        local latency = metadata.since_last_response_ms
+        if not latency then
+          return ""
+        end
+
+        local color
+        local icon
+        local red = "\27[31m"
+        local yellow = "\27[33m"
+        local green = "\27[32m"
+        if metadata.is_tardy then
+          if latency > 10000 then
+            color = red
+            icon = "󰢼"
+            latency = ">999"
+          else
+            color = yellow
+            icon = "󰢽"
+          end
+        else
+          color = green
+          icon = "󰢾"
+          latency = "<1"
+        end
+        return string.format(color .. icon .. " %sms ", latency)
+      end,
     },
-    tabline_x = { "battery", "datetime" },
-    tabline_y = { "ram", "cpu" },
+    tabline_y = {
+      {
+        "datetime",
+        style = "%b %d %I:%M %p",
+        icon = ' ',
+        hour_to_icon = false,
+        padding = { left = 0, right = 1 },
+      },
+    },
     tabline_z = { { "domain", padding = 0, icons_only = true }, "hostname" },
+    tab_active = {
+      {
+        "process",
+        icons_only = true,
+      },
+      function(tab)
+        local pane = tab.active_pane
+        if pane and pane.title then
+          return clean_title(pane.title)
+        end
+        return tab.tab_title or "   "
+      end
+    },
+    tab_inactive = {
+      {
+        "process",
+        icons_only = true
+      },
+      function(tab)
+        local pane = tab.active_pane
+        if pane and pane.title then
+          return clean_title(pane.title)
+        end
+        return tab.tab_title or "   "
+      end
+    },
   },
   extensions = {
     "resurrect",
@@ -218,6 +330,8 @@ tabline.setup({
   }
 })
 
+
+
 c.exit_behavior = "CloseOnCleanExit"
 c.automatically_reload_config = true
 c.default_workspace = "~"
@@ -225,5 +339,17 @@ c.selection_word_boundary = " \t\n{}[]()\"'`,;:│=&!%"
 c.warn_about_missing_glyphs = false
 c.scrollback_lines = 10000
 c.prefer_egl = true
+c.tab_bar_style = {
+  new_tab = wez.format({
+    { Background = { Color = 'rgba(0, 0, 0, 0)' } }, -- Transparent background
+    { Foreground = { Color = '#cdd6f4' } },
+    { Text = ' +' },                                 -- Just the plus symbol
+  }),
+  new_tab_hover = wez.format({
+    { Background = { Color = 'rgba(0, 0, 0, 0)' } }, -- Transparent background
+    { Foreground = { Color = '#89b4fa' } },
+    { Text = ' +' },
+  }),
+}
 
 return c
