@@ -4,3 +4,6 @@ neovim
 npm-check-updates
 git-open
 git-recent
+{{ if ne chezmoi.os "windows" }}
+composerize
+{{ end }}
