@@ -6,9 +6,15 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 if ([Environment]::GetCommandLineArgs().Contains('-NonInteractive')) {
-	return
+	$Global:InteractiveMode = $false
 }
-fastfetch
+else {
+	$Global:InteractiveMode = $true
+}
+
+if ($InteractiveMode -and $env:TERM_PROGRAM -ne 'vscode') {
+	fastfetch
+}
 
 # 🌐 Env
 $env:DOTS = & chezmoi source-path
@@ -34,6 +40,7 @@ function Invoke-Starship-TransientFunction {
 Invoke-Expression (&starship init powershell)
 Enable-TransientPrompt
 
+Invoke-Expression (&scoop-search --hook)
 mise activate pwsh | Out-String | Invoke-Expression
 carapace _carapace | Out-String | Invoke-Expression
 

@@ -1,11 +1,11 @@
 [settings]
 experimental = true
-pin = true
 trusted_config_paths = ["{{ env "XDG_PROJECTS_DIR" | replace "\\" "/" }}"]
 go_set_goroot = true
 legacy_version_file = true
-verbose = false
-windows_shim_mode = 'hardlink'
+yes = true
+quiet = true
+windows_shim_mode = 'symlink'
 
 [settings.npm]
 bun = true
@@ -24,7 +24,7 @@ node = { version = "latest", postinstall = "corepack enable && corepack prepare 
 bun = "latest"
 go = { version = "latest", preinstall = "mkdir -p {{ env "XDG_DATA_HOME" | replace "\\" "/" }}/go/bin" }
 cargo-binstall = "latest"
-rust = { version = "latest", profile = "default" }
+rust = "beta"
 java = "corretto-21"
 maven = "latest"
 uv = "latest"
@@ -37,6 +37,7 @@ npm_config_init_module = '{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/npm/con
 npm_config_cache = "{{ env "XDG_CACHE_HOME" | replace "\\" "/" }}/npm"
 YARN_CACHE_FOLDER = "{{ env "XDG_CACHE_HOME" | replace "\\" "/" }}/npm"
 PNPM_HOME = "{{ env "XDG_DATA_HOME" | replace "\\" "/" }}/pnpm"
+UV_LINK_MODE = { value = "symlink", tools = true }
 MISE_PYTHON_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/mise/default-python-packages"
 MISE_GO_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/mise/default-go-packages"
 MISE_NODE_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/mise/default-npm-packages"
