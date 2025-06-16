@@ -1,7 +1,4 @@
-﻿# eza
-if (!(Get-Command eza -ErrorAction SilentlyContinue)) { return }
-
-$ezaParams = @(
+﻿$ezaParams = @(
 	'--icons'
 	'--header'
 	'--hyperlink'

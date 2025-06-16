@@ -1,62 +1,62 @@
 Remove-Item Alias:rm -Force -ErrorAction SilentlyContinue
 
-Set-Alias -Name 'whic' -Value Get-CommandInfo -Description "Shows command information (intentional typo to avoid conflict with 'which' command)"
+Set-Alias -Name 'w' -Value Get-CommandInfo -Description "Shows command information (intentional typo to avoid conflict with 'which' command)"
 
-Set-Alias -Name 'rl' -Value Import-Profile -Description "Reloads PowerShell profile"
+Set-Alias -Name 'rl' -Value Import-Profile -Description 'Reloads PowerShell profile'
 
-Set-Alias -Name 'rst' -Value restart -Description "Restarts current PowerShell session"
+Set-Alias -Name 'rst' -Value restart -Description 'Restarts current PowerShell session'
 
-Set-Alias -Name 'vim' -Value nvim -Description "Opens Neovim editor"
+Set-Alias -Name 'vim' -Value nvim -Description 'Opens Neovim editor'
 
-Set-Alias -Name 'su' -Value gsudo -Description "Runs command with admin privileges"
+Set-Alias -Name 'su' -Value gsudo -Description 'Runs command with admin privileges'
 
-Set-Alias -Name 'vi' -Value nvim -Description "Opens Neovim editor (alternative)"
+Set-Alias -Name 'vi' -Value nvim -Description 'Opens Neovim editor (alternative)'
 
-Set-Alias -Name 'c' -Value clear -Description "Clears the console screen"
+Set-Alias -Name 'c' -Value clear -Description 'Clears the console screen'
 
-Set-Alias -Name 'df' -Value Get-Volume -Description "Displays volume information"
+Set-Alias -Name 'df' -Value Get-Volume -Description 'Displays volume information'
 
-Set-Alias -Name 'cat' -Value Invoke-Bat -Option AllScope -Force -Description "Uses bat as cat replacement with options"
+Set-Alias -Name 'cat' -Value Invoke-Bat -Option AllScope -Force -Description 'Uses bat as cat replacement with options'
 
-Set-Alias -Name 'komorel' -Value Invoke-Komorebirl -Description "Restarts Komorebi window manager"
+Set-Alias -Name 'komorel' -Value Invoke-Komorebirl -Description 'Restarts Komorebi window manager'
 
-Set-Alias -Name 'sarc' -Value Invoke-Sarcastaball -Description "Converts text to Spongebob-case"
+Set-Alias -Name 'sarc' -Value Invoke-Sarcastaball -Description 'Converts text to Spongebob-case'
 
-Set-Alias -Name 'ipg' -Value Get-IPLocation -Description "Gets location information for an IP address"
+Set-Alias -Name 'ipg' -Value Get-IPLocation -Description 'Gets location information for an IP address'
 
 Set-Alias -Name 'mg' -Value magick -Description "Shortcut for ImageMagick's magick command"
 
-Set-Alias -Name 'deltmp' -Value Remove-TempData -Description "Cleans temporary file directories"
+Set-Alias -Name 'deltmp' -Value Remove-TempData -Description 'Cleans temporary file directories'
 
-Set-Alias -Name 'npm-ls' -Value Get-NpmGlobalPackages -Description "Lists globally installed NPM packages"
+Set-Alias -Name 'npm-ls' -Value Get-NpmGlobalPackages -Description 'Lists globally installed NPM packages'
 
-Set-Alias -Name 'bun-ls' -Value Get-BunGlobalPackages -Description "Lists globally installed Bun packages"
+Set-Alias -Name 'bun-ls' -Value Get-BunGlobalPackages -Description 'Lists globally installed Bun packages'
 
-Set-Alias -Name 'pnpm-ls' -Value Get-PnpmGlobalPackages -Description "Lists globally installed PNPM packages"
+Set-Alias -Name 'pnpm-ls' -Value Get-PnpmGlobalPackages -Description 'Lists globally installed PNPM packages'
 
-Set-Alias -Name 'cm' -Value chezmoi -Description "Shortcut for chezmoi dotfiles manager"
+Set-Alias -Name 'cm' -Value chezmoi -Description 'Shortcut for chezmoi dotfiles manager'
 
-Set-Alias -Name "md5" -Value Get-FileHashMD5 -Description "Calculates the MD5 hash of an input."
+Set-Alias -Name 'md5' -Value Get-FileHashMD5 -Description 'Calculates the MD5 hash of an input.'
 
-Set-Alias -Name "sha1" -Value Get-FileHashSHA1 -Description "Calculates the SHA1 hash of an input."
+Set-Alias -Name 'sha1' -Value Get-FileHashSHA1 -Description 'Calculates the SHA1 hash of an input.'
 
-Set-Alias -Name "sha256" -Value Get-FileHashSHA256 -Description "Calculates the SHA256 hash of an input."
+Set-Alias -Name 'sha256' -Value Get-FileHashSHA256 -Description 'Calculates the SHA256 hash of an input.'
 
-Set-Alias -Name "GET" -Value Invoke-RestMethodGet -Description "Sends a GET http request."
+Set-Alias -Name 'GET' -Value Invoke-RestMethodGet -Description 'Sends a GET http request.'
 
-Set-Alias -Name "HEAD" -Value Invoke-RestMethodHead -Description "Sends a HEAD http request."
+Set-Alias -Name 'HEAD' -Value Invoke-RestMethodHead -Description 'Sends a HEAD http request.'
 
-Set-Alias -Name "POST" -Value Invoke-RestMethodPost -Description "Sends a POST http request."
+Set-Alias -Name 'POST' -Value Invoke-RestMethodPost -Description 'Sends a POST http request.'
 
-Set-Alias -Name "PUT" -Value Invoke-RestMethodPut -Description "Sends a PUT http request."
+Set-Alias -Name 'PUT' -Value Invoke-RestMethodPut -Description 'Sends a PUT http request.'
 
-Set-Alias -Name "DELETE" -Value Invoke-RestMethodDelete -Description "Sends a DELETE http request."
+Set-Alias -Name 'DELETE' -Value Invoke-RestMethodDelete -Description 'Sends a DELETE http request.'
 
-Set-Alias -Name "TRACE" -Value Invoke-RestMethodTrace -Description "Sends a TRACE http request."
+Set-Alias -Name 'TRACE' -Value Invoke-RestMethodTrace -Description 'Sends a TRACE http request.'
 
-Set-Alias -Name "OPTIONS" -Value Invoke-RestMethodOptions -Description "Sends an OPTIONS http request."
+Set-Alias -Name 'OPTIONS' -Value Invoke-RestMethodOptions -Description 'Sends an OPTIONS http request.'
 
-Set-Alias -Name "keys" -value Get-PSReadLineKeyHandler
+Set-Alias -Name 'keys' -value Get-PSReadLineKeyHandler
 
 Set-Alias -Name 'lg' -Value lazygit
 
@@ -73,12 +73,13 @@ function export($name, $value) {
   Set-Item -Path "env:$name" -Value $value
 }
 function pip {
-  $pythonPath = (mise exec -- python -c "import sys; print(sys.executable)")
-  $pipPath = [System.IO.Path]::GetDirectoryName($pythonPath) + "\Scripts\pip.exe"
+  $pythonPath = (mise exec -- python -c 'import sys; print(sys.executable)')
+  $pipPath = [System.IO.Path]::GetDirectoryName($pythonPath) + '\Scripts\pip.exe'
 
   if (Test-Path $pipPath) {
     & $pipPath $args
-  } else {
+  }
+  else {
     mise exec -- python -m pip $args
   }
 }
@@ -95,15 +96,15 @@ function fdns { ipconfig /flushdns }
 function rdns { ipconfig /release }
 function ddns { ipconfig /displaydns }
 function sysinfo { if (Get-Command fastfetch -ErrorAction SilentlyContinue) { fastfetch -c all } else { Get-ComputerInfo } }
-function profiles { Get-PSProfile { $_.exists -eq "True" } | Format-List }
+function profiles { Get-PSProfile { $_.exists -eq 'True' } | Format-List }
 function restart { Get-Process -Id $PID | Select-Object -ExpandProperty Path | ForEach-Object { Invoke-Command { & "$_" } -NoNewScope } }
 function getnf { Invoke-NerdFontInstaller }
 function Invoke-Bat {
   param([Parameter(ValueFromRemainingArguments = $true)]$args)
   & (Get-Command bat).Source --paging=never --style=plain @args
 }
-function Get-NpmGlobalPackages { (npm ls -g | Select-Object -skip 1).Trim().Split() | ForEach-Object { if ($_ -match [regex]::Escape("@")) { Write-Output $_ } } }
-function Get-BunGlobalPackages { (bun pm ls -g | Select-Object -Skip 1).Trim().Split() | ForEach-Object { if ($_ -match [regex]::Escape("@")) { Write-Output $_ } } }
+function Get-NpmGlobalPackages { (npm ls -g | Select-Object -skip 1).Trim().Split() | ForEach-Object { if ($_ -match [regex]::Escape('@')) { Write-Output $_ } } }
+function Get-BunGlobalPackages { (bun pm ls -g | Select-Object -Skip 1).Trim().Split() | ForEach-Object { if ($_ -match [regex]::Escape('@')) { Write-Output $_ } } }
 function Get-PnpmGlobalPackages { (pnpm ls -g | Select-Object -Skip 5) | ForEach-Object { $name = $_.Split()[0]; $version = $_.Split()[1]; Write-Output "$name@$version" } }
 function cmpack {
   [CmdletBinding(DefaultParameterSetName = 'Args')]
@@ -114,7 +115,8 @@ function cmpack {
   $scriptPath = Join-Path $env:XDG_BIN_HOME 'update-manifest.ps1'
   if (Test-Path $scriptPath) {
     & $scriptPath @Args
-  } else {
+  }
+  else {
     Write-Error "Script not found: $scriptPath"
   }
 }
@@ -146,26 +148,26 @@ function Get-PSProfile {
 }
 
 function Remove-TempData {
-  Write-Color "Deleting temp data..." -Color Gray
+  Write-Color 'Deleting temp data...' -Color Gray
 
-  $path1 = "C" + ":\Windows\Temp"
+  $path1 = 'C' + ':\Windows\Temp'
   Get-ChildItem $path1 -Force -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
 
-  $path2 = "C" + ":\Windows\Prefetch"
+  $path2 = 'C' + ':\Windows\Prefetch'
   Get-ChildItem $path2 -Force -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
 
-  $path3 = "C" + ":\Users\*\AppData\Local\Temp"
+  $path3 = 'C' + ':\Users\*\AppData\Local\Temp'
   Get-ChildItem $path3 -Force -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
 
-  Write-Color "Temp data deleted successfully." -Color Green
+  Write-Color 'Temp data deleted successfully.' -Color Green
 }
 
 function Update-PowerShell {
   try {
-    Write-Host "Checking for PowerShell updates..." -ForegroundColor Cyan
+    Write-Host 'Checking for PowerShell updates...' -ForegroundColor Cyan
     $updateNeeded = $false
     $currentVersion = $PSVersionTable.PSVersion.ToString()
-    $gitHubApiUrl = "https://api.github.com/repos/PowerShell/PowerShell/releases/latest"
+    $gitHubApiUrl = 'https://api.github.com/repos/PowerShell/PowerShell/releases/latest'
     $latestReleaseInfo = Invoke-RestMethod -Uri $gitHubApiUrl
     $latestVersion = $latestReleaseInfo.tag_name.Trim('v')
     if ($currentVersion -lt $latestVersion) {
@@ -173,13 +175,15 @@ function Update-PowerShell {
     }
 
     if ($updateNeeded) {
-      Write-Host "Updating PowerShell..." -ForegroundColor Yellow
-      Start-Process powershell.exe -ArgumentList "-NoProfile -Command winget upgrade Microsoft.PowerShell --accept-source-agreements --accept-package-agreements" -Wait -NoNewWindow
-      Write-Host "PowerShell has been updated. Please restart your shell to reflect changes" -ForegroundColor Magenta
-    } else {
-      Write-Host "Your PowerShell is up to date." -ForegroundColor Green
+      Write-Host 'Updating PowerShell...' -ForegroundColor Yellow
+      Start-Process powershell.exe -ArgumentList '-NoProfile -Command winget upgrade Microsoft.PowerShell --accept-source-agreements --accept-package-agreements' -Wait -NoNewWindow
+      Write-Host 'PowerShell has been updated. Please restart your shell to reflect changes' -ForegroundColor Magenta
     }
-  } catch {
+    else {
+      Write-Host 'Your PowerShell is up to date.' -ForegroundColor Green
+    }
+  }
+  catch {
     Write-Error "Failed to update PowerShell. Error: $_"
   }
 }
@@ -198,7 +202,8 @@ function Get-CommandInfo {
   $commandExists = Get-Command $Name -ErrorAction SilentlyContinue
   if ($commandExists) {
     return $commandExists | Select-Object -ExpandProperty Definition
-  } else {
+  }
+  else {
     Write-Warning "Command not found: $Name."
     break
   }
@@ -207,7 +212,7 @@ function Get-CommandInfo {
 function Invoke-Sarcastaball {
   [cmdletbinding()]
   param(
-    [Parameter(HelpMessage = "provide string" , Mandatory = $true)]
+    [Parameter(HelpMessage = 'provide string' , Mandatory = $true)]
     [string]$Message
   )
   $charArray = $Message.ToCharArray()
@@ -218,7 +223,8 @@ function Invoke-Sarcastaball {
       $string = $char.ToString()
       $Upper = $string.ToUpper()
       $output = $output + $Upper
-    } else {
+    }
+    else {
       $lower = $char.ToString()
       $output = $output + $lower
     }
@@ -233,18 +239,19 @@ function Invoke-Komorebirl {
     [switch]$Yasb
   )
 
-  Write-Color "Stopping Komorebi & whkd..." -Color Magenta
+  Write-Color 'Stopping Komorebi & whkd...' -Color Magenta
   komorebic stop --whkd | Out-Null
 
-  Write-Color "Starting Komorebi & whkd..." -Color Blue
+  Write-Color 'Starting Komorebi & whkd...' -Color Blue
   if ($Bar) {
     komorebic start --whkd --bar | Out-Null
-  } else {
+  }
+  else {
     komorebic start --whkd | Out-Null
   }
-  Write-Color "Komorebi (with whkd) has been restarted successfully." -Color Gray
+  Write-Color 'Komorebi (with whkd) has been restarted successfully.' -Color Gray
   if ($Yasb) {
-    Write-Color "Reloading Yasb..." -Color Gray
+    Write-Color 'Reloading Yasb...' -Color Gray
     yasbc reload
   }
 }
