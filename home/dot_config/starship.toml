@@ -1,19 +1,85 @@
 "$schema" = "https://starship.rs/config-schema.json"
 
-add_newline = false
+add_newline = true
 command_timeout = 6900
 palette = "catppuccin_mocha"
 continuation_prompt = "[❯❯ ](subtext0)"
 
-format = """$os$directory$sudo$git_branch$git_commit$git_state$git_status$buf$c$cmake$cobol$conda$daml$dart$deno$docker_context$dotnet$elixir$elm$erlang$fennel$golang$gradle$guix_shell$haskell$haxe$helm$java$julia$kotlin$kubernetes$lua$meson$nim$nodejs$ocaml$opa$perl$php$pulumi$purescript$python$raku$red$rlang$ruby$rust$scala$singularity$solidity$swift$terraform$vagrant$vlang$zig$cmd_duration$character"""
+# format = """$os$directory$sudo$git_branch$git_commit$git_state$git_status$buf$c$cmake$cobol$conda$daml$dart$deno$docker_context$dotnet$elixir$elm$erlang$fennel$golang$gradle$guix_shell$haskell$haxe$helm$java$julia$kotlin$kubernetes$lua$meson$nim$nodejs$ocaml$opa$perl$php$pulumi$purescript$python$raku$red$rlang$ruby$rust$scala$singularity$solidity$swift$terraform$vagrant$vlang$zig$cmd_duration$character"""
+
+format = """
+$os\
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$git_metrics\
+$localip\
+$shlvl\
+$shell\
+$env_var\
+$jobs\
+$package\
+$buf\
+$c\
+$cmake\
+$cobol\
+$conda\
+$daml\
+$dart\
+$deno\
+$docker_context\
+$dotnet\
+$elixir\
+$elm\
+$erlang\
+$fennel\
+$golang\
+$gradle\
+$guix_shell\
+$haskell\
+$haxe\
+$helm\
+$java\
+$julia\
+$kotlin\
+$kubernetes\
+$lua\
+$meson\
+$nim\
+$nodejs\
+$ocaml\
+$opa\
+$perl\
+$php\
+$pulumi\
+$purescript\
+$python\
+$raku\
+$red\
+$rlang\
+$ruby\
+$rust\
+$scala\
+$singularity\
+$solidity\
+$swift\
+$terraform\
+$vagrant\
+$vlang\
+$zig\
+$cmd_duration\
+$battery\
+$line_break\
+$sudo$character"""
 
 [os]
 format = '[$symbol ](lavender)'
 disabled = false
 
 [character]
-success_symbol = "[❯](peach)"
-error_symbol = "[X](mauve bold)"
+success_symbol = "[❯](green)"
+error_symbol = "[❯](red)"
 vimcmd_symbol = "[❮](subtext1)"
 
 [battery]
