@@ -46,7 +46,6 @@ pkgs:
         - 'versions/komorebi-nightly'
         - 'extras/qbittorrent'
         - 'versions/systeminformer-nightly'
-        - 'extras/wezterm'
         - 'extras/nirlauncher'
         - 'extras/altsnap'
         - 'extras/audacity'
@@ -163,6 +162,13 @@ pkgs:
         - 'nonportable/winfsp-np'
         - 'main/1password-cli'
         - 'main/traefik'
+        - 'extras/carapace-bin'
+        - 'games/legendary'
+        - 'main/nu'
+        - 'games/runelite'
+        - 'main/syncthing'
+        - 'versions/wezterm-nightly'
+        - 'extras/yasb'
 
       importRegistry:
         - '$env:USERPROFILE\scoop\apps\7zip\current\install-context.reg'
@@ -180,7 +186,6 @@ pkgs:
       - 'Tailscale.Tailscale'
       - 'Proton.ProtonVPN'
       - 'AgileBits.1Password'
-      - 'AmN.yasb'
       - 'AngusJohnson.ResourceHacker'
       - 'AutoHotkey.AutoHotkey'
       - 'AntibodySoftware.WizTree'
@@ -206,8 +211,6 @@ pkgs:
       - 'Google.Chrome'
       - 'Zoom.Zoom'
       - 'ViGEm.ViGEmBus'
-      - 'Nvidia.PhysX'
-      - 'SUSE.RancherDesktop'
       - 'CodecGuide.K-LiteCodecPack.Standard'
       - 'Microsoft.Edge'
       - 'Microsoft.VisualStudio.2022.BuildTools'
@@ -224,6 +227,7 @@ pkgs:
       - 'Microsoft.UI.Xaml.2.7'
       - 'Microsoft.UI.Xaml.2.8'
       - 'Microsoft.WSL'
+      - 'Nextcloud.NextcloudDesktop'
 
     psGallery:
       - 'PsReadLine'
@@ -257,3 +261,4 @@ pkgs:
           - 'Link-/gh-token'
           - 'yusukebe/gh-markdown-preview'
           - 'Shresht7/gh-license'
+
