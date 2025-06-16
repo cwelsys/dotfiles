@@ -1,7 +1,6 @@
 # vim:ft=gitignore.chezmoitmpl
 
 .config/windows-terminal/
-.config/windows-terminal/**
 {{ if (joinPath .chezmoi.homeDir ".config/.key" | lstat) }}
 .config/rclone/rclone.conf
 {{ end }}
