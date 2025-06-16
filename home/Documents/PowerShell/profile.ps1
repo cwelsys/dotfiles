@@ -34,6 +34,7 @@ function Invoke-Starship-TransientFunction {
 Invoke-Expression (&starship init powershell)
 Enable-TransientPrompt
 
+mise activate pwsh | Out-String | Invoke-Expression
 carapace _carapace | Out-String | Invoke-Expression
 
 . $Env:PWSH\readline.ps1

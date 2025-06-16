@@ -63,5 +63,3 @@ mise activate nu | save -f ~/.cache/.mise.nu
 
 $env.EDITOR = "nvim"
 $env.VISUAL = $env.EDITOR
-
-if ( '~/.local/share/inshellisense/nu/init.nu' | path exists ) { source ~/.local/share/inshellisense/nu/init.nu }

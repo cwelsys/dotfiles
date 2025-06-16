@@ -10,6 +10,8 @@ Set-Alias -Name 'vim' -Value nvim -Description 'Opens Neovim editor'
 
 Set-Alias -Name 'su' -Value gsudo -Description 'Runs command with admin privileges'
 
+Set-Alias -Name 'pipx' -Value uvx
+
 Set-Alias -Name 'vi' -Value nvim -Description 'Opens Neovim editor (alternative)'
 
 Set-Alias -Name 'c' -Value clear -Description 'Clears the console screen'
@@ -72,17 +74,8 @@ function cdc { Set-Location $env:XDG_CONFIG_HOME }
 function export($name, $value) {
   Set-Item -Path "env:$name" -Value $value
 }
-function pip {
-  $pythonPath = (mise exec -- python -c 'import sys; print(sys.executable)')
-  $pipPath = [System.IO.Path]::GetDirectoryName($pythonPath) + '\Scripts\pip.exe'
 
-  if (Test-Path $pipPath) {
-    & $pipPath $args
-  }
-  else {
-    mise exec -- python -m pip $args
-  }
-}
+function pip { uv pip }
 function lock { Invoke-Command { rundll32.exe user32.dll, LockWorkStation } }
 function hibernate { shutdown.exe /h }
 function shutdown { Stop-Computer }
