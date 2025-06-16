@@ -35,6 +35,7 @@ $PSReadLineOptions = @{
         Type                   = $Flavor.Sky.Foreground()
         Variable               = $Flavor.Mauve.Foreground()
     }
+    HistorySavePath               = "$Env:PWSH/history.txt"
     HistoryNoDuplicates           = $True
     HistorySearchCursorMovesToEnd = $True
     PredictionSource              = 'HistoryAndPlugin'
