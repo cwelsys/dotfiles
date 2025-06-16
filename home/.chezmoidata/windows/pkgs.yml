@@ -169,9 +169,12 @@ pkgs:
         - 'main/syncthing'
         - 'versions/wezterm-nightly'
         - 'extras/yasb'
+        - 'main/pipx'
+        - 'main/python'
 
       importRegistry:
         - '$env:USERPROFILE\scoop\apps\7zip\current\install-context.reg'
+        - '$env:USERPROFILE\scoop\apps\python\current\install-pep-514.reg'
 
     winget:
       - 'Microsoft.PowerShell' # target specific version w/ 'App.App --version 2.30.3'

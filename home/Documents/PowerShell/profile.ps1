@@ -40,6 +40,7 @@ function Invoke-Starship-TransientFunction {
 Invoke-Expression (&starship init powershell)
 Enable-TransientPrompt
 
+iex "$(thefuck --alias)"
 Invoke-Expression (&scoop-search --hook)
 mise activate pwsh | Out-String | Invoke-Expression
 carapace _carapace | Out-String | Invoke-Expression
