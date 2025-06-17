@@ -125,6 +125,18 @@ c.window_padding = {
 c.adjust_window_size_when_changing_font_size = false
 c.tab_and_split_indices_are_zero_based = true
 c.window_close_confirmation = "NeverPrompt"
+c.skip_close_confirmation_for_processes_named = {
+  'bash',
+  'sh',
+  'zsh',
+  'fish',
+  'tmux',
+  'nu',
+  'ssh.exe',
+  'cmd.exe',
+  'pwsh.exe',
+  'powershell.exe',
+}
 c.window_decorations = "RESIZE"
 c.tab_max_width = 42
 c.initial_cols = 120
@@ -148,7 +160,7 @@ c.colors = {
       bg_color = '#89b4fa',
       fg_color = '#1e1e2e',
       italic = true,
-    }
+    },
   }
 }
 -- c.tab_bar_style = {
@@ -230,7 +242,6 @@ local ICON_MAP = {
 local APP_PATTERNS = {
   { pattern = "lazygit",    icon = nf.dev_git,       name = "Lazygit" },
   { pattern = "lazydocker", icon = nf.dev_docker,    name = "Lazydocker" },
-  { pattern = "neovim",     icon = nf.custom_neovim, name = "Neovim" },
   { pattern = "nvim",       icon = nf.custom_neovim, name = "Neovim" },
   { pattern = "atac",       icon = nf.md_api,        name = "ATAC" },
 }
@@ -338,8 +349,8 @@ tabline.setup({
     } },
     tabline_b = {},
     tabline_c = { " " },
-    tab_active = { tab_title, " ", process_name },
-    tab_inactive = { tab_title },
+    tab_active = { tab_title, '  ', process_name },
+    tab_inactive = { tab_title, '  ', process_name },
     tabline_x = (function()
       local components = {}
       -- local has_battery = wez.battery_info()[1] ~= nil

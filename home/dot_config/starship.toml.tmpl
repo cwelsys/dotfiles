@@ -16,7 +16,6 @@ $git_status\
 $git_metrics\
 $localip\
 $shlvl\
-$shell\
 $env_var\
 $jobs\
 $package\
@@ -71,23 +70,38 @@ $zig\
 $cmd_duration\
 $battery\
 $line_break\
-$sudo$username$character"""
+$sudo$username$shell$character"""
 
 [os]
 format = '[$symbol ](lavender)'
 disabled = false
 
 [character]
-success_symbol = "[❯](green)"
-error_symbol = "[❯](red)"
+success_symbol = "[❯](peach)"
+error_symbol = "[](mauve bold)"
 vimcmd_symbol = "[❮](subtext1)"
 
 [username]
-style_user = 'bold yellow'
-style_root = 'bold red'
+style_user = 'yellow'
+style_root = 'red'
 format = '[$user]($style)'
 show_always = false
 aliases = { "Administrator" = '󱐋 ' }
+
+[shell]
+fish_indicator = '󰈺 '
+bash_indicator = ' '
+nu_indicator = '󰟆 '
+unknown_indicator = ' '
+style = 'teal bold'
+disabled = false
+format = '[$indicator]($style)'
+{{ if eq .chezmoi.os "windows" }}
+powershell_indicator = ''
+{{ else }}
+zsh_indicator = ''
+powershell_indicator = '_'
+{{ end }}
 
 [battery]
 full_symbol = "󰁹 "

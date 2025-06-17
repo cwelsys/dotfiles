@@ -9,14 +9,19 @@ local opts = {
 
 if os.is_win then
 	opts.launch_menu = {
-		{ label = 'Powershell',     args = { 'pwsh', '-NoLogo' } },
-		-- { label = 'PowerShell Desktop', args = { 'powershell' } },
+		{ label = 'Powershell', args = { 'pwsh', '-NoLogo' } },
 		{ label = 'Command Prompt', args = { 'cmd' } },
-		{ label = 'Nushell',        args = { 'nu' } },
-		{ label = 'Msys2',          args = { 'ucrt64.cmd' } },
+		{ label = 'Nushell', args = { 'nu' } },
+		{ label = 'Msys2', args = { 'ucrt64.cmd' }, icon = nf.md_pac_man, color = '#f9e2af' },
+		{ label = 'Git Bash', args = { 'C:\\Program Files\\git\\bin\\bash.exe' }, },
+		{ label = 'pbox', args = { 'ssh', 'pbox' }, icon = "🌴", color = '#cdd6f4' },
+		{ label = 'mba', args = { 'ssh', 'mba' }, icon = nf.dev_apple, color = '#cdd6f4' },
+		-- { label = 'PowerShell 5', args = { 'powershell' } },
 		{
-			label = 'Git Bash',
-			args = { 'C:\\Program Files\\git\\bin\\bash.exe' },
+			label = 'nvim',
+			args = { "nvim" },
+			icon = nf.custom_neovim,
+			color = '#179299'
 		},
 	}
 elseif os.is_mac then
@@ -40,20 +45,20 @@ local unix_domains = {}
 local wsl_domains = {}
 
 if os.is_win then
-	ssh_domains = {
-		{
-			name = 'pbox',
-			remote_address = 'pbox',
-			multiplexing = 'None',
-			assume_shell = "Posix"
-		},
-		{
-			name = 'mba',
-			remote_address = 'mba',
-			multiplexing = 'None',
-			assume_shell = "Posix"
-		},
-	}
+	-- ssh_domains = {
+	-- 	{
+	-- 		name = 'pbox',
+	-- 		remote_address = 'pbox',
+	-- 		multiplexing = 'None',
+	-- 		assume_shell = "Posix"
+	-- 	},
+	-- 	{
+	-- 		name = 'mba',
+	-- 		remote_address = 'mba',
+	-- 		multiplexing = 'None',
+	-- 		assume_shell = "Posix"
+	-- 	},
+	-- }
 	wsl_domains = {
 		{
 			name = 'Fedora',
@@ -68,34 +73,34 @@ if os.is_win then
 			default_cwd = '~',
 		}
 	}
-elseif os.is_mac then
-	ssh_domains = {
-		{
-			name = 'pbox',
-			remote_address = 'pbox',
-			multiplexing = 'None',
-			assume_shell = "Posix"
-		},
-		{
-			name = 'wini',
-			remote_address = 'wini',
-			multiplexing = 'None'
-		},
-	}
-elseif os.is_linux then
-	ssh_domains = {
-		{
-			name = 'mba',
-			remote_address = 'mba',
-			multiplexing = 'None',
-			assume_shell = "Posix"
-		},
-		{
-			name = 'wini',
-			remote_address = 'wini',
-			multiplexing = 'None'
-		},
-	}
+	-- elseif os.is_mac then
+	-- 	ssh_domains = {
+	-- 		{
+	-- 			name = 'pbox',
+	-- 			remote_address = 'pbox',
+	-- 			multiplexing = 'None',
+	-- 			assume_shell = "Posix"
+	-- 		},
+	-- 		{
+	-- 			name = 'wini',
+	-- 			remote_address = 'wini',
+	-- 			multiplexing = 'None'
+	-- 		},
+	-- 	}
+	-- elseif os.is_linux then
+	-- 	ssh_domains = {
+	-- 		{
+	-- 			name = 'mba',
+	-- 			remote_address = 'mba',
+	-- 			multiplexing = 'None',
+	-- 			assume_shell = "Posix"
+	-- 		},
+	-- 		{
+	-- 			name = 'wini',
+	-- 			remote_address = 'wini',
+	-- 			multiplexing = 'None'
+	-- 		},
+	-- 	}
 end
 
 local domains = {
@@ -134,7 +139,7 @@ M.domains = domains
 ---@alias FormatItem FormatItem.Text|FormatItem.Attribute|FormatItem.Foreground|FormatItem.Background|FormatItem.Reset
 --[[ FormatItems: End ]]
 
-local attr_module = {} -- Renamed from attr to avoid conflict with Cells.attr
+local attr_module = {}
 
 ---@param type 'Bold'|'Half'|'Normal'
 ---@return {Attribute: FormatItem.Attribute.Intensity}
@@ -172,7 +177,7 @@ Cells.__index = Cells
 ---@field underline fun(type: 'None'|'Single'|'Double'|'Curly'): {Attribute: FormatItem.Attribute.Underline}
 ---@field italic fun(): {Attribute: FormatItem.Attribute.Italic}
 ---@overload fun(...: FormatItem.Attribute): FormatItem.Attribute[]
-Cells.attr = setmetatable(attr_module, { -- Use the renamed attr_module
+Cells.attr = setmetatable(attr_module, {
 	__call = function(_, ...)
 		return { ... }
 	end,
@@ -298,7 +303,7 @@ end
 ---@param ids table<string|number> the segment ids
 ---@return FormatItem[]
 function Cells:render(ids)
-	local cells_render = {} -- Renamed from cells to avoid conflict
+	local cells_render = {}
 
 	for _, id in ipairs(ids) do
 		self:_check_segment(id)
@@ -312,10 +317,10 @@ end
 
 ---Convert all segments into a format that `wezterm.format` can use
 --- WARNING: Segments may not be in the same order as they were added if the `segment_id` is a string
----
+
 ---@return FormatItem[]
 function Cells:render_all()
-	local cells_render_all = {} -- Renamed from cells to avoid conflict
+	local cells_render_all = {}
 	for _, segment in pairs(self.segments) do
 		for _, item in pairs(segment.items) do
 			table.insert(cells_render_all, item)
@@ -341,53 +346,170 @@ local colors = {
 	icon_unix    = { fg = '#CBA6F7' },
 }
 
-local cells_instance = Cells:new() -- Renamed from 'cells' to 'cells_instance'
-		:add_segment('icon_default', ' ' .. nf.oct_terminal .. ' ', colors.icon_default)
-		:add_segment('icon_wsl', ' ' .. nf.md_linux .. ' ', colors.icon_wsl)
-		:add_segment('icon_ssh', ' ' .. nf.cod_remote_explorer .. ' ', colors.icon_ssh)
-		:add_segment('icon_unix', ' ' .. nf.dev_gnu .. ' ', colors.icon_unix)
-		:add_segment('label_text', '', colors.label_text, attr(attr.intensity('Bold')))
+-- WSL distribution icons mapping
+local WSL_DISTRO_ICONS = {
+	['Ubuntu'] = { icon = nf.linux_ubuntu, color = '#E95420' },
+	['Debian'] = { icon = nf.linux_debian, color = '#A81D33' },
+	['Arch'] = { icon = nf.linux_archlinux, color = '#1793D1' },
+	['Alpine'] = { icon = nf.linux_alpine, color = '#0D597F' },
+	['Fedora'] = { icon = nf.linux_fedora, color = '#b4befe' },
+	['openSUSE'] = { icon = nf.linux_opensuse, color = '#73BA25' },
+	['SUSE'] = { icon = nf.linux_opensuse, color = '#73BA25' },
+	['CentOS'] = { icon = nf.linux_centos, color = '#932279' },
+	['RedHat'] = { icon = nf.linux_redhat, color = '#EE0000' },
+	['Kali'] = { icon = nf.linux_kali_linux, color = '#557C94' },
+	['Manjaro'] = { icon = nf.linux_manjaro, color = '#35BF5C' },
+}
+
+-- Shell icons mapping
+local SHELL_ICONS = {
+	['pwsh'] = { icon = nf.dev_powershell, color = '#89b4fa' },
+	['powershell'] = { icon = nf.seti_powershell, color = '#89b4fa' },
+	['cmd'] = { icon = nf.md_console, color = '#fab387' },
+	['bash'] = { icon = nf.cod_terminal_bash, color = '#94e2d5' },
+	['zsh'] = { icon = nf.dev_terminal, color = '#89DDFF' },
+	['fish'] = { icon = nf.dev_terminal, color = '#4E9A06' },
+	['nu'] = { icon = nf.dev_terminal, color = '#50C878' },
+	['elvish'] = { icon = nf.dev_terminal, color = '#FF6B35' },
+	['xonsh'] = { icon = nf.dev_python, color = '#306998' },
+	['dash'] = { icon = nf.dev_terminal, color = '#757575' },
+	['sh'] = { icon = nf.dev_terminal, color = '#4EAA25' },
+	['tcsh'] = { icon = nf.dev_terminal, color = '#326CE5' },
+	['csh'] = { icon = nf.dev_terminal, color = '#326CE5' },
+	['ksh'] = { icon = nf.dev_terminal, color = '#FF6B6B' },
+}
+
+-- Helper function to detect shell from args
+local function get_shell_from_args(args)
+	if not args or #args == 0 then
+		return nil
+	end
+
+	local first_arg = args[1]
+	if not first_arg then
+		return nil
+	end
+
+	first_arg = first_arg:lower()
+
+	local shell_name = first_arg:match('.*[/\\]([^/\\]+)$') or first_arg
+	shell_name = shell_name:gsub('%.exe$', '')
+
+	return shell_name
+end
+
+local cells_instance = nil
+
+local function initialize_cells()
+	if not cells_instance then
+		cells_instance = Cells:new()
+				:add_segment('icon_default', ' ' .. nf.oct_terminal .. ' ', colors.icon_default)
+				:add_segment('icon_wsl', ' ' .. nf.md_linux .. ' ', colors.icon_wsl)
+				:add_segment('icon_ssh', ' ' .. nf.cod_remote_explorer .. ' ', colors.icon_ssh)
+				:add_segment('icon_unix', ' ' .. nf.dev_gnu .. ' ', colors.icon_unix)
+				:add_segment('label_text', '', colors.label_text, attr(attr.intensity('Bold')))
+	end
+end
 
 local function build_choices()
+	initialize_cells()
+
+	if not cells_instance then
+		error("Failed to initialize cells_instance")
+	end
+
 	local choices = {}
 	local choices_data = {}
 	local idx = 1
 
-	-- Add launch menu items (DefaultDomain)
 	for _, v in ipairs(opts.launch_menu) do
-		cells_instance:update_segment_text('label_text', v.label) -- Use cells_instance
+		cells_instance:update_segment_text('label_text', v.label)
+
+		local icon_segment = 'icon_default'
+		local cleanup_segment = nil
+
+		if v.icon or v.color then
+			local custom_icon_id = 'custom_icon_' .. idx
+			local custom_color = v.color and { fg = v.color } or colors.icon_default
+			local custom_icon = v.icon or nf.oct_terminal
+
+			if custom_icon then
+				cells_instance:add_segment(custom_icon_id, ' ' .. custom_icon .. ' ', custom_color)
+				icon_segment = custom_icon_id
+				cleanup_segment = custom_icon_id
+			end
+		else
+			local shell_name = get_shell_from_args(v.args)
+			if shell_name and SHELL_ICONS[shell_name] then
+				local shell_info = SHELL_ICONS[shell_name]
+
+				if shell_info and shell_info.icon and shell_info.color then
+					local shell_icon_id = 'shell_icon_' .. idx
+					local shell_color = { fg = shell_info.color }
+					local shell_icon = shell_info.icon
+
+					cells_instance:add_segment(shell_icon_id, ' ' .. shell_icon .. ' ', shell_color)
+					icon_segment = shell_icon_id
+					cleanup_segment = shell_icon_id
+				end
+			end
+		end
 
 		table.insert(choices, {
 			id = tostring(idx),
-			label = wez.format(cells_instance:render({ 'icon_default', 'label_text' })), -- Use cells_instance
+			label = wez.format(cells_instance:render({ icon_segment, 'label_text' })),
 		})
 		table.insert(choices_data, {
 			args = v.args,
 			domain = 'DefaultDomain',
 		})
+
+		-- Clean up temporary segments
+		if cleanup_segment then
+			cells_instance.segments[cleanup_segment] = nil
+		end
+
 		idx = idx + 1
 	end
 
-	-- Add WSL domains
+	-- WSL domains
 	for _, v in ipairs(domains.wsl_domains) do
-		cells_instance:update_segment_text('label_text', v.name) -- Use cells_instance
+		cells_instance:update_segment_text('label_text', v.name)
+
+		local icon_segment = 'icon_wsl'
+		local distro_info = WSL_DISTRO_ICONS[v.distribution] or WSL_DISTRO_ICONS[v.name]
+
+		if distro_info and distro_info.icon and distro_info.color then
+			local custom_icon_id = 'custom_wsl_icon_' .. idx
+			local custom_color = { fg = distro_info.color }
+			local custom_icon = distro_info.icon
+
+			cells_instance:add_segment(custom_icon_id, ' ' .. custom_icon .. ' ', custom_color)
+			icon_segment = custom_icon_id
+		end
 
 		table.insert(choices, {
 			id = tostring(idx),
-			label = wez.format(cells_instance:render({ 'icon_wsl', 'label_text' })), -- Use cells_instance
+			label = wez.format(cells_instance:render({ icon_segment, 'label_text' })),
 		})
 		table.insert(choices_data, {
 			domain = { DomainName = v.name },
 		})
+
+		if distro_info then
+			cells_instance.segments['custom_wsl_icon_' .. idx] = nil
+		end
+
 		idx = idx + 1
 	end
 
-	-- Add SSH domains
+	-- SSH domains
 	for _, v in ipairs(domains.ssh_domains) do
-		cells_instance:update_segment_text('label_text', v.name) -- Use cells_instance
+		cells_instance:update_segment_text('label_text', v.name)
+
 		table.insert(choices, {
 			id = tostring(idx),
-			label = wez.format(cells_instance:render({ 'icon_ssh', 'label_text' })), -- Use cells_instance
+			label = wez.format(cells_instance:render({ 'icon_ssh', 'label_text' })),
 		})
 		table.insert(choices_data, {
 			domain = { DomainName = v.name },
@@ -395,12 +517,13 @@ local function build_choices()
 		idx = idx + 1
 	end
 
-	-- Add Unix domains
+	-- Unix domains
 	for _, v in ipairs(domains.unix_domains) do
-		cells_instance:update_segment_text('label_text', v.name) -- Use cells_instance
+		cells_instance:update_segment_text('label_text', v.name)
+
 		table.insert(choices, {
 			id = tostring(idx),
-			label = wez.format(cells_instance:render({ 'icon_unix', 'label_text' })), -- Use cells_instance
+			label = wez.format(cells_instance:render({ 'icon_unix', 'label_text' })),
 		})
 		table.insert(choices_data, {
 			domain = { DomainName = v.name },
@@ -425,7 +548,8 @@ M.setup = function()
 					title = 'Launch Menu',
 					choices = choices,
 					fuzzy = true,
-					fuzzy_description = nf.md_rocket .. ' Select a lauch item: ',
+					-- fuzzy_description = nf.md_rocket .. ' Select a lauch item: ',
+					fuzzy_description = '',
 					action = wez.action_callback(function(_window, _pane, id, label)
 						if not id and not label then
 							return

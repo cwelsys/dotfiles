@@ -54,10 +54,10 @@ shopt -s cmdhist
 shopt -s histappend histverify
 
 # 🐚 Prompt
-if command -v oh-my-posh >/dev/null 2>&1; then
-	eval "$(oh-my-posh init bash --config "$HOME/.config/posh.toml")"
-elif command -v starship >/dev/null 2>&1; then
+if command -v starship >/dev/null 2>&1; then
 	eval "$(starship init bash)"
+elif command -v oh-my-posh >/dev/null 2>&1; then
+	eval "$(oh-my-posh init bash --config "$HOME/.config/posh.toml")"
 fi
 
 

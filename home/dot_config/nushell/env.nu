@@ -45,21 +45,20 @@ $env.NU_PLUGIN_DIRS = [
 # path add ($env.HOME | path join ".local" "bin")
 # $env.PATH = ($env.PATH | uniq)
 
+# Add mise to PATH instead
 $env.PATH = (
     $env.PATH
-        | split row (char esep)
-        | prepend ($env.HOME | path join ".local" "bin")
-        | prepend ($env.NUPM_HOME | path join "scripts")
-        | uniq
+    | split row (char esep)
+    | prepend ($env.HOME | path join ".local" "bin")
+    | prepend ($env.HOME | path join ".cargo" "bin")
+    | prepend ($env.XDG_DATA_HOME | path join "mise" "shims" )
+    | uniq
 )
 
-# To load from a custom file you can use:
-# source ($nu.default-config-dir | path join 'custom.nu')
 
 carapace _carapace nushell | save -f ~/.cache/carapace/init.nu
 atuin init nu | save -f ~/.local/share/atuin/init.nu
 zoxide init nushell --cmd cd | save -f ~/.cache/.zoxide.nu
-mise activate nu | save -f ~/.cache/.mise.nu
 
 $env.EDITOR = "nvim"
 $env.VISUAL = $env.EDITOR
