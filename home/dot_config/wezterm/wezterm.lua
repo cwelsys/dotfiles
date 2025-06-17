@@ -127,6 +127,7 @@ c.tab_and_split_indices_are_zero_based = true
 c.window_close_confirmation = "NeverPrompt"
 c.skip_close_confirmation_for_processes_named = {
   'bash',
+  'bash.exe',
   'sh',
   'zsh',
   'fish',

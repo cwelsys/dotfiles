@@ -46,11 +46,11 @@ $PSReadLineOptions = @{
 
 Set-PSReadLineOption @PSReadLineOptions
 
-# hacky workaround to make listview play nice w/ starship transient prompt
-Set-PSReadLineKeyHandler -Key Enter -BriefDescription 'AcceptLineAndClear' -LongDescription 'Accept the current line and clear predictions' -ScriptBlock {
-    [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
-    [Console]::Write("`e[J")
-}
+# hacky workaround to clear phantom listview suggestions - doesnt really work w/ transient prompt
+# Set-PSReadLineKeyHandler -Key Enter -BriefDescription 'AcceptLineAndClear' -LongDescription 'Accept the current line and clear predictions' -ScriptBlock {
+#     [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+#     [Console]::Write("`e[J")
+# }
 
 Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward

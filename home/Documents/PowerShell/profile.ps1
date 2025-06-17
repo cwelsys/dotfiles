@@ -1,8 +1,6 @@
-﻿# 👾 Encoding
-$OutputEncoding = [System.Text.Encoding]::UTF8
+﻿$OutputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-# 🚌 Tls
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 if ([Environment]::GetCommandLineArgs().Contains('-NonInteractive')) {
@@ -16,7 +14,6 @@ if ($InteractiveMode -and $env:TERM_PROGRAM -ne 'vscode') {
 	fastfetch
 }
 
-# 🌐 Env
 $env:DOTS = & chezmoi source-path
 $env:DOTFILES = $env:DOTS
 $Env:PWSH = Split-Path $PROFILE -Parent
@@ -26,37 +23,34 @@ $env:CARAPACE_NOSPACE = '*'
 $Env:_ZO_DATA_DIR = "$Env:PWSH"
 $env:SSH_AUTH_SOCK = '\\.\pipe\openssh-ssh-agent'
 $Env:GLOW_STYLE = "$HOME/.config/glow/catppuccin-mocha.json"
-. $Env:PWSH\priv.ps1
-. $Env:PWSH\utils.ps1
+
+$global:term_app = $env:TERM_PROGRAM
+if ($null -ne $env:WT_SESSION) {
+	$global:term_app = 'WindowsTerminal'
+}
 
 foreach ($module in $((Get-ChildItem -Path "$env:PWSH\psm\*" -Include *.psm1).FullName )) {
 	Import-Module "$module" -Global
 }
 
-$prompt = ''
-function Invoke-Starship-PreCommand {
-	$current_location = $executionContext.SessionState.Path.CurrentLocation
-	if ($current_location.Provider.Name -eq 'FileSystem') {
-		$ansi_escape = [char]27
-		$provider_path = $current_location.ProviderPath -replace '\\', '/'
-		$prompt = "$ansi_escape]7;file://${env:COMPUTERNAME}/${provider_path}$ansi_escape\"
+foreach ($file in $((Get-ChildItem -Path "$env:PWSH\lib\*" -Include *.ps1).FullName)) {
+	. "$file"
+}
+
+Set-ShellIntegration -TerminalProgram $term_app
+
+if (Get-Command 'starship' -ErrorAction SilentlyContinue) {
+	Invoke-Expression (&starship init powershell)
+	function Invoke-Starship-TransientFunction {
+		&starship module character
 	}
-	$host.ui.Write($prompt)
+	if ($env:TERM_PROGRAM -ne 'vscode') {
+		Enable-TransientPrompt
+	}
 }
-
-function Invoke-Starship-TransientFunction {
-	&starship module character
-}
-
-Invoke-Expression (&starship init powershell)
-Enable-TransientPrompt
-
 
 iex "$(thefuck --alias)"
 Invoke-Expression (&scoop-search --hook)
 mise activate pwsh | Out-String | Invoke-Expression
 carapace _carapace | Out-String | Invoke-Expression
-
-. $Env:PWSH\readline.ps1
-
 Invoke-Expression (& { ( zoxide init powershell --cmd cd | Out-String ) })
