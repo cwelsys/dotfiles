@@ -374,18 +374,22 @@
 
     if (( $1 )); then
       # Styling for up-to-date Git status.
-      local       meta='%F{#cdd6f4}'      # text
-      local      clean='%F{#a6e3a1}'      # green
-      local   modified='%F{#f9e2af}'      # yellow
-      local  untracked='%F{#89b4fa}'      # blue
-      local conflicted='%F{#f38ba8}'      # red
+      local       meta='%F{#cdd6f4}'
+      local      clean='%F{#a6e3a1}'
+      local      added=$clean
+      local    deleted='%F{#f38ba8}'
+      local   modified='%F{#f9e2af}'
+      local   unstaged='%F{#cdd6f4}'
+      local  untracked='%F{#89b4fa}'
+      local conflicted='%F{#fab387}'
     else
       # Styling for incomplete and stale Git status.
-      local       meta='%F{#cdd6f4}'      # text
-      local      clean='%F{#cdd6f4}'      # text
-      local   modified='%F{#cdd6f4}'      # text
-      local  untracked='%F{#cdd6f4}'      # text
-      local conflicted='%F{#cdd6f4}'      # text
+      local       meta='%f'
+      local      clean='%f'
+      local   modified='%f'
+      local  untracked='%f'
+      local conflicted='%f'
+      local    default='%f'
     fi
 
     local res
@@ -505,8 +509,8 @@
 
   # These settings are used for repositories other than Git or when gitstatusd fails and
   # Powerlevel10k has to fall back to using vcs_info.
-  typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND='#a6e3a1'
-  typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND='#a6e3a1'
+  typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND=
+  typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND=
   typeset -g POWERLEVEL9K_VCS_MODIFIED_FOREGROUND='#f9e2af'
 
   ##########################[ status: exit code of the last command ]###########################
