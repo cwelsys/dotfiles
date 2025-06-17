@@ -71,7 +71,7 @@ $zig\
 $cmd_duration\
 $battery\
 $line_break\
-$sudo$character"""
+$sudo$username$character"""
 
 [os]
 format = '[$symbol ](lavender)'
@@ -81,6 +81,13 @@ disabled = false
 success_symbol = "[❯](green)"
 error_symbol = "[❯](red)"
 vimcmd_symbol = "[❮](subtext1)"
+
+[username]
+style_user = 'bold yellow'
+style_root = 'bold red'
+format = '[$user]($style)'
+show_always = false
+aliases = { "Administrator" = '󱐋 ' }
 
 [battery]
 full_symbol = "󰁹 "

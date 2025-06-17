@@ -189,14 +189,118 @@ c.hyperlink_rules = {
 }
 
 -- tabline
-local function clean_title(title)
+local function extract_process_name(title)
   if not title then return "" end
+
+  -- Remove common prefixes
   title = title:gsub('^Administrator: ', '')
   title = title:gsub(' %(Admin%)', '')
-  title = title:gsub('.*[/\\]([^/\\]+)$', '%1')
-  title = title:gsub('%.exe$', '')
-  title = title:gsub('%.EXE$', '')
-  return title
+
+  -- Extract just the filename from full path
+  local filename = title:match('.*[/\\]([^/\\]+)$') or title
+
+  -- Remove .exe extension (case insensitive)
+  filename = filename:gsub('%.exe$', '')
+  filename = filename:gsub('%.EXE$', '')
+
+  return filename
+end
+
+-- Icon mapping for different applications with patterns
+local ICON_MAP = {
+  nvim = nf.custom_neovim,
+  vim = nf.custom_neovim,
+  lazygit = nf.dev_git,
+  lazydocker = nf.dev_docker,
+  atac = nf.md_api,
+  apis = nf.md_api,
+  pwsh = nf.seti_powershell,
+  powershell = nf.seti_powershell,
+  cmd = nf.md_console,
+  bash = nf.cod_terminal_bash,
+  zsh = nf.dev_terminal,
+  git = nf.dev_git_branch,
+  node = nf.dev_nodejs_small,
+  python = nf.dev_python,
+  cargo = nf.dev_rust,
+  npm = nf.dev_npm,
+}
+
+-- Pattern-based application detection
+local APP_PATTERNS = {
+  { pattern = "lazygit",    icon = nf.dev_git,       name = "Lazygit" },
+  { pattern = "lazydocker", icon = nf.dev_docker,    name = "Lazydocker" },
+  { pattern = "neovim",     icon = nf.custom_neovim, name = "Neovim" },
+  { pattern = "nvim",       icon = nf.custom_neovim, name = "Neovim" },
+  { pattern = "atac",       icon = nf.md_api,        name = "ATAC" },
+}
+
+local function get_icon_for_process(title)
+  if not title then return nf.oct_terminal end
+
+  local title_lower = title:lower()
+
+  -- First check for pattern matches (for complex titles like "repo - Lazygit")
+  for _, app in ipairs(APP_PATTERNS) do
+    if title_lower:find(app.pattern) then
+      return app.icon
+    end
+  end
+
+  -- Fall back to exact process name matching
+  local process = extract_process_name(title):lower()
+  return ICON_MAP[process] or nf.oct_terminal
+end
+
+local function get_display_name(title)
+  if not title then return "" end
+
+  local title_lower = title:lower()
+
+  -- Check for pattern matches first
+  for _, app in ipairs(APP_PATTERNS) do
+    if title_lower:find(app.pattern) then
+      return app.name
+    end
+  end
+
+  -- Fall back to extracted process name
+  return extract_process_name(title)
+end
+
+local function get_tab_info(tab)
+  -- Use explicit tab title if set
+  if tab.tab_title and #tab.tab_title > 0 then
+    return tab.tab_title, tab.tab_title
+  end
+
+  local pane_title = tab.active_pane.title or ""
+
+  -- Handle special directory patterns first
+  if pane_title:match("^~") then
+    return nf.cod_home, pane_title
+  end
+
+  if pane_title:match("^%.%.") then
+    local dir_name = pane_title:match("([^/\\]+)[/\\]?$") or ""
+    return nf.custom_folder_open, "../" .. dir_name
+  end
+
+  -- For process titles, show just the process name, not the full path
+  local process_name = get_display_name(pane_title)
+  local icon = get_icon_for_process(pane_title)
+
+  return icon, process_name
+end
+
+local function tab_title(tab)
+  local icon, _ = get_tab_info(tab)
+  return icon
+end
+
+local function process_name(tab)
+  local _, name = get_tab_info(tab)
+  return name
 end
 
 tabline.setup({
@@ -234,6 +338,8 @@ tabline.setup({
     } },
     tabline_b = {},
     tabline_c = { " " },
+    tab_active = { tab_title, " ", process_name },
+    tab_inactive = { tab_title },
     tabline_x = (function()
       local components = {}
       -- local has_battery = wez.battery_info()[1] ~= nil
@@ -289,29 +395,6 @@ tabline.setup({
       },
     },
     tabline_z = { { "domain", padding = 0, icons_only = true }, "hostname" },
-    tab_active = {
-      { "process", icons_only = true, padding = { left = 1, right = 0 } },
-      { "parent",  max_length = 10,   padding = 0,                      fmt = function(text) return text:lower() end },
-      "/",
-      { "cwd", max_length = 15, padding = { left = 0, right = 1 } },
-    },
-    tab_inactive = {
-      { "process", icons_only = true, padding = { left = 1, right = 0 } },
-      { "parent",  max_length = 10,   padding = 0,                      fmt = function(text) return text:lower() end },
-      "/",
-      { "cwd", max_length = 15, padding = { left = 0, right = 1 } },
-      -- {
-      --   "process",
-      --   icons_only = true
-      -- },
-      -- function(tab)
-      --   local pane = tab.active_pane
-      --   if pane and pane.title then
-      --     return clean_title(pane.title)
-      --   end
-      --   return tab.tab_title or "   "
-      -- end
-    },
   },
   extensions = {
     "resurrect",

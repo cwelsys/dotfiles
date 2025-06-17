@@ -192,7 +192,6 @@ Set-PsFzfOption @PSFzfOptions
 
 Set-Alias -Name 'fze' -Value 'Invoke-FuzzyEdit'
 Set-Alias -Name 'fzg' -Value 'Invoke-FuzzyGitStatus'
-Set-Alias -Name 'fzh' -Value 'Invoke-FuzzyHistory'
 Set-Alias -Name 'fzd' -Value 'Invoke-FuzzySetLocation'
 Set-Alias -Name 'fzs' -Value 'Invoke-FuzzyScoop'
 
@@ -254,6 +253,13 @@ function _fzf_get_path_using_rg {
 function fdz { _fzf_open_path $(_fzf_get_path_using_fd) }
 function rgz { _fzf_open_path $(_fzf_get_path_using_rg) }
 
+function Invoke-PsFzfAltCCommandHandler {
+    param($Location)
+
+    Push-Location -Path $Location
+}
+Set-PsFzfOption -AltCCommand ${function:Invoke-PsFzfAltCCommandHandler}
+
 Set-PSReadLineKeyHandler -Key 'Ctrl+f' -BriefDescription 'Invoke-FuzzyFileFinder' -LongDescription 'Launch fuzzy file finder using fd and fzf' -ScriptBlock {
     [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
     [Microsoft.PowerShell.PSConsoleReadLine]::Insert('fdz')
@@ -265,3 +271,5 @@ Set-PSReadLineKeyHandler -Key 'Ctrl+g' -BriefDescription 'Invoke-FuzzyRipGrep' -
     [Microsoft.PowerShell.PSConsoleReadLine]::Insert('rgz')
     [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
 }
+
+

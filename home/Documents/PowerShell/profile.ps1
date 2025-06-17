@@ -32,13 +32,13 @@ $Env:GLOW_STYLE = "$HOME/.config/glow/catppuccin-mocha.json"
 foreach ($module in $((Get-ChildItem -Path "$env:PWSH\psm\*" -Include *.psm1).FullName )) {
 	Import-Module "$module" -Global
 }
-
 function Invoke-Starship-TransientFunction {
 	&starship module character
 }
 
 Invoke-Expression (&starship init powershell)
 Enable-TransientPrompt
+
 
 iex "$(thefuck --alias)"
 Invoke-Expression (&scoop-search --hook)
