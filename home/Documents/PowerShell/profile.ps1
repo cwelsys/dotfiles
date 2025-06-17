@@ -3,31 +3,12 @@
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-if ([Environment]::GetCommandLineArgs().Contains('-NonInteractive')) {
-	$Global:InteractiveMode = $false
-}
-else {
-	$Global:InteractiveMode = $true
-}
-
-if ($InteractiveMode -and $env:TERM_PROGRAM -ne 'vscode') {
-	fastfetch
-}
-
-$env:DOTS = & chezmoi source-path
-$env:DOTFILES = $env:DOTS
+$Env:DOTS = & chezmoi source-path
 $Env:PWSH = Split-Path $PROFILE -Parent
 $Env:PYTHONIOENCODING = 'utf-8'
-$env:CARAPACE_BRIDGES = 'powershell,inshellisense'
-$env:CARAPACE_NOSPACE = '*'
+$Env:CARAPACE_BRIDGES = 'powershell,inshellisense'
+$Env:CARAPACE_NOSPACE = '*'
 $Env:_ZO_DATA_DIR = "$Env:PWSH"
-$env:SSH_AUTH_SOCK = '\\.\pipe\openssh-ssh-agent'
-$Env:GLOW_STYLE = "$HOME/.config/glow/catppuccin-mocha.json"
-
-$global:term_app = $env:TERM_PROGRAM
-if ($null -ne $env:WT_SESSION) {
-	$global:term_app = 'WindowsTerminal'
-}
 
 foreach ($module in $((Get-ChildItem -Path "$env:PWSH\psm\*" -Include *.psm1).FullName )) {
 	Import-Module "$module" -Global
@@ -37,16 +18,15 @@ foreach ($file in $((Get-ChildItem -Path "$env:PWSH\lib\*" -Include *.ps1).FullN
 	. "$file"
 }
 
-Set-ShellIntegration -TerminalProgram $term_app
+if ($InteractiveMode -and $env:TERM_PROGRAM -ne 'vscode') {
+	fastfetch
+}
 
-if (Get-Command 'starship' -ErrorAction SilentlyContinue) {
-	Invoke-Expression (&starship init powershell)
-	function Invoke-Starship-TransientFunction {
-		&starship module character
-	}
-	if ($env:TERM_PROGRAM -ne 'vscode') {
-		Enable-TransientPrompt
-	}
+if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
+	oh-my-posh init pwsh --config "$HOME\.config\posh.toml" | Invoke-Expression
+}
+elseif (Get-Command starship -ErrorAction SilentlyContinue) {
+	. "$env:PWSH\starship.ps1"
 }
 
 iex "$(thefuck --alias)"

@@ -60,14 +60,14 @@ Set-Alias -Name 'keys' -value Get-PSReadLineKeyHandler
 
 Set-Alias -Name 'lg' -Value lazygit
 
-Set-Alias -Name 'lzd' -Value lazydocker
+Set-Alias -Name 'ld' -Value lazydocker
 
 Set-Alias -name 'lj' -Value lazyjournal
 
 Set-Alias -Name 'tg' -Value topgrade
-function dots { Set-Location $env:DOTFILES }
+function dots { Set-Location $Env:DOTS }
 function qq { exit }
-function cdcm { Set-Location $env:DOTFILES }
+function cdcm { Set-Location $Env:DOTS }
 function cdc { Set-Location $env:XDG_CONFIG_HOME }
 function export($name, $value) {
   Set-Item -Path "env:$name" -Value $value

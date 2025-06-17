@@ -27,12 +27,12 @@ function Get-Modules {
         $result = Get-InstalledModule |
         Select-Object Name, Version, Author, InstalledDate, Description |
         ConvertTo-Json -Depth 100 |
-        Out-File "$Env:DOTFILES\modules.lock.json" -Encoding utf8 -Force
+        Out-File "$Env:DOTS\modules.lock.json" -Encoding utf8 -Force
     }
 
     if ($list) {
-        if (Test-Path "$Env:DOTFILES\modules.lock.json") {
-            $result = Get-Content "$Env:DOTFILES\modules.lock.json" | ConvertFrom-Json | Format-Table -AutoSize
+        if (Test-Path "$Env:DOTS\modules.lock.json") {
+            $result = Get-Content "$Env:DOTS\modules.lock.json" | ConvertFrom-Json | Format-Table -AutoSize
         } else {
             $result = Get-InstalledModule | Select-Object Name, Version, Author, InstalledDate, Description | Format-Table -AutoSize
         }

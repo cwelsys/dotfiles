@@ -49,6 +49,7 @@ config:
         MISE_RUBY_DEFAULT_PACKAGES_FILE: 'C:\Users\cwel\.config\mise\default-gems'
         PYTHON_HISTORY: 'C:\Users\cwel\.local\share\python\history'
         NODE_REPL_HISTORY: 'C:\Users\cwel\.local\share\node_repl_history'
+        GLOW_STYLE: 'C:\Users\cwel\.config\glow\catppuccin-mocha.json'
 
     features:
       enable:

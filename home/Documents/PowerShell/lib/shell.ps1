@@ -1,3 +1,20 @@
+if ([Environment]::GetCommandLineArgs().Contains('-NonInteractive')) {
+  $Global:InteractiveMode = $false
+}
+else {
+  $Global:InteractiveMode = $true
+}
+
+$global:term_app = $env:TERM_PROGRAM
+if ($null -ne $env:WT_SESSION) {
+  $global:term_app = 'WindowsTerminal'
+}
+
+if ($env:TERM_PROGRAM -eq 'Wezterm') {
+  $env:SSH_AUTH_SOCK = '\\.\pipe\openssh-ssh-agent'
+}
+
+
 # Reference:
 # https://devblogs.microsoft.com/commandline/shell-integration-in-the-windows-terminal/
 # Forked from https://gist.github.com/mdgrs-mei/1599cb07ef5bc67125ebffba9c8f1e37

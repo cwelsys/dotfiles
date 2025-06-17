@@ -30,15 +30,8 @@ end
 
 -- plugins
 local splits = wez.plugin.require("https://github.com/mrjones2014/smart-splits.nvim")
--- local resurrect = wez.plugin.require("https://github.com/MLFlexer/resurrect.wezterm")
-local switcher = wez.plugin.require("https://github.com/MLFlexer/smart_workspace_switcher.wezterm")
 local tabline = wez.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
 
-switcher.get_choices = function(opts)
-  return switcher.choices.get_workspace_elements({})
-end
-
-switcher.apply_to_config(c)
 splits.apply_to_config(c)
 
 -- opts
@@ -387,12 +380,7 @@ tabline.setup({
     },
     tabline_z = { { "domain", padding = 0, icons_only = true }, "hostname" },
   },
-  extensions = {
-    "resurrect",
-    "smart_workspace_switcher",
-    "quick_domains",
-    "presentation",
-  }
+  extensions = {}
 })
 
 return c
