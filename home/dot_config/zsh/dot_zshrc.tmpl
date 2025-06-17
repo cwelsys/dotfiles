@@ -2,20 +2,16 @@ if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
   fastfetch
 fi
 
+[ -f "${HOME}/.config/shared/init.sh" ] && source "${HOME}/.config/shared/init.sh"
+
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
-if [ "$ZSH_PROFILING" = 1 ];
-then
-  zmodload zsh/zprof
 fi
 
 if [[ -f "/opt/homebrew/bin/brew" ]] then
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# 🚀 zinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
 if [[ ! -d "${ZINIT_HOME}" ]]; then
@@ -32,20 +28,7 @@ if [ -d "$ZDOTDIR/lib" ]; then
   unset file
 fi
 
-if [ ! -d "$XDG_STATE_HOME/zsh" ]; then
-  mkdir -p "$XDG_STATE_HOME/zsh"
-fi
-
-if [ -f "$HOME/.zsh_history" ] && [ ! -f "$XDG_STATE_HOME/zsh/history" ]; then
-  mv "$HOME/.zsh_history" "$XDG_STATE_HOME/zsh/history"
-fi
-
-[ -z "$HISTFILE" ] && HISTFILE="$XDG_STATE_HOME/zsh/history"
-
-HISTSIZE=290000
-SAVEHIST=$HISTSIZE
-HISTDUP=erase
-
+zinit ice depth=1; zinit light romkatv/powerlevel10k
 
 zstyle ":completion:*" matcher-list "" "m:{a-z}={A-Z}" "m:{a-zA-Z}={A-Za-z}" "r:|[._-]=* r:|=* l:|=*"
 zstyle ':completion:*:git-checkout:*' sort false
@@ -53,20 +36,17 @@ zstyle ':completion:*:descriptions' format '[%d]'
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' menu no
 zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa --icons --group-directories-first --color=always --git --oneline --all $realpath'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza --icons --group-directories-first --color=always --git --oneline --all $realpath'
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
 zstyle ':fzf-tab:*' switch-group ',' '.'
 
 omzLib correction.zsh
-omzLib directories.zsh
 omzLib clipboard.zsh
 omzLib git.zsh
 omzLib grep.zsh
 omzLib history.zsh
 
-zinit ice depth=1; zinit light romkatv/powerlevel10k
-
-# 🔌 plugs
+# # 🔌 plugs
 {{ if eq .chezmoi.os "darwin" }}
 omzPlugin macos
 {{ else if eq .chezmoi.os "linux" }}
@@ -80,10 +60,8 @@ omzPlugin git
 omzPlugin mise
 omzPlugin git-flow wait"1"
 omzPlugin github wait"1"
-# omzPlugin 1password wait"1"
 omzPlugin docker wait"1"
 omzPlugin command-not-found wait"1"
-omzPlugin common-aliases
 
 # atuin
 zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
@@ -122,7 +100,6 @@ zinit ice lucid wait"0" atclone"sed -ie 's/fc -rl 1/fc -rli 1/' shell/key-bindin
   pick"/dev/null"
 zinit light junegunn/fzf
 
-# probably redundant atp
 zinit ice lucid wait'0'
 zinit light joshskidmore/zsh-fzf-history-search
 
@@ -139,8 +116,6 @@ zinit light zsh-users/zsh-completions
 autoload -Uz compinit && compinit
 zinit cdreplay -q
 
-[ -d "${ZDOTDIR}/functions" ] && fpath+=${ZDOTDIR}/functions
-[ -d "${ZDOTDIR}/completions" ] && fpath+=${ZDOTDIR}/completions
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=247
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
@@ -170,16 +145,28 @@ bindkey "^E" end-of-line
 bindkey "^N" insert-last-word
 bindkey '^[w' kill-region
 
-# 🐚 Prompt
-[[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
-# if [[ -v commands['oh-my-posh'] ]]; then
-#  eval "$(oh-my-posh init zsh --config $HOME/.config/posh.toml)"
-# elif [[ -v commands[starship] ]]; then
-#  eval "$(starship init zsh)"
-# fi
+if [ ! -d "$XDG_STATE_HOME/zsh" ]; then
+  mkdir -p "$XDG_STATE_HOME/zsh"
+fi
 
-# 🚬 source
-[ -f "${HOME}/.config/shared/init.sh" ] && source "${HOME}/.config/shared/init.sh"
+if [ -f "$HOME/.zsh_history" ] && [ ! -f "$XDG_STATE_HOME/zsh/history" ]; then
+  mv "$HOME/.zsh_history" "$XDG_STATE_HOME/zsh/history"
+fi
+
+[ -z "$HISTFILE" ] && HISTFILE="$XDG_STATE_HOME/zsh/history"
+
+HISTSIZE=290000
+SAVEHIST=$HISTSIZE
+HISTDUP=erase
+
+# 🐚 Prompt
+if [[ -f ~/.config/zsh/.p10k.zsh ]]; then
+  source ~/.config/zsh/.p10k.zsh
+elif [[ -v commands['oh-my-posh'] ]]; then
+  eval "$(oh-my-posh init zsh --config $HOME/.config/posh.toml)"
+elif [[ -v commands[starship] ]]; then
+  eval "$(starship init zsh)"
+fi
 
 if [[ -n "$SSH_CONNECTION" ]]; then
   export DISPLAY=wini:0
@@ -194,3 +181,4 @@ if [[ -v commands[mise] ]]; then
 fi
 
 [[ -x "$(command -v zoxide)" ]] && eval "$(zoxide init zsh --cmd=cd)"
+
