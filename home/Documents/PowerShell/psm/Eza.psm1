@@ -1,14 +1,4 @@
-﻿# $ezaParams = @(
-# 	'--icons'
-# 	'--header'
-# 	'--hyperlink'
-# 	'--group'
-# 	'--git'
-# 	'-I=*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv'
-# 	'--group-directories-first'
-# )
-
-$ezaParams = @(
+﻿$ezaParams = @(
 	'--git'
 	'--group'
 	'--hyperlink'
