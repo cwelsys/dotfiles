@@ -204,29 +204,18 @@ c.hyperlink_rules = {
 -- tabline
 local function extract_process_name(title)
   if not title then return "" end
-
-  -- Remove common prefixes
   title = title:gsub('^Administrator: ', '')
   title = title:gsub(' %(Admin%)', '')
-
-  -- Extract just the filename from full path
   local filename = title:match('.*[/\\]([^/\\]+)$') or title
-
-  -- Remove .exe extension (case insensitive)
   filename = filename:gsub('%.exe$', '')
   filename = filename:gsub('%.EXE$', '')
-
   return filename
 end
 
--- Icon mapping for different applications with patterns
 local ICON_MAP = {
   nvim = nf.custom_neovim,
-  vim = nf.custom_neovim,
   lazygit = nf.dev_git,
   lazydocker = nf.dev_docker,
-  atac = nf.md_api,
-  apis = nf.md_api,
   pwsh = nf.seti_powershell,
   powershell = nf.seti_powershell,
   cmd = nf.md_console,
@@ -235,7 +224,7 @@ local ICON_MAP = {
   git = nf.dev_git_branch,
   node = nf.dev_nodejs_small,
   python = nf.dev_python,
-  cargo = nf.dev_rust,
+  cargo = '🦀',
   npm = nf.dev_npm,
 }
 
@@ -244,44 +233,33 @@ local APP_PATTERNS = {
   { pattern = "lazygit",    icon = nf.dev_git,       name = "Lazygit" },
   { pattern = "lazydocker", icon = nf.dev_docker,    name = "Lazydocker" },
   { pattern = "nvim",       icon = nf.custom_neovim, name = "Neovim" },
-  { pattern = "atac",       icon = nf.md_api,        name = "ATAC" },
 }
 
 local function get_icon_for_process(title)
   if not title then return nf.oct_terminal end
 
   local title_lower = title:lower()
-
-  -- First check for pattern matches (for complex titles like "repo - Lazygit")
   for _, app in ipairs(APP_PATTERNS) do
     if title_lower:find(app.pattern) then
       return app.icon
     end
   end
-
-  -- Fall back to exact process name matching
   local process = extract_process_name(title):lower()
   return ICON_MAP[process] or nf.oct_terminal
 end
 
 local function get_display_name(title)
   if not title then return "" end
-
   local title_lower = title:lower()
-
-  -- Check for pattern matches first
   for _, app in ipairs(APP_PATTERNS) do
     if title_lower:find(app.pattern) then
       return app.name
     end
   end
-
-  -- Fall back to extracted process name
   return extract_process_name(title)
 end
 
 local function get_tab_info(tab)
-  -- Use explicit tab title if set
   if tab.tab_title and #tab.tab_title > 0 then
     return tab.tab_title, tab.tab_title
   end
@@ -354,11 +332,11 @@ tabline.setup({
     tab_inactive = { tab_title, '  ', process_name },
     tabline_x = (function()
       local components = {}
-      -- local has_battery = wez.battery_info()[1] ~= nil
+      local has_battery = wez.battery_info()[1] ~= nil
 
-      -- if has_battery then
-      --   table.insert(components, { "battery" })
-      -- end
+      if has_battery then
+        table.insert(components, { "battery" })
+      end
       -- table.insert(components, { "ram", icon = nf.fa_memory })
       -- table.insert(components, { "cpu", icon = nf.oct_cpu })
 
