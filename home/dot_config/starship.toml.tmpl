@@ -94,28 +94,42 @@ ssh_symbol = " "
 disabled = true
 
 [git_branch]
-style = "subtext1"
-truncation_length = 25
-format = '[ ](peach)[$branch]($style) '
+style = "overlay2"
+truncation_length = 32
+truncation_symbol = "…"
+format = ' [$symbol$branch]($style)'
+symbol = ' '
 
 [git_commit]
 tag_symbol = '  '
-commit_hash_length = 4
+commit_hash_length = 8
+format = ' [@$hash$tag]($style)'
+style = "overlay2"
+
+[git_state]
+format = ' <red>[$state( $progress_current/$progress_total)]($style)</>'
+style = "red"
+rebase = ""
+merge = ""
+revert = " "
+cherry_pick = " "
+bisect = "󱢇"
+am = "󰲾"
 
 [git_status]
-format = '[$all_status$ahead_behind]($style) '
-style = 'bold green'
-conflicted = '🏳'
+format = '[$all_status$ahead_behind]($style)'
+style = "overlay2"
+conflicted = '[ ~${count}](red)'
 up_to_date = ''
-untracked = ' '
-ahead = '⇡${count}'
-diverged = '⇕⇡${ahead_count}⇣${behind_count}'
-behind = '⇣${count}'
-stashed = ' '
-modified = ' '
-staged = '[++\($count\)](green)'
-renamed = '襁 '
-deleted = ' '
+untracked = '[ ?${count}](blue)'
+ahead = '[ ⇡${count}](green)'
+diverged = '[ ⇕⇣${behind_count}⇡${ahead_count}](green)'
+behind = '[ ⇣${count}](green)'
+stashed = '[ *${count}](green)'
+modified = '[ !${count}](yellow)'
+staged = '[ +${count}](yellow)'
+renamed = '[ »${count}](yellow)'
+deleted = '[ -${count}](yellow)'
 
 [memory_usage]
 symbol = "󰍛 "
