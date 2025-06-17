@@ -25,9 +25,6 @@ fi
 
 source "${ZINIT_HOME}/zinit.zsh"
 
-# 🚬 source
-[ -f "${HOME}/.config/shared/init.sh" ] && source "${HOME}/.config/shared/init.sh"
-
 if [ -d "$ZDOTDIR/lib" ]; then
   for file in "$ZDOTDIR/lib/"*.zsh; do
     source "$file"
@@ -132,8 +129,6 @@ zinit light joshskidmore/zsh-fzf-history-search
 ZSH_FZF_HISTORY_SEARCH_DATES_IN_SEARCH=0
 ZSH_FZF_HISTORY_SEARCH_EVENT_NUMBERS=0
 
-zinit light z-shell/zsh-eza
-
 zinit ice pick"themes/catppuccin_mocha-zsh-syntax-highlighting.zsh"
 zinit light catppuccin/zsh-syntax-highlighting
 zinit light Aloxaf/fzf-tab
@@ -182,6 +177,9 @@ bindkey '^[w' kill-region
 # elif [[ -v commands[starship] ]]; then
 #  eval "$(starship init zsh)"
 # fi
+
+# 🚬 source
+[ -f "${HOME}/.config/shared/init.sh" ] && source "${HOME}/.config/shared/init.sh"
 
 if [[ -n "$SSH_CONNECTION" ]]; then
   export DISPLAY=wini:0
