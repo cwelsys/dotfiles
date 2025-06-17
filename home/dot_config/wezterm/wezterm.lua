@@ -132,6 +132,7 @@ c.skip_close_confirmation_for_processes_named = {
   'fish',
   'tmux',
   'nu',
+  'nu.exe',
   'ssh.exe',
   'cmd.exe',
   'pwsh.exe',
