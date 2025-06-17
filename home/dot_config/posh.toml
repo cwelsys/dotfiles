@@ -65,13 +65,14 @@ linux = '󰌽'
 template = '{{ .Path }} '
 foreground = 'p:sapphire'
 type = 'path'
-style = 'plain'
-folder_separator_icon = '/'
-
-[blocks.segments.properties]
 style = 'fish'
 folder_separator_icon = '/'
 full_length_dirs = 1
+
+# [blocks.segments.properties]
+# style = 'fish'
+# folder_separator_icon = '/'
+# full_length_dirs = 1
 
 [[blocks.segments]]
 template = '{{ .HEAD }}{{ if or (.Working.Changed) (.Staging.Changed) }}*{{ end }} <cyan>{{ if gt .Behind 0 }}⇣{{ end }}{{ if gt .Ahead 0 }}⇡{{ end }}</>'
