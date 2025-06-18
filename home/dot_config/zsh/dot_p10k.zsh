@@ -375,8 +375,8 @@
     if (( $1 )); then
       # Styling for up-to-date Git status.
       local       meta='%F{#cdd6f4}'
-      local      clean='%F{#a6e3a1}'
-      local      added=$clean
+      local      clean='%F{#9399b2}'
+      local      added='%F{#a6e3a1}'
       local    deleted='%F{#f38ba8}'
       local   modified='%F{#f9e2af}'
       local   unstaged='%F{#cdd6f4}'
