@@ -64,7 +64,8 @@ local keys = function()
          })
       ),
 
-      -- workspaces
+      -- cmd palette
+      keybind({ mod.c }, "p", act.ActivateCommandPalette), -- workspaces
       keybind({ mod.l }, "w", act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" })),
 
       -- copy and paste
@@ -72,17 +73,22 @@ local keys = function()
       keybind({ mod.c }, "v", act.PasteFrom("Clipboard")),
 
       -- update all plugins
-      keybind(
-         { mod.l },
-         "u",
-         callback(function(win)
-            wez.plugin.update_all()
-            win:toast_notification("wezterm", "plugins updated!", nil, 4000)
-         end)
-      ),
+      keybind({ mod.l }, "u", callback(function(win)
+         wez.plugin.update_all()
+      end)),
 
       -- show the debug overlay
       keybind({ mod.l }, "d", wez.action.ShowDebugOverlay),
+
+      -- picker mode
+      keybind({ mod.l }, "p", callback(function(win)
+         win:perform_action(act.ActivateKeyTable { name = "pick_mode" }, win:active_pane())
+      end)),
+
+      -- font mode for quick font size adjustments
+      keybind({ mod.l }, "f", callback(function(win)
+         win:perform_action(act.ActivateKeyTable { name = "font_mode" }, win:active_pane())
+      end)),
    }
 
    -- leader number navigates to the tab
@@ -125,11 +131,68 @@ local setup_mouse = function(c)
    }
 end
 
+-- setup key tables
+local setup_key_tables = function(c)
+   c.key_tables = {
+      pick_mode = {
+         {
+            key = "Escape",
+            action = callback(function(win)
+               win:perform_action("PopKeyTable", win:active_pane())
+            end)
+         },
+         {
+            key = "c",
+            action = callback(function(win)
+               win:perform_action(require("picker.colorscheme").pick(), win:active_pane())
+            end)
+         },
+         {
+            key = "f",
+            action = callback(function(win)
+               win:perform_action(require("picker.font").pick(), win:active_pane())
+            end)
+         },
+         {
+            key = "s",
+            action = callback(function(win)
+               win:perform_action(require("picker.font_size").pick(), win:active_pane())
+            end)
+         },
+         {
+            key = "l",
+            action = callback(function(win)
+               win:perform_action(require("picker.line_height").pick(), win:active_pane())
+            end)
+         },
+      },
+      font_mode = {
+         {
+            key = "Escape",
+            action = act.PopKeyTable,
+         },
+         {
+            key = "+",
+            action = act.IncreaseFontSize,
+         },
+         {
+            key = "-",
+            action = act.DecreaseFontSize,
+         },
+         {
+            key = "0",
+            action = act.ResetFontSize,
+         },
+      }
+   }
+end
+
 M.apply = function(c)
    c.treat_left_ctrlalt_as_altgr = true
    c.leader = leader
    c.keys = keys()
    setup_mouse(c)
+   setup_key_tables(c)
 end
 
 return M

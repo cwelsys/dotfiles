@@ -1,5 +1,4 @@
 local wez = require('wezterm')
-local nf = wez.nerdfonts
 local os = require('utils.os')
 
 if wez.config_builder then
@@ -18,9 +17,10 @@ elseif os.is_linux then
   c.default_prog = { 'zsh' }
 end
 
--- menu
+-- menus
 local menu = require('utils.menu')
 menu.setup()
+require('utils.cmd_palette')
 
 if menu.domains then
   c.ssh_domains = menu.domains.ssh_domains
@@ -30,12 +30,21 @@ end
 
 -- plugins
 local splits = wez.plugin.require("https://github.com/mrjones2014/smart-splits.nvim")
-local tabline = wez.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
+local tabline = require('tabline')
 
 splits.apply_to_config(c)
+tabline.setup()
 
 -- opts
-c.color_scheme = "Catppuccin Mocha"
+function scheme_for_appearance(appearance)
+  if appearance:find "Dark" then
+    return "Catppuccin Mocha"
+  else
+    return "Catppuccin Mocha" -- not tryna get any more blind sorry
+  end
+end
+
+c.color_scheme = scheme_for_appearance(wez.gui.get_appearance())
 c.exit_behavior = "CloseOnCleanExit"
 c.automatically_reload_config = true
 c.default_workspace = "~"
@@ -144,9 +153,10 @@ c.visual_bell = {
   fade_out_duration_ms = 250,
   target = 'CursorColor',
 }
+
+-- todo fix the new tab button why is just a block?
 c.colors = {
   tab_bar = {
-    -- background = "#1e1e2e",
     new_tab = {
       bg_color = '#1e1e2e',
       fg_color = '#cdd6f4',
@@ -158,18 +168,6 @@ c.colors = {
     },
   }
 }
--- c.tab_bar_style = {
---   new_tab = wez.format({
---     { Background = { Color = 'rgba(0, 0, 0, 0)' } },
---     { Foreground = { Color = '#cdd6f4' } },
---     { Text = ' +' },
---   }),
---   new_tab_hover = wez.format({
---     { Background = { Color = 'rgba(0, 0, 0, 0)' } },
---     { Foreground = { Color = '#89b4fa' } },
---     { Text = ' +' },
---   }),
--- }
 
 -- links
 c.hyperlink_rules = {
@@ -194,193 +192,5 @@ c.hyperlink_rules = {
     format = "https://www.github.com/$1/$3",
   },
 }
-
--- tabline
-local function extract_process_name(title)
-  if not title then return "" end
-  title = title:gsub('^Administrator: ', '')
-  title = title:gsub(' %(Admin%)', '')
-  local filename = title:match('.*[/\\]([^/\\]+)$') or title
-  filename = filename:gsub('%.exe$', '')
-  filename = filename:gsub('%.EXE$', '')
-  return filename
-end
-
-local ICON_MAP = {
-  nvim = nf.custom_neovim,
-  lazygit = nf.dev_git,
-  lazydocker = nf.dev_docker,
-  pwsh = nf.seti_powershell,
-  powershell = nf.seti_powershell,
-  cmd = nf.md_console,
-  bash = nf.cod_terminal_bash,
-  zsh = nf.dev_terminal,
-  git = nf.dev_git_branch,
-  node = nf.dev_nodejs_small,
-  python = nf.dev_python,
-  cargo = '🦀',
-  npm = nf.dev_npm,
-}
-
--- Pattern-based application detection
-local APP_PATTERNS = {
-  { pattern = "lazygit",    icon = nf.dev_git,       name = "Lazygit" },
-  { pattern = "lazydocker", icon = nf.dev_docker,    name = "Lazydocker" },
-  { pattern = "nvim",       icon = nf.custom_neovim, name = "Neovim" },
-}
-
-local function get_icon_for_process(title)
-  if not title then return nf.oct_terminal end
-
-  local title_lower = title:lower()
-  for _, app in ipairs(APP_PATTERNS) do
-    if title_lower:find(app.pattern) then
-      return app.icon
-    end
-  end
-  local process = extract_process_name(title):lower()
-  return ICON_MAP[process] or nf.oct_terminal
-end
-
-local function get_display_name(title)
-  if not title then return "" end
-  local title_lower = title:lower()
-  for _, app in ipairs(APP_PATTERNS) do
-    if title_lower:find(app.pattern) then
-      return app.name
-    end
-  end
-  return extract_process_name(title)
-end
-
-local function get_tab_info(tab)
-  if tab.tab_title and #tab.tab_title > 0 then
-    return tab.tab_title, tab.tab_title
-  end
-
-  local pane_title = tab.active_pane.title or ""
-
-  -- Handle special directory patterns first
-  if pane_title:match("^~") then
-    return nf.cod_home, pane_title
-  end
-
-  if pane_title:match("^%.%.") then
-    local dir_name = pane_title:match("([^/\\]+)[/\\]?$") or ""
-    return nf.custom_folder_open, "../" .. dir_name
-  end
-
-  -- For process titles, show just the process name, not the full path
-  local process_name = get_display_name(pane_title)
-  local icon = get_icon_for_process(pane_title)
-
-  return icon, process_name
-end
-
-local function tab_title(tab)
-  local icon, _ = get_tab_info(tab)
-  return icon
-end
-
-local function process_name(tab)
-  local _, name = get_tab_info(tab)
-  return name
-end
-
-tabline.setup({
-  options = {
-    icons_enabled = true,
-    section_separators = {
-      left = nf.ple_right_half_circle_thick,
-      right = nf.ple_left_half_circle_thick,
-    },
-    component_separators = {
-      left = '',
-      right = '',
-    },
-    tab_separators = {
-      left = nf.ple_right_half_circle_thick .. ' ',
-      right = nf.ple_left_half_circle_thick,
-    },
-  },
-  sections = {
-    tabline_a = { {
-      "mode",
-      padding = 0,
-      fmt = function(mode, window)
-        if window:leader_is_active() then
-          return " 🦀"
-        elseif mode == "NORMAL" then
-          return " 🌴"
-        elseif mode == "COPY" then
-          return "  "
-        elseif mode == "SEARCH" then
-          return "  "
-        end
-        return mode
-      end,
-    } },
-    tabline_b = {},
-    tabline_c = { " " },
-    tab_active = { tab_title, '  ', process_name },
-    tab_inactive = { tab_title, '  ', process_name },
-    tabline_x = (function()
-      local components = {}
-      local has_battery = wez.battery_info()[1] ~= nil
-
-      if has_battery then
-        table.insert(components, { "battery" })
-      end
-      -- table.insert(components, { "ram", icon = nf.fa_memory })
-      -- table.insert(components, { "cpu", icon = nf.oct_cpu })
-
-      table.insert(components, function(window)
-        local metadata = window:active_pane():get_metadata()
-        if not metadata then
-          return ""
-        end
-
-        local latency = metadata.since_last_response_ms
-        if not latency then
-          return ""
-        end
-
-        local color
-        local icon
-        local red = "\27[31m"
-        local yellow = "\27[33m"
-        local green = "\27[32m"
-        if metadata.is_tardy then
-          if latency > 10000 then
-            color = red
-            icon = "󰢼"
-            latency = ">999"
-          else
-            color = yellow
-            icon = "󰢽"
-          end
-        else
-          color = green
-          icon = "󰢾"
-          latency = "<1"
-        end
-        return string.format(color .. icon .. " %sms ", latency)
-      end)
-
-      return components
-    end)(),
-    tabline_y = {
-      {
-        "datetime",
-        style = "%b %d / %I:%M %p",
-        icon = ' ',
-        hour_to_icon = false,
-        padding = { left = 0, right = 1 },
-      },
-    },
-    tabline_z = { { "domain", padding = 0, icons_only = true }, "hostname" },
-  },
-  extensions = {}
-})
 
 return c
