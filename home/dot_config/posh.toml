@@ -74,7 +74,7 @@ folder_separator_icon = '/'
 type = 'git'
 style = 'plain'
 foreground = 'p:overlay2'
-template = ' {{ .HEAD }}{{ if .Working.Modified }}<p:yellow> !{{ .Working.Modified }}</>{{ end }}{{ if .Staging.Added }}<p:yellow> +{{ .Staging.Added }}</>{{ end }}{{ if .Staging.Modified }}<p:yellow> +{{ .Staging.Modified }}</>{{ end }}{{ if gt .Behind 0 }}<p:green> ⇣{{ .Behind }}</>{{ end }}{{ if gt .Ahead 0 }}<p:green> ⇡{{ .Ahead }}</>{{ end }}{{ if .Working.Untracked }}<p:blue> ?{{ .Working.Untracked }}</>{{ end }}{{ if gt .StashCount 0 }}<p:green> *{{ .StashCount }}</>{{ end }}{{ if .Rebase }}<p:red> {{ .Rebase.Current }}/{{ .Rebase.Total }}</>{{ end }}{{ if .Merge }}<p:red> merge</>{{ end }}'
+template = '{{ .HEAD }}{{ if .Working.Modified }}<p:yellow> !{{ .Working.Modified }}</>{{ end }}{{ if .Staging.Added }}<p:yellow> +{{ .Staging.Added }}</>{{ end }}{{ if .Staging.Modified }}<p:yellow> +{{ .Staging.Modified }}</>{{ end }}{{ if gt .Behind 0 }}<p:green> ⇣{{ .Behind }}</>{{ end }}{{ if gt .Ahead 0 }}<p:green> ⇡{{ .Ahead }}</>{{ end }}{{ if .Working.Untracked }}<p:blue> ?{{ .Working.Untracked }}</>{{ end }}{{ if gt .StashCount 0 }}<p:green> *{{ .StashCount }}</>{{ end }}{{ if .Rebase }}<p:red> {{ .Rebase.Current }}/{{ .Rebase.Total }}</>{{ end }}{{ if .Merge }}<p:red> merge</>{{ end }}'
 
 [blocks.segments.properties]
 branch_icon = ' '
