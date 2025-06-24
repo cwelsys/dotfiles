@@ -9,6 +9,13 @@ $Env:PYTHONIOENCODING = 'utf-8'
 $Env:CARAPACE_BRIDGES = 'powershell,inshellisense'
 $Env:CARAPACE_NOSPACE = '*'
 $Env:_ZO_DATA_DIR = "$Env:PWSH"
+$env:SSH_AUTH_SOCK = '\\.\pipe\openssh-ssh-agent'
+
+if (Get-Command code -ErrorAction SilentlyContinue) { $Env:EDITOR = 'code' }
+else {
+	if (Get-Command nvim -ErrorAction SilentlyContinue) { $Env:EDITOR = 'nvim' }
+	else { $Env:EDITOR = 'notepad' }
+}
 
 foreach ($module in $((Get-ChildItem -Path "$env:PWSH\psm\*" -Include *.psm1).FullName )) {
 	Import-Module "$module" -Global
