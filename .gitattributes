@@ -44,3 +44,8 @@ home/dot_config/git/config.tmpl linguist-language=gitconfig linguist-detectable
 home/dot_config/git/os.config.tmpl linguist-language=gitconfig linguist-detectable
 home/dot_config/git/global.gitignore linguist-language=ignore linguist-detectable
 home/AppData/Local/Microsoft/PowerToys/** linguist-generated
+
+#LFS
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.png filter=lfs diff=lfs merge=lfs -text
