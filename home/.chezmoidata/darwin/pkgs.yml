@@ -25,7 +25,7 @@ pkgs:
       - moonlight
       - karabiner-elements
       - vlc
-      - wezterm
+      - wezterm@nightly
       - hammerspoon
       - zed
       - discord
