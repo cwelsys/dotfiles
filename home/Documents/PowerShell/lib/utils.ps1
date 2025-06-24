@@ -152,32 +152,6 @@ function Remove-TempData {
   Write-Color 'Temp data deleted successfully.' -Color Green
 }
 
-function Update-PowerShell {
-  try {
-    Write-Host 'Checking for PowerShell updates...' -ForegroundColor Cyan
-    $updateNeeded = $false
-    $currentVersion = $PSVersionTable.PSVersion.ToString()
-    $gitHubApiUrl = 'https://api.github.com/repos/PowerShell/PowerShell/releases/latest'
-    $latestReleaseInfo = Invoke-RestMethod -Uri $gitHubApiUrl
-    $latestVersion = $latestReleaseInfo.tag_name.Trim('v')
-    if ($currentVersion -lt $latestVersion) {
-      $updateNeeded = $true
-    }
-
-    if ($updateNeeded) {
-      Write-Host 'Updating PowerShell...' -ForegroundColor Yellow
-      Start-Process powershell.exe -ArgumentList '-NoProfile -Command winget upgrade Microsoft.PowerShell --accept-source-agreements --accept-package-agreements' -Wait -NoNewWindow
-      Write-Host 'PowerShell has been updated. Please restart your shell to reflect changes' -ForegroundColor Magenta
-    }
-    else {
-      Write-Host 'Your PowerShell is up to date.' -ForegroundColor Green
-    }
-  }
-  catch {
-    Write-Error "Failed to update PowerShell. Error: $_"
-  }
-}
-
 function Import-Profile {
   if (Test-Path -Path $PROFILE) { . $PROFILE }
   elseif (Test-Path -Path $PROFILE.CurrentUserAllHosts) { . $PROFILE.CurrentUserAllHosts }

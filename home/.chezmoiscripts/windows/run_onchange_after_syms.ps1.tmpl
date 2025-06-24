@@ -1,11 +1,4 @@
-﻿# Ensure we're running in PowerShell 7+
-if ($PSVersionTable.PSVersion.Major -lt 7) {
-    Write-Host "Relaunching in PowerShell Core..."
-    & "C:\Program Files\PowerShell\7\pwsh.exe" -NoProfile -ExecutionPolicy Bypass -File $MyInvocation.MyCommand.Path
-    exit
-}
-
-# Ensure PSWriteColor is installed
+﻿# Ensure PSWriteColor is installed
 if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
     Write-Host "Installing PSWriteColor module..."
     Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction SilentlyContinue

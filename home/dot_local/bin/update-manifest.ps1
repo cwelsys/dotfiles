@@ -1,20 +1,12 @@
-﻿#!/usr/bin/env pwsh
-
-if ($PSVersionTable.PSVersion.Major -lt 7) {
-    Write-Host "Relaunching in PowerShell Core..."
-    & "C:\Program Files\PowerShell\7\pwsh.exe" -NoProfile -ExecutionPolicy Bypass -File $MyInvocation.MyCommand.Path
-    exit
-}
-
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+﻿$env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path', 'User')
 
 if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
-    Write-Host "Installing PSWriteColor module..."
+    Write-Host 'Installing PSWriteColor module...'
     Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction SilentlyContinue
 }
 Import-Module PSWriteColor -ErrorAction SilentlyContinue
 
-$yamlFilePath = Join-Path $env:USERPROFILE ".local\share\chezmoi\home\.chezmoidata\windows\pkgs.yml"
+$yamlFilePath = Join-Path $env:USERPROFILE '.local\share\chezmoi\home\.chezmoidata\windows\pkgs.yml'
 
 if (-not (Test-Path $yamlFilePath)) {
     Write-Color -Text "❌ Manifest file not found at: $yamlFilePath" -Color Red
@@ -23,7 +15,7 @@ if (-not (Test-Path $yamlFilePath)) {
 
 $manifestContent = Get-Content -Path $yamlFilePath -Raw
 if (-not $manifestContent) {
-    Write-Color -Text "❌ Failed to read manifest file or file is empty" -Color Red
+    Write-Color -Text '❌ Failed to read manifest file or file is empty' -Color Red
     exit 1
 }
 
@@ -38,9 +30,9 @@ $manifestLines = $manifestContent -split "`n"
 # Track indentation and scoop package section boundaries
 $scoopPkgsStartIndex = -1
 $scoopPkgsEndIndex = -1
-$packageIndentation = "        " # Default indentation
+$packageIndentation = '        ' # Default indentation
 
-foreach ($i in 0..($manifestLines.Count-1)) {
+foreach ($i in 0..($manifestLines.Count - 1)) {
     $line = $manifestLines[$i]
 
     if ($line -match '^\s*scoop:\s*$') {
@@ -59,8 +51,8 @@ foreach ($i in 0..($manifestLines.Count-1)) {
         $inPkgsSection = $true
         $scoopPkgsStartIndex = $i
 
-        if ($i+1 -lt $manifestLines.Count) {
-            $nextLine = $manifestLines[$i+1]
+        if ($i + 1 -lt $manifestLines.Count) {
+            $nextLine = $manifestLines[$i + 1]
             if ($nextLine -match '^(\s+)-\s+') {
                 $packageIndentation = $Matches[1]
             }
@@ -103,17 +95,17 @@ $currentWingetPackages = @()
 $inWingetSection = $false
 $wingetPkgsStartIndex = -1
 $wingetPkgsEndIndex = -1
-$wingetIndentation = "      " # Default indentation
+$wingetIndentation = '      ' # Default indentation
 
-foreach ($i in 0..($manifestLines.Count-1)) {
+foreach ($i in 0..($manifestLines.Count - 1)) {
     $line = $manifestLines[$i]
     if ($line -match '^\s*winget:\s*$') {
         $inWingetSection = $true
         $wingetPkgsStartIndex = $i
 
         # Find the indentation level from the next line if available
-        if ($i+1 -lt $manifestLines.Count) {
-            $nextLine = $manifestLines[$i+1]
+        if ($i + 1 -lt $manifestLines.Count) {
+            $nextLine = $manifestLines[$i + 1]
             if ($nextLine -match '^(\s+)-\s+') {
                 $wingetIndentation = $Matches[1]
             }
@@ -141,8 +133,8 @@ foreach ($i in 0..($manifestLines.Count-1)) {
 }
 
 # Make a backup first, but store it outside the chezmoi directory to avoid parsing issues
-$timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$backupDir = Join-Path $env:USERPROFILE ".config\chezmoi\backups"
+$timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+$backupDir = Join-Path $env:USERPROFILE '.config\chezmoi\backups'
 if (-not (Test-Path $backupDir)) {
     New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
 }
@@ -151,7 +143,7 @@ Copy-Item -Path $yamlFilePath -Destination $backupPath -Force
 Write-Color -Text "💾 Created backup at $backupPath" -Color Gray
 
 # Get installed Scoop packages
-Write-Color -Text "🔍 Getting installed Scoop packages..." -Color Blue
+Write-Color -Text '🔍 Getting installed Scoop packages...' -Color Blue
 $installedPackages = @()
 
 try {
@@ -198,7 +190,7 @@ try {
 
         # Get all existing buckets
         $buckets = Get-ChildItem "$scoopDir\buckets" -Directory -ErrorAction SilentlyContinue |
-                  Select-Object -ExpandProperty Name
+        Select-Object -ExpandProperty Name
 
         foreach ($bucket in $buckets) {
             $appManifestPath = "$scoopDir\buckets\$bucket\bucket\$appName.json"
@@ -233,7 +225,8 @@ try {
                         $installedPackages += "$bucketInfo/$appName"
                         $bucketFound = $true
                     }
-                } catch {
+                }
+                catch {
                     # Silent fail, continue to fallback
                 }
             }
@@ -250,13 +243,15 @@ try {
     foreach ($pkg in $installedPackages) {
         if ($pkg -notmatch '@\{' -and $pkg -match '^[a-zA-Z0-9_-]+/[a-zA-Z0-9_.-]+$') {
             $cleanPackages += $pkg
-        } else {
+        }
+        else {
             Write-Color -Text "⚠️ Skipping malformed package entry: $pkg" -Color Yellow
         }
     }
     $installedPackages = $cleanPackages
 
-} catch {
+}
+catch {
     Write-Color -Text "❌ Failed to get list of installed Scoop packages: $_" -Color Red
     exit 1
 }
@@ -264,7 +259,7 @@ try {
 # Replace the winget package detection section:
 
 # Get installed Winget packages
-Write-Color -Text "🔍 Getting installed Winget packages..." -Color Blue
+Write-Color -Text '🔍 Getting installed Winget packages...' -Color Blue
 $installedWingetPackages = @()
 
 try {
@@ -294,9 +289,10 @@ try {
         if ($capturePackages) {
             # Split by whitespace, but be smart about it
             # Most reliable way: The ID is typically the second-to-last column
-            $parts = $line -split '\s\s+' | Where-Object { $_ -ne "" }
+            $parts = $line -split '\s\s+' | Where-Object { $_ -ne '' }
 
-            if ($parts.Count -ge 3) {  # Must have at least Name, ID, and Source
+            if ($parts.Count -ge 3) {
+                # Must have at least Name, ID, and Source
                 # The ID is typically the second-to-last or third-to-last item
                 $potentialId = $null
 
@@ -337,7 +333,8 @@ try {
     $installedWingetPackages = $cleanWingetPackages
 
     Write-Color -Text "Found $($installedWingetPackages.Count) installed winget apps" -Color Cyan
-} catch {
+}
+catch {
     Write-Color -Text "❌ Failed to get list of installed Winget packages: $_" -Color Red
     # Continue with scoop packages even if winget fails
 }
@@ -345,12 +342,12 @@ try {
 # Filter out version numbers and MSIX packages (except whitelisted ones)
 function Filter-WingetPackages {
     param (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [array]$Packages
     )
 
     $filtered = @()
-    $msixWhitelist = @("WinRAR.ShellExtension")  # Add any MSIX packages you want to keep
+    $msixWhitelist = @('WinRAR.ShellExtension')  # Add any MSIX packages you want to keep
 
     foreach ($pkg in $Packages) {
         # Skip standalone version numbers (matches typical version patterns)
@@ -417,7 +414,7 @@ $wingetPackagesToRemove = $wingetPackagesToRemove | Where-Object {
 }
 
 if ($newPackages.Count -eq 0 -and $packagesToRemove.Count -eq 0 -and $newWingetPackages.Count -eq 0 -and $wingetPackagesToRemove.Count -eq 0) {
-    Write-Color -Text "✅ No changes needed - manifest is up to date" -Color Green
+    Write-Color -Text '✅ No changes needed - manifest is up to date' -Color Green
     exit 0
 }
 
@@ -443,8 +440,8 @@ if ($scoopPkgsEndIndex -ne -1 || $wingetPkgsEndIndex -ne -1) {
     $updatedContent = @()
 
     # Initialize section tracking variables
-    $currentSection = ""
-    $currentSubSection = ""
+    $currentSection = ''
+    $currentSubSection = ''
 
     # Process line by line
     for ($i = 0; $i -lt $manifestLines.Count; $i++) {
@@ -452,36 +449,36 @@ if ($scoopPkgsEndIndex -ne -1 || $wingetPkgsEndIndex -ne -1) {
 
         # Update section tracking based on the current line
         if ($line -match '^\s*scoop:\s*$') {
-            $currentSection = "scoop"
-            $currentSubSection = ""
+            $currentSection = 'scoop'
+            $currentSubSection = ''
         }
-        elseif ($currentSection -eq "scoop" && $line -match '^\s*buckets:\s*$') {
-            $currentSubSection = "buckets"
+        elseif ($currentSection -eq 'scoop' && $line -match '^\s*buckets:\s*$') {
+            $currentSubSection = 'buckets'
         }
-        elseif ($currentSection -eq "scoop" && $line -match '^\s*pkgs:\s*$') {
-            $currentSubSection = "pkgs"
+        elseif ($currentSection -eq 'scoop' && $line -match '^\s*pkgs:\s*$') {
+            $currentSubSection = 'pkgs'
         }
-        elseif ($currentSection -eq "scoop" && $line -match '^\s*importRegistry:\s*$') {
-            $currentSubSection = "importRegistry"
+        elseif ($currentSection -eq 'scoop' && $line -match '^\s*importRegistry:\s*$') {
+            $currentSubSection = 'importRegistry'
         }
         elseif ($line -match '^\s*winget:\s*$') {
-            $currentSection = "winget"
-            $currentSubSection = ""
+            $currentSection = 'winget'
+            $currentSubSection = ''
         }
         elseif ($line -match '^\s*psGallery:\s*$') {
-            $currentSection = "psGallery"
-            $currentSubSection = ""
+            $currentSection = 'psGallery'
+            $currentSubSection = ''
         }
         elseif ($line -match '^\s*addons:\s*$') {
-            $currentSection = "addons"
-            $currentSubSection = ""
+            $currentSection = 'addons'
+            $currentSubSection = ''
         }
 
         # Check if this line contains a package to be removed
         $shouldSkipLine = $false
         if ($packagesToRemove.Count -gt 0 &&
-            $currentSection -eq "scoop" &&
-            $currentSubSection -eq "pkgs" &&
+            $currentSection -eq 'scoop' &&
+            $currentSubSection -eq 'pkgs' &&
             $line -match '^\s*-\s+''([^'']+)''') {
             $packageInLine = $Matches[1]
             if ($packageInLine -in $packagesToRemove) {
@@ -490,7 +487,7 @@ if ($scoopPkgsEndIndex -ne -1 || $wingetPkgsEndIndex -ne -1) {
         }
 
         if ($wingetPackagesToRemove.Count -gt 0 &&
-            $currentSection -eq "winget" &&
+            $currentSection -eq 'winget' &&
             $line -match '^\s*-\s+''([^'']+)''') {
             $packageInLine = $Matches[1]
             if ($packageInLine -in $wingetPackagesToRemove) {
@@ -524,10 +521,11 @@ if ($scoopPkgsEndIndex -ne -1 || $wingetPkgsEndIndex -ne -1) {
 
     # Write the updated content back to the file
     Set-Content -Path $yamlFilePath -Value ($updatedContent -join "`n")
-} else {
+}
+else {
     # If we couldn't find the section, warn the user
-    Write-Color -Text "⚠️ Could not determine where to insert new packages. No changes made." -Color Yellow
-    Write-Color -Text "   You may need to add these packages manually:" -Color Yellow
+    Write-Color -Text '⚠️ Could not determine where to insert new packages. No changes made.' -Color Yellow
+    Write-Color -Text '   You may need to add these packages manually:' -Color Yellow
     foreach ($pkg in $newPackages) {
         Write-Color -Text "  - $pkg" -Color Cyan
     }
@@ -539,32 +537,32 @@ if ($scoopPkgsEndIndex -ne -1 || $wingetPkgsEndIndex -ne -1) {
 
 # Report on the changes made
 if ($newPackages.Count -gt 0) {
-    Write-Color -Text "✅ Successfully added new packages:" -Color Green
+    Write-Color -Text '✅ Successfully added new packages:' -Color Green
     foreach ($pkg in $newPackages) {
         Write-Color -Text "  + $pkg" -Color Cyan
     }
 }
 
 if ($packagesToRemove.Count -gt 0) {
-    Write-Color -Text "✅ Successfully removed uninstalled packages:" -Color Green
+    Write-Color -Text '✅ Successfully removed uninstalled packages:' -Color Green
     foreach ($pkg in $packagesToRemove) {
         Write-Color -Text "  - $pkg" -Color Red
     }
 }
 
 if ($newWingetPackages.Count -gt 0) {
-    Write-Color -Text "✅ Successfully added new winget packages:" -Color Green
+    Write-Color -Text '✅ Successfully added new winget packages:' -Color Green
     foreach ($pkg in $newWingetPackages) {
         Write-Color -Text "  + $pkg" -Color Cyan
     }
 }
 
 if ($wingetPackagesToRemove.Count -gt 0) {
-    Write-Color -Text "✅ Successfully removed uninstalled winget packages:" -Color Green
+    Write-Color -Text '✅ Successfully removed uninstalled winget packages:' -Color Green
     foreach ($pkg in $wingetPackagesToRemove) {
         Write-Color -Text "  - $pkg" -Color Red
     }
 }
 
-Write-Host ""
+Write-Host ''
 Write-Color -Text "✨ DONE! Run 'chezmoi apply' to apply your changes." -Color Green
