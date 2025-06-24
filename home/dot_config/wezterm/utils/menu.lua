@@ -30,6 +30,7 @@ elseif os.is_mac then
 		{ label = 'Fish', args = { '/opt/homebrew/bin/fish', '-l' } },
 		{ label = 'Nushell', args = { '/opt/homebrew/bin/nu', '-l' } },
 		{ label = 'Bash', args = { 'bash', '-l' } },
+		{ label = 'Powershell', args = { '/usr/local/bin/pwsh', '-NoLogo' } },
 		{ label = 'pbox', args = { 'ssh', 'pbox' }, icon = "🌴", color = '#cdd6f4' },
 		{ label = 'wini', args = { 'ssh', 'wini' }, icon = nf.dev_windows11, color = '#cdd6f4' },
 		{

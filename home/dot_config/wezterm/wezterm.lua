@@ -141,6 +141,7 @@ c.skip_close_confirmation_for_processes_named = {
   'ssh',
   'cmd.exe',
   'pwsh.exe',
+  'pwsh',
   'powershell.exe',
 }
 c.window_decorations = "RESIZE"
