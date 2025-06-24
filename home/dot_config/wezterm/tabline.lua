@@ -32,7 +32,7 @@ local ICON_MAP = {
 local APP_PATTERNS = {
 	{ pattern = "lazygit",    icon = nf.dev_git,       name = "Lazygit" },
 	{ pattern = "lazydocker", icon = nf.dev_docker,    name = "Lazydocker" },
-	{ pattern = "nvim",       icon = nf.custom_neovim, name = "Neovim" },
+	{ pattern = "nvim",       icon = nf.custom_neovim, name = "nvim" },
 }
 
 local function get_icon_for_process(title)

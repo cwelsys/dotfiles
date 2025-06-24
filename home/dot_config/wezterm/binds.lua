@@ -65,7 +65,7 @@ local keys = function()
       ),
 
       -- cmd palette
-      keybind({ mod.c }, "p", act.ActivateCommandPalette), -- workspaces
+      keybind({ mod.c }, "p", act.ActivateCommandPalette),
       keybind({ mod.l }, "w", act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" })),
 
       -- copy and paste

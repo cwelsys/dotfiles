@@ -128,6 +128,7 @@ c.adjust_window_size_when_changing_font_size = false
 c.tab_and_split_indices_are_zero_based = true
 c.window_close_confirmation = "NeverPrompt"
 c.skip_close_confirmation_for_processes_named = {
+  '*',
   'bash',
   'bash.exe',
   'sh',
@@ -137,6 +138,7 @@ c.skip_close_confirmation_for_processes_named = {
   'nu',
   'nu.exe',
   'ssh.exe',
+  'ssh',
   'cmd.exe',
   'pwsh.exe',
   'powershell.exe',
@@ -152,6 +154,17 @@ c.visual_bell = {
   fade_out_function = 'EaseOut',
   fade_out_duration_ms = 250,
   target = 'CursorColor',
+}
+
+c.window_frame = {
+  border_left_width = '2px',
+  border_right_width = '2px',
+  border_bottom_height = '2px',
+  border_top_height = '2px',
+  border_left_color = '#585b70',
+  border_right_color = '#585b70',
+  border_bottom_color = '#585b70',
+  border_top_color = '#585b70',
 }
 
 -- todo fix the new tab button why is just a block?

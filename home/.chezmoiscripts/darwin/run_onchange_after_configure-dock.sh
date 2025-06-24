@@ -11,7 +11,6 @@ declare -a remove_labels=(
 	Maps
 	Photos
 	FaceTime
-	Calendar
 	Contacts
 	Reminders
 	Notes
