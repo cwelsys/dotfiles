@@ -177,7 +177,7 @@ pkgs:
         - '$env:USERPROFILE\scoop\apps\python\current\install-pep-514.reg'
 
     winget:
-      - 'Microsoft.PowerShell' # target specific version w/ 'App.App --version 2.30.3'
+      # - 'Microsoft.PowerShell' # target specific version w/ 'App.App --version 2.30.3'
       - 'Microsoft.WindowsTerminal'
       - 'Microsoft.DotNet.SDK.8'
       - 'Microsoft.DotNet.SDK.9'
@@ -246,7 +246,6 @@ pkgs:
       - 'ps-color-scripts'
       - 'PSScriptTools'
       - 'PSParseHTML'
-      - 'Invoke-NerdFontInstaller'
       - 'PSToml'
       - 'Microsoft.PowerShell.SecretManagement'
       - 'Microsoft.PowerShell.SecretStore'
@@ -264,4 +263,3 @@ pkgs:
           - 'Link-/gh-token'
           - 'yusukebe/gh-markdown-preview'
           - 'Shresht7/gh-license'
-
