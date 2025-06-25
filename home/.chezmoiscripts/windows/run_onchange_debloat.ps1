@@ -1,8 +1,6 @@
 ﻿# Self-elevate
-if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator'))
-{
-  if ([int](Get-CimInstance -Class Win32_OperatingSystem | Select-Object -ExpandProperty BuildNumber) -ge 6000)
-  {
+if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) {
+  if ([int](Get-CimInstance -Class Win32_OperatingSystem | Select-Object -ExpandProperty BuildNumber) -ge 6000) {
     $CommandLine = "-File `"" + $MyInvocation.MyCommand.Path + "`" " + $MyInvocation.UnboundArguments
     Start-Process -Wait -FilePath PowerShell.exe -Verb Runas -ArgumentList $CommandLine
     Exit
@@ -44,24 +42,24 @@ Get-AppxPackage -AllUsers Microsoft.ZuneVideo | Remove-AppxPackage
 
 # https://learn.microsoft.com/en-us/answers/questions/1421927/uninstall-unpin-spotify-whatsapp-etc-using-script
 
-$Junk = "xbox|phone|disney|skype|spotify|groove|solitaire|zune|mixedreality|tiktok|adobe|prime|soundrecorder|bingweather!3dviewer"
-"Removing apps for this user only."
-$packages = Get-AppxPackage | Where-Object {  $_.Name -match $Junk  } | Where-Object -Property NonRemovable -eq $false
+$Junk = 'phone|disney|skype|spotify|groove|solitaire|zune|mixedreality|tiktok|adobe|prime|soundrecorder|bingweather!3dviewer'
+'Removing apps for this user only.'
+$packages = Get-AppxPackage | Where-Object { $_.Name -match $Junk } | Where-Object -Property NonRemovable -eq $false
 foreach ($appx in $packages) {
-    "Removing {0}" -f $appx.name
-    Remove-AppxPackage $appx
+  'Removing {0}' -f $appx.name
+  Remove-AppxPackage $appx
 }
-""
-"Removing apps for all users."
-$packages = Get-AppxPackage -AllUsers | Where-Object {  $_.Name -match $Junk  } | Where-Object -Property NonRemovable -eq $false
+''
+'Removing apps for all users.'
+$packages = Get-AppxPackage -AllUsers | Where-Object { $_.Name -match $Junk } | Where-Object -Property NonRemovable -eq $false
 foreach ($appx in $packages) {
-    "Removing {0}" -f $appx.name
-    Remove-AppxPackage $appx -AllUsers
+  'Removing {0}' -f $appx.name
+  Remove-AppxPackage $appx -AllUsers
 }
-""
-"Removing provisioned apps."
-$packages = Get-AppxProvisionedPackage -Online | Where-Object {  $_.DisplayName -match $Junk  }
+''
+'Removing provisioned apps.'
+$packages = Get-AppxProvisionedPackage -Online | Where-Object { $_.DisplayName -match $Junk }
 foreach ($appx in $packages) {
-    "Removing {0}" -f $appx.displayname
-    Remove-AppxProvisionedPackage -online -allusers -PackageName $appx.PackageName
+  'Removing {0}' -f $appx.displayname
+  Remove-AppxProvisionedPackage -online -allusers -PackageName $appx.PackageName
 }
