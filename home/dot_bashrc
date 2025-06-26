@@ -32,18 +32,19 @@ if [ -d "$BDOTDIR/lib" ]; then
 	done
 	unset file
 fi
+
 [ -d "${BDOTDIR}/functions" ] && fpath+=${BDOTDIR}/functions
 [ -d "${BDOTDIR}/completions" ] && fpath+=${BDOTDIR}/completions
 
 # Bash settings
-shopt -s autocd
-shopt -s cdspell
-shopt -s checkwinsize
-shopt -s direxpand dirspell
-shopt -s extglob
-shopt -s globstar
-shopt -s no_empty_cmd_completion
-shopt -s nocaseglob
+# shopt -s autocd
+# shopt -s cdspell
+# shopt -s checkwinsize
+# shopt -s direxpand dirspell
+# shopt -s extglob
+# shopt -s globstar
+# shopt -s no_empty_cmd_completion
+# shopt -s nocaseglob
 
 export HISTFILE="${XDG_STATE_HOME}"/bash/.bash_history
 HISTCONTROL=ignoreboth:erasedups
@@ -60,8 +61,6 @@ elif command -v oh-my-posh >/dev/null 2>&1; then
 	eval "$(oh-my-posh init bash --config "$HOME/.config/posh.toml")"
 fi
 
-
-
 # fzf
 if command -v fzf >/dev/null 2>&1; then
 	eval "$(fzf --bash)"
@@ -72,19 +71,10 @@ if command -v navi >/dev/null 2>&1; then
 	eval "$(navi widget bash)"
 fi
 
-{{ if eq .chezmoi.os "linux" }}
 # mise
 if command -v mise >/dev/null 2>&1; then
 	eval "$(mise activate bash)"
 fi
-
-if [ ! -d "$HOME/.local/share/blesh" ]; then
-	git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git
-	make -C ble.sh install PREFIX=~/.local
-fi
-
-source ~/.local/share/blesh/ble.sh
-{{ end }}
 
 # 💤 zoxide
 if command -v zoxide >/dev/null 2>&1; then
@@ -95,4 +85,3 @@ fi
 if command -v fastfetch >/dev/null 2>&1; then
 	fastfetch
 fi
-

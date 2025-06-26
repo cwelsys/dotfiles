@@ -1,10 +1,3 @@
-# Ensure PSWriteColor is installed
-if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
-  Write-Host 'Installing PSWriteColor module...'
-  Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction SilentlyContinue
-}
-Import-Module PSWriteColor -ErrorAction SilentlyContinue
-
 Write-Host ''
 Write-Color -Text '***********************************' -Color Cyan
 Write-Color -Text '**       INSTALLING SCOOP        **' -Color Cyan

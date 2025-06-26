@@ -157,16 +157,18 @@ c.visual_bell = {
   target = 'CursorColor',
 }
 
-c.window_frame = {
-  border_left_width = '2px',
-  border_right_width = '2px',
-  border_bottom_height = '2px',
-  border_top_height = '2px',
-  border_left_color = '#585b70',
-  border_right_color = '#585b70',
-  border_bottom_color = '#585b70',
-  border_top_color = '#585b70',
-}
+if os.is_mac then
+  c.window_frame = {
+    border_left_width = '2px',
+    border_right_width = '2px',
+    border_bottom_height = '2px',
+    border_top_height = '2px',
+    border_left_color = '#585b70',
+    border_right_color = '#585b70',
+    border_bottom_color = '#585b70',
+    border_top_color = '#585b70',
+  }
+end
 
 -- todo fix the new tab button why is just a block?
 c.colors = {

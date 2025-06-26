@@ -1,18 +1,4 @@
-﻿# Ensure PSWriteColor is installed
-if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
-    Write-Host "Installing PSWriteColor module..."
-    Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction SilentlyContinue
-}
-Import-Module PSWriteColor -ErrorAction SilentlyContinue
-
-# Check if running as administrator
-$isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
-if (-not $isAdmin) {
-    Write-Color -Text "⚠️ ", "Not running as administrator. Some symbolic links may fail to create." -Color Yellow, Gray
-    Write-Host ""
-}
-
-Write-Host ""
+﻿Write-Host ""
 Write-Color -Text "******************************************" -Color DarkMagenta
 Write-Color -Text "** CREATING SYMBOLIC LINKS **" -Color DarkMagenta
 Write-Color -Text "******************************************" -Color DarkMagenta

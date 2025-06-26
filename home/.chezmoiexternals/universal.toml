@@ -1,8 +1,4 @@
-{{ if eq .osId "windows" }}
-["AppData/Roaming/bat/themes"]
-{{ else }}
 [".config/bat/themes"]
-{{ end }}
 type = "archive"
 url = "https://github.com/catppuccin/bat/archive/refs/heads/main.zip"
 stripComponents = 2

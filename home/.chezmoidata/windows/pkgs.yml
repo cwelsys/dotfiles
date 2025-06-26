@@ -237,6 +237,7 @@ pkgs:
       - 'Terminal-Icons'
       - 'CompletionPredictor'
       - 'PSFzf'
+      - 'PSWriteColor'
       - 'PSScriptAnalyzer'
       - 'BurntToast'
       - 'DockerCompletion'
@@ -258,8 +259,6 @@ pkgs:
         command_invoke: 'gh extension install'
         packages:
           - 'dlvhdr/gh-dash'
-          - 'yuler/gh-download'
           - 'seachicken/gh-poi'
           - 'Link-/gh-token'
-          - 'yusukebe/gh-markdown-preview'
           - 'Shresht7/gh-license'

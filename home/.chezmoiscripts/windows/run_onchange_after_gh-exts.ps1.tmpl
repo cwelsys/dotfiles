@@ -1,13 +1,6 @@
 {{ if (index .pkgs.windows.addons "gh") }}
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
-# Ensure PSWriteColor is installed
-if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
-    Write-Host "Installing PSWriteColor module..."
-    Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction SilentlyContinue
-}
-Import-Module PSWriteColor -ErrorAction SilentlyContinue
-
 Write-Host ""
 Write-Color -Text "******************************************" -Color DarkGray
 Write-Color -Text "**   INSTALLING GITHUB CLI EXTENSIONS   **" -Color DarkGray
@@ -81,18 +74,18 @@ if ($desiredExtensions.Count -eq 0) {
         # If not, a more complex check might be needed (e.g., checking both `extToInstall` and `extToInstall.Split('/')[-1]`)
 
         if ($installedExtensionNames.Contains($extToInstall)) {
-            Write-Color -Text "[gh-ext] ", "gh: ", "(exists) ", $extToInstall -Color Blue, White, Yellow, Gray
+            Write-Color -Text "[ext] ", "gh: ", "(exists) ", $extToInstall -Color Blue, White, Yellow, Gray
         } else {
             # Attempt to install if not found by exact name.
             # `gh extension install` is idempotent for already installed extensions, but it's slower.
-            Write-Color -Text "[gh-ext] ", "gh: ", "Installing ", $extToInstall -Color Blue, White, White, Gray
+            Write-Color -Text "[ext] ", "gh: ", "Installing ", $extToInstall -Color Blue, White, White, Gray
             gh extension install $extToInstall
             if ($LASTEXITCODE -eq 0) {
-                Write-Color -Text "[gh-ext] ", "gh: ", "(success) ", $extToInstall -Color Blue, White, Green, Gray
+                Write-Color -Text "[ext] ", "gh: ", "(success) ", $extToInstall -Color Blue, White, Green, Gray
                 # Add to installed list so we don't try again if it was a different alias in config
                 $null = $installedExtensionNames.Add($extToInstall)
             } else {
-                Write-Color -Text "[gh-ext] ", "gh: ", "(failed) ", $extToInstall -Color Blue, White, Red, Gray
+                Write-Color -Text "[ext] ", "gh: ", "(failed) ", $extToInstall -Color Blue, White, Red, Gray
             }
         }
     }

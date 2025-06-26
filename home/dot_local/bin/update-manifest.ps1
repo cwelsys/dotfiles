@@ -1,11 +1,5 @@
 ﻿$env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path', 'User')
 
-if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
-    Write-Host 'Installing PSWriteColor module...'
-    Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction SilentlyContinue
-}
-Import-Module PSWriteColor -ErrorAction SilentlyContinue
-
 $yamlFilePath = Join-Path $env:USERPROFILE '.local\share\chezmoi\home\.chezmoidata\windows\pkgs.yml'
 
 if (-not (Test-Path $yamlFilePath)) {
@@ -20,11 +14,11 @@ if (-not $manifestContent) {
 }
 
 $currentPackages = @()
-$registryPaths = @()  # NEW: Track registry paths separately
+$registryPaths = @()
 $inScoopSection = $false
 $inBucketsSection = $false
 $inPkgsSection = $false
-$inRegistrySection = $false  # NEW: Track registry section
+$inRegistrySection = $false
 $manifestLines = $manifestContent -split "`n"
 
 # Track indentation and scoop package section boundaries
@@ -118,11 +112,9 @@ foreach ($i in 0..($manifestLines.Count - 1)) {
         $pkg = $Matches[1]
         $currentWingetPackages += $pkg
 
-        # This is the last winget package line so far
         $wingetPkgsEndIndex = $i
     }
 
-    # End of winget section detection
     if ($inWingetSection -and $wingetPkgsStartIndex -ne -1 -and
         $line -match '^\s*\w+:\s*$') {
         $inWingetSection = $false
@@ -132,7 +124,6 @@ foreach ($i in 0..($manifestLines.Count - 1)) {
     }
 }
 
-# Make a backup first, but store it outside the chezmoi directory to avoid parsing issues
 $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $backupDir = Join-Path $env:USERPROFILE '.config\chezmoi\backups'
 if (-not (Test-Path $backupDir)) {
@@ -142,7 +133,6 @@ $backupPath = Join-Path $backupDir "win_pkgs.yml.bak.$timestamp"
 Copy-Item -Path $yamlFilePath -Destination $backupPath -Force
 Write-Color -Text "💾 Created backup at $backupPath" -Color Gray
 
-# Get installed Scoop packages
 Write-Color -Text '🔍 Getting installed Scoop packages...' -Color Blue
 $installedPackages = @()
 
@@ -182,13 +172,10 @@ try {
 
     Write-Color -Text "Found $($installedApps.Count) installed apps" -Color Cyan
 
-    # Now get bucket info for each app - improved method
+
     foreach ($appName in $installedApps) {
-        # Method 2: Check the app manifest directly
         $scoopDir = "$env:USERPROFILE\scoop"
         $bucketFound = $false
-
-        # Get all existing buckets
         $buckets = Get-ChildItem "$scoopDir\buckets" -Directory -ErrorAction SilentlyContinue |
         Select-Object -ExpandProperty Name
 
@@ -201,7 +188,6 @@ try {
             }
         }
 
-        # Method 3: Check the app install directory for .bucket file
         if (-not $bucketFound) {
             $bucketFilePath = "$scoopDir\apps\$appName\.bucket"
             if (Test-Path $bucketFilePath) {
@@ -214,7 +200,6 @@ try {
             }
         }
 
-        # Method 4: Try to determine from the install.json file
         if (-not $bucketFound) {
             $installJsonPath = "$scoopDir\apps\$appName\current\install.json"
             if (Test-Path $installJsonPath) {
@@ -227,7 +212,6 @@ try {
                     }
                 }
                 catch {
-                    # Silent fail, continue to fallback
                 }
             }
         }
@@ -256,14 +240,10 @@ catch {
     exit 1
 }
 
-# Replace the winget package detection section:
-
-# Get installed Winget packages
 Write-Color -Text '🔍 Getting installed Winget packages...' -Color Blue
 $installedWingetPackages = @()
 
 try {
-    # Get winget packages with more reliable parsing
     $wingetOutput = winget list
 
     # Skip first few lines (headers)
@@ -313,7 +293,7 @@ try {
         }
     }
 
-    # Filter out obviously incorrect entries and version numbers
+    # Filter out incorrect entries and version numbers
     $cleanWingetPackages = @()
     foreach ($pkg in $installedWingetPackages) {
         # Skip standalone version numbers
@@ -336,10 +316,8 @@ try {
 }
 catch {
     Write-Color -Text "❌ Failed to get list of installed Winget packages: $_" -Color Red
-    # Continue with scoop packages even if winget fails
 }
 
-# Filter out version numbers and MSIX packages (except whitelisted ones)
 function Filter-WingetPackages {
     param (
         [Parameter(Mandatory = $true)]
@@ -407,7 +385,6 @@ $newWingetPackages = $filteredInstalledWinget | Where-Object { $_ -notin $filter
 # Find winget packages in the manifest that are no longer installed
 $wingetPackagesToRemove = $filteredCurrentWinget | Where-Object { $_ -notin $filteredInstalledWinget }
 
-# Exclude packages with comments (those are likely pinned versions)
 $wingetPackagesToRemove = $wingetPackagesToRemove | Where-Object {
     $pkg = $_
     -not ($manifestLines | Where-Object { $_ -match "- '$pkg'.*#" })
@@ -436,18 +413,14 @@ if ($wingetPackagesToRemove.Count -gt 0) {
 
 # Update the manifest by inserting new packages and removing uninstalled ones
 if ($scoopPkgsEndIndex -ne -1 || $wingetPkgsEndIndex -ne -1) {
-    # Create a new array for the updated content
     $updatedContent = @()
 
-    # Initialize section tracking variables
     $currentSection = ''
     $currentSubSection = ''
 
-    # Process line by line
     for ($i = 0; $i -lt $manifestLines.Count; $i++) {
         $line = $manifestLines[$i]
 
-        # Update section tracking based on the current line
         if ($line -match '^\s*scoop:\s*$') {
             $currentSection = 'scoop'
             $currentSubSection = ''
@@ -474,7 +447,6 @@ if ($scoopPkgsEndIndex -ne -1 || $wingetPkgsEndIndex -ne -1) {
             $currentSubSection = ''
         }
 
-        # Check if this line contains a package to be removed
         $shouldSkipLine = $false
         if ($packagesToRemove.Count -gt 0 &&
             $currentSection -eq 'scoop' &&
@@ -498,7 +470,6 @@ if ($scoopPkgsEndIndex -ne -1 || $wingetPkgsEndIndex -ne -1) {
             }
         }
 
-        # Add the current line unless it's a package to be removed
         if (-not $shouldSkipLine) {
             $updatedContent += $line
         }

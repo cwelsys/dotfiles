@@ -12,6 +12,7 @@ if os.is_win then
 		{ label = 'Powershell', args = { 'pwsh', '-NoLogo' } },
 		{ label = 'Command Prompt', args = { 'cmd' } },
 		{ label = 'Nushell', args = { 'nu' } },
+		{ label = 'PowerShell', args = { 'powershell.exe', '-NoLogo' } },
 		{ label = 'Msys2', args = { 'ucrt64.cmd' }, icon = nf.md_pac_man, color = '#f9e2af' },
 		{ label = 'Git Bash', args = { 'C:\\Program Files\\git\\bin\\bash.exe' }, },
 		{ label = 'pbox', args = { 'ssh', 'pbox' }, icon = "🌴", color = '#cdd6f4' },

@@ -1,7 +1,8 @@
-.shell powershell
+.shell pwsh
+
 # Reload whkd configuration
-# alt + o                 : taskkill /f /im whkd.exe && start /b whkd # if shell is cmd
 alt + o                 : taskkill /f /im whkd.exe; Start-Process whkd -WindowStyle hidden # if shell is pwsh / powershell
+# alt + o                 : taskkill /f /im whkd.exe && start /b whkd # if shell is cmd
 alt + shift + o         : komorebic reload-configuration
 
 alt + m                 : komorebic minimize

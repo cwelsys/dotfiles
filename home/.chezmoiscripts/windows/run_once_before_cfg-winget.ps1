@@ -1,11 +1,4 @@
-﻿# Ensure PSWriteColor is installed
-if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
-	Write-Host 'Installing PSWriteColor module...'
-	Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction SilentlyContinue
-}
-Import-Module PSWriteColor -ErrorAction SilentlyContinue
-
-Write-Host ''
+﻿Write-Host ''
 Write-Color -Text '***********************************' -Color DarkRed
 Write-Color -Text '**   CONFIGURING WINGET CLIENT   **' -Color DarkRed
 Write-Color -Text '***********************************' -Color DarkRed
@@ -26,14 +19,10 @@ if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
 		}
 		else {
 			Write-Color -Text '❌ ', 'winget: ', 'Installation script ran, but winget command still not found.' -Color Red, White, Gray
-			# Optionally, exit here if winget is critical for subsequent steps
-			# exit 1
 		}
 	}
  catch {
 		Write-Color -Text '❌ ', 'winget: ', "Installation failed. Error: $($_.Exception.Message)" -Color Red, White, Gray
-		# Optionally, exit here
-		# exit 1
 	}
 }
 else {
@@ -41,8 +30,6 @@ else {
 }
 Write-Host ''
 
-# --- WinGet Configuration ---
-# Proceed with configuration only if winget command is now available
 if (Get-Command winget -ErrorAction SilentlyContinue) {
 	Write-Color -Text 'Configuring WinGet settings...' -Color DarkRed
 	$settingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\settings.json"
@@ -73,7 +60,6 @@ if (Get-Command winget -ErrorAction SilentlyContinue) {
 }
 '@
 	try {
-		# Ensure the directory exists
 		$settingsDir = Split-Path $settingsPath -Parent
 		if (-not (Test-Path $settingsDir)) {
 			Write-Color -Text 'ℹ️ ', 'winget: ', "Creating settings directory: $settingsDir" -Color Yellow, White, Gray

@@ -1,13 +1,6 @@
 {{ if .pkgs.windows.psGallery }}
 
-# Ensure PSWriteColor is installed
-if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
-    Write-Host "Installing PSWriteColor module..."
-    Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction SilentlyContinue
-}
-Import-Module PSWriteColor -ErrorAction SilentlyContinue
-
-# Ensure NuGet provider is available (required for PSGallery)
+# Ensure NuGet provider is available
 if (-not (Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue)) {
     Write-Color -Text "Installing NuGet provider..." -Color Yellow
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope CurrentUser
@@ -22,7 +15,6 @@ if ($psGallery -and $psGallery.InstallationPolicy -ne 'Trusted') {
     Write-Color -Text "Registering default PSGallery repository..." -Color Yellow
     Register-PSRepository -Default -InstallationPolicy Trusted
 }
-
 
 Write-Host ""
 Write-Color -Text "***********************************" -Color Cyan

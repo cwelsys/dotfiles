@@ -1,20 +1,5 @@
-#!/usr/bin/env pwsh
 {{ if .pkgs.windows.winget }}
-# Set up environment
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-
-# Ensure PSWriteColor is installed
-if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
-    Write-Host "Installing PSWriteColor module..."
-    Install-Module -Name PSWriteColor -Force -Scope CurrentUser
-}
-Import-Module PSWriteColor
-
-# Check for WinGet
-if (-not (Get-Command "winget" -ErrorAction SilentlyContinue)) {
-    Write-Error "Winget hasn't been installed!"
-    exit 1
-}
 
 Write-Host ""
 Write-Color -Text "***********************************" -Color Cyan
@@ -22,16 +7,15 @@ Write-Color -Text "**    INSTALLING WINGET PACKAGES    **" -Color Cyan
 Write-Color -Text "***********************************" -Color Cyan
 Write-Host ""
 
-# Get all desired package IDs from the template
-$allDesiredPackages = @(
+$wingetPkgs = @(
     {{- range $i, $package := .pkgs.windows.winget -}}
     "{{ $package }}"{{ if not (eq (add $i 1) (len $.pkgs.windows.winget)) }},{{ end }}
     {{- end -}}
 )
 # Filter out potential empty string if .pkgs.windows.winget is empty
-$allDesiredPackages = $allDesiredPackages | Where-Object { $_ -ne "" }
+$wingetPkgs = $wingetPkgs | Where-Object { $_ -ne "" }
 
-if ($allDesiredPackages.Count -eq 0) {
+if ($wingetPkgs.Count -eq 0) {
     Write-Color -Text "`nℹ️ ", "No WinGet packages specified for installation.", "`n" -Color White, Cyan, White
     exit 0
 }
@@ -83,7 +67,7 @@ if ($headerLine -and $separatorLineIndex -ne -1) {
 }
 
 # Install each package individually if not already installed
-foreach ($packageIdToProcess in $allDesiredPackages) {
+foreach ($packageIdToProcess in $wingetPkgs) {
     if ($installedPackageIds.Contains($packageIdToProcess)) {
         Write-Color -Text "[package] ", "winget: ", "(exists) ", $packageIdToProcess -Color Blue, Magenta, Yellow, Gray
     } else {

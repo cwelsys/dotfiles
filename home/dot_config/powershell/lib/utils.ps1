@@ -2,7 +2,6 @@ $Env:DOTS = & chezmoi source-path
 
 Remove-Item Alias:rm -Force -ErrorAction SilentlyContinue
 
-Set-Alias w Get-CommandInfo
 Set-Alias sarc Invoke-Sarcastaball
 Set-Alias npm-ls Get-NpmGlobalPackages
 Set-Alias bun-ls Get-BunGlobalPackages
@@ -125,22 +124,6 @@ function Import-Profile {
 
   if (Test-Path -Path $PROFILE) { . $PROFILE }
   elseif (Test-Path -Path $PROFILE.CurrentUserAllHosts) { . $PROFILE.CurrentUserAllHosts }
-}
-
-function Get-CommandInfo {
-  [CmdletBinding()]
-  param (
-    [Parameter(Mandatory = $true, Position = 0)]
-    [string]$Name
-  )
-  $commandExists = Get-Command $Name -ErrorAction SilentlyContinue
-  if ($commandExists) {
-    return $commandExists | Select-Object -ExpandProperty Definition
-  }
-  else {
-    Write-Warning "Command not found: $Name."
-    break
-  }
 }
 
 function Invoke-Sarcastaball {

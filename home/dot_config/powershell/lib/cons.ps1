@@ -4,19 +4,6 @@ $Global:PSDefaultParameterValues['del:Force'] = $true
 
 $Global:HostsFile = if ($IsLinux) { '/etc/hosts' } elseif ($IsMacOS) { '' } else { 'C:\Windows\System32\drivers\etc\hosts' }
 
-if ($IsLinux -or $IsMacOS) {
-	$NixProfiles = '/etc/profile', '~/.profile', '~/.bash_profile', '~/.bashrc', '~/.bash_login', '~/.bash_logout', '~/.zshrc', '~/.zprofile', '~/.zlogin', '~/.zlogout', '~/.zshenv'
-	[array]::Reverse($NixProfiles)  # user overrides system
-	$NixPathLines = Get-Content $NixProfiles -ErrorAction Ignore | Select-String -Pattern '^\s+PATH='
-	$Expressions = @($NixPathLines) -replace '.*PATH\s*=\s*' -replace "^(?<quote>['`"])(.*)(\k<quote>)$", '$1' -split ':' |
-	? { $_ -ne '$PATH' } | Write-Output | Select-Object -Unique
-	$PATH = $Expressions | ForEach-Object { $ExecutionContext.InvokeCommand.ExpandString($_) }
-	$PATH += $env:PATH -split ':'
-	$PATH = $PATH | Select-Object -Unique
-	$env:PATH = @($PATH) -ne '' -join ':'
-	Remove-Variable PATH, NixProfiles, NixPathLines, Expressions
-}
-
 if ($IsLinux) {
 	$XdgDefaults = @{
 		XDG_CONFIG_HOME = "$env:HOME/.config"
@@ -302,13 +289,12 @@ if ($IsWindows) {
 if ($IsWindows -and $env:TERM_PROGRAM -eq 'WezTerm') {
 	$env:SSH_AUTH_SOCK = '\\.\pipe\openssh-ssh-agent'
 }
-
-if (-not $env:SSH_AUTH_SOCK) {
+elseif (-not $env:SSH_AUTH_SOCK) {
 	[string[]]$SshAgentOutput = @()
 	if ($IsLinux -and (Get-Command gnome-keyring-daemon -ErrorAction Ignore)) {
 		$SshAgentOutput = gnome-keyring-daemon --start
 	}
-	else {
+	elseif ($env:TERM_PROGRAM -ne 'vscode') {
 		$SshAgentOutput = $(ssh-agent) -replace ';.*' | Select-Object -SkipLast 1
 	}
 	$env:SSH_AUTH_SOCK = $SshAgentOutput -match 'SSH_AUTH_SOCK' -replace '.*='
@@ -414,4 +400,20 @@ function Invoke-EzaTree {
 	[alias('lt', 'tree')]
 	param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Path)
 	eza.exe $ezaParams --tree @Path
+}
+function Get-CommandInfo {
+	[CmdletBinding()]
+	[Alias('w')]
+	param (
+		[Parameter(Mandatory = $true, Position = 0)]
+		[string]$Name
+	)
+	$commandExists = Get-Command $Name -ErrorAction SilentlyContinue
+	if ($commandExists) {
+		return $commandExists | Select-Object -ExpandProperty Definition
+	}
+	else {
+		Write-Warning "Command not found: $Name."
+		break
+	}
 }

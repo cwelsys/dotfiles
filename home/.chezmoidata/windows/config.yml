@@ -28,6 +28,7 @@ config:
         VBOX_USER_HOME: 'C:\Users\cwel\.local\share\virtualbox'
         VAGRANT_HOME: 'C:\Users\cwel\.local\share\vagrant'
         VAGRANT_DEFAULT_PROVIDER: 'virtualbox'
+        BAT_CONFIG_DIR: 'C:\Users\cwel\.config\bat'
         DOCKER_CONFIG: 'C:\Users\cwel\.config\docker'
         DOTNET_CLI_HOME: 'C:\Users\cwel\.local\share\dotnet'
         PIPX_HOME: 'C:\Users\cwel\.local\share\pipx'

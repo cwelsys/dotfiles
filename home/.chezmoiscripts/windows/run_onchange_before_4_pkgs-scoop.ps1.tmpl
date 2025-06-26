@@ -1,12 +1,5 @@
-# Set up environment
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
-# Ensure PSWriteColor is installed
-if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
-    Write-Host "Installing PSWriteColor module..."
-    Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction SilentlyContinue
-}
-Import-Module PSWriteColor -ErrorAction SilentlyContinue
 
 if (-not (Get-Command "scoop" -ErrorAction SilentlyContinue)) {
     Write-Color -Text "❌ Scoop hasn't been installed! Please install Scoop first." -Color Red
