@@ -14,7 +14,16 @@
 # sudo_command = "sudo"
 
 # Disable specific steps - same options as the command line flag
-disable = ["containers", "uv", "vim", "microsoft_store", "winget", "yarn", "bun", "helm", "windows update"]
+disable = [
+	"containers",
+	"uv",
+	"vim",
+	"microsoft_store",
+	"winget",
+	"yarn",
+	"bun",
+	"helm",
+]
 
 # Ignore failures for these steps
 # ignore_failures = ["powershell"]
@@ -68,11 +77,12 @@ skip_notify = true
 # available also via setting the environment variable TOPGRADE_NO_SELF_UPGRADE)
 no_self_update = true
 
+
+{{ if eq .chezmoi.os "windows" }}
 # Extra tracing filter directives
 # These are prepended to the `--log-filter` argument
 # See: https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html#directives
 # log_filters = ["topgrade::command=debug", "warn"]
-{{ if eq .chezmoi.os "windows" }}
 # Commands to run before anything
 [pre_commands]
 "Stop Komorebi" = "komorebic stop --whkd"
@@ -83,9 +93,10 @@ no_self_update = true
 
 # Custom commands
 [commands]
-"Fetch Komorebi" = "komorebic fetch-asc"
+
 
 {{ else }}
+"Fetch Komorebi" = "komorebic fetch-asc"
 # Commands to run before anything
 [pre_commands]
 
