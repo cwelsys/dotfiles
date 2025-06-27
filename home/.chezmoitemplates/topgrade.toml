@@ -26,7 +26,7 @@ disable = [
 ]
 
 # Ignore failures for these steps
-# ignore_failures = ["powershell"]
+ignore_failures = ["powershell"]
 
 # List of remote machines with Topgrade installed on them
 # remote_topgrades = ["toothless", "pi", "parnas"]
@@ -70,22 +70,24 @@ skip_notify = true
 # Run specific steps - same options as the command line flag
 # only = ["system", "emacs"]
 
+
+
+
+
+{{ if eq .chezmoi.os "windows" }}
 # Whether to self update
 #
 # this will be ignored if the binary is built without self update support
 #
 # available also via setting the environment variable TOPGRADE_NO_SELF_UPGRADE)
 no_self_update = true
-
-
-{{ if eq .chezmoi.os "windows" }}
 # Extra tracing filter directives
 # These are prepended to the `--log-filter` argument
 # See: https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html#directives
 # log_filters = ["topgrade::command=debug", "warn"]
 # Commands to run before anything
 [pre_commands]
-"Stop Komorebi" = "komorebic stop --whkd"
+"Stop Komorebi" = "komorebic stop --whkd 2>$null; $true"
 # Commands to run after anything
 [post_commands]
 "Start Komorebi" = "komorebic start --whkd"
