@@ -9,7 +9,6 @@ alias sv='sudo -E nvim'
 alias v='nvim'
 alias vi='nvim'
 
-# package managers
 alias npm-ls="npm list -g"
 alias pnpm-ls="pnpm list -g"
 alias bun-ls="bun pm ls -g"
@@ -18,6 +17,49 @@ alias go-ls="go-global-update --dry-run"
 alias dnf="sudo dnf"
 alias apt="sudo apt"
 alias apt-get="sudo apt-get"
+alias pacman="sudo pacman"
+
+{{ if eq .chezmoi.os "darwin" -}}
+alias update="brew update && brew upgrade"
+alias install="brew install"
+alias clean="brew cleanup"
+alias remove="brew uninstall"
+alias search="brew search"
+alias info="brew info"
+alias cask-install="brew install --cask"
+alias cask-remove="brew uninstall --cask"
+{{- else if eq .chezmoi.os "linux" -}}
+    {{- if eq .chezmoi.osRelease.id "debian" }}
+alias update="sudo apt update -y && sudo apt upgrade -y"
+alias install="sudo apt install -y"
+alias clean="sudo apt autoremove -y && sudo apt autoclean -y && sudo apt clean -y"
+alias purge="sudo apt purge -y"
+alias search="apt search"
+alias info="apt show"
+    {{- else if eq .chezmoi.osRelease.id "ubuntu" }}
+alias update="sudo apt update -y && sudo apt dist-upgrade -y"
+alias install="sudo apt install -y"
+alias clean="sudo apt autoremove -y && sudo apt autoclean -y && sudo apt clean -y"
+alias purge="sudo apt purge -y"
+alias search="apt search"
+alias info="apt show"
+    {{- else if eq .chezmoi.osRelease.id "fedora" }}
+alias clean="sudo dnf autoremove -y"
+alias update="sudo dnf upgrade -y"
+alias install="sudo dnf install -y"
+alias remove="sudo dnf remove -y"
+alias search="dnf search"
+alias info="dnf info"
+    {{- else if eq .chezmoi.osRelease.id "arch" }}
+alias clean="yay -Yc --noconfirm"
+alias update="yay -Syu --noconfirm"
+alias install="yay -S --needed --noconfirm"
+alias remove="sudo pacman -Rcns --noconfirm"
+alias search="yay -Ss"
+alias info="yay -Si"
+    {{- end }}
+{{- end }}
+
 alias ..='cd ..'
 alias ...='cd ../..'
 alias .3='cd ../../..'
