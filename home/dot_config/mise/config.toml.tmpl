@@ -25,10 +25,8 @@ cargo-binstall = "latest"
 rust = "beta"
 java = "corretto-21"
 maven = "latest"
-uv = { version = "latest", postinstall = "mkdir -p {{ env "XDG_DATA_HOME" | replace "\\" "/" }}/uv/tools {{ env "XDG_DATA_HOME" | replace "\\" "/" }}/uv/bin" }
+uv = "latest"
 python = { version = "3.13", postinstall = "python -m pip install --upgrade pip" }
-"pipx:cookiecutter" = "latest"
-"pipx:yamllint" = "latest"
 
 [env]
 npm_config_init_module = '{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/npm/config/npm-init.js'
