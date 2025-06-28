@@ -16,5 +16,13 @@ sudo pacman -S --noconfirm base-devel procps-ng wget curl file git zsh age
 echo "Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
 exit 1
   {{- end -}}
+
+  {{- if .isWSL }}
+# Install wsl2-ssh-agent for WSL
+if ! command -v wsl2-ssh-agent &> /dev/null; then
+  curl -L -O https://github.com/mame/wsl2-ssh-agent/releases/latest/download/wsl2-ssh-agent -o ~/.local/bin/wsl2-ssh-agent
+  chmod +x ~/.local/bin/wsl2-ssh-agent
+fi
+  {{- end -}}
 {{- end }}
 
