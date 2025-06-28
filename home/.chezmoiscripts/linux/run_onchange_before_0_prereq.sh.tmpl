@@ -8,6 +8,9 @@ sudo apt-get install build-essential procps wget curl file git zsh age -y
 sudo dnf update -y
 sudo dnf group install development-tools -y
 sudo dnf install procps-ng wget curl file git age zsh  -y
+  {{- else if eq .chezmoi.osRelease.id "arch" -}}
+sudo pacman -Syu --noconfirm
+sudo pacman -S --noconfirm base-devel procps-ng wget curl file git zsh age
   {{- else -}}
 echo "Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
 exit 1
