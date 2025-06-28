@@ -170,7 +170,3 @@ if [ "$VSCODE_INJECTION" = "1" ]; then
 fi
 
 [[ -x "$(command -v zoxide)" ]] && eval "$(zoxide init zsh --cmd=cd)"
-
-if (( ${+functions[fzf-atuin-history-widget]} )); then
-  bindkey '^R' fzf-atuin-history-widget
-fi
