@@ -38,15 +38,6 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 
 Set-PSReadLineOption -HistorySavePath $Env:PWSH/history.txt
 
-	# $PSFzfOptions = @{
-	# 	AltCCommand                   = [ScriptBlock] { param($Location) Write-Host $Location }
-	# 	PSReadlineChordProvider       = 'Ctrl+t'
-	# 	PSReadlineChordReverseHistory = 'Ctrl+r'
-	# 	GitKeyBindings                = $True
-	# 	TabExpansion                  = $True
-	# 	EnableAliasFuzzyKillProcess   = $True
-	# }
-
 $AsyncProfile = {
 	. "$env:PWSH\lib\cons.ps1"
 	if (Get-Command code -ErrorAction SilentlyContinue) { $Env:EDITOR = 'code' }
@@ -109,4 +100,12 @@ else {
 	. $AsyncProfile
 }
 
-Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+	$PSFzfOptions = @{
+		PSReadlineChordProvider       = 'Ctrl+t'
+		PSReadlineChordReverseHistory = 'Ctrl+r'
+		GitKeyBindings                = $True
+		TabExpansion                  = $True
+		EnableAliasFuzzyKillProcess   = $True
+	}
+
+	Set-PsFzfOption $PSFzfOptions
