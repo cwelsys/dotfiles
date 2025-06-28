@@ -13,16 +13,14 @@ HostName git.cwel.casa
 User git
 PreferredAuthentications publickey
 
-{{- if eq .chezmoi.os "darwin" }}
 Host wini
 HostName wini
 User cwel
-{{ end }}
-{{- if eq .chezmoi.os "windows" }}
+
 Host mba
 HostName mba
 User cwel
-{{- end }}
+
 Host pbox
 HostName pbox
 user cwel

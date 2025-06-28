@@ -6,10 +6,10 @@
   safecrlf = false
 
 [gpg]
-  format = ssh
+	format = ssh
 
-[commit]
-  gpgsign = true
+[gpg "ssh"]
+	program = ssh-keygen
 
 [am]
   threeWay = true
@@ -31,7 +31,6 @@
   tabs = 2
   true-color = always
   hyperlinks = true
-  hyperlinks-file-link-format = "vscode://file/{path}:{line}"
   line-numbers = true
   show-syntax-themes = true
 
@@ -45,7 +44,7 @@
 [user]
   name = Connor Welsh
   email = cwel@cwel.sh
-  signingkey = {{ .sshId }}
+  signingkey = {{ .sshId | quote }}
 
 [advice]
   addEmptyPathspec = false
