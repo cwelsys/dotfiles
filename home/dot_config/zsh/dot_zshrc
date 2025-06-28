@@ -49,7 +49,7 @@ omzLib git.zsh
 omzLib grep.zsh
 
 # # 🔌 plugs
-if [ "$(uname)" = "Darwin" ] then
+if [ "$(uname)" = "Darwin" ]; then
 omzPlugin macos
 else
 omzPlugin systemd
