@@ -125,11 +125,11 @@ zinit ice lucid wait"0" atclone"sed -ie 's/fc -rl 1/fc -rli 1/' shell/key-bindin
   pick"/dev/null"
 zinit light junegunn/fzf
 
-zinit ice lucid wait'0'
-zinit light joshskidmore/zsh-fzf-history-search
+# zinit ice lucid wait'0'
+# zinit light joshskidmore/zsh-fzf-history-search
 
-ZSH_FZF_HISTORY_SEARCH_DATES_IN_SEARCH=0
-ZSH_FZF_HISTORY_SEARCH_EVENT_NUMBERS=0
+# ZSH_FZF_HISTORY_SEARCH_DATES_IN_SEARCH=0
+# ZSH_FZF_HISTORY_SEARCH_EVENT_NUMBERS=0
 
 zinit ice pick"themes/catppuccin_mocha-zsh-syntax-highlighting.zsh"
 zinit light catppuccin/zsh-syntax-highlighting
