@@ -20,11 +20,32 @@ pkgs:
       - thefuck
       - yazi
       - yq
+      - jq
+      - gum
       - mise
       - btop
+      - git-cliff
+      - ripgrep
       - zoxide
       - rsync
+      - shellcheck
       - glow
+      - rich-cli
+      - less
+      - navi
+      - lazydocker
+      - lazygit
+      - lazyjournal
+      - bat-extras
+      - luarocks
+      - neovim
+      - dua-cli
+      - tealdeer
+      - gh
+      - git-delta
+      - git-extras
+      - git-flow
+      - git-lfs
 
   shared:
     brews:
@@ -38,6 +59,7 @@ pkgs:
       - fzf
       - gum
       - jq
+      - wrk
       - oh-my-posh
       - lazydocker
       - luarocks

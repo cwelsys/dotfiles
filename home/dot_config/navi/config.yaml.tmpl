@@ -29,4 +29,8 @@ shell:
   # shell used for shell out. possible values: bash, zsh, dash, ...
   # finder_command: /usr/bin/zsh
   # command: env BASH_ENV="${HOME}/dotfiles/shell/bash/bashrc" /usr/local/bin/bash --norc --noprofile
+  {{ if eq .chezmoi.os "linux" "darwin" }}
   command: zsh
+  {{ else }}
+  command: pwsh
+  {{ end }}
