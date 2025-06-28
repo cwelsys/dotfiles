@@ -35,7 +35,6 @@ npm_config_init_module = '{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/npm/con
 npm_config_cache = "{{ env "XDG_CACHE_HOME" | replace "\\" "/" }}/npm"
 YARN_CACHE_FOLDER = "{{ env "XDG_CACHE_HOME" | replace "\\" "/" }}/npm"
 PNPM_HOME = "{{ env "XDG_DATA_HOME" | replace "\\" "/" }}/pnpm"
-UV_LINK_MODE = { value = "symlink", tools = true }
 MISE_PYTHON_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/mise/default-python-packages"
 MISE_GO_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/mise/default-go-packages"
 MISE_NODE_DEFAULT_PACKAGES_FILE = "{{ env "XDG_CONFIG_HOME" | replace "\\" "/" }}/mise/default-npm-packages"
