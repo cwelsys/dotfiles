@@ -140,10 +140,14 @@ unsetopt beep
 
 bindkey ' ' magic-space
 bindkey '^[[3~' delete-char
-bindkey "^A" beginning-of-line
+#bindkey "^A" beginning-of-line
 bindkey "^E" end-of-line
 bindkey "^N" insert-last-word
 bindkey '^[w' kill-region
+bindkey '^[' kill-whole-line
+bindkey '^Z' undo
+bindkey '^Y' redo
+
 
 if [ ! -d "$XDG_STATE_HOME/zsh" ]; then
   mkdir -p "$XDG_STATE_HOME/zsh"

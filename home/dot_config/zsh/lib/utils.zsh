@@ -65,6 +65,13 @@ function omzLib() {
   zinit wait'!' lucid for OMZL::$1
 }
 
+select-all() {
+    CURSOR=0
+    MARK=${#BUFFER}
+    zle set-mark-command
+}
+zle -N select-all
+bindkey '^A' select-all
 
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
