@@ -286,7 +286,7 @@ if ($IsWindows) {
 	}
 }
 
-if ($IsWindows -and $env:TERM_PROGRAM -eq 'WezTerm') {
+if ($IsWindows) {
 	$env:SSH_AUTH_SOCK = '\\.\pipe\openssh-ssh-agent'
 }
 
