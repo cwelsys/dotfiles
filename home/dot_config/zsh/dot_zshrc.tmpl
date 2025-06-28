@@ -147,7 +147,14 @@ bindkey '^[w' kill-region
 bindkey '^[' kill-whole-line
 bindkey '^Z' undo
 bindkey '^Y' redo
-bindkey "^A" select-all-or-beginning-of-line
+
+select-all() {
+    CURSOR=0
+    MARK=${#BUFFER}
+    zle set-mark-command
+}
+zle -N select-all
+bindkey '^A' select-all
 
 
 if [ ! -d "$XDG_STATE_HOME/zsh" ]; then
