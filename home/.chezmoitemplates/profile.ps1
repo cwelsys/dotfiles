@@ -38,14 +38,14 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 
 Set-PSReadLineOption -HistorySavePath $Env:PWSH/history.txt
 
-	$PSFzfOptions = @{
-		AltCCommand                   = [ScriptBlock] { param($Location) Write-Host $Location }
-		PSReadlineChordProvider       = 'Ctrl+t'
-		PSReadlineChordReverseHistory = 'Ctrl+r'
-		GitKeyBindings                = $True
-		TabExpansion                  = $True
-		EnableAliasFuzzyKillProcess   = $True
-	}
+	# $PSFzfOptions = @{
+	# 	AltCCommand                   = [ScriptBlock] { param($Location) Write-Host $Location }
+	# 	PSReadlineChordProvider       = 'Ctrl+t'
+	# 	PSReadlineChordReverseHistory = 'Ctrl+r'
+	# 	GitKeyBindings                = $True
+	# 	TabExpansion                  = $True
+	# 	EnableAliasFuzzyKillProcess   = $True
+	# }
 
 $AsyncProfile = {
 	. "$env:PWSH\lib\cons.ps1"
@@ -57,6 +57,10 @@ $AsyncProfile = {
 
 	if (Get-Command python -ErrorAction SilentlyContinue) {
 		$Env:PYTHONIOENCODING = 'utf-8'
+	}
+
+	if (Import-Module PSFzf -PassThru -ea Ignore) {
+    Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
 	}
 
 	if (-not $isVSCode) {
@@ -80,7 +84,6 @@ $AsyncProfile = {
 		}
 		iex "$(thefuck --alias)"
 	}
-
 
 	if (Get-Command carapace -ErrorAction SilentlyContinue) {
 		$env:CARAPACE_BRIDGES = 'zsh,fish,bash,inshellisense'
@@ -107,11 +110,6 @@ if ((-not $isVSCode) -and (Import-Module ProfileAsync -PassThru -ea Ignore)) {
 }
 
 else {
-
-	if (Import-Module PSFzf -PassThru -ea Ignore) {
-	Set-PsFzfOption @PSFzfOptions
-	}
-
 	. $AsyncProfile
 }
 
