@@ -30,6 +30,9 @@ fi
 
 zinit ice depth=1; zinit light romkatv/powerlevel10k
 
+vivid_theme="catppuccin-mocha"
+zinit light ryanccn/vivid-zsh
+
 zstyle ":completion:*" matcher-list "" "m:{a-z}={A-Z}" "m:{a-zA-Z}={A-Za-z}" "r:|[._-]=* r:|=* l:|=*"
 zstyle ':completion:*:git-checkout:*' sort false
 zstyle ':completion:*:descriptions' format '[%d]'
@@ -44,14 +47,13 @@ omzLib correction.zsh
 omzLib clipboard.zsh
 omzLib git.zsh
 omzLib grep.zsh
-omzLib history.zsh
 
 # # 🔌 plugs
-{{ if eq .chezmoi.os "darwin" }}
+if [ "$(uname)" = "Darwin" ] then
 omzPlugin macos
-{{ else if eq .chezmoi.os "linux" }}
+else
 omzPlugin systemd
-{{ end }}
+fi
 omzPlugin sudo
 omzPlugin cp
 omzPlugin rsync
@@ -60,7 +62,6 @@ omzPlugin git
 omzPlugin mise
 omzPlugin git-flow wait"1"
 omzPlugin github wait"1"
-omzPlugin docker wait"1"
 omzPlugin command-not-found wait"1"
 
 # atuin
@@ -68,11 +69,6 @@ zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin"
     atclone"./atuin init zsh > init.zsh; ./atuin gen-completions --shell zsh > _atuin" \
     atpull"%atclone" src"init.zsh"
 zinit light atuinsh/atuin
-
-# direnv
-zinit ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
-    atpull'%atclone' pick"direnv" src"zhook.zsh"
-zinit light direnv/direnv
 
 # navi
 zinit ice wait"1" lucid
@@ -160,13 +156,12 @@ HISTSIZE=290000
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
 
-# 🐚 Prompt
 if [[ -f ~/.config/zsh/.p10k.zsh ]]; then
   source ~/.config/zsh/.p10k.zsh
-elif [[ -v commands['oh-my-posh'] ]]; then
-  eval "$(oh-my-posh init zsh --config $HOME/.config/posh.toml)"
 elif [[ -v commands[starship] ]]; then
   eval "$(starship init zsh)"
+elif [[ -v commands['oh-my-posh'] ]]; then
+  eval "$(oh-my-posh init zsh --config $HOME/.config/posh.toml)"
 fi
 
 if [[ -n "$SSH_CONNECTION" ]]; then
@@ -175,10 +170,6 @@ fi
 
 if [ "$VSCODE_INJECTION" = "1" ]; then
   export EDITOR="code --wait"
-fi
-
-if [[ -v commands[mise] ]]; then
-  eval "$(mise activate zsh)"
 fi
 
 [[ -x "$(command -v zoxide)" ]] && eval "$(zoxide init zsh --cmd=cd)"

@@ -2,23 +2,25 @@ if [ -f "$HOME/.config/shared/init.sh" ]; then
 	. "$HOME/.config/shared/init.sh"
 fi
 
-if [ -f /etc/bashrc ]; then
-	. /etc/bashrc
-fi
-
-if [ -d ~/.bashrc.d ]; then
-	for rc in ~/.bashrc.d/*; do
-		if [ -f "$rc" ]; then
-			. "$rc"
-		fi
-	done
-fi
+for file in ~/.config/bash/*.bash; do
+	source "$file"
+done
+unset file
 
 export HISTFILE="${XDG_STATE_HOME}"/bash/.bash_history
 HISTCONTROL=ignoreboth:erasedups
 HISTIGNORE="&:[bf]g:c:clear:history:exit:q:pwd:* --help"
 HISTFILESIZE=10000
 HISTSIZE=10000
+
+shopt -s autocd
+shopt -s cdspell
+shopt -s checkwinsize
+shopt -s direxpand dirspell
+shopt -s extglob
+shopt -s globstar
+shopt -s no_empty_cmd_completion
+shopt -s nocaseglob
 
 if command -v starship >/dev/null 2>&1; then
 	eval "$(starship init bash)"
@@ -41,12 +43,3 @@ fi
 if command -v fastfetch >/dev/null 2>&1; then
 	fastfetch
 fi
-
-function y() {
-	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-	yazi "$@" --cwd-file="$tmp"
-	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-		builtin cd -- "$cwd" || exit
-	fi
-	rm -f -- "$tmp"
-}
