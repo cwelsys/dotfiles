@@ -2,6 +2,7 @@ if [ -f "$HOME/.config/shared/init.sh" ]; then
 	. "$HOME/.config/shared/init.sh"
 fi
 
+if [ -f "$HOME/.config/bash" ]; then
 for file in ~/.config/bash/*.bash; do
 	source "$file"
 done
