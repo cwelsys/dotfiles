@@ -1,4 +1,4 @@
-{{ if eq .osId "windows" }}
+{{ if eq .chezmoi.os "windows" }}
 
 [".config/komorebi/applications.json"]
 type = "file"
@@ -41,12 +41,6 @@ pull.args = ['--depth', '1']
 #[".local/bin/NewOutlookPatcher.exe"]
 #type = "file"
 #url = "https://github.com/valinet/NewOutlookPatcher/releases/download/2024.06.24.01/NewOutlookPatcher.exe"
-
-["AppData/Roaming/windhawk/redirect"]
-type = "git-repo"
-url = "https://github.com/cwelsys/redirect.git"
-clone.args = ['--depth', '1']
-pull.args = ['--depth', '1']
 
 ["Documents/PoB/Builds"]
 type = "git-repo"

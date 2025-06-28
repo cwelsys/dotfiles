@@ -122,7 +122,7 @@ if (Get-Module Catppuccin) {
 		HistoryNoDuplicates           = $True
 		HistorySearchCursorMovesToEnd = $True
 		PredictionSource              = 'HistoryAndPlugin'
-		PredictionViewStyle           = 'ListView'
+		PredictionViewStyle           = 'Inline'
 		PromptText                    = ''
 		ShowToolTips                  = $True
 	}
@@ -288,16 +288,6 @@ if ($IsWindows) {
 
 if ($IsWindows -and $env:TERM_PROGRAM -eq 'WezTerm') {
 	$env:SSH_AUTH_SOCK = '\\.\pipe\openssh-ssh-agent'
-}
-elseif (-not $env:SSH_AUTH_SOCK) {
-	[string[]]$SshAgentOutput = @()
-	if ($IsLinux -and (Get-Command gnome-keyring-daemon -ErrorAction Ignore)) {
-		$SshAgentOutput = gnome-keyring-daemon --start
-	}
-	elseif ($env:TERM_PROGRAM -ne 'vscode') {
-		$SshAgentOutput = $(ssh-agent) -replace ';.*' | Select-Object -SkipLast 1
-	}
-	$env:SSH_AUTH_SOCK = $SshAgentOutput -match 'SSH_AUTH_SOCK' -replace '.*='
 }
 
 function Import-Script {

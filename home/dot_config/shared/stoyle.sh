@@ -1,8 +1,8 @@
-export FZF_DEFAULT_OPTS="--color=bg+:{{ .catppuccin.palettes.mocha.surface0 }},bg:{{ .catppuccin.palettes.mocha.base }},spinner:{{ .catppuccin.palettes.mocha.rosewater }}
---color=hl:{{ .catppuccin.palettes.mocha.red }},fg:{{ .catppuccin.palettes.mocha.text }},header:{{ .catppuccin.palettes.mocha.red }}
---color=info:{{ .catppuccin.palettes.mocha.teal }},pointer:{{ .catppuccin.palettes.mocha.rosewater }},marker:{{ .catppuccin.palettes.mocha.rosewater }}
---color=fg+:{{ .catppuccin.palettes.mocha.text }},prompt:{{ .catppuccin.palettes.mocha.teal }},hl+:{{ .catppuccin.palettes.mocha.red }}
---color=border:{{ .catppuccin.palettes.mocha.surface2 }}
+export FZF_DEFAULT_OPTS="--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc
+--color=hl:#f38ba8,fg:#cdd6f4,header:#f38ba8
+--color=info:#94e2d5,pointer:#f5e0dc,marker:#f5e0dc
+--color=fg+:#cdd6f4,prompt:#94e2d5,hl+:#f38ba8
+--color=border:#585b70
 --layout=reverse --cycle --height=~80% --border=rounded --info=right
 --bind=alt-w:toggle-preview-wrap
 --bind=ctrl-e:toggle-preview"
@@ -47,12 +47,12 @@ _fzf_open_path() {
   local cmd
   cmd=$(printf "bat\ncat\ncd\nvim\ncode\nrm\necho" | fzf --prompt="Select Command> ")
   case "$cmd" in
-    bat)  bat "$file" ;;
-    cat)  cat "$file" ;;
-    cd)   if [ -f "$file" ]; then cd "$(dirname "$file")"; else cd "$file"; fi ;;
-    vim)  vim "$file" ;;
-    code) code "$file" ;;
-    rm)   rm -rf "$file" ;;
-    echo) echo "$file" ;;
+  bat) bat "$file" ;;
+  cat) cat "$file" ;;
+  cd) if [ -f "$file" ]; then cd "$(dirname "$file")"; else cd "$file"; fi ;;
+  vim) vim "$file" ;;
+  code) code "$file" ;;
+  rm) rm -rf "$file" ;;
+  echo) echo "$file" ;;
   esac
 }

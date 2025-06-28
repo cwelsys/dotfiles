@@ -1,36 +1,42 @@
-[am]
-threeWay = true
-
 [core]
-branch = auto
-editor = code --wait
-grep = auto
-interactive = auto
-longpaths = true
-pager = delta
-showBranch = auto
-status = auto
-ui = true
-safecrlf = false
+  editor = code --wait
+  longpaths = true
+  pager = delta
+  excludesFile = ~/.config/git/ignore
+  safecrlf = false
+
+[gpg]
+  format = ssh
+
+[commit]
+  gpgsign = true
+
+[am]
+  threeWay = true
 
 [diff]
-tool = default-difftool
-colorMoved = default
+  tool = default-difftool
+  colorMoved = default
 
 [difftool "default-difftool"]
-cmd = code --wait --diff $LOCAL $REMOTE
+  cmd = code --wait --diff $LOCAL $REMOTE
 
 [delta]
-features = catppuccin-mocha
-file-style = omit
-file-decoration-style = none
-hunk-label = "  󰡏 "
-side-by-side = true
-navigate = true
-tabs = 2
-true-color = always
-hyperlinks = true
-hyperlinks-file-link-format = "vscode://file/{path}:{line}"
+  features = catppuccin-mocha
+  file-style = omit
+  file-decoration-style = none
+  hunk-label = "  󰡏 "
+  side-by-side = true
+  navigate = true
+  tabs = 2
+  true-color = always
+  hyperlinks = true
+  hyperlinks-file-link-format = "vscode://file/{path}:{line}"
+  line-numbers = true
+  show-syntax-themes = true
+
+[interactive]
+  diffFilter = delta --color-only
 
 [include]
   path = ~/.config/delta/catppuccin.gitconfig
@@ -38,13 +44,13 @@ hyperlinks-file-link-format = "vscode://file/{path}:{line}"
 
 [user]
   name = Connor Welsh
-  email = {{ .email }}
+  email = cwel@cwel.sh
   signingkey = {{ .sshId }}
 
 [advice]
-	addEmptyPathspec = false
-	pushNonFastForward = false
-	statusHints = false
+  addEmptyPathspec = false
+  pushNonFastForward = false
+  statusHints = false
 
 [github]
   user = cwelsys
@@ -52,43 +58,18 @@ hyperlinks-file-link-format = "vscode://file/{path}:{line}"
 [gitea]
   user = cwel
 
-[core]
-  editor = code --wait
-  longpaths = true
-  pager = delta
-  excludesFile = ~/.config/git/ignore
-
 [color]
   ui = always
   interactive = always
 
-{{ if eq .chezmoi.os "windows" -}}
+{{- if eq .chezmoi.os "windows" }}
 [safe]
-	directory = {{ .chezmoi.workingTree }}
+  directory = {{ .chezmoi.workingTree }}
   directory = ~/scoop/*
-{{ else if eq .chezmoi.os "linux" "darwin" -}}
+{{- else }}
 [safe]
-  directory =  /opt/docker/*
-{{ end -}}
-
-[gpg]
-  format = ssh
-
-{{- if eq .osId "windows" }}
-[gpg "ssh"]
-  program = "C:/Users/cwel/AppData/Local/1Password/app/8/op-ssh-sign.exe"
-
-{{- else if .isWSL }}
-[gpg "ssh"]
-  program = "/mnt/c/Users/cwel/AppData/Local/1Password/app/8/op-ssh-sign-wsl"
-
-{{- else if eq .chezmoi.os "darwin" }}
-[gpg "ssh"]
-  program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+  directory = /opt/docker/*
 {{- end }}
-
-[commit]
-  gpgsign = true
 
 [help]
   autoCorrect = prompt
@@ -107,44 +88,27 @@ hyperlinks-file-link-format = "vscode://file/{path}:{line}"
   rebase = true
 
 [rebase]
-	autoSquash = true
-	autoStash = true
-	updateRefs = true
+  autoSquash = true
+  autoStash = true
+  updateRefs = true
 
 [receive]
-	fsckobjects = true
+  fsckobjects = true
 
 [rerere]
   enabled = true
 
-[interactive]
-  diffFilter = delta --color-only
-
-[delta]
-  features = catppuccin-{{ .catppuccinFlavor }}
-  navigate = true
-  {{ .theme }} = true
-  side-by-side = true
-  line-numbers = true
-  show-syntax-themes = true
-  hyperlinks = true
-  ; hyperlinks-file-link-format = "vscode://file/{path}:{line}"
-
 [merge]
-tool = code
-conflictstyle = zdiff3
-
-[diff]
-tool = default-difftool
-colorMoved = default
+  tool = code
+  conflictstyle = zdiff3
 
 [submodule]
   fetchJobs = 8
 
 [fetch]
-	all = true
-	fsckobjects = false
-	prune = true
+  all = true
+  fsckobjects = false
+  prune = true
 
 [remote]
   pushDefault = origin
@@ -159,18 +123,20 @@ colorMoved = default
   insteadOf = "gh:"
   pushInsteadOf = "github:"
   pushInsteadOf = "git://github.com/"
+
 [url "git@gist.github.com:"]
   insteadOf = "gst:"
   pushInsteadOf = "gist:"
   pushInsteadOf = "git://gist.github.com/"
+
 [url "git@git.cwel.casa:"]
   insteadOf = "gitea:"
   pushInsteadOf = "git://git.cwel.casa/"
 
-{{- if eq .osId "windows" }}
+{{- if eq .chezmoi.os "windows" }}
 [credential "helperselector"]
   selected = manager
-{{- else }} }}
+{{- else }}
 [credential "https://git.cwel.casa"]
   provider = generic
 {{- end }}

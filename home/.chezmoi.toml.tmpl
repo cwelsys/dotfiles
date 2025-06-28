@@ -1,194 +1,66 @@
-{{/* Default static values */}}
-{{ $gpgId := "061DF935B288405FF6B906169496153E284399EF" }}
-{{ $agePubKey := "age1wezwdvug6rdnwedvw8tk7npjm2rlmmewukxdat8v5y5garwvgdeq3ww5m9" }}
-{{ $sshId := "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXPGUiiFFBzqutbhNqi5RjykdlwvdFveB/XkSdg0BAM" }}
-{{ $email := "cwel@cwel.sh" -}}
-{{ $opType := "connect" }}
-
-{{/* Default dynamic values */}}
-
-{{ $shell := "" }}
-{{ $theme := "dark" }}
-{{ $catppuccinLightFlavour := "latte" }}
-{{ $catppuccinDarkFlavour := "mocha" }}
-{{ $catppuccinAccentColor := "teal" }}
-{{- $isCloud := false -}}
-{{- $isContainer := false -}}
-{{- $isWSL := false -}}
-{{- $isHeadless := false -}}
-{{ $isLaptop := false }}
-
-{{ $themes := list
-     "dark"
-     "light"
-}}
-
-{{ $catppuccinFlavors := list
-     "latte"
-     "frappe"
-     "macchiato"
-     "mocha"
-}}
-
-{{ $catppuccinAccentColors := list
-     "blue"
-     "flamingo"
-     "green"
-     "lavender"
-     "maroon"
-     "mauve"
-     "peach"
-     "pink"
-     "red"
-     "rosewater"
-     "sapphire"
-     "sky"
-     "teal"
-     "yellow"
-}}
-
-{{/* Checks */}}
-
-{{ $osId := .chezmoi.os }}
-{{ if (and (eq .chezmoi.os "linux") (hasKey .chezmoi.osRelease "id")) }}
-  {{ $osId = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id }}
-{{ end }}
-
-{{/* if running in WSL */}}
-{{ if and (eq .chezmoi.os "linux") (or (stat "/proc/sys/fs/binfmt_misc/WSLInterop") (contains "microsoft" (output "uname" "-r" | lower))) }}
-  {{ $isWSL = true }}
-{{ end }}
-
-{{/* if system is headless */}}
-{{ if and (eq .chezmoi.os "linux") (or
-     (not (or (env "DISPLAY") (env "WAYLAND_DISPLAY") (env "XDG_SESSION_TYPE")))
-     (eq (env "DISPLAY") "wini:0")
-     (contains "localhost" (env "DISPLAY"))
-     (hasPrefix ":" (env "DISPLAY"))
-   ) }}
-  {{ $isHeadless = true }}
-{{ end }}
-
-{{/* if its a windows box */}}
-{{ if eq $osId "windows" }}
-  {{ $shell = "pwsh" }}
-{{ else }}
-  {{ $shell = "zsh" }}
-{{ end }}
-
-{{/* if running in a container */}}
-{{ if eq .chezmoi.os "linux" }}
-  {{ if or (stat "/.dockerenv") (contains "docker" (output "cat" "/proc/1/cgroup" | lower)) (contains "lxc" (output "cat" "/proc/1/cgroup" | lower)) }}
-    {{ $isContainer = true }}
-  {{ end }}
-{{ end }}
-
-{{/* if running in a cloud environment */}}
-{{ if eq .chezmoi.os "linux" }}
-  {{ if or (stat "/var/lib/cloud/instance") (stat "/var/lib/cloud/data") (stat "/proc/xen") (stat "/sys/hypervisor/uuid") }}
-    {{ $isCloud = true }}
-  {{ else if or (stat "/sys/class/dmi/id/product_uuid") (stat "/sys/class/dmi/id/product_name") }}
-    {{ $dmiProduct := (output "cat" "/sys/class/dmi/id/product_name" | lower) }}
-    {{ if or (contains "amazon" $dmiProduct) (contains "google" $dmiProduct) (contains "azure" $dmiProduct) (contains "digitalocean" $dmiProduct) }}
-      {{ $isCloud = true }}
-    {{ end }}
-  {{ end }}
-{{ end }}
-
-{{- $hostname := .chezmoi.hostname -}}
-{{- if eq .chezmoi.os "darwin" -}}
-{{-   $computerName := output "scutil" "--get" "ComputerName" | trim -}}
-{{-   if eq $computerName "Connor’s Laptop" -}}
-{{-     $hostname = "cwel-lap" -}}
-{{-   else if eq $computerName "Connor's MacBook Air" -}}
-{{-     $hostname = "cwel-mba" -}}
-{{-   else -}}
-{{-     $hostname = $computerName -}}
-{{-   end -}}
-{{- end -}}
-
-{{ if lookPath "hostnamectl" }}
-  {{ if eq (output "hostnamectl" "chassis") "laptop" }}
-    {{ $isLaptop = true }}
-  {{ end }}
-{{ else if lookPath "wmic" }}
-  {{ if eq (output "wmic" "computersystem" "get" "PCSystemType" "/VALUE" | trim) "PCSystemType=2" }}
-    {{ $isLaptop = true }}
-  {{ end }}
-{{ else if stdinIsATTY }}
-  {{ $isLaptop = promptBoolOnce . "isLaptop" "laptop" false }}
-{{ end }}
-
-{{ $catppuccinFlavor := "" }}
-{{ if eq $theme "dark" }}
-  {{ $catppuccinFlavor = $catppuccinDarkFlavour }}
-{{ else }}
-  {{ $catppuccinFlavor = $catppuccinLightFlavour }}
-{{ end }}
-
-{{- $choices := list "account" "service" "connect" -}}
-{{- if eq $hostname "pbox" -}}
-{{-   $opType = "connect" -}}
-{{- else if $isWSL -}}
-{{-   $opType = "account" -}}
-{{- else if $isContainer -}}
-{{-   $opType = "connect" -}}
-{{- else -}}
-{{-   $opType = promptChoice "1Password connection type" $choices -}}
-{{- end -}}
-
 encryption = "age" # age, rage, gpg
 mode = "file" # file, symlink
 progress = true
 
-[data]
-theme = {{ $theme | quote }}
-catppuccinLightFlavour = {{ $catppuccinLightFlavour | quote }}
-catppuccinDarkFlavour = {{ $catppuccinDarkFlavour | quote }}
-catppuccinFlavor = {{ $catppuccinFlavor | quote }}
-catppuccinFlavorTitle = {{ $catppuccinFlavor | title | quote }}
-catppuccinAccentColor = {{ $catppuccinAccentColor | quote }}
-email = {{ $email | quote }}
-gpgId = {{ $gpgId | quote }}
-sshId = {{ $sshId | quote }}
-agePubKey = {{ $agePubKey | quote }}
-osId = {{ $osId | quote }}
-isLaptop = {{ $isLaptop }}
-isWSL = {{ $isWSL }}
-isHeadless = {{ $isHeadless }}
-isCloud = {{ $isCloud }}
-isContainer = {{ $isContainer }}
-opType = {{ $opType | quote }}
-hostname = {{ $hostname | quote }}
+{{ $gpgId := "061DF935B288405FF6B906169496153E284399EF" }}
+{{ $agePubKey := "age1wezwdvug6rdnwedvw8tk7npjm2rlmmewukxdat8v5y5garwvgdeq3ww5m9" }}
+{{ $sshId := "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXPGUiiFFBzqutbhNqi5RjykdlwvdFveB/XkSdg0BAM" }}
 
-[data.catppuccin]
-accentColors = [ {{ $catppuccinAccentColors | quoteList | join ", " }} ]
-flavors = [ {{ $catppuccinFlavors | quoteList | join ", " }} ]
+[data]
+{{- $isLaptop := false }}
+{{- if lookPath "hostnamectl" }}
+  {{- if eq (output "hostnamectl" "chassis") "laptop" }}
+    {{- $isLaptop = true }}
+  {{- end }}
+{{- else if lookPath "wmic" }}
+  {{- if eq (output "wmic" "computersystem" "get" "PCSystemType" "/VALUE" | trim) "PCSystemType=2" }}
+    {{- $isLaptop = true }}
+  {{- end }}
+{{- end }}
+isLaptop = {{ $isLaptop }}
+gpgId = {{ $gpgId | quote }}
+agePubKey = {{ $agePubKey | quote }}
+sshId = {{ $sshId | quote }}
+{{- $isWSL := false }}
+{{- if eq .chezmoi.os "linux" }}
+  {{- if hasKey .chezmoi "kernel" }}
+    {{- if hasKey .chezmoi.kernel "osrelease" }}
+      {{- $isWSL = (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+isWSL = {{ $isWSL }}
 
 [age]
-    identity = "~/.config/.key"
-    recipient = {{ $agePubKey | quote }}
+identity = "~/.config/.key"
+recipient = {{ $agePubKey | quote }}
 
 [gpg]
 recipient = {{ $gpgId | quote }}
-args = ["--quiet"]
 
 [git]
 autoAdd = true
 autoCommit = false
 autoPush = false
 
-[cd]
-command = {{ $shell | quote }}
-
 [onepassword]
-    mode = {{ $opType | quote }}
+mode = "connect"
 
 [interpreters.ps1]
-    command = "pwsh"
-    args = ["-NoLogo"]
+command = "pwsh"
+args = ["-NoLogo"]
+
 [edit]
 watch = true
+
+[cd]
+{{- $shell := "" }}
+{{- if eq .chezmoi.os "windows" }}
+  {{- $shell = "pwsh" }}
+{{- else }}
+  {{- $shell = "zsh" }}
+{{- end }}
+command = {{ $shell | quote }}
 
 
 

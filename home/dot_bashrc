@@ -72,9 +72,9 @@ if command -v navi >/dev/null 2>&1; then
 fi
 
 # mise
-if command -v mise >/dev/null 2>&1; then
-	eval "$(mise activate bash)"
-fi
+# if command -v mise >/dev/null 2>&1; then
+# 	eval "$(mise activate bash)"
+# fi
 
 # 💤 zoxide
 if command -v zoxide >/dev/null 2>&1; then

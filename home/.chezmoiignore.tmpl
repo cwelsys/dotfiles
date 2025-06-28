@@ -9,7 +9,7 @@
 .chezmoiscripts/linux/**
 {{ end }}
 
-{{ if ne .osId "windows" }}
+{{ if ne .chezmoi.os "windows" }}
 .chezmoiscripts/windows/**
 .local/bin/*.bat
 .local/bin/*.reg
@@ -17,21 +17,21 @@
 .local/bin/*.ahk
 {{ end }}
 
-{{ if ne .osId "darwin" }}
+{{ if ne .chezmoi.os "darwin" }}
 .chezmoiscripts/darwin/**
 .config/yabai/
 .config/skhd/
 .config/karabiner/
 .config/hammerspoon/
-Library/Application Support/
+Library/**
 {{ end }}
 
-{{ if eq .osId "windows" }}
+{{ if eq .chezmoi.os "windows" }}
 .chezmoiscripts/posix/**
 .local/bin/*.sh
 {{ end }}
 
-{{ if eq .osId "windows" }}
+{{ if eq .chezmoi.os "windows" }}
 .config/atuin/
 .config/powershell/profile.ps1
 .config/btop/

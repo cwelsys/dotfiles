@@ -206,10 +206,8 @@ pkgs:
       - 'LesFerch.WinSetView'
       - 'Logitech.GHUB'
       - 'RARLab.WinRAR'
-      - 'Discord.Discord'
       - 'ClassicOldSong.Apollo'
       - 'Git.Git'
-      - 'KurtZimmermann.RegCool'
       - 'TigerVNC.TigerVNC'
       - 'Google.Chrome'
       - 'Zoom.Zoom'
@@ -231,6 +229,7 @@ pkgs:
       - 'Microsoft.UI.Xaml.2.8'
       - 'Microsoft.WSL'
       - 'Nextcloud.NextcloudDesktop'
+      - 'Nvidia.PhysX'
 
     psGallery:
       - 'PsReadLine'
@@ -262,3 +261,4 @@ pkgs:
           - 'seachicken/gh-poi'
           - 'Link-/gh-token'
           - 'Shresht7/gh-license'
+

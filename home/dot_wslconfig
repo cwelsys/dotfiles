@@ -1,8 +1,0 @@
-[wsl2]
-memory = 6GB
-processors = 4
-debugConsole = false
-
-[experimental]
-autoMemoryReclaim = gradual
-

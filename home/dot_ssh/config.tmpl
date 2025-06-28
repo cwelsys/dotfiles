@@ -1,33 +1,8 @@
 HashKnownHosts no
-{{- if eq .chezmoi.os "windows" "darwin" }}
-Include ~/.ssh/1Password/config
-{{- end }}
 Host *
 ServerAliveInterval 86400
 ServerAliveCountMax 4
-{{ if eq .chezmoi.os "linux" }}
 IdentityFile ~/.ssh/cwel
-{{ end }}
-{{- if eq .chezmoi.os "darwin" }}
-IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-
-Host wini
-HostName wini
-User cwel
-ForwardAgent yes
-{{ end }}
-{{- if eq .chezmoi.os "windows" }}
-Host mba
-HostName mba
-User cwel
-ForwardAgent yes
-{{- end }}
-
-Host pbox
-HostName pbox
-user cwel
-ForwardAgent yes
-ForwardX11 yes
 
 Host github.com
 User git
@@ -37,3 +12,18 @@ Host gitea
 HostName git.cwel.casa
 User git
 PreferredAuthentications publickey
+
+{{- if eq .chezmoi.os "darwin" }}
+Host wini
+HostName wini
+User cwel
+{{ end }}
+{{- if eq .chezmoi.os "windows" }}
+Host mba
+HostName mba
+User cwel
+{{- end }}
+Host pbox
+HostName pbox
+user cwel
+ForwardX11 yes
