@@ -35,6 +35,7 @@
 	"transparency": false,
 	"transparency_alpha": 240,
 	"transparency_ignore_rules": [{ "kind": "Title", "id": "Youtube", "matching_strategy": "Contains" }],
+	"manage_rules": [{ "kind": "Exe", "id": "MTGA.exe", "matching_strategy": "Equals" }],
 	"ignore_rules": [
 		{ "kind": "Exe", "id": "ShareX", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "uninstall.exe", "matching_strategy": "Equals" },
@@ -57,8 +58,7 @@
 		{ "kind": "Exe", "id": "shadPS4.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "scummvm.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "retroarch.exe", "matching_strategy": "Equals" },
-		{ "kind": "Exe", "id": "ResourceHacker.exe", "matching_strategy": "Equals" },
-		{ "kind": "Exe", "id": "MTGA.exe", "matching_strategy": "Equals" }
+		{ "kind": "Exe", "id": "ResourceHacker.exe", "matching_strategy": "Equals" }
 	],
 	"floating_applications": [
 		{ "kind": "Exe", "id": "explorer.exe", "matching_strategy": "Equals" },
