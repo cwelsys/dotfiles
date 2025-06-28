@@ -1,12 +1,28 @@
 pkgs:
   debian:
     apt:
-      - tmux
+      - fish
 
   fedora:
     dnf:
-      - tmux
       - fish
+
+  arch:
+    pacman:
+      - fish
+      - bat
+      - chezmoi
+      - eza
+      - fd
+      - fzf
+      - thefuck
+      - yazi
+      - yq
+      - mise
+      - btop
+      - zoxide
+      - rsync
+      - glow
 
   shared:
     brews:
