@@ -46,6 +46,16 @@ bindkey '^A' .zle_select-all
 zle -N       .zle_smart-backspace
 bindkey '^?' .zle_smart-backspace
 
+.zle_smart-ctrl-backspace () {
+  if (( REGION_ACTIVE )); then
+    zle kill-region
+  else
+    zle backward-kill-word
+  fi
+}
+zle -N       .zle_smart-ctrl-backspace
+bindkey '^H' .zle_smart-ctrl-backspace
+
 _fix-omz-plugin() {
   if [[ ! -f ._zinit/teleid ]] then return 0; fi
   if [[ ! $(cat ._zinit/teleid) =~ "^OMZP::.*" ]] then return 0; fi
