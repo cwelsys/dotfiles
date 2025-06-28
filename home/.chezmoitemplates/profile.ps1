@@ -108,4 +108,4 @@ else {
 		EnableAliasFuzzyKillProcess   = $True
 	}
 
-	Set-PsFzfOption $PSFzfOptions
+	Set-PsFzfOption @PSFzfOptions
