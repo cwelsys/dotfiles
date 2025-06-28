@@ -140,22 +140,12 @@ unsetopt beep
 
 bindkey ' ' magic-space
 bindkey '^[[3~' delete-char
-#bindkey "^A" beginning-of-line
-bindkey "^E" end-of-line
+bindkey '^[[1;5D' beginning-of-line
+bindkey '^[[1;5C' end-of-line
 bindkey "^N" insert-last-word
 bindkey '^[w' kill-region
-bindkey '^[' kill-whole-line
-bindkey '^Z' undo
+bindkey '^H' backward-kill-word
 bindkey '^Y' redo
-
-select-all() {
-    CURSOR=0
-    MARK=${#BUFFER}
-    zle set-mark-command
-}
-zle -N select-all
-bindkey '^A' select-all
-
 
 if [ ! -d "$XDG_STATE_HOME/zsh" ]; then
   mkdir -p "$XDG_STATE_HOME/zsh"

@@ -28,14 +28,23 @@ function fancy-ctrl-z () {
 zle -N fancy-ctrl-z
 bindkey '^Z' fancy-ctrl-z
 
-function do-nothing() {
+.zle_select-all () {
+  (( CURSOR=0 ))
+  (( MARK=$#BUFFER ))
+  (( REGION_ACTIVE=1 ))
 }
-zle -N do-nothing
+zle -N       .zle_select-all
+bindkey '^A' .zle_select-all
 
-# Bind F13 to the no-op function
-#bindkey '^[[25~' do-nothing
-#bindkey '^[[1;2P' do-nothing
-#bindkey '^[[[E' do-nothing
+.zle_smart-backspace () {
+  if (( REGION_ACTIVE )); then
+    zle kill-region
+  else
+    zle backward-delete-char
+  fi
+}
+zle -N       .zle_smart-backspace
+bindkey '^?' .zle_smart-backspace
 
 _fix-omz-plugin() {
   if [[ ! -f ._zinit/teleid ]] then return 0; fi
