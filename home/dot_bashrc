@@ -3,10 +3,11 @@ if [ -f "$HOME/.config/shared/init.sh" ]; then
 fi
 
 if [ -f "$HOME/.config/bash" ]; then
-for file in ~/.config/bash/*.bash; do
-	source "$file"
-done
-unset file
+	for file in ~/.config/bash/*.bash; do
+		source "$file"
+	done
+	unset file
+fi
 
 export HISTFILE="${XDG_STATE_HOME}"/bash/.bash_history
 HISTCONTROL=ignoreboth:erasedups
