@@ -9,11 +9,15 @@ if [ -f "$HOME/.config/bash" ]; then
 	unset file
 fi
 
-export HISTFILE="${XDG_STATE_HOME}"/bash/.bash_history
+if [ -f "$HOME/.bash_history" ] && [ ! -f "$XDG_STATE_HOME/bash/history" ]; then
+	mv "$HOME/.bash_history" "$XDG_STATE_HOME/bash/history"
+fi
+[ -z "$HISTFILE" ] && export HISTFILE="$XDG_STATE_HOME/bash/history"
+
 HISTCONTROL=ignoreboth:erasedups
 HISTIGNORE="&:[bf]g:c:clear:history:exit:q:pwd:* --help"
 HISTFILESIZE=10000
-HISTSIZE=10000
+HISTSIZE=$HISTFILESIZE
 
 shopt -s autocd
 shopt -s cdspell
