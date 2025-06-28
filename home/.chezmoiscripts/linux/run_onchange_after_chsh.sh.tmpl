@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+if [[ "$SHELL" =~ .*zsh$ ]]; then
+    exit 0
+fi
+
+chsh -s "/bin/zsh"
+
+# Set ZDOTDIR in global zsh configuration
+{{- if eq .chezmoi.osRelease.id "arch" }}
+sudo tee /etc/zsh/zshenv > /dev/null <<'EOF'
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+EOF
+{{- else if eq .chezmoi.osRelease.id "debian" }}
+sudo tee /etc/zsh/zshenv > /dev/null <<'EOF'
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+EOF
+{{- else if eq .chezmoi.osRelease.id "fedora" }}
+sudo tee /etc/zshenv > /dev/null <<'EOF'
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+EOF
+{{- end }}
