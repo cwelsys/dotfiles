@@ -146,7 +146,7 @@ return {
     },
     opts = {
       add_default_keybindings = false,
-      projects_dir = "~/projects/",
+      projects_dir = "~/Projects/",
     },
     keys = {
       { prefix .. "rl", "<cmd>OctoRepos<CR>",              desc = "List Repos" },
