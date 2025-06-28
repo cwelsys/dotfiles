@@ -18,8 +18,7 @@ if ! grep -q "ILoveCandy" /etc/pacman.conf; then
 fi
 
 sudo pacman -Syu --noconfirm
-sudo pacman -S --needed --noconfirm git base-devel
-sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si && cd .. rm -rf yay-bin
+sudo pacman -S --needed --noconfirm git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si && cd .. rm -rf yay
 sudo pacman -S --needed --noconfirm base-devel procps-ng wget curl file git zsh age openssh
 sudo sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 sudo locale-gen
