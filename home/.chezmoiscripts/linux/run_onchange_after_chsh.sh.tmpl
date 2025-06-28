@@ -4,7 +4,14 @@ if [[ "$SHELL" =~ .*zsh$ ]]; then
     exit 0
 fi
 
-chsh -s "/bin/zsh"
+if grep -q "^/bin/zsh$" /etc/shells; then
+    sudo chsh -s /bin/zsh
+elif grep -q "^/usr/bin/zsh$" /etc/shells; then
+    sudo chsh -s /usr/bin/zsh
+else
+    echo "Error: zsh not found in /etc/shells"
+    exit 1
+fi
 
 # Set ZDOTDIR in global zsh configuration
 {{- if eq .chezmoi.osRelease.id "arch" }}

@@ -10,8 +10,8 @@ sudo dnf group install development-tools -y
 sudo dnf install procps-ng wget curl file git age zsh  -y
   {{- else if eq .chezmoi.osRelease.id "arch" -}}
 sudo pacman -Syu --noconfirm
-sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay-bin.git && cd yay-bin && makepkg -si
-sudo pacman -S --noconfirm base-devel procps-ng wget curl file git zsh age openssh
+sudo pacman -S --needed --noconfirm git base-devel && git clone https://aur.archlinux.org/yay-bin.git && cd yay-bin && makepkg -si --noconfirm
+sudo pacman -S --needed --noconfirm base-devel procps-ng wget curl file git zsh age openssh
 sudo sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 sudo locale-gen
   {{- else -}}
