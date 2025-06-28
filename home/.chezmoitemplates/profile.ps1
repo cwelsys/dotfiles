@@ -59,10 +59,6 @@ $AsyncProfile = {
 		$Env:PYTHONIOENCODING = 'utf-8'
 	}
 
-	if (Import-Module PSFzf -PassThru -ea Ignore) {
-    Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
-	}
-
 	if (-not $isVSCode) {
 
 		if (Get-Command scoop -ErrorAction SilentlyContinue) {
@@ -101,6 +97,10 @@ $AsyncProfile = {
 	if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 		$Env:_ZO_DATA_DIR = "$Env:PWSH"
 		Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
+	}
+
+	if (Import-Module PSFzf -PassThru -ea Ignore) {
+    Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
 	}
 }
 
