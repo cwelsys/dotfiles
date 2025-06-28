@@ -20,7 +20,6 @@ HISTIGNORE="&:[bf]g:c:clear:history:exit:q:pwd:* --help"
 HISTFILESIZE=10000
 HISTSIZE=10000
 
-# 🐚 Prompt
 if command -v starship >/dev/null 2>&1; then
 	eval "$(starship init bash)"
 elif command -v oh-my-posh >/dev/null 2>&1; then
