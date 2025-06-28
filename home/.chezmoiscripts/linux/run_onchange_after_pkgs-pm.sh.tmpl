@@ -9,6 +9,6 @@ sudo apt install {{ $pkgs | quoteList | join " " }} -y
 sudo dnf install {{ $pkgs | quoteList | join " " }} -y
 {{   else if eq .chezmoi.osRelease.id "arch" }}
 {{ $pkgs := .pkgs.arch.pacman }}
-sudo pacman -S --noconfirm {{ $pkgs | quoteList | join " " }}
+yay -S {{ $pkgs | quoteList | join " " }} --needed --noconfirm
 {{   end }}
 {{ end }}
