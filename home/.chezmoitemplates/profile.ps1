@@ -38,6 +38,15 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 
 Set-PSReadLineOption -HistorySavePath $Env:PWSH/history.txt
 
+	$PSFzfOptions = @{
+		AltCCommand                   = [ScriptBlock] { param($Location) Write-Host $Location }
+		PSReadlineChordProvider       = 'Ctrl+t'
+		PSReadlineChordReverseHistory = 'Ctrl+r'
+		GitKeyBindings                = $True
+		TabExpansion                  = $True
+		EnableAliasFuzzyKillProcess   = $True
+	}
+
 $AsyncProfile = {
 	. "$env:PWSH\lib\cons.ps1"
 	if (Get-Command code -ErrorAction SilentlyContinue) { $Env:EDITOR = 'code' }
@@ -69,9 +78,9 @@ $AsyncProfile = {
 		if (Get-Module -ListAvailable -Name 'Terminal-Icons' -ErrorAction SilentlyContinue) {
 			Import-Module -Name Terminal-Icons -Global
 		}
+		iex "$(thefuck --alias)"
 	}
 
-	iex "$(thefuck --alias)"
 
 	if (Get-Command carapace -ErrorAction SilentlyContinue) {
 		$env:CARAPACE_BRIDGES = 'zsh,fish,bash,inshellisense'
@@ -85,6 +94,7 @@ $AsyncProfile = {
 			mise activate pwsh | Out-String | Invoke-Expression
 		}
 	}
+
 	if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 		$Env:_ZO_DATA_DIR = "$Env:PWSH"
 		Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
@@ -95,19 +105,13 @@ if ((-not $isVSCode) -and (Import-Module ProfileAsync -PassThru -ea Ignore)) {
 	$splat = if ((Get-Command Import-ProfileAsync).Parameters.LogPath) { @{LogPath = "$env:PWSH\async.log" } } else { @{} }
 	Import-ProfileAsync $AsyncProfile @splat
 }
+
 else {
+
+	if (Import-Module PSFzf -PassThru -ea Ignore) {
+	Set-PsFzfOption @PSFzfOptions
+	}
+
 	. $AsyncProfile
 }
 
-if (Import-Module PSFzf -PassThru -ea Ignore) {
-	$commandOverride = [ScriptBlock] { param($Location) Write-Host $Location }
-	$PSFzfOptions = @{
-		AltCCommand                   = $commandOverride
-		PSReadlineChordProvider       = 'Ctrl+t'
-		PSReadlineChordReverseHistory = 'Ctrl+r'
-		GitKeyBindings                = $True
-		TabExpansion                  = $True
-		EnableAliasFuzzyKillProcess   = $True
-	}
-	Set-PsFzfOption @PSFzfOptions
-}
