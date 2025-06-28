@@ -70,11 +70,6 @@ skip_notify = true
 # Run specific steps - same options as the command line flag
 # only = ["system", "emacs"]
 
-
-
-
-
-{{ if eq .chezmoi.os "windows" }}
 # Whether to self update
 #
 # this will be ignored if the binary is built without self update support
@@ -86,6 +81,7 @@ no_self_update = true
 # See: https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html#directives
 # log_filters = ["topgrade::command=debug", "warn"]
 # Commands to run before anything
+{{ if eq .chezmoi.os "windows" }}
 [pre_commands]
 "Stop Komorebi" = "komorebic stop --whkd 2>$null; $true"
 # Commands to run after anything
@@ -95,10 +91,9 @@ no_self_update = true
 
 # Custom commands
 [commands]
-
-
-{{ else }}
 "Fetch Komorebi" = "komorebic fetch-asc"
+{{ else }}
+
 # Commands to run before anything
 [pre_commands]
 
