@@ -5,20 +5,6 @@ command_timeout = 6900
 palette = "catppuccin_mocha"
 continuation_prompt = "[❯❯ ](subtext0)"
 
-{{ if eq .chezmoi.os "windows" }}
-format = """
-$os\
-$directory\
-$git_branch\
-$git_state\
-$git_status\
-$git_metrics\
-$all\
-$cmd_duration\
-$battery\
-$line_break\
-$sudo$username$shell$character"""
-{{ else }}
 format = """
 $os\
 $directory\
@@ -30,7 +16,6 @@ $line_break\
 $sudo$username$shell$character"""
 
 right_format = """$all"""
-{{ end }}
 
 [os]
 format = '[$symbol ](lavender)'
@@ -50,28 +35,13 @@ aliases = { "Administrator" = '󱐋 ' }
 
 [shell]
 fish_indicator = '󰈺 '
-bash_indicator = ' '
-nu_indicator = '󰟆 '
-cmd_indicator = ' '
+bash_indicator = '󱆃 '
 unknown_indicator = ' '
 style = 'teal bold'
 disabled = false
 format = '[$indicator]($style)'
-{{ if eq .chezmoi.os "windows" }}
 powershell_indicator = ''
-{{ else }}
 zsh_indicator = ''
-powershell_indicator = '_'
-{{ end }}
-
-[battery]
-full_symbol = "󰁹 "
-charging_symbol = "󰂄 "
-discharging_symbol = "󰂃 "
-unknown_symbol = "󰁽 "
-empty_symbol = "󰂎 "
-disabled = false
-format = "[$symbol$percentage]($style) "
 
 [cmd_duration]
 min_time = 2000
@@ -82,28 +52,17 @@ disabled = false
 show_notifications = false
 min_time_to_notify = 45000
 
-[[battery.display]]
-threshold = 10
-style = "red bold"
-
-[vagrant]
-format = " [$symbol($version )]($style)"
-symbol = "⋁"
-style = "sky bold"
-disabled = false
-
 [directory]
 truncation_length = 2
 use_os_path_sep = false
 fish_style_pwd_dir_length = 2
 read_only_style = '197'
-read_only = " 󰌾"
+read_only = " "
 style = "sapphire"
 format = '[$path]($style)[$read_only]($read_only_style) '
 
 [hostname]
-ssh_symbol = " "
-disabled = true
+ssh_symbol = "󰥛 "
 
 [git_branch]
 style = "overlay2"
@@ -146,11 +105,18 @@ deleted = '[ -${count}](yellow)'
 [memory_usage]
 symbol = "󰍛 "
 
+[vagrant]
+format = " [$symbol($version )]($style)"
+symbol = ""
+# symbol = "⋁"
+style = "sky bold"
+disabled = false
+
 [docker_context]
 symbol = " "
 
 [aws]
-symbol = "  "
+symbol = " "
 disabled = true
 
 [buf]
@@ -160,7 +126,7 @@ symbol = " "
 symbol = " "
 
 [conda]
-symbol = " "
+symbol = "🐍 "
 
 [crystal]
 symbol = " "
@@ -178,7 +144,7 @@ symbol = " "
 symbol = " "
 
 [fossil_branch]
-symbol = " "
+symbol = " "
 
 [golang]
 symbol = " "
@@ -193,7 +159,7 @@ symbol = " "
 symbol = " "
 
 [hg_branch]
-symbol = " "
+symbol = " "
 
 [java]
 symbol = " "
@@ -232,7 +198,7 @@ symbol = " "
 symbol = " "
 
 [pijul_channel]
-symbol = " "
+symbol = " "
 
 [python]
 symbol = " "
