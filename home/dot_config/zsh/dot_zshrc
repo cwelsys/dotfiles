@@ -128,14 +128,11 @@ zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin"
         return $ret
     }
     zle -N fzf-atuin-history-widget
-    bindkey '^R' fzf-atuin-history-widget
     '
 zinit light atuinsh/atuin
 
-
 autoload -Uz compinit && compinit
 zinit cdreplay -q
-
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=247
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
@@ -158,6 +155,7 @@ setopt prompt_subst
 setopt interactive_comments # allow comments in interactive shells
 unsetopt beep
 
+bindkey '^R' fzf-atuin-history-widget
 bindkey ' ' magic-space
 bindkey '^[[3~' delete-char
 bindkey '^[[1;5D' beginning-of-line
