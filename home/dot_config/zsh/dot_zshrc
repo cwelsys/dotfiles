@@ -39,9 +39,59 @@ fi
 [ -z "$HISTFILE" ] && export HISTFILE="$XDG_STATE_HOME/zsh/history"
 
 zinit ice depth=1; zinit light romkatv/powerlevel10k
-
-vivid_theme="catppuccin-mocha"
 zinit light ryanccn/vivid-zsh
+
+if [ "$(uname)" = "Darwin" ]; then
+omzPlugin macos
+else
+omzPlugin systemd
+fi
+omzLib git.zsh
+omzPlugin sudo
+omzPlugin colored-man-pages
+omzPlugin rsync
+omzPlugin gpg-agent
+omzPlugin git
+omzPlugin mise
+omzPlugin git-flow wait"1"
+omzPlugin github wait"1"
+omzPlugin command-not-found wait"1"
+omzPlugin zoxide
+
+zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
+    atclone"./atuin init zsh > init.zsh; ./atuin gen-completions --shell zsh > _atuin" \
+    atpull"%atclone" src"init.zsh" \
+    atload'
+    bindkey "^E" _atuin_search_widget
+    export ATUIN_NOBIND="true"
+    '
+zinit light atuinsh/atuin
+
+zinit ice wait"1" lucid
+zinit light denisidoro/navi
+zinit light reegnz/jq-zsh-plugin
+zinit ice wait"1" lucid
+zinit light laggardkernel/zsh-thefuck
+zinit ice wait"1" lucid
+zinit light paulirish/git-open
+
+zinit wait lucid as"completion" for \
+    OMZP::docker/completions/_docker \
+    OMZP::docker-compose/_docker-compose
+
+zinit light zdharma-continuum/fast-syntax-highlighting
+zinit light Aloxaf/fzf-tab
+zinit light zsh-users/zsh-autosuggestions
+zinit light zsh-users/zsh-syntax-highlighting
+zinit light zsh-users/zsh-completions
+
+autoload -Uz compinit && compinit
+zinit cdreplay -q
+
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=247
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+ZSH_AUTOSUGGEST_USE_ASYNC=true
+MATCH_PREV_CM=true
 
 zstyle ":completion:*" matcher-list "" "m:{a-z}={A-Z}" "m:{a-zA-Z}={A-Za-z}" "r:|[._-]=* r:|=* l:|=*"
 zstyle ':completion:*:git-checkout:*' sort false
@@ -52,72 +102,6 @@ zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza --icons --group-directories-first --color=always --git --oneline --all $realpath'
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
 zstyle ':fzf-tab:*' switch-group ',' '.'
-
-omzLib correction.zsh
-omzLib clipboard.zsh
-omzLib git.zsh
-omzLib grep.zsh
-
-# # 🔌 plugs
-if [ "$(uname)" = "Darwin" ]; then
-omzPlugin macos
-else
-omzPlugin systemd
-fi
-omzPlugin sudo
-omzPlugin cp
-omzPlugin rsync
-omzPlugin gpg-agent
-omzPlugin git
-omzPlugin mise
-omzPlugin git-flow wait"1"
-omzPlugin github wait"1"
-omzPlugin command-not-found wait"1"
-
-# navi
-zinit ice wait"1" lucid
-zinit light denisidoro/navi
-
-# jq tool
-zinit light reegnz/jq-zsh-plugin
-
-# thefuck
-zinit ice wait"1" lucid
-zinit light laggardkernel/zsh-thefuck
-
-# docker
-zinit wait lucid as"completion" for \
-    OMZP::docker/completions/_docker \
-    OMZP::docker-compose/_docker-compose
-
-# git-open
-zinit ice wait"1" lucid
-zinit light paulirish/git-open
-
-zinit ice pick"themes/catppuccin_mocha-zsh-syntax-highlighting.zsh"
-zinit light catppuccin/zsh-syntax-highlighting
-zinit light Aloxaf/fzf-tab
-zinit light zsh-users/zsh-autosuggestions
-zinit light zsh-users/zsh-syntax-highlighting
-zinit light zsh-users/zsh-completions
-
-# atuin
-zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
-    atclone"./atuin init zsh > init.zsh; ./atuin gen-completions --shell zsh > _atuin" \
-    atpull"%atclone" src"init.zsh" \
-    atload'
-    bindkey "^E" _atuin_search_widget
-    export ATUIN_NOBIND="true"
-    '
-zinit light atuinsh/atuin
-
-autoload -Uz compinit && compinit
-zinit cdreplay -q
-
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=247
-ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-ZSH_AUTOSUGGEST_USE_ASYNC=true
-MATCH_PREV_CM=true
 
 setopt hist_ignore_all_dups # remove older duplicate entries from history
 setopt hist_reduce_blanks # remove superfluous blanks from history items
@@ -154,13 +138,3 @@ elif [[ -v commands[starship] ]]; then
 elif [[ -v commands['oh-my-posh'] ]]; then
   eval "$(oh-my-posh init zsh --config $HOME/.config/posh.toml)"
 fi
-
-if [[ -n "$SSH_CONNECTION" ]]; then
-  export DISPLAY=wini:0
-fi
-
-if [ "$VSCODE_INJECTION" = "1" ]; then
-  export EDITOR="code --wait"
-fi
-
-[[ -x "$(command -v zoxide)" ]] && eval "$(zoxide init zsh --cmd=cd)"
