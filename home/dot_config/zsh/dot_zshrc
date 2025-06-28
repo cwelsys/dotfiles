@@ -28,6 +28,16 @@ if [ -d "$ZDOTDIR/lib" ]; then
   unset file
 fi
 
+if [ ! -d "$XDG_STATE_HOME/zsh" ]; then
+  mkdir -p "$XDG_STATE_HOME/zsh"
+fi
+
+if [ -f "$HOME/.zsh_history" ] && [ ! -f "$XDG_STATE_HOME/zsh/history" ]; then
+  mv "$HOME/.zsh_history" "$XDG_STATE_HOME/zsh/history"
+fi
+
+[ -z "$HISTFILE" ] && export HISTFILE="$XDG_STATE_HOME/zsh/history"
+
 zinit ice depth=1; zinit light romkatv/powerlevel10k
 
 vivid_theme="catppuccin-mocha"
@@ -141,16 +151,6 @@ bindkey '^[[1;5C' end-of-line
 bindkey "^N" insert-last-word
 bindkey '^[w' kill-region
 bindkey '^Y' redo
-
-if [ ! -d "$XDG_STATE_HOME/zsh" ]; then
-  mkdir -p "$XDG_STATE_HOME/zsh"
-fi
-
-if [ -f "$HOME/.zsh_history" ] && [ ! -f "$XDG_STATE_HOME/zsh/history" ]; then
-  mv "$HOME/.zsh_history" "$XDG_STATE_HOME/zsh/history"
-fi
-
-[ -z "$HISTFILE" ] && export HISTFILE="$XDG_STATE_HOME/zsh/history"
 
 HISTSIZE=290000
 SAVEHIST=$HISTSIZE
