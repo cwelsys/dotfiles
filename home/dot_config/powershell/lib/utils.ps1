@@ -2,6 +2,8 @@ $Env:DOTS = & chezmoi source-path
 
 Remove-Item Alias:rm -Force -ErrorAction SilentlyContinue
 
+Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+
 Set-Alias sarc Invoke-Sarcastaball
 Set-Alias npm-ls Get-NpmGlobalPackages
 Set-Alias bun-ls Get-BunGlobalPackages

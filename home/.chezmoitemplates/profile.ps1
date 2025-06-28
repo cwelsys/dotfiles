@@ -99,9 +99,9 @@ $AsyncProfile = {
 		Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
 	}
 
-	if (Import-Module PSFzf -PassThru -ea Ignore) {
-    Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
-	}
+	# if (Import-Module PSFzf -PassThru -ea Ignore) {
+  #   Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+	# }
 }
 
 if ((-not $isVSCode) -and (Import-Module ProfileAsync -PassThru -ea Ignore)) {
