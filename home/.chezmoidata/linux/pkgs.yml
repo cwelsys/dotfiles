@@ -30,7 +30,6 @@ pkgs:
       - rsync
       - shellcheck
       - glow
-      - rich-cli
       - less
       - navi
       - lazydocker
