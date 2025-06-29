@@ -2,7 +2,9 @@ if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
   fastfetch
 fi
 
-[ -f "${HOME}/.config/shared/init.sh" ] && source "${HOME}/.config/shared/init.sh"
+# [ -f "${HOME}/.config/shared/init.sh" ] && source "${HOME}/.config/shared/init.sh"
+
+eval "$(aliae init zsh --config "$HOME/.config/aliae.yaml")"
 
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
@@ -16,7 +18,7 @@ GPG_TTY=$(tty)
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
 if [[ ! -d "${ZINIT_HOME}" ]]; then
-  mkdir -p "$(dirname $ZINIT_HOME)"
+  mkdir -p "$(dirname "$ZINIT_HOME")"
   git clone https://github.com/zdharma-continuum/zinit.git "${ZINIT_HOME}"
 fi
 
@@ -101,7 +103,7 @@ MATCH_PREV_CM=true
 zstyle ":completion:*" matcher-list "" "m:{a-z}={A-Z}" "m:{a-zA-Z}={A-Za-z}" "r:|[._-]=* r:|=* l:|=*"
 zstyle ':completion:*:git-checkout:*' sort false
 zstyle ':completion:*:descriptions' format '[%d]'
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
 zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza --icons --group-directories-first --color=always --git --oneline --all $realpath'
@@ -141,5 +143,5 @@ if [[ -f ~/.config/zsh/.p10k.zsh ]]; then
 elif [[ -v commands[starship] ]]; then
   eval "$(starship init zsh)"
 elif [[ -v commands['oh-my-posh'] ]]; then
-  eval "$(oh-my-posh init zsh --config $HOME/.config/posh.toml)"
+  eval "$(oh-my-posh init zsh --config "$HOME"/.config/posh.toml)"
 fi
