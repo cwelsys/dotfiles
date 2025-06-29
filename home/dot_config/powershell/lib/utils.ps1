@@ -1,28 +1,15 @@
-$Env:DOTS = & chezmoi source-path
-
 Remove-Item Alias:rm -Force -ErrorAction SilentlyContinue
+Remove-Item Alias:ls -Force -ErrorAction SilentlyContinue
+Remove-Item Alias:cat -Force -ErrorAction SilentlyContinue
 
-Set-Alias sarc Invoke-Sarcastaball
-Set-Alias npm-ls Get-NpmGlobalPackages
-Set-Alias bun-ls Get-BunGlobalPackages
-Set-Alias pnpm-ls Get-PnpmGlobalPackages
-Set-Alias md5 Get-FileHashMD5
-Set-Alias sha1 Get-FileHashSHA1
-Set-Alias sha256 Get-FileHashSHA256
-Set-Alias GET Invoke-RestMethodGet
-Set-Alias HEAD Invoke-RestMethodHead
-Set-Alias POST Invoke-RestMethodPost
-Set-Alias PUT Invoke-RestMethodPut
-Set-Alias DELETE Invoke-RestMethodDelete
-Set-Alias TRACE Invoke-RestMethodTrace
-Set-Alias OPTIONS Invoke-RestMethodOptions
-
-function dots { Set-Location $Env:DOTS }
-function qq { exit }
-function cdcm { Set-Location $Env:DOTS }
-function cdc { Set-Location $env:XDG_CONFIG_HOME }
+function Import-Profile {
+  if (Test-Path -Path $PROFILE) { . $PROFILE }
+  elseif (Test-Path -Path $PROFILE.CurrentUserAllHosts) { . $PROFILE.CurrentUserAllHosts }
+}
+function rst { Get-Process -Id $PID | Select-Object -ExpandProperty Path | ForEach-Object { Invoke-Command { & "$_" } -NoNewScope } }
 
 if ($IsWindows) {
+  function envs { Get-ChildItem Env: }
   function lock { Invoke-Command { rundll32.exe user32.dll, LockWorkStation } }
   function hibernate { shutdown.exe /h }
   function shutdown { Stop-Computer }
@@ -36,43 +23,10 @@ if ($IsWindows) {
   function export($name, $value) {
     Set-Item -Path "env:$name" -Value $value
   }
-  function Invoke-Bat {
-    [Alias('cat')]
-    param([Parameter(ValueFromRemainingArguments = $true)]$args)
-    & (Get-Command bat).Source --paging=never --style=plain @args
-  }
-
-  Set-Alias deltemp Remove-TempData
-
   function komorel {
     komorebic stop --whkd | Out-Null
     komorebic start --whkd | Out-Null
     yasbc reload | Out-Null
-  }
-
-}
-function envs { Get-ChildItem Env: }
-function paths { $env:PATH -Split ';' }
-function e { Invoke-Item . }
-function sysinfo { if (Get-Command fastfetch -ErrorAction SilentlyContinue) { fastfetch -c all } else { Get-ComputerInfo } }
-function profiles { Get-PSProfile { $_.exists -eq 'True' } | Format-List }
-function rst { Get-Process -Id $PID | Select-Object -ExpandProperty Path | ForEach-Object { Invoke-Command { & "$_" } -NoNewScope } }
-
-function Get-NpmGlobalPackages { (npm ls -g | Select-Object -skip 1).Trim().Split() | ForEach-Object { if ($_ -match [regex]::Escape('@')) { Write-Output $_ } } }
-function Get-BunGlobalPackages { (bun pm ls -g | Select-Object -Skip 1).Trim().Split() | ForEach-Object { if ($_ -match [regex]::Escape('@')) { Write-Output $_ } } }
-function Get-PnpmGlobalPackages { (pnpm ls -g | Select-Object -Skip 5) | ForEach-Object { $name = $_.Split()[0]; $version = $_.Split()[1]; Write-Output "$name@$version" } }
-function cmpack {
-  [CmdletBinding(DefaultParameterSetName = 'Args')]
-  param(
-    [Parameter(ValueFromRemainingArguments = $true)]
-    $Args
-  )
-  $scriptPath = Join-Path $env:XDG_BIN_HOME 'update-manifest.ps1'
-  if (Test-Path $scriptPath) {
-    & $scriptPath @Args
-  }
-  else {
-    Write-Error "Script not found: $scriptPath"
   }
 }
 function y {
@@ -85,49 +39,78 @@ function y {
   Remove-Item -Path $tmp
 }
 
-function fortune {
+function Get-Fortune {
+  [CmdletBinding()]
+  [Alias('fortune')]
+  param ()
   [System.IO.File]::ReadAllText("$Env:PWSH\lib\Assets\fortune.txt") -replace "`r`n", "`n" -split "`n%`n" | Get-Random
 }
 
-function cfortune {
+function Get-CowFortune {
   [CmdletBinding()]
-  param()
-
+  [Alias('cowf')]
+  param ()
   $fortuneText = fortune
   $fortuneText | cowsay
 }
 
+function profiles { Get-PSProfile { $_.exists -eq 'True' } | Format-List }
+
 function Get-PSProfile {
   $PROFILE.PSExtended.PSObject.Properties |
-  Select-Object Name, Value, @{Name = 'IsExist'; Expression = { Test-Path -Path $_.Value -PathType Leaf } }
+  Select-Object Name, Value, @{Name = 'Active'; Expression = { Test-Path -Path $_.Value -PathType Leaf } }
 }
 
+function Import-Script {
+  [CmdletBinding()]
+  [Alias('ips')]
+  param (
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+    [ArgumentCompleter({
+        param ($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
 
-function Remove-TempData {
-  Write-Color 'Deleting temp data...' -Color Gray
+        $Files = Get-ChildItem $PSScriptRoot -Filter *.ps1 | % BaseName
+            ($Files -like "$wordToComplete*"), ($Files -like "*$wordToComplete*") | Write-Output
+      })]
+    [string[]]$Name
+  )
 
-  $path1 = 'C' + ':\Windows\Temp'
-  Get-ChildItem $path1 -Force -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+  if ($MyInvocation.ExpectingInput) {
+    $Name = $input
+  }
 
-  $path2 = 'C' + ':\Windows\Prefetch'
-  Get-ChildItem $path2 -Force -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+  foreach ($_Name in $Name) {
+    [string]$Path = [IO.Path]::ChangeExtension($_Name, 'ps1')  # no-op when already ps1
+    if (-not (Test-Path $Path)) { $Path = Join-Path $PSScriptRoot $Path }
+    $Path = Resolve-Path $Path -ErrorAction Stop
 
-  $path3 = 'C' + ':\Users\*\AppData\Local\Temp'
-  Get-ChildItem $path3 -Force -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+    $Importer = ". $Path; Export-ModuleMember -Function * -Variable * -Cmdlet * -Alias *"
+    $ScriptBlock = [scriptblock]::Create($Importer)
+    $Module = New-Module -Name $_Name -ScriptBlock $ScriptBlock
 
-  Write-Color 'Temp data deleted successfully.' -Color Green
+    Import-Module $Module -Global -Force
+  }
 }
 
-function Import-Profile {
-  [Alias('rl')]
-  param()
-
-  if (Test-Path -Path $PROFILE) { . $PROFILE }
-  elseif (Test-Path -Path $PROFILE.CurrentUserAllHosts) { . $PROFILE.CurrentUserAllHosts }
+function Get-CommandInfo {
+  [CmdletBinding()]
+  [Alias('w')]
+  param (
+    [Parameter(Mandatory = $true, Position = 0)]
+    [string]$Name
+  )
+  $commandExists = Get-Command $Name -ErrorAction SilentlyContinue
+  if ($commandExists) {
+    return $commandExists | Select-Object -ExpandProperty Definition
+  }
+  else {
+    Write-Warning "Command not found: $Name."
+    break
+  }
 }
-
 function Invoke-Sarcastaball {
   [cmdletbinding()]
+  [Alias('sarc')]
   param(
     [Parameter(HelpMessage = 'provide string' , Mandatory = $true)]
     [string]$Message
@@ -150,126 +133,21 @@ function Invoke-Sarcastaball {
   $output = $null
 }
 
-function Invoke-RestMethodGet {
-  <#
-    .SYNOPSIS
-        Sends a GET http request.
-    .INPUTS
-        System.Object
-    .OUTPUTS
-        System.Object
-    .LINK
-        Invoke-RestMethod
-    #>
-  Invoke-RestMethod -Method GET @args
-}
-
-function Invoke-RestMethodHead {
-  <#
-    .SYNOPSIS
-        Sends a HEAD http request.
-    .INPUTS
-        System.Object
-    .OUTPUTS
-        System.Object
-    .LINK
-        Invoke-RestMethod
-    #>
-  Invoke-RestMethod -Method HEAD @args
-}
-
-function Invoke-RestMethodPost {
-  <#
-    .SYNOPSIS
-        Sends a POST http request.
-    .INPUTS
-        System.Object
-    .OUTPUTS
-        System.Object
-    .LINK
-        Invoke-RestMethod
-    #>
-  Invoke-RestMethod -Method POST @args
-}
-
-function Invoke-RestMethodPut {
-  <#
-    .SYNOPSIS
-        Sends a PUT http request.
-    .INPUTS
-        System.Object
-    .OUTPUTS
-        System.Object
-    .LINK
-        Invoke-RestMethod
-    #>
-  Invoke-RestMethod -Method PUT @args
-}
-
-function Invoke-RestMethodDelete {
-  <#
-    .SYNOPSIS
-        Sends a DELETE http request.
-    .INPUTS
-        System.Object
-    .OUTPUTS
-        System.Object
-    .LINK
-        Invoke-RestMethod
-    #>
-  Invoke-RestMethod -Method DELETE @args
-}
-
-function Invoke-RestMethodTrace {
-  <#
-    .SYNOPSIS
-        Sends a TRACE http request.
-    .INPUTS
-        System.Object
-    .OUTPUTS
-        System.Object
-    .LINK
-        Invoke-RestMethod
-    #>
-  Invoke-RestMethod -Method TRACE @args
-}
-
-function Invoke-RestMethodOptions {
-  <#
-    .SYNOPSIS
-        Sends an OPTIONS http request.
-    .INPUTS
-        System.Object
-    .OUTPUTS
-        System.Int64
-        System.String
-        System.Xml.XmlDocument
-        PSObject
-    .LINK
-        Invoke-RestMethod
-    #>
-  Invoke-RestMethod -Method OPTIONS @args
-}
+# function Get-ChezmoiPackages {
+# 	[CmdletBinding(DefaultParameterSetName = 'Args')]
+# 	[Alias('cmpack')]
+# 	param(
+# 		[Parameter(ValueFromRemainingArguments = $true)]
+# 		$Args
+# 	)
+# 	$scriptPath = Join-Path $env:XDG_BIN_HOME 'update-manifest.ps1'
+# 	if (Test-Path $scriptPath) {
+# 		& $scriptPath @Args
+# 	}
+# }
 
 function Get-FileHashMD5 {
-  <#
-    .SYNOPSIS
-        Calculates the MD5 hash of an input.
-    .PARAMETER Path
-        Path to calculate hashes from.
-    .EXAMPLE
-        Get-FileHashMD5 file
-    .EXAMPLE
-        Get-FileHashMD5 file1,file2
-    .EXAMPLE
-        Get-FileHashMD5 *.gz
-    .INPUTS
-        System.String[]
-    .OUTPUTS
-        Microsoft.PowerShell.Commands.FileHashInfo
-    .LINK
-        Get-FileHash
-    #>
+  [Alias('md5')]
   [CmdletBinding()]
   param(
     [Parameter(
@@ -283,24 +161,7 @@ function Get-FileHashMD5 {
 }
 
 function Get-FileHashSHA1 {
-  <#
-    .SYNOPSIS
-        Calculates the SHA1 hash of an input.
-    .PARAMETER Path
-        File(s) to calculate hashes from.
-    .EXAMPLE
-        Get-FileHashSHA1 file
-    .EXAMPLE
-        Get-FileHashSHA1 file1,file2
-    .EXAMPLE
-        Get-FileHashSHA1 *.gz
-    .INPUTS
-        System.String[]
-    .OUTPUTS
-        Microsoft.PowerShell.Commands.FileHashInfo
-    .LINK
-        Get-FileHash
-    #>
+  [Alias('sha1')]
   [CmdletBinding()]
   param(
     [Parameter(
@@ -314,24 +175,7 @@ function Get-FileHashSHA1 {
 }
 
 function Get-FileHashSHA256 {
-  <#
-    .SYNOPSIS
-        Calculates the SHA256 hash of an input.
-    .PARAMETER Path
-        File(s) to calculate hashes from.
-    .EXAMPLE
-        Get-FileHashSHA256 file
-    .EXAMPLE
-        Get-FileHashSHA256 file1,file2
-    .EXAMPLE
-        Get-FileHashSHA256 *.gz
-    .INPUTS
-        System.String[]
-    .OUTPUTS
-        Microsoft.PowerShell.Commands.FileHashInfo
-    .LINK
-        Get-FileHash
-    #>
+  [Alias('sha256')]
   [CmdletBinding()]
   param(
     [Parameter(
@@ -344,99 +188,32 @@ function Get-FileHashSHA256 {
   Get-FileHash $Path -Algorithm SHA256
 }
 
-function Invoke-ChezmoiCommitAndPush {
-  [CmdletBinding()]
-  [Alias('cmc')]
-  param(
-    [Parameter(Position = 0)]
-    [string]$Message
-  )
-
-  if ([string]::IsNullOrEmpty($Message)) {
-    chezmoi git 'commit'
-  }
-  else {
-    chezmoi git "commit -m `"$Message`""
-  }
-
-  if ($LASTEXITCODE -eq 0) {
-    chezmoi git push
-  }
+function Invoke-RestMethodGet {
+  Invoke-RestMethod -Method GET @args
 }
 
-function Invoke-ChezmoiSaveChanges {
-  [CmdletBinding()]
-  [Alias('cms')]
-  param()
-
-  chezmoi re-add
-
-  try {
-    chezmoi git 'f' 2>&1
-    if ($LASTEXITCODE -ne 0) {
-      Write-Warning "No 'f' alias for git!"
-      Invoke-ChezmoiCommitAndPush
-    }
-  }
-  catch {
-    Write-Warning "No 'f' alias for git!"
-    Invoke-ChezmoiCommitAndPush
-  }
+function Invoke-RestMethodHead {
+  Invoke-RestMethod -Method HEAD @args
 }
 
-function Invoke-ChezmoiAdd {
-  [CmdletBinding()]
-  [Alias('cma')]
-  param(
-    [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$Arguments
-  )
-
-  chezmoi add @Arguments
+function Invoke-RestMethodPost {
+  Invoke-RestMethod -Method POST @args
 }
 
-function Invoke-ChezmoiEdit {
-  [CmdletBinding()]
-  [Alias('cme')]
-  param(
-    [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$Arguments
-  )
-
-  chezmoi edit @Arguments
+function Invoke-RestMethodPut {
+  Invoke-RestMethod -Method PUT @args
 }
 
-function Invoke-ChezmoiUpdate {
-  [CmdletBinding()]
-  [Alias('cmu')]
-  param(
-    [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$Arguments
-  )
-
-  chezmoi update @Arguments
+function Invoke-RestMethodDelete {
+  Invoke-RestMethod -Method DELETE @args
 }
 
-function Invoke-ChezmoiReAdd {
-  [CmdletBinding()]
-  [Alias('cmra')]
-  param(
-    [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$Arguments
-  )
-
-  chezmoi re-add @Arguments
+function Invoke-RestMethodTrace {
+  Invoke-RestMethod -Method TRACE @args
 }
 
-function Invoke-ChezmoiApply {
-  [CmdletBinding()]
-  [Alias('cmapl')]
-  param(
-    [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$Arguments
-  )
-
-  chezmoi apply @Arguments
+function Invoke-RestMethodOptions {
+  Invoke-RestMethod -Method OPTIONS @args
 }
 
 function split {
@@ -519,8 +296,8 @@ function notmatch {
   }
 }
 
-
 function Switch-Order {
+  [Alias('reverse')]
   [CmdletBinding()]
   param
   (
@@ -533,7 +310,6 @@ function Switch-Order {
     $input
   }
 }
-Set-Alias reverse Switch-Order
 
 
 function Split-Line {
@@ -564,6 +340,7 @@ function Split-Line {
 }
 
 function Trim-String {
+  [Alias('trim')]
   [CmdletBinding()]
   param
   (
@@ -578,9 +355,9 @@ function Trim-String {
   }
   $InputObject | Out-String -Stream:$Stream | ForEach-Object { $_.Trim() }
 }
-Set-Alias trim Trim-String
 
 function Split-Batch {
+  [Alias('batch')]
   [CmdletBinding()]
   param
   (
@@ -601,7 +378,6 @@ function Split-Batch {
     $PSCmdlet.WriteObject($Batch)
   }
 }
-Set-Alias batch Split-Batch
 
 
 function ConvertTo-ListExpression {
@@ -643,6 +419,7 @@ function ConvertTo-ListExpression {
 
 
 function Get-EnumValues {
+  [Alias('enumvals')]
   [CmdletBinding(DefaultParameterSetName = 'ByType')]
   param
   (
@@ -665,7 +442,6 @@ function Get-EnumValues {
     }
   }
 }
-Set-Alias enumvals Get-EnumValues
 
 function ConvertFrom-Base64 {
   [CmdletBinding()]
@@ -750,59 +526,7 @@ function Copy-SshKey {
     }
   }
 }
-$PSDefaultParameterValues['Copy-SshKey:KeyFile'] = '~/.ssh/freddie_home', '~/.ssh/freddie_git'
-
-function Copy-Terminfo {
-  <#
-        .DESCRIPTION
-        When using kitty and SSHing to pwsh, the console can be garbled. This is caused by TERM
-        being set to 'xterm-kitty' on the remote host, but kitty not having a terminfo entry. This
-        can be worked around with `$env:TERM = 'xterm-256color'; ssh <host>`, but the actual fix
-        is to copy over the kitty declaration to the remote host.
-    #>
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory, ValueFromPipeline)]
-    [ValidateNotNullOrEmpty()]
-    [string[]]$Hostname,
-
-    [string]$Username,
-
-    [switch]$Force
-  )
-
-  begin {
-    if ($env:TERM -ne 'xterm-kitty' -and -not $Force) {
-      Write-Warning "TERM is not 'xterm-kitty'; use -Force to override"
-      return
-    }
-    $Src = Resolve-Path $HOME/.terminfo
-  }
-
-  process {
-    $Hostname | ForEach-Object {
-      $User = if ($Username) {
-        $Username
-      }
-      else {
-        $UserConfig = ssh -G $Hostname | Select-String '^user (?<User>.*)'
-        if ($UserConfig) {
-          $UserConfig.Matches.Groups[-1].Value
-        }
-        else {
-          $env:USER
-        }
-      }
-
-      $UserHome = if ($User -eq 'root') { '/root' } else { "/home/$User" }
-      $Dest = "$User@$_`:$UserHome"
-
-      scp -r $Src $Dest
-    }
-  }
-}
-
+$PSDefaultParameterValues['Copy-SshKey:KeyFile'] = '~/.ssh/cwel'
 
 function Forget-KnownHost {
   [CmdletBinding()]
@@ -1096,8 +820,6 @@ function Search-History {
     [switch]$s  # session search
   )
 
-  #requires -Module PSReadLine
-
   if ($PSBoundParameters.Count -eq 0 ) {
     $result = Get-Content (Get-PSReadlineOption).HistorySavePath | Get-Unique
     return $result
@@ -1122,7 +844,6 @@ function Search-History {
     return $result
   }
 }
-
 function Clear-PSHistory {
   [alias('clr-hist')]
   param ()
@@ -1134,7 +855,7 @@ function Clear-PSHistory {
 
 function Get-Aliases {
   [CmdletBinding()]
-  [Alias('aliae')]
+  [Alias('get-aliae')]
   param()
   Get-MyAlias |
   Sort-Object Source, Name |
@@ -1218,11 +939,9 @@ function Get-DnsCacheReport {
     [Parameter(Mandatory = $false)][string]$CsvPath
   )
 
-  # Set script root directory to ensure relative paths work correctly
   Set-Location $PSScriptRoot
   [System.Environment]::CurrentDirectory = $PSScriptRoot
 
-  # Spinner up a background job to periodically update DNS cache
   $origpos = $host.UI.RawUI.CursorPosition
   $spinner = (Get-Content "$env:PWSH\lib\Assets\spinners.json" | ConvertFrom-Json -AsHashTable).moon.frames
   $spinnerPos = 0
@@ -1232,7 +951,6 @@ function Get-DnsCacheReport {
   $d = (Get-Date) + $t
   [int]$Interval = 1
 
-  # Start countdown
   while ($remain.TotalSeconds -gt 0) {
     Write-Host (' {0} ' -f $spinner[$spinnerPos % ($spinner.Count)]) -NoNewline
     Write-Host 'Gathering DNS Cache Information, countdown:' -ForegroundColor 'Green' -NoNewline
@@ -1243,7 +961,6 @@ function Get-DnsCacheReport {
     $spinnerPos += 1
     Start-Sleep -Seconds $Interval
 
-    # Get DNS cache information and update remaining time
     $dnscache = Get-DnsClientCache
     $result = foreach ($item in $dnscache) {
       [PSCustomObject]@{
@@ -1497,21 +1214,21 @@ function Get-ScheduledTaskDetail {
   )
   Get-ScheduledTask -TaskName $Name | Format-List
 }
+Set-Alias -Name 'task-detail' -Value 'Get-ScheduledTaskDetail'
 
 function Invoke-ScheduledTasksRunning {
   Get-ScheduledTasksInfo -Running
 }
+Set-Alias -Name 'tasks-running' -Value 'Invoke-ScheduledTasksRunning'
 
 function Invoke-ScheduledTasksReady {
   Get-ScheduledTasksInfo -Ready
 }
+Set-Alias -Name 'tasks-ready' -Value 'Invoke-ScheduledTasksReady'
 
 function Invoke-ScheduledTasksDisabled {
   Get-ScheduledTasksInfo -Disabled
 }
-
-Set-Alias -Name 'tasks-running' -Value 'Invoke-ScheduledTasksRunning'
-Set-Alias -Name 'tasks-ready' -Value 'Invoke-ScheduledTasksReady'
 Set-Alias -Name 'tasks-disabled' -Value 'Invoke-ScheduledTasksDisabled'
 
 function Get-WifiPassword {
@@ -1552,258 +1269,128 @@ function Get-WifiPassword {
   }
 }
 
-function bfg {
-  # Assume that you installed bfg somewhere in user's `HOME` directory
-  $bfgFile = (Get-ChildItem -Path "$Env:USERPROFILE" -Recurse -Filter 'bfg.jar' -ErrorAction SilentlyContinue).FullName
+if ($isWindows) {
+  function Get-KnownFolderPath {
+    [Alias('gkf')]
+    Param (
+      [Parameter(Mandatory = $true)]
+      [ValidateSet('3DObjects', 'AddNewPrograms', 'AdminTools', 'AppUpdates', 'CDBurning',
+        'ChangeRemovePrograms', 'CommonAdminTools', 'CommonOEMLinks', 'CommonPrograms',
+        'CommonStartMenu', 'CommonStartup', 'CommonTemplates', 'ComputerFolder',
+        'ConflictFolder', 'ConnectionsFolder', 'Contacts', 'ControlPanelFolder',
+        'Cookies', 'Desktop', 'Documents', 'Downloads', 'Favorites', 'Fonts', 'Games',
+        'GameTasks', 'History', 'InternetCache', 'InternetFolder', 'Links',
+        'LocalAppData', 'LocalAppDataLow', 'LocalizedResourcesDir', 'Music', 'NetHood',
+        'NetworkFolder', 'OriginalImages', 'PhotoAlbums', 'Pictures', 'Playlists',
+        'PrintersFolder', 'PrintHood', 'Profile', 'ProgramData', 'ProgramFiles',
+        'ProgramFilesX64', 'ProgramFilesX86', 'ProgramFilesCommon', 'ProgramFilesCommonX64',
+        'ProgramFilesCommonX86', 'Programs', 'Public', 'PublicDesktop', 'PublicDocuments',
+        'PublicDownloads', 'PublicGameTasks', 'PublicMusic', 'PublicPictures',
+        'PublicVideos', 'QuickLaunch', 'Recent', 'RecycleBinFolder', 'ResourceDir',
+        'RoamingAppData', 'SampleMusic', 'SamplePictures', 'SamplePlaylists', 'SampleVideos',
+        'SavedGames', 'SavedSearches', 'SEARCH_CSC', 'SEARCH_MAPI', 'SearchHome', 'SendTo',
+        'SidebarDefaultParts', 'SidebarParts', 'StartMenu', 'Startup', 'SyncManagerFolder',
+        'SyncResultsFolder', 'SyncSetupFolder', 'System', 'SystemX86', 'Templates',
+        'TreeProperties', 'UserProfiles', 'UsersFiles', 'Videos',
+        'Windows')] [string]$Folder
+    )
 
-  if (Test-Path "$bfgFile" -PathType Leaf) {
-    java -jar $bfgFile $args
-  }
-  else {
-    Write-Warning "File not found: bfg.jar. Please install 'BFG' to continue."
-    Write-Host 'Exiting...' -ForegroundColor DarkGray
-    return
-  }
-}
-
-function Remove-GitUnwantedData {
-  [alias('git-unwanted')]
-  param (
-    [Parameter(Mandatory = $True, Position = 0)]
-    [string]$RepoName,
-
-    [Alias('lf')][switch]$LargeFiles,
-    [string]$Size = '100M',
-
-    [Alias('sd')][switch]$SensitiveData,
-    [string]$FileName,
-    [switch]$FolderName
-  )
-
-  $VerbosePreference = 'SilentlyContinue'
-
-  $currentLocation = "$($(Get-Location).Path)"
-  $gitRepo = "$RepoName.git"
-  $backupDate = Get-Date -Format 'dd/MM/yyyy_HH:mm:ss'
-
-  Write-Verbose "Clone a fresh copy of your $RepoName (bare repo)"
-  gh repo clone $RepoName -- --mirror
-
-  Write-Verbose "Make backup for bare $RepoName to $gitRepo_$backupDate.bak"
-  Copy-Item -Path "$currentLocation/$gitRepo" -Destination "$currentLocation/$gitRepo_$backupDate.bak" -Recurse -Force -ErrorAction SilentlyContinue
-
-  if ($LargeFiles) {
-    Write-Verbose "Clean repo $RepoName using BFG"
-    bfg --strip-blobs-bigger-than $Size $gitRepo
-  }
-  elseif ($SensitiveData) {
-    Write-Verbose 'Remove sensitive data from Git repo'
-    $bfgArg = ''
-    if ($FileName) { $bfgArg += " --delete-files $FileName" }
-    if ($FolderName) { $bfgArgs += " --delete-folders $FolderName" }
-    if (!$FileName -and !$FolderName) { return }
-    bfg $bfgArg $gitRepo
-  }
-
-  Set-Location "$currentLocation/$gitRepo"
-  Write-Verbose 'Examine the repo to make sure history has been updated.'
-  git reflog expire --expire=now --all
-
-  Write-Verbose "Use 'git gc' command to strip out the unwanted dirty data"
-  git gc --prune=now --aggressive
-
-  $updateRefs = $(Write-Host "Are you happy with the updated state of current $repoDir? (y/N) " -ForegroundColor Magenta -NoNewline; Read-Host )
-  if ($updateRefs.ToUpper() -eq 'Y') {
-    Write-Host 'Pushing new updates for all refs on your remote repository server...' -ForegroundColor Blue
-    git push
-  }
-
-  Set-Location "$currentLocation"
-
-}
-
-function Invoke-GitOpen {
-  [CmdletBinding()]
-  [alias('git-open')]
-  param (
-    [string]$Path = "$($(Get-Location).Path)"
-  )
-
-  $currentLocation = "$($(Get-Location).Path)"
-
-  # Exit immediately if `Path` is not a git repo
-  $workingDir = (Resolve-Path $Path).Path
-  if (!(Test-Path "$workingDir/.git" -PathType Container)) {
-    Write-Warning 'not a git repository (or any of the parent directories): .git'
-    break
-  }
-
-  # Get git branch
-  $branch = git -C $workingDir symbolic-ref -q --short HEAD
-
-  # Use `gh` to open github repo
-  if (Get-Command gh -ErrorAction SilentlyContinue) {
-    Set-Location "$Path"
-    gh repo view --branch $branch --web
-    Set-Location $currentLocation
-  }
-
-  # Find the exact url to open github repo
-  # References:
-  # - https://github.com/paulirish/git-open
-
-  else {
-    $remote = git -C $workingDir config "branch.$branch.remote"
-    $gitUrl = git -C $workingDir remote get-url "$remote"
-
-    if ($gitUrl -match '^[a-z\+]+://.*') {
-      $gitProtocol = $gitUrl.Replace('://.*', '')
-      $uri = $gitUrl -replace '.*://', ''
-      $urlPath = $uri.Split('/', 2)[1]
-      $domain = $uri.Split('/', 2)[0]
-
-      if ($gitProtocol -ne 'https' -and $gitProtocol -ne 'http') {
-        $domain = $domain -replace ':.*', ''
-      }
-    }
-    else {
-      $uri = $gitUrl -replace '.*@', ''
-      $domain = $uri -replace ':.*', ''
-      $urlPath = $uri -replace '.*?:', ''
+    $KnownFolders = @{
+      '3DObjects'             = '31C0DD25-9439-4F12-BF41-7FF4EDA38722'
+      'AddNewPrograms'        = 'de61d971-5ebc-4f02-a3a9-6c82895e5c04'
+      'AdminTools'            = '724EF170-A42D-4FEF-9F26-B60E846FBA4F'
+      'AppUpdates'            = 'a305ce99-f527-492b-8b1a-7e76fa98d6e4'
+      'CDBurning'             = '9E52AB10-F80D-49DF-ACB8-4330F5687855'
+      'ChangeRemovePrograms'  = 'df7266ac-9274-4867-8d55-3bd661de872d'
+      'CommonAdminTools'      = 'D0384E7D-BAC3-4797-8F14-CBA229B392B5'
+      'CommonOEMLinks'        = 'C1BAE2D0-10DF-4334-BEDD-7AA20B227A9D'
+      'CommonPrograms'        = '0139D44E-6AFE-49F2-8690-3DAFCAE6FFB8'
+      'CommonStartMenu'       = 'A4115719-D62E-491D-AA7C-E74B8BE3B067'
+      'CommonStartup'         = '82A5EA35-D9CD-47C5-9629-E15D2F714E6E'
+      'CommonTemplates'       = 'B94237E7-57AC-4347-9151-B08C6C32D1F7'
+      'ComputerFolder'        = '0AC0837C-BBF8-452A-850D-79D08E667CA7'
+      'ConflictFolder'        = '4bfefb45-347d-4006-a5be-ac0cb0567192'
+      'ConnectionsFolder'     = '6F0CD92B-2E97-45D1-88FF-B0D186B8DEDD'
+      'Contacts'              = '56784854-C6CB-462b-8169-88E350ACB882'
+      'ControlPanelFolder'    = '82A74AEB-AEB4-465C-A014-D097EE346D63'
+      'Cookies'               = '2B0F765D-C0E9-4171-908E-08A611B84FF6'
+      'Desktop'               = 'B4BFCC3A-DB2C-424C-B029-7FE99A87C641'
+      'Documents'             = 'FDD39AD0-238F-46AF-ADB4-6C85480369C7'
+      'Downloads'             = '374DE290-123F-4565-9164-39C4925E467B'
+      'Favorites'             = '1777F761-68AD-4D8A-87BD-30B759FA33DD'
+      'Fonts'                 = 'FD228CB7-AE11-4AE3-864C-16F3910AB8FE'
+      'Games'                 = 'CAC52C1A-B53D-4edc-92D7-6B2E8AC19434'
+      'GameTasks'             = '054FAE61-4DD8-4787-80B6-090220C4B700'
+      'History'               = 'D9DC8A3B-B784-432E-A781-5A1130A75963'
+      'InternetCache'         = '352481E8-33BE-4251-BA85-6007CAEDCF9D'
+      'InternetFolder'        = '4D9F7874-4E0C-4904-967B-40B0D20C3E4B'
+      'Links'                 = 'bfb9d5e0-c6a9-404c-b2b2-ae6db6af4968'
+      'LocalAppData'          = 'F1B32785-6FBA-4FCF-9D55-7B8E7F157091'
+      'LocalAppDataLow'       = 'A520A1A4-1780-4FF6-BD18-167343C5AF16'
+      'LocalizedResourcesDir' = '2A00375E-224C-49DE-B8D1-440DF7EF3DDC'
+      'Music'                 = '4BD8D571-6D19-48D3-BE97-422220080E43'
+      'NetHood'               = 'C5ABBF53-E17F-4121-8900-86626FC2C973'
+      'NetworkFolder'         = 'D20BEEC4-5CA8-4905-AE3B-BF251EA09B53'
+      'OriginalImages'        = '2C36C0AA-5812-4b87-BFD0-4CD0DFB19B39'
+      'PhotoAlbums'           = '69D2CF90-FC33-4FB7-9A0C-EBB0F0FCB43C'
+      'Pictures'              = '33E28130-4E1E-4676-835A-98395C3BC3BB'
+      'Playlists'             = 'DE92C1C7-837F-4F69-A3BB-86E631204A23'
+      'PrintersFolder'        = '76FC4E2D-D6AD-4519-A663-37BD56068185'
+      'PrintHood'             = '9274BD8D-CFD1-41C3-B35E-B13F55A758F4'
+      'Profile'               = '5E6C858F-0E22-4760-9AFE-EA3317B67173'
+      'ProgramData'           = '62AB5D82-FDC1-4DC3-A9DD-070D1D495D97'
+      'ProgramFiles'          = '905e63b6-c1bf-494e-b29c-65b732d3d21a'
+      'ProgramFilesX64'       = '6D809377-6AF0-444b-8957-A3773F02200E'
+      'ProgramFilesX86'       = '7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E'
+      'ProgramFilesCommon'    = 'F7F1ED05-9F6D-47A2-AAAE-29D317C6F066'
+      'ProgramFilesCommonX64' = '6365D5A7-0F0D-45E5-87F6-0DA56B6A4F7D'
+      'ProgramFilesCommonX86' = 'DE974D24-D9C6-4D3E-BF91-F4455120B917'
+      'Programs'              = 'A77F5D77-2E2B-44C3-A6A2-ABA601054A51'
+      'Public'                = 'DFDF76A2-C82A-4D63-906A-5644AC457385'
+      'PublicDesktop'         = 'C4AA340D-F20F-4863-AFEF-F87EF2E6BA25'
+      'PublicDocuments'       = 'ED4824AF-DCE4-45A8-81E2-FC7965083634'
+      'PublicDownloads'       = '3D644C9B-1FB8-4f30-9B45-F670235F79C0'
+      'PublicGameTasks'       = 'DEBF2536-E1A8-4c59-B6A2-414586476AEA'
+      'PublicMusic'           = '3214FAB5-9757-4298-BB61-92A9DEAA44FF'
+      'PublicPictures'        = 'B6EBFB86-6907-413C-9AF7-4FC2ABF07CC5'
+      'PublicVideos'          = '2400183A-6185-49FB-A2D8-4A392A602BA3'
+      'QuickLaunch'           = '52a4f021-7b75-48a9-9f6b-4b87a210bc8f'
+      'Recent'                = 'AE50C081-EBD2-438A-8655-8A092E34987A'
+      'RecycleBinFolder'      = 'B7534046-3ECB-4C18-BE4E-64CD4CB7D6AC'
+      'ResourceDir'           = '8AD10C31-2ADB-4296-A8F7-E4701232C972'
+      'RoamingAppData'        = '3EB685DB-65F9-4CF6-A03A-E3EF65729F3D'
+      'SampleMusic'           = 'B250C668-F57D-4EE1-A63C-290EE7D1AA1F'
+      'SamplePictures'        = 'C4900540-2379-4C75-844B-64E6FAF8716B'
+      'SamplePlaylists'       = '15CA69B3-30EE-49C1-ACE1-6B5EC372AFB5'
+      'SampleVideos'          = '859EAD94-2E85-48AD-A71A-0969CB56A6CD'
+      'SavedGames'            = '4C5C32FF-BB9D-43b0-B5B4-2D72E54EAAA4'
+      'SavedSearches'         = '7d1d3a04-debb-4115-95cf-2f29da2920da'
+      'SEARCH_CSC'            = 'ee32e446-31ca-4aba-814f-a5ebd2fd6d5e'
+      'SEARCH_MAPI'           = '98ec0e18-2098-4d44-8644-66979315a281'
+      'SearchHome'            = '190337d1-b8ca-4121-a639-6d472d16972a'
+      'SendTo'                = '8983036C-27C0-404B-8F08-102D10DCFD74'
+      'SidebarDefaultParts'   = '7B396E54-9EC5-4300-BE0A-2482EBAE1A26'
+      'SidebarParts'          = 'A75D362E-50FC-4fb7-AC2C-A8BEAA314493'
+      'StartMenu'             = '625B53C3-AB48-4EC1-BA1F-A1EF4146FC19'
+      'Startup'               = 'B97D20BB-F46A-4C97-BA10-5E3608430854'
+      'SyncManagerFolder'     = '43668BF8-C14E-49B2-97C9-747784D784B7'
+      'SyncResultsFolder'     = '289a9a43-be44-4057-a41b-587a76d7e7f9'
+      'SyncSetupFolder'       = '0F214138-B1D3-4a90-BBA9-27CBC0C5389A'
+      'System'                = '1AC14E77-02E7-4E5D-B744-2EB1AE5198B7'
+      'SystemX86'             = 'D65231B0-B2F1-4857-A4CE-A8E7C6EA7D27'
+      'Templates'             = 'A63293E8-664E-48DB-A079-DF759E0509F7'
+      'TreeProperties'        = '5b3749ad-b49f-49c1-83eb-15370fbd4882'
+      'UserProfiles'          = '0762D272-C50A-4BB0-A382-697DCD729B80'
+      'UsersFiles'            = 'f3ce0f7c-4901-4acc-8648-d5d44b04ef8f'
+      'Videos'                = '18989B1D-99B5-455B-841C-AB7C74E4DDFC'
+      'Windows'               = 'F38BF404-1D43-42F2-9305-67DE0B28FC23'
     }
 
-    $urlPath = $urlPath.TrimStart('/').TrimEnd('.git')
-    if ($gitProtocol -eq 'http') { $protocol = 'http' }
-    else { $protocol = 'https' }
+    $guid = $KnownFolders.$("$folder")
 
-    $openUrl = "${protocol}://$domain/$urlPath/tree/$branch"
-
-    Write-Output "Opening $openUrl in your browser."
-    Start-Process "$openUrl"
-  }
-}
-
-function Get-KnownFolderPath {
-  Param (
-    [Parameter(Mandatory = $true)]
-    [ValidateSet('3DObjects', 'AddNewPrograms', 'AdminTools', 'AppUpdates', 'CDBurning',
-      'ChangeRemovePrograms', 'CommonAdminTools', 'CommonOEMLinks', 'CommonPrograms',
-      'CommonStartMenu', 'CommonStartup', 'CommonTemplates', 'ComputerFolder',
-      'ConflictFolder', 'ConnectionsFolder', 'Contacts', 'ControlPanelFolder',
-      'Cookies', 'Desktop', 'Documents', 'Downloads', 'Favorites', 'Fonts', 'Games',
-      'GameTasks', 'History', 'InternetCache', 'InternetFolder', 'Links',
-      'LocalAppData', 'LocalAppDataLow', 'LocalizedResourcesDir', 'Music', 'NetHood',
-      'NetworkFolder', 'OriginalImages', 'PhotoAlbums', 'Pictures', 'Playlists',
-      'PrintersFolder', 'PrintHood', 'Profile', 'ProgramData', 'ProgramFiles',
-      'ProgramFilesX64', 'ProgramFilesX86', 'ProgramFilesCommon', 'ProgramFilesCommonX64',
-      'ProgramFilesCommonX86', 'Programs', 'Public', 'PublicDesktop', 'PublicDocuments',
-      'PublicDownloads', 'PublicGameTasks', 'PublicMusic', 'PublicPictures',
-      'PublicVideos', 'QuickLaunch', 'Recent', 'RecycleBinFolder', 'ResourceDir',
-      'RoamingAppData', 'SampleMusic', 'SamplePictures', 'SamplePlaylists', 'SampleVideos',
-      'SavedGames', 'SavedSearches', 'SEARCH_CSC', 'SEARCH_MAPI', 'SearchHome', 'SendTo',
-      'SidebarDefaultParts', 'SidebarParts', 'StartMenu', 'Startup', 'SyncManagerFolder',
-      'SyncResultsFolder', 'SyncSetupFolder', 'System', 'SystemX86', 'Templates',
-      'TreeProperties', 'UserProfiles', 'UsersFiles', 'Videos',
-      'Windows')] [string]$Folder
-  )
-
-  # Define known folder GUIDs
-  $KnownFolders = @{
-    '3DObjects'             = '31C0DD25-9439-4F12-BF41-7FF4EDA38722'
-    'AddNewPrograms'        = 'de61d971-5ebc-4f02-a3a9-6c82895e5c04'
-    'AdminTools'            = '724EF170-A42D-4FEF-9F26-B60E846FBA4F'
-    'AppUpdates'            = 'a305ce99-f527-492b-8b1a-7e76fa98d6e4'
-    'CDBurning'             = '9E52AB10-F80D-49DF-ACB8-4330F5687855'
-    'ChangeRemovePrograms'  = 'df7266ac-9274-4867-8d55-3bd661de872d'
-    'CommonAdminTools'      = 'D0384E7D-BAC3-4797-8F14-CBA229B392B5'
-    'CommonOEMLinks'        = 'C1BAE2D0-10DF-4334-BEDD-7AA20B227A9D'
-    'CommonPrograms'        = '0139D44E-6AFE-49F2-8690-3DAFCAE6FFB8'
-    'CommonStartMenu'       = 'A4115719-D62E-491D-AA7C-E74B8BE3B067'
-    'CommonStartup'         = '82A5EA35-D9CD-47C5-9629-E15D2F714E6E'
-    'CommonTemplates'       = 'B94237E7-57AC-4347-9151-B08C6C32D1F7'
-    'ComputerFolder'        = '0AC0837C-BBF8-452A-850D-79D08E667CA7'
-    'ConflictFolder'        = '4bfefb45-347d-4006-a5be-ac0cb0567192'
-    'ConnectionsFolder'     = '6F0CD92B-2E97-45D1-88FF-B0D186B8DEDD'
-    'Contacts'              = '56784854-C6CB-462b-8169-88E350ACB882'
-    'ControlPanelFolder'    = '82A74AEB-AEB4-465C-A014-D097EE346D63'
-    'Cookies'               = '2B0F765D-C0E9-4171-908E-08A611B84FF6'
-    'Desktop'               = 'B4BFCC3A-DB2C-424C-B029-7FE99A87C641'
-    'Documents'             = 'FDD39AD0-238F-46AF-ADB4-6C85480369C7'
-    'Downloads'             = '374DE290-123F-4565-9164-39C4925E467B'
-    'Favorites'             = '1777F761-68AD-4D8A-87BD-30B759FA33DD'
-    'Fonts'                 = 'FD228CB7-AE11-4AE3-864C-16F3910AB8FE'
-    'Games'                 = 'CAC52C1A-B53D-4edc-92D7-6B2E8AC19434'
-    'GameTasks'             = '054FAE61-4DD8-4787-80B6-090220C4B700'
-    'History'               = 'D9DC8A3B-B784-432E-A781-5A1130A75963'
-    'InternetCache'         = '352481E8-33BE-4251-BA85-6007CAEDCF9D'
-    'InternetFolder'        = '4D9F7874-4E0C-4904-967B-40B0D20C3E4B'
-    'Links'                 = 'bfb9d5e0-c6a9-404c-b2b2-ae6db6af4968'
-    'LocalAppData'          = 'F1B32785-6FBA-4FCF-9D55-7B8E7F157091'
-    'LocalAppDataLow'       = 'A520A1A4-1780-4FF6-BD18-167343C5AF16'
-    'LocalizedResourcesDir' = '2A00375E-224C-49DE-B8D1-440DF7EF3DDC'
-    'Music'                 = '4BD8D571-6D19-48D3-BE97-422220080E43'
-    'NetHood'               = 'C5ABBF53-E17F-4121-8900-86626FC2C973'
-    'NetworkFolder'         = 'D20BEEC4-5CA8-4905-AE3B-BF251EA09B53'
-    'OriginalImages'        = '2C36C0AA-5812-4b87-BFD0-4CD0DFB19B39'
-    'PhotoAlbums'           = '69D2CF90-FC33-4FB7-9A0C-EBB0F0FCB43C'
-    'Pictures'              = '33E28130-4E1E-4676-835A-98395C3BC3BB'
-    'Playlists'             = 'DE92C1C7-837F-4F69-A3BB-86E631204A23'
-    'PrintersFolder'        = '76FC4E2D-D6AD-4519-A663-37BD56068185'
-    'PrintHood'             = '9274BD8D-CFD1-41C3-B35E-B13F55A758F4'
-    'Profile'               = '5E6C858F-0E22-4760-9AFE-EA3317B67173'
-    'ProgramData'           = '62AB5D82-FDC1-4DC3-A9DD-070D1D495D97'
-    'ProgramFiles'          = '905e63b6-c1bf-494e-b29c-65b732d3d21a'
-    'ProgramFilesX64'       = '6D809377-6AF0-444b-8957-A3773F02200E'
-    'ProgramFilesX86'       = '7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E'
-    'ProgramFilesCommon'    = 'F7F1ED05-9F6D-47A2-AAAE-29D317C6F066'
-    'ProgramFilesCommonX64' = '6365D5A7-0F0D-45E5-87F6-0DA56B6A4F7D'
-    'ProgramFilesCommonX86' = 'DE974D24-D9C6-4D3E-BF91-F4455120B917'
-    'Programs'              = 'A77F5D77-2E2B-44C3-A6A2-ABA601054A51'
-    'Public'                = 'DFDF76A2-C82A-4D63-906A-5644AC457385'
-    'PublicDesktop'         = 'C4AA340D-F20F-4863-AFEF-F87EF2E6BA25'
-    'PublicDocuments'       = 'ED4824AF-DCE4-45A8-81E2-FC7965083634'
-    'PublicDownloads'       = '3D644C9B-1FB8-4f30-9B45-F670235F79C0'
-    'PublicGameTasks'       = 'DEBF2536-E1A8-4c59-B6A2-414586476AEA'
-    'PublicMusic'           = '3214FAB5-9757-4298-BB61-92A9DEAA44FF'
-    'PublicPictures'        = 'B6EBFB86-6907-413C-9AF7-4FC2ABF07CC5'
-    'PublicVideos'          = '2400183A-6185-49FB-A2D8-4A392A602BA3'
-    'QuickLaunch'           = '52a4f021-7b75-48a9-9f6b-4b87a210bc8f'
-    'Recent'                = 'AE50C081-EBD2-438A-8655-8A092E34987A'
-    'RecycleBinFolder'      = 'B7534046-3ECB-4C18-BE4E-64CD4CB7D6AC'
-    'ResourceDir'           = '8AD10C31-2ADB-4296-A8F7-E4701232C972'
-    'RoamingAppData'        = '3EB685DB-65F9-4CF6-A03A-E3EF65729F3D'
-    'SampleMusic'           = 'B250C668-F57D-4EE1-A63C-290EE7D1AA1F'
-    'SamplePictures'        = 'C4900540-2379-4C75-844B-64E6FAF8716B'
-    'SamplePlaylists'       = '15CA69B3-30EE-49C1-ACE1-6B5EC372AFB5'
-    'SampleVideos'          = '859EAD94-2E85-48AD-A71A-0969CB56A6CD'
-    'SavedGames'            = '4C5C32FF-BB9D-43b0-B5B4-2D72E54EAAA4'
-    'SavedSearches'         = '7d1d3a04-debb-4115-95cf-2f29da2920da'
-    'SEARCH_CSC'            = 'ee32e446-31ca-4aba-814f-a5ebd2fd6d5e'
-    'SEARCH_MAPI'           = '98ec0e18-2098-4d44-8644-66979315a281'
-    'SearchHome'            = '190337d1-b8ca-4121-a639-6d472d16972a'
-    'SendTo'                = '8983036C-27C0-404B-8F08-102D10DCFD74'
-    'SidebarDefaultParts'   = '7B396E54-9EC5-4300-BE0A-2482EBAE1A26'
-    'SidebarParts'          = 'A75D362E-50FC-4fb7-AC2C-A8BEAA314493'
-    'StartMenu'             = '625B53C3-AB48-4EC1-BA1F-A1EF4146FC19'
-    'Startup'               = 'B97D20BB-F46A-4C97-BA10-5E3608430854'
-    'SyncManagerFolder'     = '43668BF8-C14E-49B2-97C9-747784D784B7'
-    'SyncResultsFolder'     = '289a9a43-be44-4057-a41b-587a76d7e7f9'
-    'SyncSetupFolder'       = '0F214138-B1D3-4a90-BBA9-27CBC0C5389A'
-    'System'                = '1AC14E77-02E7-4E5D-B744-2EB1AE5198B7'
-    'SystemX86'             = 'D65231B0-B2F1-4857-A4CE-A8E7C6EA7D27'
-    'Templates'             = 'A63293E8-664E-48DB-A079-DF759E0509F7'
-    'TreeProperties'        = '5b3749ad-b49f-49c1-83eb-15370fbd4882'
-    'UserProfiles'          = '0762D272-C50A-4BB0-A382-697DCD729B80'
-    'UsersFiles'            = 'f3ce0f7c-4901-4acc-8648-d5d44b04ef8f'
-    'Videos'                = '18989B1D-99B5-455B-841C-AB7C74E4DDFC'
-    'Windows'               = 'F38BF404-1D43-42F2-9305-67DE0B28FC23'
-  }
-
-  $guid = $KnownFolders.$("$folder")
-
-  #https://renenyffenegger.ch/notes/Windows/dirs/_known-folders
-  if ('shell32' -as [type]) {} else {
-    add-type @'
+    #https://renenyffenegger.ch/notes/Windows/dirs/_known-folders
+    if ('shell32' -as [type]) {} else {
+      add-type @'
     using System;
     using System.Runtime.InteropServices;
 
@@ -1828,341 +1415,160 @@ function Get-KnownFolderPath {
          }
     }
 '@
-  }
-  # now get the folder from the GUID
-  $result = $([shell32]::GetKnownFolderPath("{$($guid)}"))
-  "$result"
-}
-
-function Set-KnownFolderPath {
-  Param (
-    [Parameter(Mandatory = $true)]
-    [ValidateSet('3DObjects', 'AddNewPrograms', 'AdminTools', 'AppUpdates', 'CDBurning',
-      'ChangeRemovePrograms', 'CommonAdminTools', 'CommonOEMLinks', 'CommonPrograms',
-      'CommonStartMenu', 'CommonStartup', 'CommonTemplates', 'ComputerFolder',
-      'ConflictFolder', 'ConnectionsFolder', 'Contacts', 'ControlPanelFolder',
-      'Cookies', 'Desktop', 'Documents', 'Downloads', 'Favorites', 'Fonts', 'Games',
-      'GameTasks', 'History', 'InternetCache', 'InternetFolder', 'Links',
-      'LocalAppData', 'LocalAppDataLow', 'LocalizedResourcesDir', 'Music',
-      'NetHood', 'NetworkFolder', 'OriginalImages', 'PhotoAlbums', 'Pictures',
-      'Playlists', 'PrintersFolder', 'PrintHood', 'Profile', 'ProgramData',
-      'ProgramFiles', 'ProgramFilesX64', 'ProgramFilesX86', 'ProgramFilesCommon',
-      'ProgramFilesCommonX64', 'ProgramFilesCommonX86', 'Programs', 'Public',
-      'PublicDesktop', 'PublicDocuments', 'PublicDownloads', 'PublicGameTasks',
-      'PublicMusic', 'PublicPictures', 'PublicVideos', 'QuickLaunch', 'Recent',
-      'RecycleBinFolder', 'ResourceDir', 'RoamingAppData', 'SampleMusic',
-      'SamplePictures', 'SamplePlaylists', 'SampleVideos', 'SavedGames',
-      'SavedSearches', 'SEARCH_CSC', 'SEARCH_MAPI', 'SearchHome', 'SendTo',
-      'SidebarDefaultParts', 'SidebarParts', 'StartMenu', 'Startup',
-      'SyncManagerFolder', 'SyncResultsFolder', 'SyncSetupFolder', 'System',
-      'SystemX86', 'Templates', 'TreeProperties', 'UserProfiles', 'UsersFiles',
-      'Videos', 'Windows')] [string]$KnownFolder,
-
-    [Parameter(Mandatory = $true)]
-    [string]$Path
-  )
-
-  # Define known folder GUIDs
-  $KnownFolders = @{
-    '3DObjects'             = '31C0DD25-9439-4F12-BF41-7FF4EDA38722'
-    'AddNewPrograms'        = 'de61d971-5ebc-4f02-a3a9-6c82895e5c04'
-    'AdminTools'            = '724EF170-A42D-4FEF-9F26-B60E846FBA4F'
-    'AppUpdates'            = 'a305ce99-f527-492b-8b1a-7e76fa98d6e4'
-    'CDBurning'             = '9E52AB10-F80D-49DF-ACB8-4330F5687855'
-    'ChangeRemovePrograms'  = 'df7266ac-9274-4867-8d55-3bd661de872d'
-    'CommonAdminTools'      = 'D0384E7D-BAC3-4797-8F14-CBA229B392B5'
-    'CommonOEMLinks'        = 'C1BAE2D0-10DF-4334-BEDD-7AA20B227A9D'
-    'CommonPrograms'        = '0139D44E-6AFE-49F2-8690-3DAFCAE6FFB8'
-    'CommonStartMenu'       = 'A4115719-D62E-491D-AA7C-E74B8BE3B067'
-    'CommonStartup'         = '82A5EA35-D9CD-47C5-9629-E15D2F714E6E'
-    'CommonTemplates'       = 'B94237E7-57AC-4347-9151-B08C6C32D1F7'
-    'ComputerFolder'        = '0AC0837C-BBF8-452A-850D-79D08E667CA7'
-    'ConflictFolder'        = '4bfefb45-347d-4006-a5be-ac0cb0567192'
-    'ConnectionsFolder'     = '6F0CD92B-2E97-45D1-88FF-B0D186B8DEDD'
-    'Contacts'              = '56784854-C6CB-462b-8169-88E350ACB882'
-    'ControlPanelFolder'    = '82A74AEB-AEB4-465C-A014-D097EE346D63'
-    'Cookies'               = '2B0F765D-C0E9-4171-908E-08A611B84FF6'
-    'Desktop'               = 'B4BFCC3A-DB2C-424C-B029-7FE99A87C641'
-    'Documents'             = 'FDD39AD0-238F-46AF-ADB4-6C85480369C7'
-    'Downloads'             = '374DE290-123F-4565-9164-39C4925E467B'
-    'Favorites'             = '1777F761-68AD-4D8A-87BD-30B759FA33DD'
-    'Fonts'                 = 'FD228CB7-AE11-4AE3-864C-16F3910AB8FE'
-    'Games'                 = 'CAC52C1A-B53D-4edc-92D7-6B2E8AC19434'
-    'GameTasks'             = '054FAE61-4DD8-4787-80B6-090220C4B700'
-    'History'               = 'D9DC8A3B-B784-432E-A781-5A1130A75963'
-    'InternetCache'         = '352481E8-33BE-4251-BA85-6007CAEDCF9D'
-    'InternetFolder'        = '4D9F7874-4E0C-4904-967B-40B0D20C3E4B'
-    'Links'                 = 'bfb9d5e0-c6a9-404c-b2b2-ae6db6af4968'
-    'LocalAppData'          = 'F1B32785-6FBA-4FCF-9D55-7B8E7F157091'
-    'LocalAppDataLow'       = 'A520A1A4-1780-4FF6-BD18-167343C5AF16'
-    'LocalizedResourcesDir' = '2A00375E-224C-49DE-B8D1-440DF7EF3DDC'
-    'Music'                 = '4BD8D571-6D19-48D3-BE97-422220080E43'
-    'NetHood'               = 'C5ABBF53-E17F-4121-8900-86626FC2C973'
-    'NetworkFolder'         = 'D20BEEC4-5CA8-4905-AE3B-BF251EA09B53'
-    'OriginalImages'        = '2C36C0AA-5812-4b87-BFD0-4CD0DFB19B39'
-    'PhotoAlbums'           = '69D2CF90-FC33-4FB7-9A0C-EBB0F0FCB43C'
-    'Pictures'              = '33E28130-4E1E-4676-835A-98395C3BC3BB'
-    'Playlists'             = 'DE92C1C7-837F-4F69-A3BB-86E631204A23'
-    'PrintersFolder'        = '76FC4E2D-D6AD-4519-A663-37BD56068185'
-    'PrintHood'             = '9274BD8D-CFD1-41C3-B35E-B13F55A758F4'
-    'Profile'               = '5E6C858F-0E22-4760-9AFE-EA3317B67173'
-    'ProgramData'           = '62AB5D82-FDC1-4DC3-A9DD-070D1D495D97'
-    'ProgramFiles'          = '905e63b6-c1bf-494e-b29c-65b732d3d21a'
-    'ProgramFilesX64'       = '6D809377-6AF0-444b-8957-A3773F02200E'
-    'ProgramFilesX86'       = '7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E'
-    'ProgramFilesCommon'    = 'F7F1ED05-9F6D-47A2-AAAE-29D317C6F066'
-    'ProgramFilesCommonX64' = '6365D5A7-0F0D-45E5-87F6-0DA56B6A4F7D'
-    'ProgramFilesCommonX86' = 'DE974D24-D9C6-4D3E-BF91-F4455120B917'
-    'Programs'              = 'A77F5D77-2E2B-44C3-A6A2-ABA601054A51'
-    'Public'                = 'DFDF76A2-C82A-4D63-906A-5644AC457385'
-    'PublicDesktop'         = 'C4AA340D-F20F-4863-AFEF-F87EF2E6BA25'
-    'PublicDocuments'       = 'ED4824AF-DCE4-45A8-81E2-FC7965083634'
-    'PublicDownloads'       = '3D644C9B-1FB8-4f30-9B45-F670235F79C0'
-    'PublicGameTasks'       = 'DEBF2536-E1A8-4c59-B6A2-414586476AEA'
-    'PublicMusic'           = '3214FAB5-9757-4298-BB61-92A9DEAA44FF'
-    'PublicPictures'        = 'B6EBFB86-6907-413C-9AF7-4FC2ABF07CC5'
-    'PublicVideos'          = '2400183A-6185-49FB-A2D8-4A392A602BA3'
-    'QuickLaunch'           = '52a4f021-7b75-48a9-9f6b-4b87a210bc8f'
-    'Recent'                = 'AE50C081-EBD2-438A-8655-8A092E34987A'
-    'RecycleBinFolder'      = 'B7534046-3ECB-4C18-BE4E-64CD4CB7D6AC'
-    'ResourceDir'           = '8AD10C31-2ADB-4296-A8F7-E4701232C972'
-    'RoamingAppData'        = '3EB685DB-65F9-4CF6-A03A-E3EF65729F3D'
-    'SampleMusic'           = 'B250C668-F57D-4EE1-A63C-290EE7D1AA1F'
-    'SamplePictures'        = 'C4900540-2379-4C75-844B-64E6FAF8716B'
-    'SamplePlaylists'       = '15CA69B3-30EE-49C1-ACE1-6B5EC372AFB5'
-    'SampleVideos'          = '859EAD94-2E85-48AD-A71A-0969CB56A6CD'
-    'SavedGames'            = '4C5C32FF-BB9D-43b0-B5B4-2D72E54EAAA4'
-    'SavedSearches'         = '7d1d3a04-debb-4115-95cf-2f29da2920da'
-    'SEARCH_CSC'            = 'ee32e446-31ca-4aba-814f-a5ebd2fd6d5e'
-    'SEARCH_MAPI'           = '98ec0e18-2098-4d44-8644-66979315a281'
-    'SearchHome'            = '190337d1-b8ca-4121-a639-6d472d16972a'
-    'SendTo'                = '8983036C-27C0-404B-8F08-102D10DCFD74'
-    'SidebarDefaultParts'   = '7B396E54-9EC5-4300-BE0A-2482EBAE1A26'
-    'SidebarParts'          = 'A75D362E-50FC-4fb7-AC2C-A8BEAA314493'
-    'StartMenu'             = '625B53C3-AB48-4EC1-BA1F-A1EF4146FC19'
-    'Startup'               = 'B97D20BB-F46A-4C97-BA10-5E3608430854'
-    'SyncManagerFolder'     = '43668BF8-C14E-49B2-97C9-747784D784B7'
-    'SyncResultsFolder'     = '289a9a43-be44-4057-a41b-587a76d7e7f9'
-    'SyncSetupFolder'       = '0F214138-B1D3-4a90-BBA9-27CBC0C5389A'
-    'System'                = '1AC14E77-02E7-4E5D-B744-2EB1AE5198B7'
-    'SystemX86'             = 'D65231B0-B2F1-4857-A4CE-A8E7C6EA7D27'
-    'Templates'             = 'A63293E8-664E-48DB-A079-DF759E0509F7'
-    'TreeProperties'        = '5b3749ad-b49f-49c1-83eb-15370fbd4882'
-    'UserProfiles'          = '0762D272-C50A-4BB0-A382-697DCD729B80'
-    'UsersFiles'            = 'f3ce0f7c-4901-4acc-8648-d5d44b04ef8f'
-    'Videos'                = '18989B1D-99B5-455B-841C-AB7C74E4DDFC'
-    'Windows'               = 'F38BF404-1D43-42F2-9305-67DE0B28FC23'
+    }
+    $result = $([shell32]::GetKnownFolderPath("{$($guid)}"))
+    "$result"
   }
 
-  # Define SHSetKnownFolderPath if it hasn’t been defined already
-  $Type1 = ([System.Management.Automation.PSTypeName]'KnownFolders').Type
-  if (-not $Type1) {
-    $Signature = @'
+  function Set-KnownFolderPath {
+    [Alias('skf')]
+    Param (
+      [Parameter(Mandatory = $true)]
+      [ValidateSet('3DObjects', 'AddNewPrograms', 'AdminTools', 'AppUpdates', 'CDBurning',
+        'ChangeRemovePrograms', 'CommonAdminTools', 'CommonOEMLinks', 'CommonPrograms',
+        'CommonStartMenu', 'CommonStartup', 'CommonTemplates', 'ComputerFolder',
+        'ConflictFolder', 'ConnectionsFolder', 'Contacts', 'ControlPanelFolder',
+        'Cookies', 'Desktop', 'Documents', 'Downloads', 'Favorites', 'Fonts', 'Games',
+        'GameTasks', 'History', 'InternetCache', 'InternetFolder', 'Links',
+        'LocalAppData', 'LocalAppDataLow', 'LocalizedResourcesDir', 'Music',
+        'NetHood', 'NetworkFolder', 'OriginalImages', 'PhotoAlbums', 'Pictures',
+        'Playlists', 'PrintersFolder', 'PrintHood', 'Profile', 'ProgramData',
+        'ProgramFiles', 'ProgramFilesX64', 'ProgramFilesX86', 'ProgramFilesCommon',
+        'ProgramFilesCommonX64', 'ProgramFilesCommonX86', 'Programs', 'Public',
+        'PublicDesktop', 'PublicDocuments', 'PublicDownloads', 'PublicGameTasks',
+        'PublicMusic', 'PublicPictures', 'PublicVideos', 'QuickLaunch', 'Recent',
+        'RecycleBinFolder', 'ResourceDir', 'RoamingAppData', 'SampleMusic',
+        'SamplePictures', 'SamplePlaylists', 'SampleVideos', 'SavedGames',
+        'SavedSearches', 'SEARCH_CSC', 'SEARCH_MAPI', 'SearchHome', 'SendTo',
+        'SidebarDefaultParts', 'SidebarParts', 'StartMenu', 'Startup',
+        'SyncManagerFolder', 'SyncResultsFolder', 'SyncSetupFolder', 'System',
+        'SystemX86', 'Templates', 'TreeProperties', 'UserProfiles', 'UsersFiles',
+        'Videos', 'Windows')] [string]$KnownFolder,
+
+      [Parameter(Mandatory = $true)]
+      [string]$Path
+    )
+
+    $KnownFolders = @{
+      '3DObjects'             = '31C0DD25-9439-4F12-BF41-7FF4EDA38722'
+      'AddNewPrograms'        = 'de61d971-5ebc-4f02-a3a9-6c82895e5c04'
+      'AdminTools'            = '724EF170-A42D-4FEF-9F26-B60E846FBA4F'
+      'AppUpdates'            = 'a305ce99-f527-492b-8b1a-7e76fa98d6e4'
+      'CDBurning'             = '9E52AB10-F80D-49DF-ACB8-4330F5687855'
+      'ChangeRemovePrograms'  = 'df7266ac-9274-4867-8d55-3bd661de872d'
+      'CommonAdminTools'      = 'D0384E7D-BAC3-4797-8F14-CBA229B392B5'
+      'CommonOEMLinks'        = 'C1BAE2D0-10DF-4334-BEDD-7AA20B227A9D'
+      'CommonPrograms'        = '0139D44E-6AFE-49F2-8690-3DAFCAE6FFB8'
+      'CommonStartMenu'       = 'A4115719-D62E-491D-AA7C-E74B8BE3B067'
+      'CommonStartup'         = '82A5EA35-D9CD-47C5-9629-E15D2F714E6E'
+      'CommonTemplates'       = 'B94237E7-57AC-4347-9151-B08C6C32D1F7'
+      'ComputerFolder'        = '0AC0837C-BBF8-452A-850D-79D08E667CA7'
+      'ConflictFolder'        = '4bfefb45-347d-4006-a5be-ac0cb0567192'
+      'ConnectionsFolder'     = '6F0CD92B-2E97-45D1-88FF-B0D186B8DEDD'
+      'Contacts'              = '56784854-C6CB-462b-8169-88E350ACB882'
+      'ControlPanelFolder'    = '82A74AEB-AEB4-465C-A014-D097EE346D63'
+      'Cookies'               = '2B0F765D-C0E9-4171-908E-08A611B84FF6'
+      'Desktop'               = 'B4BFCC3A-DB2C-424C-B029-7FE99A87C641'
+      'Documents'             = 'FDD39AD0-238F-46AF-ADB4-6C85480369C7'
+      'Downloads'             = '374DE290-123F-4565-9164-39C4925E467B'
+      'Favorites'             = '1777F761-68AD-4D8A-87BD-30B759FA33DD'
+      'Fonts'                 = 'FD228CB7-AE11-4AE3-864C-16F3910AB8FE'
+      'Games'                 = 'CAC52C1A-B53D-4edc-92D7-6B2E8AC19434'
+      'GameTasks'             = '054FAE61-4DD8-4787-80B6-090220C4B700'
+      'History'               = 'D9DC8A3B-B784-432E-A781-5A1130A75963'
+      'InternetCache'         = '352481E8-33BE-4251-BA85-6007CAEDCF9D'
+      'InternetFolder'        = '4D9F7874-4E0C-4904-967B-40B0D20C3E4B'
+      'Links'                 = 'bfb9d5e0-c6a9-404c-b2b2-ae6db6af4968'
+      'LocalAppData'          = 'F1B32785-6FBA-4FCF-9D55-7B8E7F157091'
+      'LocalAppDataLow'       = 'A520A1A4-1780-4FF6-BD18-167343C5AF16'
+      'LocalizedResourcesDir' = '2A00375E-224C-49DE-B8D1-440DF7EF3DDC'
+      'Music'                 = '4BD8D571-6D19-48D3-BE97-422220080E43'
+      'NetHood'               = 'C5ABBF53-E17F-4121-8900-86626FC2C973'
+      'NetworkFolder'         = 'D20BEEC4-5CA8-4905-AE3B-BF251EA09B53'
+      'OriginalImages'        = '2C36C0AA-5812-4b87-BFD0-4CD0DFB19B39'
+      'PhotoAlbums'           = '69D2CF90-FC33-4FB7-9A0C-EBB0F0FCB43C'
+      'Pictures'              = '33E28130-4E1E-4676-835A-98395C3BC3BB'
+      'Playlists'             = 'DE92C1C7-837F-4F69-A3BB-86E631204A23'
+      'PrintersFolder'        = '76FC4E2D-D6AD-4519-A663-37BD56068185'
+      'PrintHood'             = '9274BD8D-CFD1-41C3-B35E-B13F55A758F4'
+      'Profile'               = '5E6C858F-0E22-4760-9AFE-EA3317B67173'
+      'ProgramData'           = '62AB5D82-FDC1-4DC3-A9DD-070D1D495D97'
+      'ProgramFiles'          = '905e63b6-c1bf-494e-b29c-65b732d3d21a'
+      'ProgramFilesX64'       = '6D809377-6AF0-444b-8957-A3773F02200E'
+      'ProgramFilesX86'       = '7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E'
+      'ProgramFilesCommon'    = 'F7F1ED05-9F6D-47A2-AAAE-29D317C6F066'
+      'ProgramFilesCommonX64' = '6365D5A7-0F0D-45E5-87F6-0DA56B6A4F7D'
+      'ProgramFilesCommonX86' = 'DE974D24-D9C6-4D3E-BF91-F4455120B917'
+      'Programs'              = 'A77F5D77-2E2B-44C3-A6A2-ABA601054A51'
+      'Public'                = 'DFDF76A2-C82A-4D63-906A-5644AC457385'
+      'PublicDesktop'         = 'C4AA340D-F20F-4863-AFEF-F87EF2E6BA25'
+      'PublicDocuments'       = 'ED4824AF-DCE4-45A8-81E2-FC7965083634'
+      'PublicDownloads'       = '3D644C9B-1FB8-4f30-9B45-F670235F79C0'
+      'PublicGameTasks'       = 'DEBF2536-E1A8-4c59-B6A2-414586476AEA'
+      'PublicMusic'           = '3214FAB5-9757-4298-BB61-92A9DEAA44FF'
+      'PublicPictures'        = 'B6EBFB86-6907-413C-9AF7-4FC2ABF07CC5'
+      'PublicVideos'          = '2400183A-6185-49FB-A2D8-4A392A602BA3'
+      'QuickLaunch'           = '52a4f021-7b75-48a9-9f6b-4b87a210bc8f'
+      'Recent'                = 'AE50C081-EBD2-438A-8655-8A092E34987A'
+      'RecycleBinFolder'      = 'B7534046-3ECB-4C18-BE4E-64CD4CB7D6AC'
+      'ResourceDir'           = '8AD10C31-2ADB-4296-A8F7-E4701232C972'
+      'RoamingAppData'        = '3EB685DB-65F9-4CF6-A03A-E3EF65729F3D'
+      'SampleMusic'           = 'B250C668-F57D-4EE1-A63C-290EE7D1AA1F'
+      'SamplePictures'        = 'C4900540-2379-4C75-844B-64E6FAF8716B'
+      'SamplePlaylists'       = '15CA69B3-30EE-49C1-ACE1-6B5EC372AFB5'
+      'SampleVideos'          = '859EAD94-2E85-48AD-A71A-0969CB56A6CD'
+      'SavedGames'            = '4C5C32FF-BB9D-43b0-B5B4-2D72E54EAAA4'
+      'SavedSearches'         = '7d1d3a04-debb-4115-95cf-2f29da2920da'
+      'SEARCH_CSC'            = 'ee32e446-31ca-4aba-814f-a5ebd2fd6d5e'
+      'SEARCH_MAPI'           = '98ec0e18-2098-4d44-8644-66979315a281'
+      'SearchHome'            = '190337d1-b8ca-4121-a639-6d472d16972a'
+      'SendTo'                = '8983036C-27C0-404B-8F08-102D10DCFD74'
+      'SidebarDefaultParts'   = '7B396E54-9EC5-4300-BE0A-2482EBAE1A26'
+      'SidebarParts'          = 'A75D362E-50FC-4fb7-AC2C-A8BEAA314493'
+      'StartMenu'             = '625B53C3-AB48-4EC1-BA1F-A1EF4146FC19'
+      'Startup'               = 'B97D20BB-F46A-4C97-BA10-5E3608430854'
+      'SyncManagerFolder'     = '43668BF8-C14E-49B2-97C9-747784D784B7'
+      'SyncResultsFolder'     = '289a9a43-be44-4057-a41b-587a76d7e7f9'
+      'SyncSetupFolder'       = '0F214138-B1D3-4a90-BBA9-27CBC0C5389A'
+      'System'                = '1AC14E77-02E7-4E5D-B744-2EB1AE5198B7'
+      'SystemX86'             = 'D65231B0-B2F1-4857-A4CE-A8E7C6EA7D27'
+      'Templates'             = 'A63293E8-664E-48DB-A079-DF759E0509F7'
+      'TreeProperties'        = '5b3749ad-b49f-49c1-83eb-15370fbd4882'
+      'UserProfiles'          = '0762D272-C50A-4BB0-A382-697DCD729B80'
+      'UsersFiles'            = 'f3ce0f7c-4901-4acc-8648-d5d44b04ef8f'
+      'Videos'                = '18989B1D-99B5-455B-841C-AB7C74E4DDFC'
+      'Windows'               = 'F38BF404-1D43-42F2-9305-67DE0B28FC23'
+    }
+
+    $Type1 = ([System.Management.Automation.PSTypeName]'KnownFolders').Type
+    if (-not $Type1) {
+      $Signature = @'
 [DllImport("shell32.dll")]
 public extern static int SHSetKnownFolderPath(ref Guid folderId, uint flags, IntPtr token, [MarshalAs(UnmanagedType.LPWStr)] string path);
 '@
-    $Type1 = Add-Type -MemberDefinition $Signature -Name 'KnownFolders' -Namespace 'SHSetKnownFolderPath' -PassThru
-  }
+      $Type1 = Add-Type -MemberDefinition $Signature -Name 'KnownFolders' -Namespace 'SHSetKnownFolderPath' -PassThru
+    }
 
-  $Type2 = ([System.Management.Automation.PSTypeName]'ChangeNotify').Type
-  if (-not $Type2) {
-    $Signature = @'
+    $Type2 = ([System.Management.Automation.PSTypeName]'ChangeNotify').Type
+    if (-not $Type2) {
+      $Signature = @'
 [DllImport("Shell32.dll")]
 public static extern int SHChangeNotify(int eventId, int flags, IntPtr item1, IntPtr item2);
 '@
-    $Type2 = Add-Type -MemberDefinition $Signature -Name 'ChangeNotify' -Namespace 'SHChangeNotify' -PassThru
-  }
+      $Type2 = Add-Type -MemberDefinition $Signature -Name 'ChangeNotify' -Namespace 'SHChangeNotify' -PassThru
+    }
 
-  # Validate the path
-  if (Test-Path $Path -PathType Container) {
-    # Call SHSetKnownFolderPath
-    $r = $Type1::SHSetKnownFolderPath([ref]$KnownFolders[$KnownFolder], 0, 0, $Path)
-    $Type2::SHChangeNotify(0x8000000, 0x1000, 0, 0)
-    Echo "Set [$KnownFolder] to [$Path]"
-    return $r
-  }
-  else {
-    throw New-Object System.IO.DirectoryNotFoundException "Could not find part of the path $Path."
-  }
-}
-
-Set-Alias -Name 'gkf' -Value Get-KnownFolderPath -Description '🤔⁉️🤔⁉️🤔⁉️🤔⁉️'
-Set-Alias -Name 'skf' -Value Set-KnownFolderPath -Description '🏄‍♂️🏄‍♂️🏄‍♂️🏄‍♂️🏄‍♂️🏄‍♂️🏄‍♂️'
-
-function Get-BIOSInfo {
-  [alias('bios')]
-  param ()
-
-  Write-Host '----------------- ' -ForegroundColor 'Yellow'
-  Write-Host 'BIOS Information: ' -ForegroundColor 'Yellow'
-  Write-Host '----------------- ' -ForegroundColor 'Yellow'
-  $details = Get-CimInstance -ClassName Win32_BIOS
-  $result = [PSCustomObject]@{
-    Model        = $details.Name.Trim()
-    Version      = $details.Version
-    SerialNumber = $details.SerialNumber
-    Manufacturer = $details.Manufacturer
-    ReleaseDate  = $details.ReleaseDate
-  }
-  return $result | Format-List
-}
-
-function Get-CPUInfo {
-  [alias('cpu')]
-  param ()
-
-  Write-Host '---------------- ' -ForegroundColor 'Yellow'
-  Write-Host 'CPU Information: ' -ForegroundColor 'Yellow'
-  Write-Host '---------------- ' -ForegroundColor 'Yellow'
-  $details = Get-WmiObject -Class Win32_Processor
-  $celsius = Get-CPUTemperature
-  $result = [PSCustomObject]@{
-    CpuName     = $details.Name.Trim()
-    Arch        = "$env:PROCESSOR_ARCHITECTURE"
-    DeviceID    = $($details.DeviceID)
-    Socket      = "$($details.SocketDesignation)"
-    Speed       = "$($details.MaxClockSpeed) MHz"
-    Temperature = "$($celsius)°C"
-  }
-  return $result | Format-List
-}
-
-function Get-GPUInfo {
-  [alias('gpu')]
-  param ()
-
-  Write-Host '---------------- ' -ForegroundColor 'Yellow'
-  Write-Host 'GPU Information: ' -ForegroundColor 'Yellow'
-  Write-Host '---------------- ' -ForegroundColor 'Yellow'
-  $details = Get-WmiObject Win32_videocontroller
-  $result = [PSCustomObject]@{
-    Model          = $details.Caption
-    RAMSize        = "$($($details.AdapterRAM) / 1MB)" + ' MB'
-    Pixel          = "$($details.CurrentHorizontalResolution)" + 'x' + "$($details.CurrentVerticalResolution)" + ' pixels'
-    BitsPerPixel   = "$($details.CurrentBitsPerPixel)" + '-bit'
-    RefreshRate    = "$($details.CurrentRefreshRate)" + ' Hz'
-    MaxRefreshRate = "$($details.MaxRefreshRate)" + ' Hz'
-    DriverVersion  = $details.DriverVersion
-    Status         = $details.Status
-  }
-  return $result | Format-List
-}
-
-function Get-MotherBoardInfo {
-  [alias('motherboard')]
-  param ()
-
-  Write-Host '------------------------ ' -ForegroundColor 'Yellow'
-  Write-Host 'Motherboard Information: ' -ForegroundColor 'Yellow'
-  Write-Host '------------------------ ' -ForegroundColor 'Yellow'
-  $details = Get-WmiObject Win32_BaseBoard
-  $result = [PSCustomObject]@{
-    Model        = $details.Product
-    SerialNumber = $details.SerialNumber
-    Manufacturer = $details.Manufacturer
-  }
-  return $result | Format-List
-}
-
-function Get-OSInfo {
-  [alias('os')]
-  param ()
-
-  Write-Host '----------------------------- ' -ForegroundColor 'Yellow'
-  Write-Host 'Operating System Information: ' -ForegroundColor 'Yellow'
-  Write-Host '----------------------------- ' -ForegroundColor 'Yellow'
-  $details = Get-WmiObject -Class Win32_OperatingSystem
-  $result = [PSCustomObject]@{
-    OSName       = $details.Caption
-    Arch         = $details.OSArchitecture
-    Version      = $details.Version
-    BuildNo      = $details.BuildNumber
-    SerialNumber = $details.SerialNumber
-    InstallDate  = $details.InstallDate
-    ProductKey   = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SoftwareProtectionPlatform' -Name BackupProductKeyDefault).BackupProductKeyDefault
-  }
-  return $result | Format-List
-}
-
-function Get-RAMInfo {
-  [alias('ram')]
-  param ()
-
-  Write-Host '---------------- ' -ForegroundColor 'Yellow'
-  Write-Host 'RAM Information: ' -ForegroundColor 'Yellow'
-  Write-Host '---------------- ' -ForegroundColor 'Yellow'
-  $objs = Get-WmiObject -Class Win32_PhysicalMemory
-  $objSum = $objs | Measure-Object -Property Capacity -Sum
-  foreach ($obj in $objs) {
-    $result = [PSCustomObject]@{
-      Type           = Get-RAMType $obj.SMBIOSMemoryType
-      Size           = "$($obj.Capacity / 1GB)" + ' GB'
-      TotalSize      = "$($objSum.Sum / 1GB)" + ' GB'
-      InstalledSlots = "$($objSum.Count)" + '/' + "$((Get-WmiObject -Class Win32_PhysicalMemoryArray).MemoryDevices)" + ' slots'
-      Speed          = "$($obj.Speed)" + ' MHz'
-      Voltage        = "$($obj.ConfiguredVoltage / 1000.0)" + 'V'
-      Location       = "$($obj.BankLabel) / $($obj.DeviceLocator)"
-      PartNumber     = $obj.PartNumber
-      Manufacturer   = $obj.Manufacturer
+    if (Test-Path $Path -PathType Container) {
+      $r = $Type1::SHSetKnownFolderPath([ref]$KnownFolders[$KnownFolder], 0, 0, $Path)
+      $Type2::SHChangeNotify(0x8000000, 0x1000, 0, 0)
+      Echo "Set [$KnownFolder] to [$Path]"
+      return $r
+    }
+    else {
+      throw New-Object System.IO.DirectoryNotFoundException "Could not find part of the path $Path."
     }
   }
-  return $result | Format-List
 }
-
-function Get-SwapSpaceInfo {
-  [alias('swapspace')]
-  param ()
-
-  Write-Host '----------------------- ' -ForegroundColor 'Yellow'
-  Write-Host 'Swap Space Information: ' -ForegroundColor 'Yellow'
-  Write-Host '----------------------- ' -ForegroundColor 'Yellow'
-  $details = Get-WmiObject -Class Win32_PageFileUsage -Namespace 'root/CIMV2' -ComputerName 'localhost'
-  [int]$total = [int]$used = 0
-  foreach ($item in $details) {
-    $total += $item.AllocatedBaseSize
-    $used += $item.CurrentUsage
-  }
-  [int]$free = $total - $used
-  [int]$percent = ($used * 100) / $total
-
-  $result = [PSCustomObject]@{
-    TotalSize = "$total" + ' MB'
-    UsedSize  = "$used" + ' MB'
-  }
-  $result | Format-List
-  Write-Host '==> Swap Space Used: ' -ForegroundColor 'Blue' -NoNewline
-  Write-Host "$percent% " -ForegroundColor 'Yellow' -NoNewline
-  Write-Host '(Free: ' -ForegroundColor 'Blue' -NoNewline
-  Write-Host "$free MB" -ForegroundColor 'Yellow' -NoNewline
-  Write-Host ')' -ForegroundColor 'Blue'
-}
-
-function Get-CPUTemperature {
-  [alias('cputemp')]
-  param ()
-
-  $objects = Get-WmiObject -Query 'SELECT * FROM Win32_PerfFormattedData_Counters_ThermalZoneInformation' -Namespace 'root/CIMV2'
-  foreach ($object in $objects) {
-    $highPrec = $object.HighPrecisionTemperature
-    $temperature = [math]::round($highPrec / 100.0, 1)
-  }
-  return $temperature
-}
-
-function Get-RAMType {
-  [alias('ramtype')]
-  param ([int]$Type)
-
-  switch ($Type) {
-    20 { return 'DDR' }
-    21 { return 'DDR2' }
-    24 { return 'DDR3' }
-    26 { return 'DDR4' }
-    34 { return 'DDR5' }
-    default { return 'RAM' }
-  }
-}
-
 function Add-Path {
   param (
     [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
@@ -2348,4 +1754,679 @@ function Get-IPAddress {
     $ToastButton = New-BTButton -Dismiss -Content 'Close'
     New-BurntToastNotification -AppLogo $LogoPath -Button $ToastButton -Silent -Text "Public IP:  $PublicIp", "Private IP:  $PrivateIp"
   }
+}
+
+function Update-ChezmoiManifest {
+  [Alias('cmpack')]
+  [CmdletBinding()]
+  param()
+
+  $env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path', 'User')
+
+  $yamlFilePath = Join-Path $env:DOTS '.chezmoidata\windows\pkgs.yml'
+
+  if (-not (Test-Path $yamlFilePath)) {
+    Write-Color -Text "❌ Manifest file not found at: $yamlFilePath" -Color Red
+    return 1
+  }
+
+  $manifestContent = Get-Content -Path $yamlFilePath -Raw
+  if (-not $manifestContent) {
+    Write-Color -Text '❌ Failed to read manifest file or file is empty' -Color Red
+    return 1
+  }
+
+  $currentPackages = @()
+  $registryPaths = @()
+  $inScoopSection = $false
+  $inBucketsSection = $false
+  $inPkgsSection = $false
+  $inRegistrySection = $false
+  $manifestLines = $manifestContent -split "`n"
+  $scoopPkgsStartIndex = -1
+  $scoopPkgsEndIndex = -1
+  $packageIndentation = '        '
+
+  foreach ($i in 0..($manifestLines.Count - 1)) {
+    $line = $manifestLines[$i]
+    if ($line -match '^\s*scoop:\s*$') {
+      $inScoopSection = $true
+      continue
+    }
+
+    if ($inScoopSection -and $line -match '^\s*buckets:\s*$') {
+      $inBucketsSection = $true
+      $inPkgsSection = $false
+      continue
+    }
+
+    if ($inScoopSection -and $line -match '^\s*apps:\s*$') {
+      $inBucketsSection = $false
+      $inPkgsSection = $true
+      $scoopPkgsStartIndex = $i
+
+      if ($i + 1 -lt $manifestLines.Count) {
+        $nextLine = $manifestLines[$i + 1]
+        if ($nextLine -match '^(\s+)-\s+') {
+          $packageIndentation = $Matches[1]
+        }
+      }
+      continue
+    }
+
+    if ($inScoopSection -and $line -match '^\s*importRegistry:\s*$') {
+      $inBucketsSection = $false
+      $inPkgsSection = $false
+      $inRegistrySection = $true
+      continue
+    }
+
+    if ($inPkgsSection -and $line -match '^\s*-\s+''([^'']+)''') {
+      $pkg = $Matches[1]
+      $currentPackages += $pkg
+      $scoopPkgsEndIndex = $i
+    }
+    elseif ($inRegistrySection -and $line -match '^\s*-\s+''([^'']+)''') {
+      $regPath = $Matches[1]
+      $registryPaths += $regPath
+    }
+
+    if ($inScoopSection -and
+            ($line -match '^\s*\w+:\s*$' -and $line -notmatch '^\s*apps:\s*$' -and $line -notmatch '^\s*buckets:\s*$' -and $line -notmatch '^\s*importRegistry:\s*$') ||
+            ($line -match '^\s*winget:\s*$')) {
+      $inScoopSection = $false
+      $inBucketsSection = $false
+      $inPkgsSection = $false
+      $inRegistrySection = $false
+      if ($scoopPkgsEndIndex -eq -1) {
+        $scoopPkgsEndIndex = $i - 1
+      }
+    }
+  }
+
+  $currentWingetPackages = @()
+  $inWingetSection = $false
+  $wingetPkgsStartIndex = -1
+  $wingetPkgsEndIndex = -1
+  $wingetIndentation = '      '
+
+  foreach ($i in 0..($manifestLines.Count - 1)) {
+    $line = $manifestLines[$i]
+    if ($line -match '^\s*winget:\s*$') {
+      $inWingetSection = $true
+      $wingetPkgsStartIndex = $i
+
+      if ($i + 1 -lt $manifestLines.Count) {
+        $nextLine = $manifestLines[$i + 1]
+        if ($nextLine -match '^(\s+)-\s+') {
+          $wingetIndentation = $Matches[1]
+        }
+      }
+      continue
+    }
+
+    if ($inWingetSection -and $line -match '^\s*-\s+''([^'']+)''') {
+      $pkg = $Matches[1]
+      $currentWingetPackages += $pkg
+      $wingetPkgsEndIndex = $i
+    }
+
+    if ($inWingetSection -and $wingetPkgsStartIndex -ne -1 -and
+      $line -match '^\s*\w+:\s*$') {
+      $inWingetSection = $false
+      if ($wingetPkgsEndIndex -eq -1) {
+        $wingetPkgsEndIndex = $i - 1
+      }
+    }
+  }
+
+  $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+  $backupDir = Join-Path $env:USERPROFILE '.config\chezmoi\backups'
+  if (-not (Test-Path $backupDir)) {
+    New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
+  }
+  $backupPath = Join-Path $backupDir "win_pkgs.yml.bak.$timestamp"
+  Copy-Item -Path $yamlFilePath -Destination $backupPath -Force
+  Write-Color -Text "💾 Created backup at $backupPath" -Color Gray
+
+  Write-Color -Text '🔍 Getting installed Scoop packages...' -Color Blue
+  $installedPackages = @()
+
+  try {
+    $scoopList = scoop list | Out-String -Stream
+    $installedApps = @()
+    $skipNextLine = $true
+
+    foreach ($line in $scoopList) {
+      if ([string]::IsNullOrWhiteSpace($line)) { continue }
+
+      if ($line -match '^\s*Name\s+Version\s+') {
+        $skipNextLine = $true
+        continue
+      }
+
+      if ($line -match '^\s*-+\s+-+\s*') {
+        continue
+      }
+
+      if ($line -match '^\s*([a-zA-Z0-9._-]+)\s+') {
+        $appName = $Matches[1].Trim()
+        $appName = $appName -replace '^\*', ''
+        if (-not [string]::IsNullOrWhiteSpace($appName)) {
+          $installedApps += $appName
+        }
+      }
+    }
+
+    Write-Color -Text "Found $($installedApps.Count) installed apps" -Color Cyan
+
+    foreach ($appName in $installedApps) {
+      $scoopDir = "$env:USERPROFILE\scoop"
+      $bucketFound = $false
+      $buckets = Get-ChildItem "$scoopDir\buckets" -Directory -ErrorAction SilentlyContinue |
+      Select-Object -ExpandProperty Name
+
+      foreach ($bucket in $buckets) {
+        $appManifestPath = "$scoopDir\buckets\$bucket\bucket\$appName.json"
+        if (Test-Path $appManifestPath) {
+          $installedPackages += "$bucket/$appName"
+          $bucketFound = $true
+          break
+        }
+      }
+
+      if (-not $bucketFound) {
+        $bucketFilePath = "$scoopDir\apps\$appName\.bucket"
+        if (Test-Path $bucketFilePath) {
+          $bucketInfo = Get-Content $bucketFilePath -Raw
+          $bucketInfo = $bucketInfo.Trim()
+          if (-not [string]::IsNullOrWhiteSpace($bucketInfo)) {
+            $installedPackages += "$bucketInfo/$appName"
+            $bucketFound = $true
+          }
+        }
+      }
+
+      if (-not $bucketFound) {
+        $installJsonPath = "$scoopDir\apps\$appName\current\install.json"
+        if (Test-Path $installJsonPath) {
+          try {
+            $installJson = Get-Content $installJsonPath -Raw | ConvertFrom-Json
+            if ($installJson.PSObject.Properties.Name -contains 'bucket') {
+              $bucketInfo = $installJson.bucket
+              $installedPackages += "$bucketInfo/$appName"
+              $bucketFound = $true
+            }
+          }
+          catch {
+          }
+        }
+      }
+
+      if (-not $bucketFound) {
+        # Write-Color -Text "⚠️ Could not determine bucket for $appName, will use 'main'" -Color Yellow
+        # $installedPackages += "main/$appName"
+        Write-Color -Text "⚠️ Could not determine bucket for $appName, skipping..." -Color Yellow
+      }
+    }
+
+    $cleanPackages = @()
+    foreach ($pkg in $installedPackages) {
+      if ($pkg -notmatch '@\{' -and $pkg -match '^[a-zA-Z0-9_-]+/[a-zA-Z0-9_.-]+$') {
+        $cleanPackages += $pkg
+      }
+      else {
+        Write-Color -Text "⚠️ Skipping malformed package entry: $pkg" -Color Yellow
+      }
+    }
+    $installedPackages = $cleanPackages
+
+  }
+  catch {
+    Write-Color -Text "❌ Failed to get list of installed Scoop packages: $_" -Color Red
+    return 1
+  }
+
+  Write-Color -Text '🔍 Getting installed Winget packages...' -Color Blue
+  $installedWingetPackages = @()
+
+  try {
+    $wingetOutput = winget list
+    $capturePackages = $false
+    $seenIds = @{}
+
+    foreach ($line in $wingetOutput) {
+      if ([string]::IsNullOrWhiteSpace($line)) { continue }
+      if (-not $capturePackages -and $line -match 'Name' -and $line -match 'ID') {
+        $capturePackages = $true
+        continue
+      }
+
+      if ($capturePackages -and $line -match '^-+\s+-+') {
+        continue
+      }
+
+      if ($capturePackages) {
+        $parts = $line -split '\s\s+' | Where-Object { $_ -ne '' }
+
+        if ($parts.Count -ge 3) {
+          $potentialId = $null
+          foreach ($part in $parts) {
+            if ($part -match '^[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+)+$') {
+              $potentialId = $part.Trim()
+              break
+            }
+          }
+          if ($potentialId -and -not $seenIds.ContainsKey($potentialId)) {
+            $seenIds[$potentialId] = $true
+            $installedWingetPackages += $potentialId
+          }
+        }
+      }
+    }
+
+    $cleanWingetPackages = @()
+    foreach ($pkg in $installedWingetPackages) {
+      if ($pkg -match '^[\d\.]+(\.\d+)*(\+\d+)*(…)?$' -or
+        $pkg -match '^v\d+\.\d+(\.\d+)*$') {
+        continue
+      }
+
+      if ($pkg -notmatch '\.') {
+        continue
+      }
+
+      $cleanWingetPackages += $pkg
+    }
+
+    $installedWingetPackages = $cleanWingetPackages
+
+    Write-Color -Text "Found $($installedWingetPackages.Count) installed winget apps" -Color Cyan
+  }
+  catch {
+    Write-Color -Text "❌ Failed to get list of installed Winget packages: $_" -Color Red
+  }
+
+  function Filter-WingetPackages {
+    param (
+      [Parameter(Mandatory = $true)]
+      [array]$Packages
+    )
+
+    $filtered = @()
+    $msixWhitelist = @('WinRAR.ShellExtension')  # Add any MSIX packages you want to keep
+
+    foreach ($pkg in $Packages) {
+      if ($pkg -match '^[\d\.]+(\.\d+)*(\+\d+)*(…)?$' -or
+        $pkg -match '^v\d+\.\d+(\.\d+)*$' -or
+        $pkg -match '^\d+\.\d+\.\d+\.\d+$') {
+
+        Write-Color -Text "  Filtering version number: $pkg" -Color Gray
+        continue
+      }
+
+      if ($pkg -match '^MSIX\\') {
+        $isWhitelisted = $false
+        foreach ($whitelistItem in $msixWhitelist) {
+          if ($pkg -match $whitelistItem) {
+            $isWhitelisted = $true
+            break
+          }
+        }
+
+        if (-not $isWhitelisted) {
+          Write-Color -Text "  Filtering MSIX package: $pkg" -Color Gray
+          continue
+        }
+      }
+      $filtered += $pkg
+    }
+
+    return $filtered
+  }
+
+  $filteredInstalledWinget = Filter-WingetPackages -Packages $installedWingetPackages
+  Write-Color -Text "Filtered to $($filteredInstalledWinget.Count) relevant winget apps" -Color Cyan
+
+  $filteredCurrentWinget = Filter-WingetPackages -Packages $currentWingetPackages
+  $newWingetPackages = $filteredInstalledWinget | Where-Object { $_ -notin $filteredCurrentWinget }
+  $wingetPackagesToRemove = $filteredCurrentWinget | Where-Object { $_ -notin $filteredInstalledWinget }
+  $newPackages = $installedPackages | Where-Object { $_ -notin $currentPackages }
+
+  $packagesToRemove = $currentPackages | Where-Object {
+    $_ -notin $installedPackages -and
+    $_ -notin $registryPaths
+  }
+
+  $newWingetPackages = $filteredInstalledWinget | Where-Object { $_ -notin $filteredCurrentWinget }
+  $wingetPackagesToRemove = $filteredCurrentWinget | Where-Object { $_ -notin $filteredInstalledWinget }
+
+  $wingetPackagesToRemove = $wingetPackagesToRemove | Where-Object {
+    $pkg = $_
+    -not ($manifestLines | Where-Object { $_ -match "- '$pkg'.*#" })
+  }
+
+  if ($newPackages.Count -eq 0 -and $packagesToRemove.Count -eq 0 -and $newWingetPackages.Count -eq 0 -and $wingetPackagesToRemove.Count -eq 0) {
+    Write-Color -Text '✅ No changes needed - manifest is up to date' -Color Green
+    return 0
+  }
+
+  if ($newPackages.Count -gt 0) {
+    Write-Color -Text "📝 Adding $($newPackages.Count) new packages to manifest..." -Color Blue
+  }
+
+  if ($packagesToRemove.Count -gt 0) {
+    Write-Color -Text "🗑️ Removing $($packagesToRemove.Count) uninstalled packages from manifest..." -Color Yellow
+  }
+
+  if ($newWingetPackages.Count -gt 0) {
+    Write-Color -Text "📝 Adding $($newWingetPackages.Count) new winget packages to manifest..." -Color Blue
+  }
+
+  if ($wingetPackagesToRemove.Count -gt 0) {
+    Write-Color -Text "🗑️ Removing $($wingetPackagesToRemove.Count) uninstalled winget packages from manifest..." -Color Yellow
+  }
+
+  if ($scoopPkgsEndIndex -ne -1 || $wingetPkgsEndIndex -ne -1) {
+    $updatedContent = @()
+
+    $currentSection = ''
+    $currentSubSection = ''
+
+    for ($i = 0; $i -lt $manifestLines.Count; $i++) {
+      $line = $manifestLines[$i]
+
+      if ($line -match '^\s*scoop:\s*$') {
+        $currentSection = 'scoop'
+        $currentSubSection = ''
+      }
+      elseif ($currentSection -eq 'scoop' && $line -match '^\s*buckets:\s*$') {
+        $currentSubSection = 'buckets'
+      }
+      elseif ($currentSection -eq 'scoop' && $line -match '^\s*pkgs:\s*$') {
+        $currentSubSection = 'pkgs'
+      }
+      elseif ($currentSection -eq 'scoop' && $line -match '^\s*importRegistry:\s*$') {
+        $currentSubSection = 'importRegistry'
+      }
+      elseif ($line -match '^\s*winget:\s*$') {
+        $currentSection = 'winget'
+        $currentSubSection = ''
+      }
+      elseif ($line -match '^\s*psGallery:\s*$') {
+        $currentSection = 'psGallery'
+        $currentSubSection = ''
+      }
+      elseif ($line -match '^\s*addons:\s*$') {
+        $currentSection = 'addons'
+        $currentSubSection = ''
+      }
+
+      $shouldSkipLine = $false
+      if ($packagesToRemove.Count -gt 0 &&
+        $currentSection -eq 'scoop' &&
+        $currentSubSection -eq 'pkgs' &&
+        $line -match '^\s*-\s+''([^'']+)''') {
+        $packageInLine = $Matches[1]
+        if ($packageInLine -in $packagesToRemove) {
+          $shouldSkipLine = $true
+        }
+      }
+
+      if ($wingetPackagesToRemove.Count -gt 0 &&
+        $currentSection -eq 'winget' &&
+        $line -match '^\s*-\s+''([^'']+)''') {
+        $packageInLine = $Matches[1]
+        if ($packageInLine -in $wingetPackagesToRemove) {
+          if ($line -notmatch '#') {
+            $shouldSkipLine = $true
+          }
+        }
+      }
+
+      if (-not $shouldSkipLine) {
+        $updatedContent += $line
+      }
+      if ($i -eq $scoopPkgsEndIndex) {
+        foreach ($pkg in $newPackages) {
+          $updatedContent += "$packageIndentation- '$pkg'"
+        }
+      }
+
+      if ($i -eq $wingetPkgsEndIndex) {
+        foreach ($pkg in $newWingetPackages) {
+          $updatedContent += "$wingetIndentation- '$pkg'"
+        }
+      }
+    }
+    Set-Content -Path $yamlFilePath -Value ($updatedContent -join "`n")
+  }
+  else {
+    Write-Color -Text '⚠️ Could not determine where to insert new packages. No changes made.' -Color Yellow
+    Write-Color -Text '   You may need to add these packages manually:' -Color Yellow
+    foreach ($pkg in $newPackages) {
+      Write-Color -Text "  - $pkg" -Color Cyan
+    }
+    foreach ($pkg in $newWingetPackages) {
+      Write-Color -Text "  - $pkg" -Color Cyan
+    }
+    return 1
+  }
+
+  if ($newPackages.Count -gt 0) {
+    Write-Color -Text '✅ Successfully added new packages:' -Color Green
+    foreach ($pkg in $newPackages) {
+      Write-Color -Text "  + $pkg" -Color Cyan
+    }
+  }
+
+  if ($packagesToRemove.Count -gt 0) {
+    Write-Color -Text '✅ Successfully removed uninstalled packages:' -Color Green
+    foreach ($pkg in $packagesToRemove) {
+      Write-Color -Text "  - $pkg" -Color Red
+    }
+  }
+
+  if ($newWingetPackages.Count -gt 0) {
+    Write-Color -Text '✅ Successfully added new winget packages:' -Color Green
+    foreach ($pkg in $newWingetPackages) {
+      Write-Color -Text "  + $pkg" -Color Cyan
+    }
+  }
+
+  if ($wingetPackagesToRemove.Count -gt 0) {
+    Write-Color -Text '✅ Successfully removed uninstalled winget packages:' -Color Green
+    foreach ($pkg in $wingetPackagesToRemove) {
+      Write-Color -Text "  - $pkg" -Color Red
+    }
+  }
+
+  Write-Host ''
+  Write-Color -Text "✨ DONE! Run 'chezmoi apply' to apply your changes." -Color Green
+}
+
+function Invoke-WindhawkBackup {
+  [Alias('windhawk-backup')]
+  [CmdletBinding()]
+  param()
+  # Self-elevate
+  if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) {
+    if ([int](Get-CimInstance -Class Win32_OperatingSystem | Select-Object -ExpandProperty BuildNumber) -ge 6000) {
+      $CommandLine = "-File `"" + $MyInvocation.MyCommand.Path + "`" " + $MyInvocation.UnboundArguments
+      Start-Process -Wait -FilePath PowerShell.exe -Verb Runas -ArgumentList $CommandLine
+    }
+  }
+
+  $backupZipPath = Join-Path $env:USERPROFILE 'Downloads\windhawk-backup.zip'
+  $windhawkRoot = 'C:\ProgramData\Windhawk'
+  $registryKey = 'HKLM:\SOFTWARE\Windhawk'
+
+  function Test-WindhawkInstalled {
+    param(
+      [string]$WindhawkFolder
+    )
+    if (Test-Path $WindhawkFolder) {
+      return $true
+    }
+    else {
+      return $false
+    }
+  }
+
+  function Do-Backup {
+    param(
+      [string]$WindhawkFolder,
+      [string]$BackupPath,
+      [string]$RegistryKey
+    )
+
+    Write-Host "`n--- Starting Windhawk backup ---" -ForegroundColor Cyan
+
+    # Create a temporary folder to stage the backup contents
+    $timeStamp = (Get-Date -Format 'yyyyMMddHHmmss')
+    $backupFolder = Join-Path $env:TEMP ("WindhawkBackup_$timeStamp")
+    New-Item -ItemType Directory -Path $backupFolder -Force | Out-Null
+
+    # Prepare Engine folder structure inside the backup
+    $engineFolder = Join-Path $backupFolder 'Engine'
+    New-Item -ItemType Directory -Path $engineFolder -Force | Out-Null
+
+    # Define the paths to copy from
+    $modsSourceFolder = Join-Path $WindhawkFolder 'ModsSource'
+    $modsFolder = Join-Path $WindhawkFolder 'Engine\Mods'
+
+    # Copy ModsSource if it exists
+    if (Test-Path $modsSourceFolder) {
+      Write-Host 'Copying ModsSource folder...'
+      Copy-Item -Path $modsSourceFolder -Destination $backupFolder -Recurse -Force
+    }
+    else {
+      Write-Warning "ModsSource folder not found at: $modsSourceFolder"
+    }
+
+    # Copy Mods folder if it exists
+    if (Test-Path $modsFolder) {
+      Write-Host 'Copying Engine\Mods folder...'
+      Copy-Item -Path $modsFolder -Destination $engineFolder -Recurse -Force
+    }
+    else {
+      Write-Warning "Mods folder not found at: $modsFolder"
+    }
+
+    # Export registry key
+    Write-Host 'Exporting Windhawk registry key...'
+    $regExportFile = Join-Path $backupFolder 'Windhawk.reg'
+    # Using reg.exe for consistent export. /y overwrites without prompt.
+    reg export 'HKLM\SOFTWARE\Windhawk' $regExportFile /y | Out-Null
+
+    # Create/overwrite the existing backup zip
+    if (Test-Path $BackupPath) {
+      Write-Host "Removing existing backup zip at: $BackupPath"
+      Remove-Item $BackupPath -Force
+    }
+
+    Write-Host "Compressing backup to: $BackupPath"
+    Compress-Archive -Path (Join-Path $backupFolder '*') -DestinationPath $BackupPath -Force
+
+    Write-Host "`nBackup completed successfully!"
+    Write-Host "Backup archive saved to: $BackupPath"
+  }
+
+  function Do-Restore {
+    param(
+      [string]$WindhawkFolder,
+      [string]$BackupPath,
+      [string]$RegistryKey
+    )
+
+    Write-Host "`n--- Starting Windhawk restore ---" -ForegroundColor Cyan
+
+    # Check if the backup zip exists
+    if (!(Test-Path $BackupPath)) {
+      Write-Warning "Backup zip not found at: $BackupPath"
+      return
+    }
+
+    # Create a temporary folder to extract contents
+    $timeStamp = (Get-Date -Format 'yyyyMMddHHmmss')
+    $extractFolder = Join-Path $env:TEMP ("WindhawkRestore_$timeStamp")
+    New-Item -ItemType Directory -Path $extractFolder -Force | Out-Null
+
+    Write-Host "Extracting backup zip: $BackupPath"
+    Expand-Archive -Path $BackupPath -DestinationPath $extractFolder -Force
+
+    # After extraction, we expect:
+    #   ModsSource in the root of $extractFolder
+    #   Engine\Mods in $extractFolder\Engine
+    #   Windhawk.reg also in $extractFolder
+
+    $modsSourceBackup = Join-Path $extractFolder 'ModsSource'
+    $modsBackup = Join-Path $extractFolder 'Engine\Mods'
+    $regBackup = Join-Path $extractFolder 'Windhawk.reg'
+
+    # Copy ModsSource back if present
+    if (Test-Path $modsSourceBackup) {
+      Write-Host 'Copying ModsSource to Windhawk folder...'
+      Copy-Item -Path $modsSourceBackup -Destination $WindhawkFolder -Recurse -Force
+    }
+    else {
+      Write-Warning 'ModsSource not found in backup.'
+    }
+
+    # Copy Mods back if present
+    if (Test-Path $modsBackup) {
+      Write-Host 'Copying Engine\Mods to Windhawk folder...'
+      # Ensure Engine folder exists
+      $engineFolder = Join-Path $WindhawkFolder 'Engine'
+      if (!(Test-Path $engineFolder)) {
+        New-Item -ItemType Directory -Path $engineFolder -Force | Out-Null
+      }
+      Copy-Item -Path $modsBackup -Destination $engineFolder -Recurse -Force
+    }
+    else {
+      Write-Warning 'Mods folder not found in backup.'
+    }
+
+    # Import registry if present
+    if (Test-Path $regBackup) {
+      Write-Host 'Importing Windhawk registry settings...'
+      reg import $regBackup | Out-Null
+    }
+    else {
+      Write-Warning 'Windhawk registry file not found in backup.'
+    }
+
+    Write-Host "`nRestore completed successfully!"
+  }
+
+  Write-Host "Checking if Windhawk is installed at: $windhawkRoot"
+
+  if (!(Test-WindhawkInstalled -WindhawkFolder $windhawkRoot)) {
+    Write-Warning "`nWindhawk folder not found at: $windhawkRoot"
+    $choice = Read-Host 'Windhawk might not be installed. Continue anyway? (y/n)'
+    if ($choice -notmatch '^(y|Y)$') {
+      Write-Host 'Exiting.'
+      return
+    }
+  }
+
+  Write-Host "`nWould you like to (B)ackup or (R)estore or (E)xit?"
+  $action = Read-Host 'Enter your choice (B/R/E)'
+
+  switch ($action.ToUpper()) {
+    'B' {
+      Do-Backup -WindhawkFolder $windhawkRoot -BackupPath $backupZipPath -RegistryKey $registryKey
+    }
+    'R' {
+      Do-Restore -WindhawkFolder $windhawkRoot -BackupPath $backupZipPath -RegistryKey $registryKey
+    }
+    'E' {
+      Write-Host 'Exiting script.'
+    }
+    Default {
+      Write-Host 'Unrecognized choice. Exiting.'
+    }
+  }
+
+  Write-Host "`nDone."
 }

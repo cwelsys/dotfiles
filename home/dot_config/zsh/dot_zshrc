@@ -12,6 +12,7 @@ if [[ -f "/opt/homebrew/bin/brew" ]] then
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
+GPG_TTY=$(tty)
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
 if [[ ! -d "${ZINIT_HOME}" ]]; then
@@ -37,6 +38,10 @@ if [ -f "$HOME/.zsh_history" ] && [ ! -f "$XDG_STATE_HOME/zsh/history" ]; then
 fi
 
 [ -z "$HISTFILE" ] && export HISTFILE="$XDG_STATE_HOME/zsh/history"
+
+if command -v wsl2-ssh-agent &> /dev/null; then
+  eval "$(wsl2-ssh-agent)"
+fi
 
 zinit ice depth=1; zinit light romkatv/powerlevel10k
 zinit light ryanccn/vivid-zsh

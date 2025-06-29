@@ -82,4 +82,5 @@ pkgs:
       - git-lfs
       - lazygit
       - bat-extras
+      - jandedobbeleer/aliae/aliae
     casks:

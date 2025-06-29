@@ -230,6 +230,7 @@ pkgs:
       - 'Microsoft.WSL'
       - 'Nextcloud.NextcloudDesktop'
       - 'Nvidia.PhysX'
+      - 'JanDeDobbeleer.Aliae'
 
     psGallery:
       - 'PsReadLine'
@@ -261,4 +262,3 @@ pkgs:
           - 'seachicken/gh-poi'
           - 'Link-/gh-token'
           - 'Shresht7/gh-license'
-

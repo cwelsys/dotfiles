@@ -9,6 +9,12 @@ if [ -f "$HOME/.config/bash" ]; then
 	unset file
 fi
 
+GPG_TTY=$(tty)
+
+if command -v wsl2-ssh-agent &>/dev/null; then
+	eval "$(wsl2-ssh-agent)"
+fi
+
 mkdir -p "$XDG_STATE_HOME/bash"
 
 if [ -f "$HOME/.bash_history" ] && [ ! -f "$XDG_STATE_HOME/bash/history" ]; then
