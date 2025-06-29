@@ -2,7 +2,7 @@ if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
   fastfetch
 fi
 
-# [ -f "${HOME}/.config/shared/init.sh" ] && source "${HOME}/.config/shared/init.sh"
+[ -f "${HOME}/.config/shared/init.sh" ] && source "${HOME}/.config/shared/init.sh"
 
 eval "$(aliae init zsh --config "$HOME/.config/aliae.yaml")"
 
