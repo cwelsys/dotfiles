@@ -34,12 +34,12 @@ show_always = false
 aliases = { "Administrator" = '󱐋 ' }
 
 [shell]
-fish_indicator = '󰈺 '
-bash_indicator = '󱆃 '
-unknown_indicator = ' '
+fish_indicator = '󰈺'
+bash_indicator = '󱆃'
+unknown_indicator = ''
 style = 'teal bold'
 disabled = false
-format = '[$indicator]($style)'
+format = '[$indicator ]($style)'
 powershell_indicator = ''
 zsh_indicator = ''
 
