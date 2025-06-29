@@ -1,8 +1,9 @@
 source ./aliae.nu
 source ./priv.nu
 source ./themes/catppuccin_mocha.nu
+overlay use ./scripts/git-aliases.nu
 
-$env.config.plugins.highlight.theme = "catppuccin-mocha"
+$env.config.plugins.highlight.theme = "ansi"
 $env.config.buffer_editor = "nvim"
 $env.config.show_banner = false
 $env.config.edit_mode = 'vi'

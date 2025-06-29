@@ -7,13 +7,14 @@ continuation_prompt = "[❯❯ ](subtext0)"
 
 format = """
 $os\
+$shell\
 $directory\
 $git_branch\
 $git_state\
 $git_status\
 $git_metrics\
 $line_break\
-$sudo$username$shell$character"""
+$sudo$username$character"""
 
 right_format = """$all"""
 
@@ -39,7 +40,7 @@ bash_indicator = '󱆃'
 unknown_indicator = ''
 style = 'teal bold'
 disabled = false
-format = '[$indicator ]($style)'
+format = '[$indicator]($style)'
 powershell_indicator = ''
 zsh_indicator = ''
 
