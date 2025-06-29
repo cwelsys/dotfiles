@@ -27,7 +27,7 @@ sudo locale-gen
 yay -Y --gendb
 yay -Syu --devel
 yay -Y --devel --save
-curl -s https://aliae.dev/install.sh | bash -s
+curl -s https://aliae.dev/install.sh | sudo bash -s
   {{- else -}}
 echo "Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
   {{- end -}}
