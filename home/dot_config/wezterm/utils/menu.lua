@@ -9,7 +9,7 @@ local opts = {
 
 if os.is_win then
 	opts.launch_menu = {
-		{ label = 'Powershell', args = { 'pwsh', '-NoLogo' } },
+		{ label = 'Pwsh', args = { 'pwsh', '-NoLogo' } },
 		{ label = 'Command Prompt', args = { 'cmd' } },
 		{ label = 'Nushell', args = { 'nu' } },
 		{ label = 'PowerShell', args = { 'powershell.exe', '-NoLogo' } },
@@ -17,7 +17,6 @@ if os.is_win then
 		{ label = 'Git Bash', args = { 'C:\\Program Files\\git\\bin\\bash.exe' }, },
 		{ label = 'pbox', args = { 'ssh', 'pbox' }, icon = "🌴", color = '#cdd6f4' },
 		{ label = 'mba', args = { 'ssh', 'mba' }, icon = nf.dev_apple, color = '#cdd6f4' },
-		-- { label = 'PowerShell 5', args = { 'powershell' } },
 		{
 			label = 'nvim',
 			args = { "nvim" },

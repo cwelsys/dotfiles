@@ -4,6 +4,10 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 
 $Env:PWSH = "$HOME/.config/powershell"
 
+Remove-Item Alias:rm -Force -ErrorAction SilentlyContinue
+Remove-Item Alias:ls -Force -ErrorAction SilentlyContinue
+Remove-Item Alias:cat -Force -ErrorAction SilentlyContinue
+
 $timer = New-TimeSpan -Minutes 10
 $stamp = "$Env:PWSH/timer.txt"
 $send = {
@@ -43,12 +47,13 @@ if (Get-Command aliae -ErrorAction SilentlyContinue) {
 	aliae init pwsh | Invoke-Expression
 }
 
-if (Get-Command mise -ErrorAction SilentlyContinue) {
-	mise activate pwsh | Out-String | Invoke-Expression
-}
-
-foreach ($file in $((Get-ChildItem -Path "$env:PWSH\lib\*" -Include *.ps1).FullName)) {
-	. "$file"
+if ($PSVersionTable.PSVersion.Major -ne 5) {
+	foreach ($file in $((Get-ChildItem -Path "$env:PWSH\lib\*" -Include *.ps1).FullName)) {
+		. "$file"
+	}
+	if (Get-Command mise -ErrorAction SilentlyContinue) {
+		mise activate pwsh | Out-String | Invoke-Expression
+	}
 }
 
 if (Get-Command carapace -ErrorAction SilentlyContinue) {

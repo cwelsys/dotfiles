@@ -1,7 +1,3 @@
-Remove-Item Alias:rm -Force -ErrorAction SilentlyContinue
-Remove-Item Alias:ls -Force -ErrorAction SilentlyContinue
-Remove-Item Alias:cat -Force -ErrorAction SilentlyContinue
-
 function Import-Profile {
   if (Test-Path -Path $PROFILE) { . $PROFILE }
   elseif (Test-Path -Path $PROFILE.CurrentUserAllHosts) { . $PROFILE.CurrentUserAllHosts }
