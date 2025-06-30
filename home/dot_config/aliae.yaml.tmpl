@@ -203,9 +203,10 @@ alias:
     value: brew install --cask
   - name: cask-remove
     value: brew uninstall --cask
-{{- end -}}
-{{ if eq .chezmoi.os "linux" -}}
-{{- if eq .chezmoi.osRelease.id "fedora" -}}
+{{ end }}
+
+{{ if eq .chezmoi.os "linux" }}
+{{ if eq .chezmoi.osRelease.id "fedora" }}
   - name: clean
     value: sudo dnf autoremove -y
   - name: update
@@ -218,7 +219,7 @@ alias:
     value: dnf search
   - name: info
     value: dnf info
-{{- else if eq .chezmoi.osRelease.id "arch" -}}
+{{ else if eq .chezmoi.osRelease.id "arch" }}
   - name: clean
     value: yay -Yc --noconfirm
   - name: update
@@ -231,8 +232,8 @@ alias:
     value: yay -Ss
   - name: info
     value: yay -Si
-{{- end -}}
-{{- end -}}
+{{ end }}
+{{ end }}
 
 env:
   - !include priv.yaml
