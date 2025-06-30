@@ -1,5 +1,11 @@
-{{ if and (or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux")) (ne .chezmoi.osRelease.id "arch") -}}
+{{ if or (eq .chezmoi.os "darwin") (and (eq .chezmoi.os "linux") (ne .chezmoi.osRelease.id "arch")) -}}
 #!/bin/bash
+
+{{- range .pkgs.shared.brews }}
+{{- if (contains . "/") }}
+brew tap {{ (splitList "/" . | slice 0 2 | join "/") }}
+{{- end }}
+{{- end }}
 
 brew bundle --file=/dev/stdin <<EOF
 {{- range .pkgs.shared.brews }}
