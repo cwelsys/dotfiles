@@ -1,4 +1,5 @@
 alias:
+  - !include "priv.yaml"
   - name: c
     value: clear
   - name: ld
@@ -121,6 +122,19 @@ alias:
   - name: su
     value: gsudo
     if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+  - name: winutil
+    value: iwr -useb https://christitus.com/win | iex
+    type: function
+    if: eq .OS "windows"
+  - name: getnf
+    value: |
+      & ([scriptblock]::Create((iwr 'https://to.loredo.me/Install-NerdFont.ps1')))
+    type: function
+    if: eq .OS "windows"
+  - name: ms-activate
+    value: irm https://get.activated.win | iex
+    type: function
+    if: eq .OS "windows"
 
   # pwsh
   - name: os
@@ -351,6 +365,9 @@ env:
     value: bat
   - name: GIT_PAGER
     value: delta
+  - name: FZF_DEFAULT_OPTS
+    value: '--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc --color=hl:#f38ba8,fg:#cdd6f4,header:#f38ba8 --color=info:#94e2d5,pointer:#f5e0dc,marker:#f5e0dc --color=fg+:#cdd6f4,prompt:#94e2d5,hl+:#f38ba8 --color=border:#585b70 --layout=reverse --cycle --height=~80% --border=rounded --info=right --bind=alt-w:toggle-preview-wrap --bind=ctrl-e:toggle-preview'
+    if: "{{"{{"}} hasCommand \"fzf\" {{"}}"}}"
   - name: VAGRANT_HOME
     value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/vagrant'
   {{ if .isWSL -}}
