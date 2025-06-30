@@ -1,6 +1,4 @@
-if [ -f "$HOME/.config/shared/init.sh" ]; then
-	. "$HOME/.config/shared/init.sh"
-fi
+eval "$(aliae init bash --config "$HOME/.config/aliae.yaml")"
 
 if [ -f "$HOME/.config/bash" ]; then
 	for file in ~/.config/bash/*.bash; do
@@ -8,8 +6,6 @@ if [ -f "$HOME/.config/bash" ]; then
 	done
 	unset file
 fi
-
-GPG_TTY=$(tty)
 
 if command -v wsl2-ssh-agent &>/dev/null; then
 	eval "$(wsl2-ssh-agent)"
@@ -52,8 +48,4 @@ fi
 
 if command -v zoxide >/dev/null 2>&1; then
 	eval "$(zoxide init bash --cmd cd)"
-fi
-
-if command -v fastfetch >/dev/null 2>&1; then
-	fastfetch
 fi

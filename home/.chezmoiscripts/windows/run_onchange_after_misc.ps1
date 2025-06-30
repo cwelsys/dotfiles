@@ -1,7 +1,4 @@
-﻿clink installscripts "$HOME/.config/clink/prompt"
-clink installscripts "$HOME/.config/clink/clink-gizmos"
-clink installscripts "$HOME/.config/clink/more-clink-completions"
-clink set prompt.transient always
+﻿clink installscripts "$HOME\.config\clink\scripts"
 
 if (!(Get-Process -Name komorebi -ErrorAction SilentlyContinue)) {
 	komorebic enable-autostart --whkd

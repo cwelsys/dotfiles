@@ -1,5 +1,3 @@
-source ./aliae.nu
-source ./priv.nu
 source ./themes/catppuccin_mocha.nu
 overlay use ./scripts/git-aliases.nu
 
@@ -106,5 +104,6 @@ plugin use highlight
 
 source ($nu.default-config-dir | path join mise.nu)
 
+source ~/.cache/.aliae.nu
 source ~/.cache/.zoxide.nu
 

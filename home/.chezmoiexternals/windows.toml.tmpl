@@ -16,13 +16,19 @@ url = "https://raw.githubusercontent.com/catppuccin/btop/refs/heads/main/themes/
 type= "file"
 url = "https://github.com/catppuccin/qbittorrent/releases/download/v2.0.1/catppuccin-mocha.qbtheme"
 
-[".config/clink/clink-gizmos"]
+[".config/clink/scripts/clink-gizmos"]
 type = "git-repo"
 url = "https://github.com/chrisant996/clink-gizmos.git"
 clone.args = ['--depth', '1']
 pull.args = ['--depth', '1']
 
-[".config/clink/more-clink-completions"]
+[".config/clink/scripts/clink-completions"]
+type = "git-repo"
+url = "https://github.com/vladimir-kotikov/clink-completions"
+clone.args = ['--depth', '1']
+pull.args = ['--depth', '1']
+
+[".config/clink/scripts/more-clink-completions"]
 type = "git-repo"
 url = "https://github.com/sebthom/more-clink-completions.git"
 clone.args = ['--depth', '1']

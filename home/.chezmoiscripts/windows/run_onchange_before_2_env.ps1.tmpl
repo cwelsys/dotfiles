@@ -8,6 +8,7 @@ $envUpdateOccurred = $false
 
 # --- PATH Environment Variable ---
 Write-Color -Text "Processing PATH environment variable..." -Color DarkMagenta
+{{- if .config.windows.envs.path }}
 try {
     $currentUserPath = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
     $existingUserPathArray = $currentUserPath -split ';' | Where-Object { -not [String]::IsNullOrWhiteSpace($_) } | ForEach-Object { $_.TrimEnd('\') } | Get-Unique
@@ -50,15 +51,20 @@ try {
 } catch {
     Write-Color -Text "[path] ", "PATH: ", "(failed) ", "Error processing: $($_.Exception.Message)" -Color Blue, White, Red, Gray
 }
+{{- else }}
+Write-Color -Text "[path] ", "PATH: ", "(skipped) ", "No path configuration found" -Color Blue, White, Yellow, Gray
+{{- end }}
 Write-Host ""
 
 # --- Other Environment Variables ---
 Write-Color -Text "Processing other environment variables..." -Color DarkMagenta
-{{- range $name, $desiredValue := .config.windows.envs.others }}
+{{- if .config.windows.envs.others }}
+{{- range .config.windows.envs.others }}
+{{- range $name, $value := . }}
 try {
     $varName = "{{ $name }}"
     # Ensure desiredValue from template is treated as a literal string, handling special characters
-    $varDesiredValue = '{{ $desiredValue | replace "'" "''" }}' # Escape single quotes for PowerShell string literal
+    $varDesiredValue = '{{ $value | replace "'" "''" }}' # Escape single quotes for PowerShell string literal
 
     $currentValue = [System.Environment]::GetEnvironmentVariable($varName, [System.EnvironmentVariableTarget]::User)
 
@@ -77,6 +83,10 @@ try {
 } catch {
     Write-Color -Text "[env] ", "{{ $name }}", ": ", "(failed) ", "Error: $($_.Exception.Message)" -Color Blue, White, White, Red, Gray
 }
+{{- end }}
+{{- end }}
+{{- else }}
+Write-Color -Text "[env] ", "Other env vars: ", "(skipped) ", "No other environment variables configuration found" -Color Blue, White, Yellow, Gray
 {{- end }}
 Write-Host ""
 

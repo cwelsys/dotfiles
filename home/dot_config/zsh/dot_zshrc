@@ -2,19 +2,16 @@ if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
   fastfetch
 fi
 
-[ -f "${HOME}/.config/shared/init.sh" ] && source "${HOME}/.config/shared/init.sh"
-
 eval "$(aliae init zsh --config "$HOME/.config/aliae.yaml")"
 
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-if [[ -f "/opt/homebrew/bin/brew" ]] then
+if [[ -f "/opt/homebrew/bin/brew" ]]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-GPG_TTY=$(tty)
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
 if [[ ! -d "${ZINIT_HOME}" ]]; then

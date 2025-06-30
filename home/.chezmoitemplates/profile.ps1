@@ -40,7 +40,7 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 }
 
 if (Get-Command aliae -ErrorAction SilentlyContinue) {
-	aliae init pwsh --config "$HOME/.config/aliae.yaml" | Invoke-Expression
+	aliae init pwsh | Invoke-Expression
 }
 
 if (Get-Command mise -ErrorAction SilentlyContinue) {

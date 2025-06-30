@@ -1,5 +1,4 @@
 alias:
-  - !include "priv.yaml"
   - name: c
     value: clear
   - name: ld
@@ -27,6 +26,7 @@ alias:
   - name: vim
     value: nvim
   - name: cdc
+    type: function
     value: |
       {{"{{"}} if eq .Shell "pwsh" {{"}}"}}
         cd {{"{{"}} .Home {{"}}"}}\.config
@@ -39,36 +39,35 @@ alias:
   {{ if .isWSL -}}
   - name: cdw
     value: cd {{"{{"}} env "WIN_HOME" {{"}}"}}
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
-    {{- end }}
+    if: match .OS "windows"
+  {{- end }}
   - name: qq
+    type: function
     value: |
-      {{"{{"}} if eq .Shell "pwsh" {{"}}"}}
-        exit
-      {{"{{"}} else {{"}}"}}
-      {
-        exit
-      }
-      {{"{{"}} end {{"}}"}}
+      exit
+    if: match .Shell "pwsh"
+  - name: qq
+    value: exit
+    if: ne .Shell "pwsh"
 
   - name: rcp
     value: rsync --recursive --times --progress --stats --human-readable
-    if: "{{"{{"}} hasCommand \"rsync\" {{"}}"}}"
+    if: hasCommand "rsync"
   - name: rmv
     value: rsync --recursive --times --progress --stats --human-readable --remove-source-files
-    if: "{{"{{"}} hasCommand \"rsync\" {{"}}"}}"
+    if: hasCommand "rsync"
   - name: e
     value: Invoke-Item .
     type: function
-    if: "{{"{{"}} match .Shell \"pwsh\" {{"}}"}}"
+    if: match .Shell "pwsh"
   - name: e
     value: open .
     type: function
-    if: "{{"{{"}} match .OS \"darwin\" {{"}}"}}"
+    if: match .OS "darwin"
   - name: e
     value: xdg-open .
     type: function
-    if: "{{"{{"}} match .OS \"linux\" {{"}}"}}"
+    if: match .OS "linux"
 
   - name: cma
     value: chezmoi add
@@ -96,88 +95,88 @@ alias:
     value: fastfetch --logo none --structure board
 
   - name: ls
-    value: eza --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I='*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv'
+    value: eza --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
   - name: l
-    value: eza --git-ignore --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I='*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv'
+    value: eza --git-ignore --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
   - name: ll
-    value: eza --all --header --long --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I='*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv'
+    value: eza --all --header --long --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
   - name: la
     value: eza -lbhHigUmuSa
   - name: lo
-    value: eza --oneline --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I='*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv'
+    value: eza --oneline --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
   - name: lx
     value: eza -lbhHigUmuSa@
   - name: tree
-    value: eza --tree --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I='*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv'
+    value: eza --tree --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
   - name: lt
     value: tree
 
   # Windows
   - name: zsh
     value: wsl.exe -e zsh
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    if: match .OS "windows"
   - name: fish
     value: wsl.exe -e fish
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    if: match .OS "windows"
   - name: su
     value: gsudo
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
-  - name: winutil
-    value: iwr -useb https://christitus.com/win | iex
-    type: function
-    if: eq .OS "windows"
-  - name: getnf
-    value: |
-      & ([scriptblock]::Create((iwr 'https://to.loredo.me/Install-NerdFont.ps1')))
-    type: function
-    if: eq .OS "windows"
-  - name: ms-activate
-    value: irm https://get.activated.win | iex
-    type: function
-    if: eq .OS "windows"
+    if: match .OS "windows"
 
   # pwsh
   - name: os
     value: Out-String
-    if: "{{"{{"}} match .Shell \"pwsh\" {{"}}"}}"
+    if: match .Shell "pwsh"
   - name: keys
     value: Get-PSReadLineKeyHandler
-    if: "{{"{{"}} match .Shell \"pwsh\" {{"}}"}}"
+    if: match .Shell "pwsh"
   - name: clip
     value: Set-Clipboard
-    if: "{{"{{"}} match .Shell \"pwsh\" {{"}}"}}"
+    if: match .Shell "pwsh"
   - name: json
     value: ConvertTo-Json
-    if: "{{"{{"}} match .Shell \"pwsh\" {{"}}"}}"
+    if: match .Shell "pwsh"
   - name: unjson
     value: ConvertFrom-Json
-    if: "{{"{{"}} match .Shell \"pwsh\" {{"}}"}}"
+    if: match .Shell "pwsh"
   - name: GET
     value: Invoke-RestMethodGet
-    if: "{{"{{"}} match .Shell \"pwsh\" {{"}}"}}"
+    if: match .Shell "pwsh"
   - name: HEAD
     value: Invoke-RestMethodHead
-    if: "{{"{{"}} match .Shell \"pwsh\" {{"}}"}}"
+    if: match .Shell "pwsh"
   - name: POST
     value: Invoke-RestMethodPost
-    if: "{{"{{"}} match .Shell \"pwsh\" {{"}}"}}"
+    if: match .Shell "pwsh"
   - name: PUT
     value: Invoke-RestMethodPut
-    if: "{{"{{"}} match .Shell \"pwsh\" {{"}}"}}"
+    if: match .Shell "pwsh"
   - name: DELETE
     value: Invoke-RestMethodDelete
-    if: "{{"{{"}} match .Shell \"pwsh\" {{"}}"}}"
+    if: match .Shell "pwsh"
   - name: TRACE
     value: Invoke-RestMethodTrace
-    if: "{{"{{"}} match .Shell \"pwsh\" {{"}}"}}"
+    if: match .Shell "pwsh"
   - name: OPTIONS
     value: Invoke-RestMethodOptions
-    if: "{{"{{"}} match .Shell \"pwsh\" {{"}}"}}"
+    if: match .Shell "pwsh"
+  - name: winutil
+    value: iwr -useb https://christitus.com/win | iex
+    type: function
+    if: match .Shell "pwsh"
+  - name: getnf
+    value: |
+      & ([scriptblock]::Create((iwr 'https://to.loredo.me/Install-NerdFont.ps1')))
+    type: function
+    if: match .Shell "pwsh"
+  - name: ms-activate
+    value: irm https://get.activated.win | iex
+    type: function
+    if: match .Shell "pwsh"
 
   # Linux
   - name: scl
     value: systemctl
-    if: "{{"{{"}} match .OS \"linux\" {{"}}"}}"
+    if: match .OS "linux"
 
   # Package Managers
   - name: npm-ls
@@ -263,21 +262,22 @@ alias:
     value: zypper info
     {{- end }}
 env:
+  - !include priv.yaml
   - name: DOTS
     value: '{{ .chezmoi.sourceDir }}'
   - name: DOTFILES
     value: '{{ .chezmoi.sourceDir }}'
   - name: BAT_THEME
     value: Catppuccin Mocha
-    if: command -v bat >/dev/null 2>&1
+    if: hasCommand "bat"
   - name: BATDIFF_USE_DELTA
     value: 'true'
-    if: command -v bat >/dev/null 2>&1
+    if: hasCommand "bat"
   - name: DOTNET_CLI_TELEMETRY_OPTOUT
     value: '1'
   - name: SSH_AUTH_SOCK
     value: \\.\pipe\openssh-ssh-agent
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    if: match .OS "windows"
   - name: TZ
     value: America/New_York
   - name: DOMAIN
@@ -285,91 +285,101 @@ env:
   - name: CASA
     value: cwel.casa
   - name: XDG_CONFIG_HOME
-    value: '{{ if eq .chezmoi.os "windows" }}C:/Users/cwel/.config{{ else }}{{ .chezmoi.homeDir }}/.config{{ end }}'
+    value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.config{{ else }}{{ .chezmoi.homeDir }}/.config{{ end }}'
   - name: XDG_CACHE_HOME
-    value: '{{ if eq .chezmoi.os "windows" }}C:/Users/cwel/.cache{{ else }}{{ .chezmoi.homeDir }}/.cache{{ end }}'
+    value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.cache{{ else }}{{ .chezmoi.homeDir }}/.cache{{ end }}'
   - name: XDG_DATA_HOME
-    value: '{{ if eq .chezmoi.os "windows" }}C:/Users/cwel/.local/share{{ else }}{{ .chezmoi.homeDir }}/.local/share{{ end }}'
+    value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share{{ else }}{{ .chezmoi.homeDir }}/.local/share{{ end }}'
   - name: XDG_STATE_HOME
-    value: '{{ if eq .chezmoi.os "windows" }}C:/Users/cwel/.local/state{{ else }}{{ .chezmoi.homeDir }}/.local/state{{ end }}'
+    value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\state{{ else }}{{ .chezmoi.homeDir }}/.local/state{{ end }}'
   - name: XDG_BIN_HOME
-    value: '{{ if eq .chezmoi.os "windows" }}C:/Users/cwel/.local/bin{{ else }}{{ .chezmoi.homeDir }}/.local/bin{{ end }}'
+    value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\bin{{ else }}{{ .chezmoi.homeDir }}/.local/bin{{ end }}'
   - name: XDG_PROJECTS_DIR
-    value: '{{ if eq .chezmoi.os "windows" }}C:/Users/cwel/Projects{{ else }}{{ .chezmoi.homeDir }}/Projects{{ end }}'
+    value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\Projects{{ else }}{{ .chezmoi.homeDir }}/Projects{{ end }}'
   - name: MANPAGER
     value: nvim +Man!
   - name: WORDCHARS
     value: '~!#$%^&*(){}[]<>?.+;'
   - name: PROMPT_EOL_MARK
     value: ''
+  - name: GPG_TTY
+    value: '$(tty)'
+    if: .OS ne "windows"
   - name: LANG
     value: en_US.UTF-8
+    if: .OS ne "windows"
   - name: LC_ALL
     value: en_US.UTF-8
+    if: .OS ne "windows"
   - name: LC_CTYPE
     value: en_US.UTF-8
+    if: .OS ne "windows"
   - name: PASSWORD_STORE_DIR
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/pass'
-    if: "{{"{{"}} match .OS \"linux\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}/.local/share/pass'
+    if: match .OS "linux"
   - name: GNUPGHOME
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/gnupg'
+    value: '{{"{{"}} .Home {{"}}"}}/.local/share/gnupg'
   - name: DOCKER_CONFIG
-    value: '{{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/docker'
+    value: '{{"{{"}} .Home {{"}}"}}/.config/docker'
   - name: DOCKERM
     value: /opt/docker
+    if: match .OS "linux" "darwin"
   - name: CARGO_HOME
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/cargo'
+    value: '{{"{{"}} .Home {{"}}"}}/.local/share/cargo'
   - name: RUSTUP_HOME
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/rustup'
+    value: '{{"{{"}} .Home {{"}}"}}/.local/share/rustup'
   - name: HOMEBREW_NO_AUTO_UPDATE
     value: '1'
+    if: hasCommand "brew"
   - name: HOMEBREW_BAT
     value: '1'
+    if: hasCommand "brew"
   - name: HOMEBREW_GITHUB_API_TOKEN
     value: '{{ onepasswordRead "op://Secrets/Git/Github/pat" | trim }}'
   - name: HOMEBREW_NO_ENV_HINTS
     value: '1'
+    if: hasCommand "brew"
   - name: DOTNET_CLI_HOME
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/dotnet'
+    value: '{{"{{"}} .Home {{"}}"}}/.local/share/dotnet'
   - name: XAUTHORITY
-    value: '{{"{{"}} env "XDG_STATE_HOME" {{"}}"}}/.Xauthority'
+    value: '{{"{{"}} .Home {{"}}"}}/.local/state/.Xauthority'
   - name: PYTHONSTARTUP
-    value: '{{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/python/pythonrc'
+    value: '{{"{{"}} .Home {{"}}"}}/.config/python/pythonrc'
   - name: vivid_theme
     value: catppuccin-mocha
   - name: PIPX_HOME
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/pipx'
+    value: '{{"{{"}} .Home {{"}}"}}/.local/share/pipx'
   - name: GLOW_STYLE
-    value: '{{"{{ .Home }}"}}/.config/glow/catppuccin-mocha.json'
+    value: '{{"{{"}} .Home {{"}}"}}/.config/glow/catppuccin-mocha.json'
   - name: GRADLE_USER_HOME
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/gradle'
+    value: '{{"{{"}} .Home {{"}}"}}/.local/share/gradle'
   - name: NPM_CONFIG_INIT_MODULE
-    value: '{{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/npm/config/npm-init.js'
+    value: '{{"{{"}} .Home {{"}}"}}/.config/npm/config/npm-init.js'
   - name: NPM_CONFIG_CACHE
-    value: '{{"{{"}} env "XDG_CACHE_HOME" {{"}}"}}/npm'
+    value: '{{"{{"}} .Home {{"}}"}}/.cache/npm'
   - name: NODE_REPL_HISTORY
-    value: '{{"{{"}} env "XDG_STATE_HOME" {{"}}"}}/node_repl_history'
+    value: '{{"{{"}} .Home {{"}}"}}/.local/state/node_repl_history'
   - name: GOPATH
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/go'
+    value: '{{"{{"}} .Home {{"}}"}}/.local/share/go'
   - name: GOBIN
-    value: '{{"{{"}} env "GOPATH" {{"}}"}}/bin'
+    value: '{{"{{"}} .Home {{"}}"}}/.local/share/go/bin'
   - name: GO111MODULE
     value: on
   - name: RIPGREP_CONFIG_PATH
-    value: '{{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/ripgrep/config'
+    value: '{{"{{"}} .Home {{"}}"}}/.config/ripgrep/config'
   - name: LESSHISTFILE
-    value: '{{"{{"}} env "XDG_CACHE_HOME" {{"}}"}}/.lesshsts'
+    value: '{{"{{"}} .Home {{"}}"}}/.cache/.lesshsts'
   - name: WGETRC
-    value: '{{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/wget/wgetrc'
+    value: '{{"{{"}} .Home {{"}}"}}/.config/wget/wgetrc'
   - name: PAGER
     value: bat
   - name: GIT_PAGER
     value: delta
   - name: FZF_DEFAULT_OPTS
     value: '--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc --color=hl:#f38ba8,fg:#cdd6f4,header:#f38ba8 --color=info:#94e2d5,pointer:#f5e0dc,marker:#f5e0dc --color=fg+:#cdd6f4,prompt:#94e2d5,hl+:#f38ba8 --color=border:#585b70 --layout=reverse --cycle --height=~80% --border=rounded --info=right --bind=alt-w:toggle-preview-wrap --bind=ctrl-e:toggle-preview'
-    if: "{{"{{"}} hasCommand \"fzf\" {{"}}"}}"
+    if: hasCommand "fzf"
   - name: VAGRANT_HOME
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/vagrant'
+    value: '{{"{{"}} .Home {{"}}"}}/.local/share/vagrant'
   {{ if .isWSL -}}
   - name: WIN_HOME
     value: /mnt/c/users/cwel
@@ -388,151 +398,130 @@ env:
     {{- end }}
   - name: OP_BIOMETRIC_UNLOCK_ENABLED
     value: 'true'
-    if: "{{"{{"}} match .OS \"darwin\" {{"}}"}}"
+    if: match .OS "darwin"
   - name: PKG_CONFIG_PATH
     value: /usr/lib/x86_64-linux-gnu/pkgconfig/:/usr/share/pkgconfig/
-    if: "{{"{{"}} match .OS \"linux\" {{"}}"}}"
+    if: match .OS "linux"
 
   # Windows-specific environment variables
   - name: YAZI_CONFIG_HOME
-    value: '{{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/yazi'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.config\yazi'
+    if: match .OS "windows"
     persist: true
   - name: YAZI_FILE_ONE
     value: 'C:\Program Files\Git\usr\bin\file.exe'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    if: match .OS "windows"
     persist: true
   - name: KOMOREBI_CONFIG_HOME
-    value: '{{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/komorebi'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.config\komorebi'
+    if: match .OS "windows"
     persist: true
   - name: AWS_CONFIG_FILE
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/aws/config'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.local\share\aws\config'
+    if: match .OS "windows"
     persist: true
   - name: AWS_DATA_PATH
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/aws'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.local\share\aws'
+    if: match .OS "windows"
     persist: true
   - name: AWS_SHARED_CREDENTIALS_FILE
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/aws/credentials'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.local\share\aws\credentials'
+    if: match .OS "windows"
     persist: true
   - name: EZA_CONFIG_DIR
-    value: '{{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/eza'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.config\eza'
+    if: match .OS "windows"
     persist: true
   - name: VBOX_USER_HOME
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/virtualbox'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.local\share\virtualbox'
+    if: match .OS "windows"
     persist: true
   - name: VAGRANT_DEFAULT_PROVIDER
     value: virtualbox
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    if: match .OS "windows"
     persist: true
   - name: BAT_CONFIG_DIR
-    value: '{{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/bat'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.config\bat'
+    if: match .OS "windows"
+    persist: true
+  - name: CLINK_PROFILE
+    value: '{{"{{"}} .Home {{"}}"}}\.config\clink'
+    if: match .OS "windows"
     persist: true
   - name: PIPX_GLOBAL_HOME
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/pipx'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.local\share\pipx'
+    if: match .OS "windows"
     persist: true
   - name: GH_DASH_CONFIG
-    value: '{{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/gh-dash/config.yml'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.config\gh-dash\config.yml'
+    if: match .OS "windows"
     persist: true
   - name: YARN_CACHE_FOLDER
-    value: '{{"{{"}} env "XDG_CACHE_HOME" {{"}}"}}/npm'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.cache\npm'
+    if: match .OS "windows"
     persist: true
   - name: PNPM_HOME
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/pnpm'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.local\share\pnpm'
+    if: match .OS "windows"
     persist: true
   - name: RCLONE_CONFIG_DIR
-    value: '{{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/rclone'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.config\rclone'
+    if: match .OS "windows"
     persist: true
   - name: MISE_NODE_DEFAULT_PACKAGES_FILE
-    value: '{{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/mise/default-npm-packages'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.config\mise\default-npm-packages'
+    if: match .OS "windows"
     persist: true
   - name: MISE_GO_DEFAULT_PACKAGES_FILE
-    value: '{{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/mise/default-npm-packages'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.config\mise\default-npm-packages'
+    if: match .OS "windows"
     persist: true
   - name: MISE_PYTHON_DEFAULT_PACKAGES_FILE
-    value: '{{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/mise/default-python-packages'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.config\mise\default-python-packages'
+    if: match .OS "windows"
     persist: true
   - name: MISE_RUBY_DEFAULT_PACKAGES_FILE
-    value: '{{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/mise/default-gems'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.config\mise\default-gems'
+    if: match .OS "windows"
     persist: true
   - name: PYTHON_HISTORY
-    value: '{{"{{"}} env "XDG_DATA_HOME" {{"}}"}}/python/history'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\.local\share\python\history'
+    if: match .OS "windows"
     persist: true
   - name: XDG_RUNTIME_DIR
-    value: '{{"{{"}} .Home {{"}}"}}/AppData/Local/Temp'
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
+    value: '{{"{{"}} .Home {{"}}"}}\AppData\Local\Temp'
+    if: match .OS "windows"
     persist: true
 
 path:
   - value: |
-      {{"{{"}} .Home {{"}}"}}/bin
-      {{"{{"}} .Home {{"}}"}}/.local/bin
+      {{ if eq .chezmoi.os "windows" }}C:\Users\cwel\bin{{ else }}{{ .chezmoi.homeDir }}/bin{{ end }}
+      {{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\bin{{ else }}{{ .chezmoi.homeDir }}/.local/bin{{ end }}
+  - value: |
       /usr/local/sbin
       /usr/bin
       /usr/local/bin
       /bin
-    force: true
+    if: .OS ne "windows"
 
-  - value: |
-      {{"{{"}} env "WIN_HOME" {{"}}"}}/AppData/Local/Programs/Microsoft VS Code/bin
-    if: "{{"{{"}} and (match .OS \"windows\") (hasCommand \"wslvar\") {{"}}"}}"
+  {{ if eq .chezmoi.os "linux" -}}
+  - value: /home/linuxbrew/.linuxbrew/bin
+    if: hasCommand "brew"
+  - value: /home/linuxbrew/.linuxbrew/sbin
+    if: hasCommand "brew"
+    {{ end -}}
+  {{- if eq .chezmoi.os "darwin" }}
+  - value: /opt/homebrew/bin
+    {{ end -}}
 
-  # npm global packages
+  - value: {{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\cargo\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/cargo/bin{{ end }}
+  - value: {{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\cargo\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/cargo/bin{{ end }}
+  - value: {{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\go\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/go/bin{{ end }}
   - value: |
-      {{"{{"}} env "XDG_CONFIG_HOME" {{"}}"}}/npm/bin
-    if: "{{"{{"}} env \"NPM_CONFIG_INIT_MODULE\" {{"}}"}}"
-  - value: |
-      {{"{{"}} .Home {{"}}"}}/.npm-global/bin
-    if: "{{"{{"}} not (env \"NPM_CONFIG_INIT_MODULE\") {{"}}"}}"
-
-  # Homebrew paths
-  - value: |
-      /home/linuxbrew/.linuxbrew/bin
-      /home/linuxbrew/.linuxbrew/sbin
-    if: "{{"{{"}} hasCommand \"brew\" {{"}}"}}"
-
-  # Rust/Cargo paths
-  - value: |
-      {{"{{"}} env "CARGO_HOME" {{"}}"}}/bin
-    if: "{{"{{"}} env \"CARGO_HOME\" {{"}}"}}"
-  - value: |
-      {{"{{"}} .Home {{"}}"}}/.cargo/bin
-    if: "{{"{{"}} not (env \"CARGO_HOME\") {{"}}"}}"
-
-  # Go paths
-  - value: |
-      {{"{{"}} env "GOPATH" {{"}}"}}/bin
-    if: "{{"{{"}} or (hasCommand \"go\") (isDir (join .Home \".go\")) {{"}}"}}"
-
-  # macOS Homebrew
-  - value: |
-      /opt/homebrew/bin
-      /usr/local/bin
-    if: "{{"{{"}} eq .OS \"darwin\" {{"}}"}}"
-
-  # Windows-specific paths
-  - value: |
-      {{"{{"}} .Home {{"}}"}}/.local/share/nvim-data/mason/bin
-      {{"{{"}} .Home {{"}}"}}/Documents/PowerShell/Scripts
+      C:\Users\cwel\.local\share\nvim-data\mason\bin
+      C:\Users\cwel\Documents\PowerShell\Scripts
       C:\Program Files\Git\usr\bin
-      {{"{{"}} .Home {{"}}"}}/.local/bin
-    if: "{{"{{"}} match .OS \"windows\" {{"}}"}}"
-    persist: true
+      C:\Users\cwel\.local\bin
+    if: match .OS "windows"
 
 

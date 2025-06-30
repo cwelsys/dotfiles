@@ -87,6 +87,8 @@ load-env {
 mkdir ($nu.data-dir | path join "vendor/autoload")
 starship init nu | save -f ($nu.data-dir | path join "vendor/autoload/starship.nu")
 
+aliae init nu --print | save ~/.cache/.aliae.nu --force
+
 carapace _carapace nushell | save -f ~/.cache/carapace/init.nu
 
 mkdir ~/.local/share/atuin/
