@@ -36,11 +36,9 @@ alias:
   - name: cdcm
     value: cd {{"{{"}} env "DOTS" {{"}}"}}
     type: function
-{{ if .isWSL -}}
   - name: cdw
     value: cd {{"{{"}} env "WIN_HOME" {{"}}"}}
     if: match .OS "windows"
-{{- end }}
   - name: qq
     type: function
     value: |
@@ -188,76 +186,107 @@ alias:
   - name: go-ls
     value: go-global-update --dry-runs
 
-{{ if eq .chezmoi.os "darwin" -}}
+  # Package manager aliases - these will be conditionally included based on OS
   - name: update
     value: brew update && brew upgrade
+    if: eq .chezmoi.os "darwin"
   - name: install
     value: brew install
+    if: eq .chezmoi.os "darwin"
   - name: clean
     value: brew cleanup
+    if: eq .chezmoi.os "darwin"
   - name: remove
     value: brew uninstall
+    if: eq .chezmoi.os "darwin"
   - name: search
     value: brew search
+    if: eq .chezmoi.os "darwin"
   - name: info
     value: brew info
+    if: eq .chezmoi.os "darwin"
   - name: cask-install
     value: brew install --cask
+    if: eq .chezmoi.os "darwin"
   - name: cask-remove
     value: brew uninstall --cask
-{{- else if eq .chezmoi.os "fedora" -}}
+    if: eq .chezmoi.os "darwin"
+
   - name: clean
     value: sudo dnf autoremove -y
+    if: eq .chezmoi.os "fedora"
   - name: update
     value: sudo dnf upgrade -y
+    if: eq .chezmoi.os "fedora"
   - name: install
     value: sudo dnf install -y
+    if: eq .chezmoi.os "fedora"
   - name: remove
     value: sudo dnf remove -y
+    if: eq .chezmoi.os "fedora"
   - name: search
     value: dnf search
+    if: eq .chezmoi.os "fedora"
   - name: info
     value: dnf info
-{{- else if eq .chezmoi.os "arch" -}}
+    if: eq .chezmoi.os "fedora"
+
   - name: clean
     value: yay -Yc --noconfirm
+    if: eq .chezmoi.os "arch"
   - name: update
     value: yay -Syu --noconfirm
+    if: eq .chezmoi.os "arch"
   - name: install
     value: yay -S --needed --noconfirm
+    if: eq .chezmoi.os "arch"
   - name: remove
     value: sudo pacman -Rcns --noconfirm
+    if: eq .chezmoi.os "arch"
   - name: search
     value: yay -Ss
+    if: eq .chezmoi.os "arch"
   - name: info
     value: yay -Si
-{{- else if eq .chezmoi.os "alpine" -}}
+    if: eq .chezmoi.os "arch"
+
   - name: update
     value: sudo apk update
+    if: eq .chezmoi.os "alpine"
   - name: install
     value: sudo apk add
+    if: eq .chezmoi.os "alpine"
   - name: clean
     value: sudo apk cache clean
+    if: eq .chezmoi.os "alpine"
   - name: remove
     value: sudo apk del
+    if: eq .chezmoi.os "alpine"
   - name: search
     value: apk search
+    if: eq .chezmoi.os "alpine"
   - name: info
     value: apk info
-{{- else if eq .chezmoi.os "opensuse" -}}
+    if: eq .chezmoi.os "alpine"
+
   - name: update
     value: sudo zypper refresh && sudo zypper update -y
+    if: eq .chezmoi.os "opensuse"
   - name: install
     value: sudo zypper install -y
+    if: eq .chezmoi.os "opensuse"
   - name: clean
     value: sudo zypper clean --all
+    if: eq .chezmoi.os "opensuse"
   - name: remove
     value: sudo zypper remove -y
+    if: eq .chezmoi.os "opensuse"
   - name: search
     value: zypper search
+    if: eq .chezmoi.os "opensuse"
   - name: info
     value: zypper info
-{{- end }}
+    if: eq .chezmoi.os "opensuse"
 
 env:
   - !include priv.yaml
@@ -378,22 +407,21 @@ env:
     if: hasCommand "fzf"
   - name: VAGRANT_HOME
     value: '{{"{{"}} .Home {{"}}"}}/.local/share/vagrant'
-{{ if .isWSL -}}
   - name: WIN_HOME
     value: /mnt/c/users/cwel
-{{- end }}
-{{ if eq .chezmoi.hostname "pbox" -}}
+    if: .isWSL
   - name: RUST
     value: '/mnt/media'
+    if: eq .chezmoi.hostname "pbox"
   - name: FLASH
     value: '/mnt/bool'
+    if: eq .chezmoi.hostname "pbox"
   - name: BRICK
     value: '/mnt/backup'
-{{- end }}
-{{ if ne .chezmoi.hostname "pbox" -}}
+    if: eq .chezmoi.hostname "pbox"
   - name: DOCKER_HOST
     value: tcp://psock:2375
-{{- end }}
+    if: ne .chezmoi.hostname "pbox"
   - name: OP_BIOMETRIC_UNLOCK_ENABLED
     value: 'true'
     if: match .OS "darwin"
@@ -501,22 +529,17 @@ path:
       /usr/local/bin
       /bin
     if: .OS ne "windows"
-{{ if eq .chezmoi.os "linux" -}}
   - value: /home/linuxbrew/.linuxbrew/bin
-    if: hasCommand "brew"
+    if: eq .chezmoi.os "linux"
   - value: /home/linuxbrew/.linuxbrew/sbin
-    if: hasCommand "brew"
-{{- end }}
-{{- if eq .chezmoi.os "darwin" }}
+    if: eq .chezmoi.os "linux"
   - value: /opt/homebrew/bin
-{{- end }}
-  - value: {{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\cargo\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/cargo/bin{{ end }}
-  - value: {{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\go\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/go/bin{{ end }}
+    if: eq .chezmoi.os "darwin"
+  - value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\cargo\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/cargo/bin{{ end }}'
+  - value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\go\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/go/bin{{ end }}'
   - value: |
       C:\Users\cwel\.local\share\nvim-data\mason\bin
       C:\Users\cwel\Documents\PowerShell\Scripts
       C:\Program Files\Git\usr\bin
       C:\Users\cwel\.local\bin
     if: match .OS "windows"
-
-
