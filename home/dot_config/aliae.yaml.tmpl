@@ -16,8 +16,10 @@ alias:
   - name: rl
     type: function
     value: |
-      {{"{{"}} if eq .Shell "pwsh" {{"}}"}}
+      {{"{{"}} if match .Shell "pwsh" {{"}}"}}
         Import-Profile
+      {{"{{"}} else if match .Shell "nu" {{"}}"}}
+        nu
       {{"{{"}} else {{"}}"}}
         exec $SHELL -l
       {{"{{"}} end {{"}}"}}
@@ -260,16 +262,22 @@ env:
     value: cwel.casa
   - name: XDG_CONFIG_HOME
     value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.config{{ else }}{{ .chezmoi.homeDir }}/.config{{ end }}'
+    persist: true
   - name: XDG_CACHE_HOME
     value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.cache{{ else }}{{ .chezmoi.homeDir }}/.cache{{ end }}'
+    persist: true
   - name: XDG_DATA_HOME
     value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share{{ else }}{{ .chezmoi.homeDir }}/.local/share{{ end }}'
+    persist: true
   - name: XDG_STATE_HOME
     value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\state{{ else }}{{ .chezmoi.homeDir }}/.local/state{{ end }}'
+    persist: true
   - name: XDG_BIN_HOME
     value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\bin{{ else }}{{ .chezmoi.homeDir }}/.local/bin{{ end }}'
+    persist: true
   - name: XDG_PROJECTS_DIR
     value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\Projects{{ else }}{{ .chezmoi.homeDir }}/Projects{{ end }}'
+    persist: true
   - name: MANPAGER
     value: nvim +Man!
   - name: WORDCHARS

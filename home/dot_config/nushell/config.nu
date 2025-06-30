@@ -1,6 +1,8 @@
 source ./themes/catppuccin_mocha.nu
 overlay use ./scripts/git-aliases.nu
 
+aliae init nu --print | save ~/.cache/.aliae.nu --force
+
 $env.config.plugins.highlight.theme = "ansi"
 $env.config.buffer_editor = "nvim"
 $env.config.show_banner = false
