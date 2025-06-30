@@ -36,11 +36,11 @@ alias:
   - name: cdcm
     value: cd {{"{{"}} env "DOTS" {{"}}"}}
     type: function
-  {{ if .isWSL -}}
+{{ if .isWSL -}}
   - name: cdw
     value: cd {{"{{"}} env "WIN_HOME" {{"}}"}}
     if: match .OS "windows"
-  {{- end }}
+{{- end }}
   - name: qq
     type: function
     value: |
@@ -188,7 +188,7 @@ alias:
   - name: go-ls
     value: go-global-update --dry-runs
 
-    {{ if eq .chezmoi.os "darwin" -}}
+{{ if eq .chezmoi.os "darwin" -}}
   - name: update
     value: brew update && brew upgrade
   - name: install
@@ -205,7 +205,7 @@ alias:
     value: brew install --cask
   - name: cask-remove
     value: brew uninstall --cask
-    {{- else if eq .chezmoi.os "fedora" }}
+{{- else if eq .chezmoi.os "fedora" -}}
   - name: clean
     value: sudo dnf autoremove -y
   - name: update
@@ -218,8 +218,7 @@ alias:
     value: dnf search
   - name: info
     value: dnf info
-
-    {{- else if eq .chezmoi.os "arch" }}
+{{- else if eq .chezmoi.os "arch" -}}
   - name: clean
     value: yay -Yc --noconfirm
   - name: update
@@ -232,8 +231,7 @@ alias:
     value: yay -Ss
   - name: info
     value: yay -Si
-
-    {{- else if eq .chezmoi.os "alpine" }}
+{{- else if eq .chezmoi.os "alpine" -}}
   - name: update
     value: sudo apk update
   - name: install
@@ -246,8 +244,7 @@ alias:
     value: apk search
   - name: info
     value: apk info
-
-    {{- else if eq .chezmoi.os "opensuse" }}
+{{- else if eq .chezmoi.os "opensuse" -}}
   - name: update
     value: sudo zypper refresh && sudo zypper update -y
   - name: install
@@ -260,7 +257,8 @@ alias:
     value: zypper search
   - name: info
     value: zypper info
-    {{- end }}
+{{- end }}
+
 env:
   - !include priv.yaml
   - name: DOTS
@@ -380,22 +378,22 @@ env:
     if: hasCommand "fzf"
   - name: VAGRANT_HOME
     value: '{{"{{"}} .Home {{"}}"}}/.local/share/vagrant'
-  {{ if .isWSL -}}
+{{ if .isWSL -}}
   - name: WIN_HOME
     value: /mnt/c/users/cwel
-    {{- end }}
-  {{ if eq .chezmoi.hostname "pbox" -}}
+{{- end }}
+{{ if eq .chezmoi.hostname "pbox" -}}
   - name: RUST
     value: '/mnt/media'
   - name: FLASH
     value: '/mnt/bool'
   - name: BRICK
     value: '/mnt/backup'
-    {{- end }}
-  {{ if ne .chezmoi.hostname "pbox" -}}
+{{- end }}
+{{ if ne .chezmoi.hostname "pbox" -}}
   - name: DOCKER_HOST
     value: tcp://psock:2375
-    {{- end }}
+{{- end }}
   - name: OP_BIOMETRIC_UNLOCK_ENABLED
     value: 'true'
     if: match .OS "darwin"
@@ -503,7 +501,6 @@ path:
       /usr/local/bin
       /bin
     if: .OS ne "windows"
-
 {{ if eq .chezmoi.os "linux" -}}
   - value: /home/linuxbrew/.linuxbrew/bin
     if: hasCommand "brew"
@@ -513,7 +510,6 @@ path:
 {{- if eq .chezmoi.os "darwin" }}
   - value: /opt/homebrew/bin
 {{- end }}
-
   - value: {{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\cargo\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/cargo/bin{{ end }}
   - value: {{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\go\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/go/bin{{ end }}
   - value: |
