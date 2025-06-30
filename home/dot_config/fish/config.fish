@@ -18,10 +18,7 @@ if type -q brew
     end
 end
 
-if type -q bass
-    and test -f $HOME/.config/shared/init.sh
-    bass ". $HOME/.config/shared/init.sh"
-end
+aliae init fish --config "$HOME/.config/aliae.yaml" | source
 
 if type -q starship
     starship init fish | source

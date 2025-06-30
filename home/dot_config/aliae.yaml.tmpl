@@ -274,6 +274,7 @@ env:
     value: nvim +Man!
   - name: WORDCHARS
     value: '~!#$%^&*(){}[]<>?.+;'
+    if: ne .Shell "fish"
   - name: PROMPT_EOL_MARK
     value: ''
   - name: GPG_TTY
