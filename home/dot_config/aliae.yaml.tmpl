@@ -186,108 +186,76 @@ alias:
   - name: go-ls
     value: go-global-update --dry-runs
 
-  # Package manager aliases - these will be conditionally included based on OS
+{{ if eq .chezmoi.os "darwin" }}
   - name: update
     value: brew update && brew upgrade
-    if: eq .chezmoi.os "darwin"
   - name: install
     value: brew install
-    if: eq .chezmoi.os "darwin"
   - name: clean
     value: brew cleanup
-    if: eq .chezmoi.os "darwin"
   - name: remove
     value: brew uninstall
-    if: eq .chezmoi.os "darwin"
   - name: search
     value: brew search
-    if: eq .chezmoi.os "darwin"
   - name: info
     value: brew info
-    if: eq .chezmoi.os "darwin"
   - name: cask-install
     value: brew install --cask
-    if: eq .chezmoi.os "darwin"
   - name: cask-remove
     value: brew uninstall --cask
-    if: eq .chezmoi.os "darwin"
-
+{{ else if eq .chezmoi.os "fedora" }}
   - name: clean
     value: sudo dnf autoremove -y
-    if: eq .chezmoi.os "fedora"
   - name: update
     value: sudo dnf upgrade -y
-    if: eq .chezmoi.os "fedora"
   - name: install
     value: sudo dnf install -y
-    if: eq .chezmoi.os "fedora"
   - name: remove
     value: sudo dnf remove -y
-    if: eq .chezmoi.os "fedora"
   - name: search
     value: dnf search
-    if: eq .chezmoi.os "fedora"
   - name: info
     value: dnf info
-    if: eq .chezmoi.os "fedora"
-
+{{ else if eq .chezmoi.os "arch" }}
   - name: clean
     value: yay -Yc --noconfirm
-    if: eq .chezmoi.os "arch"
   - name: update
     value: yay -Syu --noconfirm
-    if: eq .chezmoi.os "arch"
   - name: install
     value: yay -S --needed --noconfirm
-    if: eq .chezmoi.os "arch"
   - name: remove
     value: sudo pacman -Rcns --noconfirm
-    if: eq .chezmoi.os "arch"
   - name: search
     value: yay -Ss
-    if: eq .chezmoi.os "arch"
   - name: info
     value: yay -Si
-    if: eq .chezmoi.os "arch"
-
+{{ else if eq .chezmoi.os "alpine" }}
   - name: update
     value: sudo apk update
-    if: eq .chezmoi.os "alpine"
   - name: install
     value: sudo apk add
-    if: eq .chezmoi.os "alpine"
   - name: clean
     value: sudo apk cache clean
-    if: eq .chezmoi.os "alpine"
   - name: remove
     value: sudo apk del
-    if: eq .chezmoi.os "alpine"
   - name: search
     value: apk search
-    if: eq .chezmoi.os "alpine"
   - name: info
     value: apk info
-    if: eq .chezmoi.os "alpine"
-
+{{ else if eq .chezmoi.os "opensuse" }}
   - name: update
     value: sudo zypper refresh && sudo zypper update -y
-    if: eq .chezmoi.os "opensuse"
   - name: install
     value: sudo zypper install -y
-    if: eq .chezmoi.os "opensuse"
   - name: clean
     value: sudo zypper clean --all
-    if: eq .chezmoi.os "opensuse"
   - name: remove
     value: sudo zypper remove -y
-    if: eq .chezmoi.os "opensuse"
   - name: search
     value: zypper search
-    if: eq .chezmoi.os "opensuse"
   - name: info
     value: zypper info
-    if: eq .chezmoi.os "opensuse"
-
+{{ end }}
 env:
   - !include priv.yaml
   - name: DOTS
@@ -534,7 +502,6 @@ path:
   - value: /home/linuxbrew/.linuxbrew/sbin
     if: eq .chezmoi.os "linux"
   - value: /opt/homebrew/bin
-    if: eq .chezmoi.os "darwin"
   - value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\cargo\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/cargo/bin{{ end }}'
   - value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\go\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/go/bin{{ end }}'
   - value: |
