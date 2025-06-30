@@ -466,48 +466,27 @@ env:
     persist: true
 
 path:
-  # Windows paths (only included on Windows)
   - value: |
-      C:\Users\cwel\.config\carapace\bin
-      C:\Users\cwel\.local\share\pnpm
-      C:\Users\cwel\.local\share\go\bin
-      C:\Users\cwel\.local\share\mise\installs\node\24.2.0
-      C:\Users\cwel\.local\share\mise\installs\bun\1.2.16\bin
-      C:\Users\cwel\.local\share\mise\installs\go\1.24.4\bin
-      C:\Users\cwel\.local\share\mise\installs\cargo-binstall\1.13.0
-      C:\Users\cwel\.local\share\cargo\bin
-      C:\Users\cwel\.local\share\mise\installs\java\corretto-21.0.7.6.1\bin
-      C:\Users\cwel\.local\share\mise\installs\maven\3.9.10\apache-maven-3.9.10\bin
-      C:\Users\cwel\.local\share\mise\installs\uv\0.7.13
-      C:\Users\cwel\.local\share\mise\installs\python\3.13.2
-      C:\Users\cwel\scoop\apps\mise\current\bin
       C:\Program Files\Git\usr\bin
-      C:\Users\cwel\Documents\PowerShell\Scripts
       C:\Users\cwel\.local\share\nvim-data\mason\bin
-      C:\Users\cwel\.local\share\go\bin
-      C:\Users\cwel\.local\share\cargo\bin
-    if: match .OS "windows"
+    if: eq .OS "windows"
 
-  # Mac paths (only included on macOS)
-  - value: /opt/homebrew/bin
-    if: match .OS "darwin"
-
-  # Linuxbrew paths (only included on Linux with brew)
-  - value: /home/linuxbrew/.linuxbrew/bin
-    if: '{{ and (match .OS "linux") (hasCommand "brew") }}'
-  - value: /home/linuxbrew/.linuxbrew/sbin
-    if: '{{ and (match .OS "linux") (hasCommand "brew") }}'
-
-  # Standard Unix paths (only included on non-Windows)
   - value: |
       /usr/local/sbin
       /usr/bin
       /usr/local/bin
-      /bin
-    if: .OS ne "windows"
+    if: eq .OS "linux" "darwin"
 
-  # Cross-platform user bin
-  - value: '{{ if match .OS "windows" }}C:\Users\cwel\bin{{ else }}{{ .Home }}/bin{{ end }}'
-  - value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\bin{{ else }}{{ .Home }}/.local/bin{{ end }}'
-  - value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\share\cargo\bin{{ else }}{{ .Home }}/.local/share/cargo/bin{{ end }}'
-  - value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\share\go\bin{{ else }}{{ .Home }}/.local/share/go/bin{{ end }}'
+  - value: |
+      /home/linuxbrew/.linuxbrew/bin
+    if: eq .OS "linux" && hasCommand "brew"
+
+  - value: |
+      /opt/homebrew/bin
+      /opt/vagrant/bin
+    if: eq .OS "darwin"
+
+  - value: '{{ .Home }}/bin }}'
+  - value: '{{ .Home }}/.local/bin'
+  - value: '{{ env "CARGO_HOME" }}/bin'
+  - value: '{{ env "GOBIN" }}'
