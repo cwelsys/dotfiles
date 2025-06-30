@@ -504,17 +504,16 @@ path:
       /bin
     if: .OS ne "windows"
 
-  {{ if eq .chezmoi.os "linux" -}}
+{{ if eq .chezmoi.os "linux" -}}
   - value: /home/linuxbrew/.linuxbrew/bin
     if: hasCommand "brew"
   - value: /home/linuxbrew/.linuxbrew/sbin
     if: hasCommand "brew"
-    {{ end -}}
-  {{- if eq .chezmoi.os "darwin" }}
+{{- end }}
+{{- if eq .chezmoi.os "darwin" }}
   - value: /opt/homebrew/bin
-    {{ end -}}
+{{- end }}
 
-  - value: {{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\cargo\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/cargo/bin{{ end }}
   - value: {{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\cargo\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/cargo/bin{{ end }}
   - value: {{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\go\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/go/bin{{ end }}
   - value: |
