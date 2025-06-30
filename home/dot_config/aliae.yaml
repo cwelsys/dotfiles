@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://aliae.dev/schema.json
 alias:
   - name: c
     value: clear
@@ -16,13 +17,13 @@ alias:
   - name: rl
     type: function
     value: |
-      {{"{{"}} if match .Shell "pwsh" {{"}}"}}
+      {{ if match .Shell "pwsh" }}
         Import-Profile
-      {{"{{"}} else if match .Shell "nu" {{"}}"}}
+      {{ else if match .Shell "nu" }}
         nu
-      {{"{{"}} else {{"}}"}}
+      {{ else }}
         exec $SHELL -l
-      {{"{{"}} end {{"}}"}}
+      {{ end }}
   - name: vi
     value: nvim
   - name: vim
@@ -30,17 +31,17 @@ alias:
   - name: cdc
     type: function
     value: |
-      {{"{{"}} if eq .Shell "pwsh" {{"}}"}}
-        cd {{"{{"}} .Home {{"}}"}}\.config
-      {{"{{"}} else {{"}}"}}
+      {{ if eq .Shell "pwsh" }}
+        cd {{ .Home }}\.config
+      {{ else }}
         cd ~/.config
-      {{"{{"}} end {{"}}"}}
+      {{ end }}
   - name: cdcm
-    value: cd {{"{{"}} env "DOTS" {{"}}"}}
+    value: cd {{ env "DOTS" }}
     type: function
   - name: cdw
-    value: cd {{"{{"}} env "WIN_HOME" {{"}}"}}
-    if: match .OS "windows"
+    value: cd {{ env "WIN_HOME" }}
+    if: eq (env "ALIAE_WSL") "1"
   - name: qq
     type: function
     value: |
@@ -188,61 +189,75 @@ alias:
   - name: go-ls
     value: go-global-update --dry-runs
 
-{{ if eq .chezmoi.os "darwin" }}
   - name: update
     value: brew update && brew upgrade
+    if: match .OS "darwin"
   - name: install
     value: brew install
+    if: match .OS "darwin"
   - name: clean
     value: brew cleanup
+    if: match .OS "darwin"
   - name: remove
     value: brew uninstall
+    if: match .OS "darwin"
   - name: search
     value: brew search
+    if: match .OS "darwin"
   - name: info
     value: brew info
-  - name: cask-install
+    if: match .OS "darwin"
+  - name: cask-get
     value: brew install --cask
-  - name: cask-remove
+    if: match .OS "darwin"
+  - name: cask-rm
     value: brew uninstall --cask
-{{ end }}
+    if: match .OS "darwin"
 
-{{ if eq .chezmoi.os "linux" }}
-{{ if eq .chezmoi.osRelease.id "fedora" }}
   - name: clean
     value: sudo dnf autoremove -y
+    if: hasCommand "dnf"
   - name: update
     value: sudo dnf upgrade -y
+    if: hasCommand "dnf"
   - name: install
     value: sudo dnf install -y
+    if: hasCommand "dnf"
   - name: remove
     value: sudo dnf remove -y
+    if: hasCommand "dnf"
   - name: search
     value: dnf search
+    if: hasCommand "dnf"
   - name: info
     value: dnf info
-{{ else if eq .chezmoi.osRelease.id "arch" }}
+    if: hasCommand "dnf"
+
   - name: clean
     value: yay -Yc --noconfirm
+    if: hasCommand "yay"
   - name: update
     value: yay -Syu --noconfirm
+    if: hasCommand "yay"
   - name: install
     value: yay -S --needed --noconfirm
+    if: hasCommand "yay"
   - name: remove
     value: sudo pacman -Rcns --noconfirm
+    if: hasCommand "pacman"
   - name: search
     value: yay -Ss
+    if: hasCommand "yay"
   - name: info
     value: yay -Si
-{{ end }}
-{{ end }}
+    if: hasCommand "yay"
 
 env:
   - !include priv.yaml
   - name: DOTS
-    value: '{{ .chezmoi.sourceDir }}'
+    value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\share\chezmoi\home{{ else }}{{ .Home }}/.local/share/chezmoi/home{{ end }}'
   - name: DOTFILES
-    value: '{{ .chezmoi.sourceDir }}'
+    value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\share\chezmoi\home{{ else }}{{ .Home }}/.local/share/chezmoi/home{{ end }}'
   - name: BAT_THEME
     value: Catppuccin Mocha
     if: hasCommand "bat"
@@ -261,22 +276,22 @@ env:
   - name: CASA
     value: cwel.casa
   - name: XDG_CONFIG_HOME
-    value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.config{{ else }}{{ .chezmoi.homeDir }}/.config{{ end }}'
+    value: '{{ if match .OS "windows" }}C:\Users\cwel\.config{{ else }}{{ .Home }}/.config{{ end }}'
     persist: true
   - name: XDG_CACHE_HOME
-    value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.cache{{ else }}{{ .chezmoi.homeDir }}/.cache{{ end }}'
+    value: '{{ if match .OS "windows" }}C:\Users\cwel\.cache{{ else }}{{ .Home }}/.cache{{ end }}'
     persist: true
   - name: XDG_DATA_HOME
-    value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share{{ else }}{{ .chezmoi.homeDir }}/.local/share{{ end }}'
+    value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\share{{ else }}{{ .Home }}/.local/share{{ end }}'
     persist: true
   - name: XDG_STATE_HOME
-    value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\state{{ else }}{{ .chezmoi.homeDir }}/.local/state{{ end }}'
+    value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\state{{ else }}{{ .Home }}/.local/state{{ end }}'
     persist: true
   - name: XDG_BIN_HOME
-    value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\bin{{ else }}{{ .chezmoi.homeDir }}/.local/bin{{ end }}'
+    value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\bin{{ else }}{{ .Home }}/.local/bin{{ end }}'
     persist: true
   - name: XDG_PROJECTS_DIR
-    value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\Projects{{ else }}{{ .chezmoi.homeDir }}/Projects{{ end }}'
+    value: '{{ .Home }}/Projects'
     persist: true
   - name: MANPAGER
     value: nvim +Man!
@@ -298,62 +313,46 @@ env:
     value: en_US.UTF-8
     if: .OS ne "windows"
   - name: PASSWORD_STORE_DIR
-    value: '{{"{{"}} .Home {{"}}"}}/.local/share/pass'
+    value: '{{ .Home }}/.local/share/pass'
     if: match .OS "linux"
   - name: GNUPGHOME
-    value: '{{"{{"}} .Home {{"}}"}}/.local/share/gnupg'
+    value: '{{ .Home }}/.local/share/gnupg'
   - name: DOCKER_CONFIG
-    value: '{{"{{"}} .Home {{"}}"}}/.config/docker'
-  - name: DOCKERM
-    value: /opt/docker
-    if: match .OS "linux" "darwin"
+    value: '{{ .Home }}/.config/docker'
   - name: CARGO_HOME
-    value: '{{"{{"}} .Home {{"}}"}}/.local/share/cargo'
+    value: '{{ .Home }}/.local/share/cargo'
   - name: RUSTUP_HOME
-    value: '{{"{{"}} .Home {{"}}"}}/.local/share/rustup'
-  - name: HOMEBREW_NO_AUTO_UPDATE
-    value: '1'
-    if: hasCommand "brew"
-  - name: HOMEBREW_BAT
-    value: '1'
-    if: hasCommand "brew"
-  - name: HOMEBREW_GITHUB_API_TOKEN
-    value: '{{ onepasswordRead "op://Secrets/Git/Github/pat" | trim }}'
-  - name: HOMEBREW_NO_ENV_HINTS
-    value: '1'
-    if: hasCommand "brew"
+    value: '{{ .Home }}/.local/share/rustup'
   - name: DOTNET_CLI_HOME
-    value: '{{"{{"}} .Home {{"}}"}}/.local/share/dotnet'
+    value: '{{ .Home }}/.local/share/dotnet'
   - name: XAUTHORITY
-    value: '{{"{{"}} .Home {{"}}"}}/.local/state/.Xauthority'
+    value: '{{ .Home }}/.local/state/.Xauthority'
   - name: PYTHONSTARTUP
-    value: '{{"{{"}} .Home {{"}}"}}/.config/python/pythonrc'
+    value: '{{ .Home }}/.config/python/pythonrc'
   - name: vivid_theme
     value: catppuccin-mocha
   - name: PIPX_HOME
-    value: '{{"{{"}} .Home {{"}}"}}/.local/share/pipx'
+    value: '{{ .Home }}/.local/share/pipx'
   - name: GLOW_STYLE
-    value: '{{"{{"}} .Home {{"}}"}}/.config/glow/catppuccin-mocha.json'
+    value: '{{ .Home }}/.config/glow/catppuccin-mocha.json'
   - name: GRADLE_USER_HOME
-    value: '{{"{{"}} .Home {{"}}"}}/.local/share/gradle'
+    value: '{{ .Home }}/.local/share/gradle'
   - name: NPM_CONFIG_INIT_MODULE
-    value: '{{"{{"}} .Home {{"}}"}}/.config/npm/config/npm-init.js'
+    value: '{{ .Home }}/.config/npm/config/npm-init.js'
   - name: NPM_CONFIG_CACHE
-    value: '{{"{{"}} .Home {{"}}"}}/.cache/npm'
+    value: '{{ .Home }}/.cache/npm'
   - name: NODE_REPL_HISTORY
-    value: '{{"{{"}} .Home {{"}}"}}/.local/state/node_repl_history'
+    value: '{{ .Home }}/.local/state/node_repl_history'
   - name: GOPATH
-    value: '{{"{{"}} .Home {{"}}"}}/.local/share/go'
+    value: '{{ .Home }}/.local/share/go'
   - name: GOBIN
-    value: '{{"{{"}} .Home {{"}}"}}/.local/share/go/bin'
-  - name: GO111MODULE
-    value: on
+    value: '{{ .Home }}/.local/share/go/bin'
   - name: RIPGREP_CONFIG_PATH
-    value: '{{"{{"}} .Home {{"}}"}}/.config/ripgrep/config'
+    value: '{{ .Home }}/.config/ripgrep/config'
   - name: LESSHISTFILE
-    value: '{{"{{"}} .Home {{"}}"}}/.cache/.lesshsts'
+    value: '{{ .Home }}/.cache/.lesshsts'
   - name: WGETRC
-    value: '{{"{{"}} .Home {{"}}"}}/.config/wget/wgetrc'
+    value: '{{ .Home }}/.config/wget/wgetrc'
   - name: PAGER
     value: bat
   - name: GIT_PAGER
@@ -362,60 +361,57 @@ env:
     value: '--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc --color=hl:#f38ba8,fg:#cdd6f4,header:#f38ba8 --color=info:#94e2d5,pointer:#f5e0dc,marker:#f5e0dc --color=fg+:#cdd6f4,prompt:#94e2d5,hl+:#f38ba8 --color=border:#585b70 --layout=reverse --cycle --height=~80% --border=rounded --info=right --bind=alt-w:toggle-preview-wrap --bind=ctrl-e:toggle-preview'
     if: hasCommand "fzf"
   - name: VAGRANT_HOME
-    value: '{{"{{"}} .Home {{"}}"}}/.local/share/vagrant'
+    value: '{{ .Home }}/.local/share/vagrant'
   - name: WIN_HOME
     value: /mnt/c/users/cwel
-    if: .isWSL
+    if: eq (env "ALIAE_WSL") "1"
   - name: RUST
     value: '/mnt/media'
-    if: eq .chezmoi.hostname "pbox"
+    if: match .OS "linux"
   - name: FLASH
     value: '/mnt/bool'
-    if: eq .chezmoi.hostname "pbox"
+    if: match .OS "linux"
   - name: BRICK
     value: '/mnt/backup'
-    if: eq .chezmoi.hostname "pbox"
+    if: match .OS "linux"
   - name: DOCKER_HOST
     value: tcp://psock:2375
-    if: ne .chezmoi.hostname "pbox"
+    if: ne .Hostname "pbox"
   - name: OP_BIOMETRIC_UNLOCK_ENABLED
     value: 'true'
     if: match .OS "darwin"
-  - name: PKG_CONFIG_PATH
-    value: /usr/lib/x86_64-linux-gnu/pkgconfig/:/usr/share/pkgconfig/
-    if: match .OS "linux"
 
   # Windows-specific environment variables
   - name: YAZI_CONFIG_HOME
-    value: '{{"{{"}} .Home {{"}}"}}\.config\yazi'
+    value: '{{ .Home }}\.config\yazi'
     if: match .OS "windows"
     persist: true
   - name: YAZI_FILE_ONE
-    value: 'C:\Program Files\Git\usr\bin\file.exe'
+    value: 'C:\\Program Files\\Git\\usr\\bin\\file.exe'
     if: match .OS "windows"
     persist: true
   - name: KOMOREBI_CONFIG_HOME
-    value: '{{"{{"}} .Home {{"}}"}}\.config\komorebi'
+    value: '{{ .Home }}\.config\komorebi'
     if: match .OS "windows"
     persist: true
   - name: AWS_CONFIG_FILE
-    value: '{{"{{"}} .Home {{"}}"}}\.local\share\aws\config'
+    value: '{{ .Home }}\.local\share\aws\config'
     if: match .OS "windows"
     persist: true
   - name: AWS_DATA_PATH
-    value: '{{"{{"}} .Home {{"}}"}}\.local\share\aws'
+    value: '{{ .Home }}\.local\share\aws'
     if: match .OS "windows"
     persist: true
   - name: AWS_SHARED_CREDENTIALS_FILE
-    value: '{{"{{"}} .Home {{"}}"}}\.local\share\aws\credentials'
+    value: '{{ .Home }}\.local\share\aws\credentials'
     if: match .OS "windows"
     persist: true
   - name: EZA_CONFIG_DIR
-    value: '{{"{{"}} .Home {{"}}"}}\.config\eza'
+    value: '{{ .Home }}\.config\eza'
     if: match .OS "windows"
     persist: true
   - name: VBOX_USER_HOME
-    value: '{{"{{"}} .Home {{"}}"}}\.local\share\virtualbox'
+    value: '{{ .Home }}\.local\share\virtualbox'
     if: match .OS "windows"
     persist: true
   - name: VAGRANT_DEFAULT_PROVIDER
@@ -423,62 +419,62 @@ env:
     if: match .OS "windows"
     persist: true
   - name: BAT_CONFIG_DIR
-    value: '{{"{{"}} .Home {{"}}"}}\.config\bat'
+    value: '{{ .Home }}\.config\bat'
     if: match .OS "windows"
     persist: true
   - name: CLINK_PROFILE
-    value: '{{"{{"}} .Home {{"}}"}}\.config\clink'
+    value: '{{ .Home }}\.config\clink'
     if: match .OS "windows"
     persist: true
   - name: PIPX_GLOBAL_HOME
-    value: '{{"{{"}} .Home {{"}}"}}\.local\share\pipx'
+    value: '{{ .Home }}\.local\share\pipx'
     if: match .OS "windows"
     persist: true
   - name: GH_DASH_CONFIG
-    value: '{{"{{"}} .Home {{"}}"}}\.config\gh-dash\config.yml'
+    value: '{{ .Home }}\.config\gh-dash\config.yml'
     if: match .OS "windows"
     persist: true
   - name: YARN_CACHE_FOLDER
-    value: '{{"{{"}} .Home {{"}}"}}\.cache\npm'
+    value: '{{ .Home }}\.cache\npm'
     if: match .OS "windows"
     persist: true
   - name: PNPM_HOME
-    value: '{{"{{"}} .Home {{"}}"}}\.local\share\pnpm'
+    value: '{{ .Home }}\.local\share\pnpm'
     if: match .OS "windows"
     persist: true
   - name: RCLONE_CONFIG_DIR
-    value: '{{"{{"}} .Home {{"}}"}}\.config\rclone'
+    value: '{{ .Home }}\.config\rclone'
     if: match .OS "windows"
     persist: true
   - name: MISE_NODE_DEFAULT_PACKAGES_FILE
-    value: '{{"{{"}} .Home {{"}}"}}\.config\mise\default-npm-packages'
+    value: '{{ .Home }}\.config\mise\default-npm-packages'
     if: match .OS "windows"
     persist: true
   - name: MISE_GO_DEFAULT_PACKAGES_FILE
-    value: '{{"{{"}} .Home {{"}}"}}\.config\mise\default-npm-packages'
+    value: '{{ .Home }}\.config\mise\default-npm-packages'
     if: match .OS "windows"
     persist: true
   - name: MISE_PYTHON_DEFAULT_PACKAGES_FILE
-    value: '{{"{{"}} .Home {{"}}"}}\.config\mise\default-python-packages'
+    value: '{{ .Home }}\.config\mise\default-python-packages'
     if: match .OS "windows"
     persist: true
   - name: MISE_RUBY_DEFAULT_PACKAGES_FILE
-    value: '{{"{{"}} .Home {{"}}"}}\.config\mise\default-gems'
+    value: '{{ .Home }}\.config\mise\default-gems'
     if: match .OS "windows"
     persist: true
   - name: PYTHON_HISTORY
-    value: '{{"{{"}} .Home {{"}}"}}\.local\share\python\history'
+    value: '{{ .Home }}\.local\share\python\history'
     if: match .OS "windows"
     persist: true
   - name: XDG_RUNTIME_DIR
-    value: '{{"{{"}} .Home {{"}}"}}\AppData\Local\Temp'
+    value: '{{ .Home }}\AppData\Local\Temp'
     if: match .OS "windows"
     persist: true
 
 path:
   - value: |
-      {{ if eq .chezmoi.os "windows" }}C:\Users\cwel\bin{{ else }}{{ .chezmoi.homeDir }}/bin{{ end }}
-      {{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\bin{{ else }}{{ .chezmoi.homeDir }}/.local/bin{{ end }}
+      {{ if match .OS "windows" }}C:\Users\cwel\bin{{ else }}{{ .Home }}/bin{{ end }}
+      {{ if match .OS "windows" }}C:\Users\cwel\.local\bin{{ else }}{{ .Home }}/.local/bin{{ end }}
   - value: |
       /usr/local/sbin
       /usr/bin
@@ -486,12 +482,12 @@ path:
       /bin
     if: .OS ne "windows"
   - value: /home/linuxbrew/.linuxbrew/bin
-    if: match .OS "linux"
+    if: match .OS "linux" && hasCommand "brew"
   - value: /home/linuxbrew/.linuxbrew/sbin
-    if: match .OS "linux"
+    if: match .OS "linux" && hasCommand "brew"
   - value: /opt/homebrew/bin
-  - value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\cargo\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/cargo/bin{{ end }}'
-  - value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\go\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/go/bin{{ end }}'
+  - value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\share\cargo\bin{{ else }}{{ .Home }}/.local/share/cargo/bin{{ end }}'
+  - value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\share\go\bin{{ else }}{{ .Home }}/.local/share/go/bin{{ end }}'
   - value: |
       C:\Users\cwel\.local\share\nvim-data\mason\bin
       C:\Users\cwel\Documents\PowerShell\Scripts
