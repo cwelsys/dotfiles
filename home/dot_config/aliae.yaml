@@ -387,7 +387,7 @@ env:
     if: match .OS "windows"
     persist: true
   - name: YAZI_FILE_ONE
-    value: "C:\Program Files\Git\usr\bin\file.exe"
+    value: 'C:\Program Files\Git\usr\bin\file.exe'
     if: match .OS "windows"
     persist: true
   - name: KOMOREBI_CONFIG_HOME
