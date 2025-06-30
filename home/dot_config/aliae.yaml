@@ -70,6 +70,8 @@ alias:
     type: function
     if: match .OS "linux"
 
+  - name: cm
+    value: chezmoi
   - name: cma
     value: chezmoi add
   - name: cme
