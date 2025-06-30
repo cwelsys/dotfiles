@@ -4,6 +4,11 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 
 $Env:PWSH = "$HOME/.config/powershell"
 
+if ($IsMacOS) {
+    $HOMEBREW_PREFIX = "/opt/homebrew"
+    & "$HOMEBREW_PREFIX/bin/brew" shellenv | Invoke-Expression
+}
+
 Remove-Item Alias:rm -Force -ErrorAction SilentlyContinue
 Remove-Item Alias:ls -Force -ErrorAction SilentlyContinue
 Remove-Item Alias:cat -Force -ErrorAction SilentlyContinue
