@@ -1,6 +1,41 @@
 {{ if and (or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux")) (ne .chezmoi.osRelease.id "arch") -}}
 #!/bin/bash
 
+{{- $taps := dict }}
+{{- range .pkgs.shared.brews }}
+  {{- $parts := split "/" . }}
+  {{- if (ge (len $parts) 2) }}
+    {{- $tap := printf "%s/%s" (index $parts 0) (index $parts 1) }}
+    {{- $_ := set $taps $tap true }}
+  {{- end }}
+{{- end }}
+{{- range .pkgs.shared.casks }}
+  {{- $parts := split "/" . }}
+  {{- if (ge (len $parts) 2) }}
+    {{- $tap := printf "%s/%s" (index $parts 0) (index $parts 1) }}
+    {{- $_ := set $taps $tap true }}
+  {{- end }}
+{{- end }}
+{{- if eq .chezmoi.os "darwin" }}
+  {{- range .pkgs.darwin.brews }}
+    {{- $parts := split "/" . }}
+    {{- if (ge (len $parts) 2) }}
+      {{- $tap := printf "%s/%s" (index $parts 0) (index $parts 1) }}
+      {{- $_ := set $taps $tap true }}
+    {{- end }}
+  {{- end }}
+  {{- range .pkgs.darwin.casks }}
+    {{- $parts := split "/" . }}
+    {{- if (ge (len $parts) 2) }}
+      {{- $tap := printf "%s/%s" (index $parts 0) (index $parts 1) }}
+      {{- $_ := set $taps $tap true }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- range $tap, $_ := $taps }}
+brew tap {{ $tap }}
+{{- end }}
+
 brew bundle --file=/dev/stdin <<EOF
 {{- range .pkgs.shared.brews }}
 brew {{ . | quote }}
