@@ -7,9 +7,13 @@
 
 [gpg]
 	format = ssh
-
+{{ if eq .chezmoi.os "darwin" }}
+[gpg "ssh"]
+	program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+{{ else }}
 [gpg "ssh"]
 	program = ssh-keygen
+{{ end }}
 
 [am]
   threeWay = true
