@@ -133,6 +133,9 @@ alias:
   - name: clip
     value: Set-Clipboard
     if: match .Shell "pwsh"
+  - name: psget
+    value: Install-Modules
+    if: match .Shell "pwsh"
   - name: json
     value: ConvertTo-Json
     if: match .Shell "pwsh"

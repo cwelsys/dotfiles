@@ -36,15 +36,10 @@ if ($been -ge $timer) {
 if (Get-Command code -ErrorAction SilentlyContinue) { $Env:EDITOR = 'code' }
 else {
 	if (Get-Command nvim -ErrorAction SilentlyContinue) { $Env:EDITOR = 'nvim' }
-	else { $Env:EDITOR = 'notepad' }
 }
 
 if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 	oh-my-posh init pwsh --config "$HOME/.config/posh.toml" | Invoke-Expression
-}
-
-if (Get-Command aliae -ErrorAction SilentlyContinue) {
-	aliae init pwsh | Invoke-Expression
 }
 
 if ($PSVersionTable.PSVersion.Major -ne 5) {
@@ -54,6 +49,10 @@ if ($PSVersionTable.PSVersion.Major -ne 5) {
 	if (Get-Command mise -ErrorAction SilentlyContinue) {
 		mise activate pwsh | Out-String | Invoke-Expression
 	}
+}
+
+if (Get-Command aliae -ErrorAction SilentlyContinue) {
+	aliae init pwsh --config "$HOME/.config/aliae.yaml" | Invoke-Expression
 }
 
 if (Get-Command carapace -ErrorAction SilentlyContinue) {
