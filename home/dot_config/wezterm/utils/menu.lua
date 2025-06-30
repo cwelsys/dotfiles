@@ -10,11 +10,14 @@ local opts = {
 if os.is_win then
 	opts.launch_menu = {
 		{ label = 'Pwsh', args = { 'pwsh', '-NoLogo' } },
-		{ label = 'Command Prompt', args = { 'cmd' } },
-		{ label = 'Nushell', args = { 'nu' } },
-		{ label = 'PowerShell', args = { 'powershell.exe', '-NoLogo' } },
+		{ label = 'Cmd', args = { 'cmd' } },
+		{ label = 'Zsh', args = { 'wsl' }, icon = nf.oct_terminal, color = '#89dceb' },
+		{ label = 'Fish', args = { 'wsl', '-e', 'fish' }, icon = nf.md_fish, color = '#4E9A06' },
+		{ label = 'Bash', args = { 'wsl', '-e', 'bash' }, icon = nf.md_bash },
+		{ label = 'Nu', args = { 'nu' } },
 		{ label = 'Msys2', args = { 'ucrt64.cmd' }, icon = nf.md_pac_man, color = '#f9e2af' },
-		{ label = 'Git Bash', args = { 'C:\\Program Files\\git\\bin\\bash.exe' }, },
+		{ label = 'PowerShell', args = { 'powershell.exe', '-NoLogo' } },
+		{ label = 'Git Bash', args = { 'C:\\Program Files\\git\\bin\\bash.exe' }, icon = nf.dev_git, color = '#94e2d5' },
 		{ label = 'pbox', args = { 'ssh', 'pbox' }, icon = "🌴", color = '#cdd6f4' },
 		{ label = 'mba', args = { 'ssh', 'mba' }, icon = nf.dev_apple, color = '#cdd6f4' },
 		{
@@ -28,9 +31,9 @@ elseif os.is_mac then
 	opts.launch_menu = {
 		{ label = 'Zsh', args = { 'zsh', '-l' } },
 		{ label = 'Fish', args = { '/opt/homebrew/bin/fish', '-l' } },
-		{ label = 'Nushell', args = { '/opt/homebrew/bin/nu', '-l' } },
-		{ label = 'Bash', args = { 'bash', '-l' } },
-		{ label = 'Powershell', args = { '/usr/local/bin/pwsh', '-NoLogo' } },
+		{ label = 'Bash', args = { 'bash', '-l' }, icon = nf.md_bash },
+		{ label = 'Pwsh', args = { '/usr/local/bin/pwsh', '-NoLogo' } },
+		{ label = 'Nu', args = { '/opt/homebrew/bin/nu', '-l' } },
 		{ label = 'pbox', args = { 'ssh', 'pbox' }, icon = "🌴", color = '#cdd6f4' },
 		{ label = 'wini', args = { 'ssh', 'wini' }, icon = nf.dev_windows11, color = '#cdd6f4' },
 		{
@@ -41,11 +44,12 @@ elseif os.is_mac then
 		},
 	}
 elseif os.is_linux then
-	opts.default_prog = { 'zsh' }
 	opts.launch_menu = {
 		{ label = 'Zsh',  args = { 'zsh', '-l' } },
 		{ label = 'Fish', args = { 'fish', '-l' } },
 		{ label = 'Bash', args = { 'bash', '-l' } },
+		{ label = 'mba',  args = { 'ssh', 'mba' },  icon = nf.dev_apple,     color = '#cdd6f4' },
+		{ label = 'wini', args = { 'ssh', 'wini' }, icon = nf.dev_windows11, color = '#cdd6f4' },
 	}
 end
 
@@ -376,13 +380,13 @@ local SHELL_ICONS = {
 	['powershell'] = { icon = nf.seti_powershell, color = '#89b4fa' },
 	['cmd'] = { icon = nf.md_console, color = '#fab387' },
 	['bash'] = { icon = nf.cod_terminal_bash, color = '#94e2d5' },
-	['zsh'] = { icon = nf.dev_terminal, color = '#89DDFF' },
 	['fish'] = { icon = nf.dev_terminal, color = '#4E9A06' },
 	['nu'] = { icon = nf.dev_terminal, color = '#50C878' },
 	['elvish'] = { icon = nf.dev_terminal, color = '#FF6B35' },
 	['xonsh'] = { icon = nf.dev_python, color = '#306998' },
 	['dash'] = { icon = nf.dev_terminal, color = '#757575' },
 	['sh'] = { icon = nf.dev_terminal, color = '#4EAA25' },
+	['zsh'] = { icon = nf.oct_terminal, color = '#89dceb' },
 	['tcsh'] = { icon = nf.dev_terminal, color = '#326CE5' },
 	['csh'] = { icon = nf.dev_terminal, color = '#326CE5' },
 	['ksh'] = { icon = nf.dev_terminal, color = '#FF6B6B' },

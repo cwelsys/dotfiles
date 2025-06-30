@@ -10,6 +10,7 @@ require('binds').apply(c)
 
 -- shells
 if os.is_win then
+  -- c.default_prog = { 'wsl' }
   c.default_prog = { 'pwsh', '-NoLogo' }
 elseif os.is_mac then
   c.default_prog = { 'zsh' }
@@ -128,7 +129,6 @@ c.adjust_window_size_when_changing_font_size = false
 c.tab_and_split_indices_are_zero_based = true
 c.window_close_confirmation = "NeverPrompt"
 c.skip_close_confirmation_for_processes_named = {
-  '*',
   'bash',
   'bash.exe',
   'sh',
@@ -137,8 +137,12 @@ c.skip_close_confirmation_for_processes_named = {
   'tmux',
   'nu',
   'nu.exe',
-  'ssh.exe',
+  'nvim',
   'ssh',
+  'ssh.exe',
+  'wsl.exe',
+  'wslhost.exe',
+  'conhost.exe',
   'cmd.exe',
   'pwsh.exe',
   'pwsh',
