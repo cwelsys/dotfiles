@@ -254,27 +254,6 @@ alias:
 
 env:
   - !include priv.yaml
-  - name: DOTS
-    value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\share\chezmoi\home{{ else }}{{ .Home }}/.local/share/chezmoi/home{{ end }}'
-  - name: DOTFILES
-    value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\share\chezmoi\home{{ else }}{{ .Home }}/.local/share/chezmoi/home{{ end }}'
-  - name: BAT_THEME
-    value: Catppuccin Mocha
-    if: hasCommand "bat"
-  - name: BATDIFF_USE_DELTA
-    value: 'true'
-    if: hasCommand "bat"
-  - name: DOTNET_CLI_TELEMETRY_OPTOUT
-    value: '1'
-  - name: SSH_AUTH_SOCK
-    value: \\.\pipe\openssh-ssh-agent
-    if: match .OS "windows"
-  - name: TZ
-    value: America/New_York
-  - name: DOMAIN
-    value: cwel.sh
-  - name: CASA
-    value: cwel.casa
   - name: XDG_CONFIG_HOME
     value: '{{ if match .OS "windows" }}C:\Users\cwel\.config{{ else }}{{ .Home }}/.config{{ end }}'
     persist: true
@@ -291,8 +270,18 @@ env:
     value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\bin{{ else }}{{ .Home }}/.local/bin{{ end }}'
     persist: true
   - name: XDG_PROJECTS_DIR
-    value: '{{ .Home }}/Projects'
+    value: '{{ if match .OS "windows" }}C:\Users\cwel\Projects{{ else }}{{ .Home }}/Projects{{ end }}'
     persist: true
+  - name: DOTS
+    value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\share\chezmoi\home{{ else }}{{ .Home }}/.local/share/chezmoi/home{{ end }}'
+  - name: DOTFILES
+    value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\share\chezmoi\home{{ else }}{{ .Home }}/.local/share/chezmoi/home{{ end }}'
+  - name: TZ
+    value: America/New_York
+  - name: DOMAIN
+    value: cwel.sh
+  - name: CASA
+    value: cwel.casa
   - name: MANPAGER
     value: nvim +Man!
   - name: WORDCHARS
@@ -325,14 +314,22 @@ env:
     value: '{{ .Home }}/.local/share/rustup'
   - name: DOTNET_CLI_HOME
     value: '{{ .Home }}/.local/share/dotnet'
+  - name: DOTNET_CLI_TELEMETRY_OPTOUT
+    value: '1'
   - name: XAUTHORITY
     value: '{{ .Home }}/.local/state/.Xauthority'
   - name: PYTHONSTARTUP
     value: '{{ .Home }}/.config/python/pythonrc'
+  - name: PYTHON_HISTORY
+    value: '{{ .Home }}/.local/share/python/history'
   - name: vivid_theme
     value: catppuccin-mocha
   - name: PIPX_HOME
     value: '{{ .Home }}/.local/share/pipx'
+  - name: PIPX_GLOBAL_HOME
+    value: '{{ .Home }}\.local\share\pipx'
+    if: match .OS "windows"
+    persist: true
   - name: GLOW_STYLE
     value: '{{ .Home }}/.config/glow/catppuccin-mocha.json'
   - name: GRADLE_USER_HOME
@@ -357,6 +354,12 @@ env:
     value: bat
   - name: GIT_PAGER
     value: delta
+  - name: BAT_THEME
+    value: Catppuccin Mocha
+    if: hasCommand "bat"
+  - name: BATDIFF_USE_DELTA
+    value: 'true'
+    if: hasCommand "bat"
   - name: FZF_DEFAULT_OPTS
     value: '--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc --color=hl:#f38ba8,fg:#cdd6f4,header:#f38ba8 --color=info:#94e2d5,pointer:#f5e0dc,marker:#f5e0dc --color=fg+:#cdd6f4,prompt:#94e2d5,hl+:#f38ba8 --color=border:#585b70 --layout=reverse --cycle --height=~80% --border=rounded --info=right --bind=alt-w:toggle-preview-wrap --bind=ctrl-e:toggle-preview'
     if: hasCommand "fzf"
@@ -367,21 +370,22 @@ env:
     if: eq (env "ALIAE_WSL") "1"
   - name: RUST
     value: '/mnt/media'
-    if: match .OS "linux"
+    if: eq (env "HOSTNAME") "pbox"
   - name: FLASH
     value: '/mnt/bool'
-    if: match .OS "linux"
+    if: eq (env "HOSTNAME") "pbox"
   - name: BRICK
     value: '/mnt/backup'
-    if: match .OS "linux"
+    if: eq (env "HOSTNAME") "pbox"
   - name: DOCKER_HOST
     value: tcp://psock:2375
     if: ne (env "HOSTNAME") "pbox"
   - name: OP_BIOMETRIC_UNLOCK_ENABLED
     value: 'true'
     if: match .OS "darwin"
-
-  # Windows-specific environment variables
+  - name: SSH_AUTH_SOCK
+    value: \\.\pipe\openssh-ssh-agent
+    if: match .OS "windows"
   - name: YAZI_CONFIG_HOME
     value: '{{ .Home }}\.config\yazi'
     if: match .OS "windows"
@@ -396,16 +400,10 @@ env:
     persist: true
   - name: AWS_CONFIG_FILE
     value: '{{ .Home }}\.local\share\aws\config'
-    if: match .OS "windows"
-    persist: true
   - name: AWS_DATA_PATH
     value: '{{ .Home }}\.local\share\aws'
-    if: match .OS "windows"
-    persist: true
   - name: AWS_SHARED_CREDENTIALS_FILE
     value: '{{ .Home }}\.local\share\aws\credentials'
-    if: match .OS "windows"
-    persist: true
   - name: EZA_CONFIG_DIR
     value: '{{ .Home }}\.config\eza'
     if: match .OS "windows"
@@ -424,10 +422,6 @@ env:
     persist: true
   - name: CLINK_PROFILE
     value: '{{ .Home }}\.config\clink'
-    if: match .OS "windows"
-    persist: true
-  - name: PIPX_GLOBAL_HOME
-    value: '{{ .Home }}\.local\share\pipx'
     if: match .OS "windows"
     persist: true
   - name: GH_DASH_CONFIG
@@ -462,14 +456,6 @@ env:
     value: '{{ .Home }}\.config\mise\default-gems'
     if: match .OS "windows"
     persist: true
-  - name: PYTHON_HISTORY
-    value: '{{ .Home }}\.local\share\python\history'
-    if: match .OS "windows"
-    persist: true
-  - name: XDG_RUNTIME_DIR
-    value: '{{ .Home }}\AppData\Local\Temp'
-    if: match .OS "windows"
-    persist: true
 
 path:
   - value: |
@@ -482,9 +468,9 @@ path:
       /bin
     if: .OS ne "windows"
   - value: /home/linuxbrew/.linuxbrew/bin
-    if: match .OS "linux" && hasCommand "brew"
+    if: '{{ and (match .OS "linux") (hasCommand "brew") }}'
   - value: /home/linuxbrew/.linuxbrew/sbin
-    if: match .OS "linux" && hasCommand "brew"
+    if: '{{ and (match .OS "linux") (hasCommand "brew") }}'
   - value: /opt/homebrew/bin
   - value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\share\cargo\bin{{ else }}{{ .Home }}/.local/share/cargo/bin{{ end }}'
   - value: '{{ if match .OS "windows" }}C:\Users\cwel\.local\share\go\bin{{ else }}{{ .Home }}/.local/share/go/bin{{ end }}'
