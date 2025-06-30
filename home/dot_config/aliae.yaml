@@ -386,6 +386,9 @@ env:
   - name: OP_BIOMETRIC_UNLOCK_ENABLED
     value: 'true'
     if: match .OS "darwin"
+  - name: HOMEBREW_NO_ENV_HINTS
+    value: 'true'
+    if: hasCommand "brew"
   - name: SSH_AUTH_SOCK
     value: \\.\pipe\openssh-ssh-agent
     if: match .OS "windows"
