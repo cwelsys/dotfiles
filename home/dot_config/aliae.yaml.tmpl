@@ -486,9 +486,9 @@ path:
       /bin
     if: .OS ne "windows"
   - value: /home/linuxbrew/.linuxbrew/bin
-    if: eq .chezmoi.os "linux"
+    if: match .OS "linux"
   - value: /home/linuxbrew/.linuxbrew/sbin
-    if: eq .chezmoi.os "linux"
+    if: match .OS "linux"
   - value: /opt/homebrew/bin
   - value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\cargo\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/cargo/bin{{ end }}'
   - value: '{{ if eq .chezmoi.os "windows" }}C:\Users\cwel\.local\share\go\bin{{ else }}{{ .chezmoi.homeDir }}/.local/share/go/bin{{ end }}'
