@@ -203,7 +203,7 @@ alias:
     value: brew install --cask
   - name: cask-remove
     value: brew uninstall --cask
-{{ else if eq .chezmoi.os "fedora" }}
+{{ else if eq .chezmoi.osRelease.id "fedora" }}
   - name: clean
     value: sudo dnf autoremove -y
   - name: update
@@ -216,7 +216,7 @@ alias:
     value: dnf search
   - name: info
     value: dnf info
-{{ else if eq .chezmoi.os "arch" }}
+{{ else if eq .chezmoi.osRelease.id "arch" }}
   - name: clean
     value: yay -Yc --noconfirm
   - name: update
@@ -229,7 +229,7 @@ alias:
     value: yay -Ss
   - name: info
     value: yay -Si
-{{ else if eq .chezmoi.os "alpine" }}
+{{ else if eq .chezmoi.osRelease.id "alpine" }}
   - name: update
     value: sudo apk update
   - name: install
@@ -242,7 +242,7 @@ alias:
     value: apk search
   - name: info
     value: apk info
-{{ else if eq .chezmoi.os "opensuse" }}
+{{ else if eq .chezmoi.osRelease.id"opensuse" }}
   - name: update
     value: sudo zypper refresh && sudo zypper update -y
   - name: install
