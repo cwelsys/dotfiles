@@ -1,19 +1,18 @@
 # dots
 
-managed with [`chezmoi`](https://github.com/twpayne/chezmoi).
+Managed with [`chezmoi`](https://github.com/twpayne/chezmoi).
 
-Install them with:
+Install w/:
 
 ```console
 $ chezmoi init cwelsys
 ```
 
-Personal secrets are stored in [1Password](https://1password.com) and you'll
+Makes heavy use of [1Password](https://1password.com) and [age](https://github.com/FiloSottile/age) you'll
 need the [1Password CLI](https://developer.1password.com/docs/cli/) installed.
-Login to 1Password with:
 
 ```console
 $ eval $(op signin)
 ```
 
-> This is for personal use, as it contains encrypted files. If for some reason you wish to proceed anyways, run chezmoi apply with `--exclude=encrypted`
+> If you are not me and wish to proceed anyways, try chezmoi apply `--exclude=encrypted`
