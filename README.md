@@ -1,4 +1,4 @@
-# github.com/cwelsys/dotfiles
+# dots
 
 Connor's dotfiles, managed with [`chezmoi`](https://github.com/twpayne/chezmoi).
 
