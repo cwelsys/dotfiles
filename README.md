@@ -1,7 +1,5 @@
 # dots
 
-Managed with [`chezmoi`](https://github.com/twpayne/chezmoi).
-
 Install:
 
 ```console
@@ -18,3 +16,5 @@ $ eval $(op signin)
 ```
 
 > If you are not me and wish to proceed anyways, try chezmoi apply `--exclude=encrypted`
+
+Managed with [`chezmoi`](https://github.com/twpayne/chezmoi).
