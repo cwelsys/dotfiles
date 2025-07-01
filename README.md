@@ -2,7 +2,7 @@
 
 Managed with [`chezmoi`](https://github.com/twpayne/chezmoi).
 
-Install w/:
+## Install:
 
 ```console
 $ chezmoi init cwelsys
@@ -10,6 +10,8 @@ $ chezmoi init cwelsys
 
 Makes heavy use of [1Password](https://1password.com) and [age](https://github.com/FiloSottile/age) you'll
 need the [1Password CLI](https://developer.1password.com/docs/cli/) installed.
+
+Login to 1password:
 
 ```console
 $ eval $(op signin)
