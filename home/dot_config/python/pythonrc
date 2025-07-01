@@ -5,14 +5,17 @@
 def is_vanilla() -> bool:
     """ :return: whether running "vanilla" Python <3.13 """
     import sys
-    return not hasattr(__builtins__, '__IPYTHON__') and 'bpython' not in sys.argv[0] and
-sys.version_info < (3, 13)
+    return (
+        not hasattr(__builtins__, '__IPYTHON__')
+        and 'bpython' not in sys.argv[0]
+        and sys.version_info < (3, 13)
+    )
 
 
 def setup_history():
     """ read and write history from state file """
-    import os
     import atexit
+    import os
     import readline
     from pathlib import Path
 
