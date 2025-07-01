@@ -1,6 +1,6 @@
 # dots
 
-Connor's dotfiles, managed with [`chezmoi`](https://github.com/twpayne/chezmoi).
+managed with [`chezmoi`](https://github.com/twpayne/chezmoi).
 
 Install them with:
 
