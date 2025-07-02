@@ -31,7 +31,7 @@ elseif os.is_mac then
 	opts.launch_menu = {
 		{ label = 'Zsh', args = { 'zsh', '-l' } },
 		{ label = 'Fish', args = { '/opt/homebrew/bin/fish', '-l' } },
-		{ label = 'Bash', args = { 'bash', '-l' }, icon = nf.md_bash },
+		{ label = 'Bash', args = { '/opt/homebrew/bin/bash', '-l' }, icon = nf.md_bash },
 		{ label = 'Pwsh', args = { '/usr/local/bin/pwsh', '-NoLogo' } },
 		{ label = 'Nu', args = { '/opt/homebrew/bin/nu', '-l' } },
 		{ label = 'pbox', args = { 'ssh', 'pbox' }, icon = "🌴", color = '#cdd6f4' },

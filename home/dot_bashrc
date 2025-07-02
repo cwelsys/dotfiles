@@ -1,6 +1,7 @@
-if grep -qEi "(Microsoft|WSL)" /proc/version &>/dev/null; then
-	export ALIAE_WSL=1
-fi
+case $- in
+*i*) ;;
+*) return ;;
+esac
 
 if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
 	eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
@@ -10,18 +11,11 @@ if [[ -f "/opt/homebrew/bin/brew" ]]; then
 	eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
+if grep -qEi "(Microsoft|WSL)" /proc/version &>/dev/null; then
+	export ALIAE_WSL=1
+fi
+
 eval "$(aliae init bash --config "$HOME/.config/aliae.yaml")"
-
-if [ -f "$HOME/.config/bash" ]; then
-	for file in ~/.config/bash/*.bash; do
-		source "$file"
-	done
-	unset file
-fi
-
-if command -v wsl2-ssh-agent &>/dev/null; then
-	eval "$(wsl2-ssh-agent)"
-fi
 
 mkdir -p "$XDG_STATE_HOME/bash"
 
@@ -35,19 +29,60 @@ HISTIGNORE="&:[bf]g:c:clear:history:exit:q:pwd:* --help"
 HISTFILESIZE=10000
 HISTSIZE=$HISTFILESIZE
 
-shopt -s autocd
+if [ ! -f ~/.local/share/blesh/ble.sh ]; then
+	git clone https://github.com/akinomyoga/ble.sh && make -C ble.sh install
+	rm -rf ble.sh
+fi
+
+if [ -f ~/.local/share/blesh/ble.sh ]; then
+	source ~/.local/share/blesh/ble.sh --noattach
+	ble-color-setface auto_complete fg='#6c7086'
+	ble-face -s syntax_error fg='#f38ba8'
+	bleopt complete_ambiguous=
+	ble-import -d integration/fzf-key-bindings
+	ble-import -d integration/fzf-completion
+fi
+
+bleopt prompt_ps1_final=
+bleopt prompt_ps1_transient=
+
+if [ -f "$HOME/.config/bash" ]; then
+	for file in ~/.config/bash/*.bash; do
+		source "$file"
+	done
+	unset file
+fi
+
+if command -v wsl2-ssh-agent &>/dev/null; then
+	eval "$(wsl2-ssh-agent)"
+fi
+
+if [[ $BASH_VERSION =~ ^[4-9] ]]; then
+	shopt -s autocd
+	shopt -s direxpand dirspell
+	shopt -s globstar
+fi
+
 shopt -s cdspell
 shopt -s checkwinsize
-shopt -s direxpand dirspell
 shopt -s extglob
-shopt -s globstar
 shopt -s no_empty_cmd_completion
 shopt -s nocaseglob
+unset MAILCHECK
 
 if command -v starship >/dev/null 2>&1; then
 	eval "$(starship init bash)"
 elif command -v oh-my-posh >/dev/null 2>&1; then
 	eval "$(oh-my-posh init bash --config "$HOME/.config/posh.toml")"
+fi
+
+if [[ -s $HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh ]]; then
+	. "$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh"
+fi
+
+if command -v atuin >/dev/null 2>&1; then
+	export ATUIN_NOBIND="true"
+	eval "$(atuin init bash)"
 fi
 
 if command -v fzf >/dev/null 2>&1; then
@@ -61,3 +96,5 @@ fi
 if command -v zoxide >/dev/null 2>&1; then
 	eval "$(zoxide init bash --cmd cd)"
 fi
+
+[[ ! ${BLE_VERSION-} ]] || ble-attach

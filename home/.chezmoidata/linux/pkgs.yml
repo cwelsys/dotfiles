@@ -25,6 +25,7 @@ pkgs:
       - mise
       - btop
       - git-cliff
+      - bash-completion
       - ripgrep
       - zoxide
       - rsync
@@ -83,4 +84,5 @@ pkgs:
       - lazygit
       - bat-extras
       - jandedobbeleer/aliae/aliae
+      - bash-completion@2
     casks:
