@@ -56,6 +56,8 @@ local PROCESS_MAP = {
 	ranger = { icon = nf.custom_folder_open, name = "Ranger" },
 }
 
+local tab_icons = {} -- Store icons per tab
+
 local function get_icon_for_process(title, process_name)
 	if not title then
 		if process_name then
@@ -133,6 +135,7 @@ end
 local function get_tab_info(tab)
 	local pane_title = tab.active_pane.title or ""
 	local process_name = tab.active_pane.foreground_process_name or ""
+	local tab_id = tab.tab_id
 
 	-- Handle explicit tab titles
 	if tab.tab_title and #tab.tab_title > 0 then
@@ -140,19 +143,19 @@ local function get_tab_info(tab)
 		if not icon then
 			icon = get_icon_for_process(process_name, process_name)
 		end
-		return icon, tab.tab_title
+		-- Store the icon if we found one, otherwise keep the previous one
+		if icon then
+			tab_icons[tab_id] = icon
+		end
+		return tab_icons[tab_id], tab.tab_title
 	end
 
-	local pane_icon = get_icon_for_process(pane_title, process_name)
 	local pane_display = get_display_name(pane_title, process_name)
 
-	local final_icon = pane_icon
+	-- Try to get icon from pane title first, then process name
+	local final_icon = get_icon_for_process(pane_title, process_name)
 	if not final_icon then
 		final_icon = get_icon_for_process(process_name, process_name)
-	end
-
-	if not final_icon then
-		final_icon = nf.oct_terminal
 	end
 
 	local final_name = pane_title
@@ -162,6 +165,8 @@ local function get_tab_info(tab)
 		local shell_info = SHELLS[exec_name]
 		if shell_info then
 			final_name = shell_info.name
+			-- Update icon if we found a shell match
+			final_icon = shell_info.icon
 		else
 			final_name = extract_process_name(pane_title)
 		end
@@ -171,13 +176,21 @@ local function get_tab_info(tab)
 			for proc_name, info in pairs(PROCESS_MAP) do
 				if title_lower:find("%f[%w]" .. proc_name .. "%f[%W]") then
 					final_name = info.name
+					-- Update icon if we found a process match
+					final_icon = info.icon
 					break
 				end
 			end
 		end
 	end
 
-	return final_icon, final_name
+	-- Only update the stored icon if we found a new one
+	if final_icon then
+		tab_icons[tab_id] = final_icon
+	end
+
+	-- Return the stored icon (preserves last known icon) or fallback
+	return tab_icons[tab_id] or nf.cod_terminal, final_name
 end
 
 local function tab_title(tab)
