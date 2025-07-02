@@ -47,6 +47,8 @@ local PROCESS_MAP = {
 	topgrade,
 	tg = { icon = nf.md_update, name = "Topgrade" },
 	scoop = { icon = '🥣', name = "scoop" },
+	yazi,
+	y = { icon = '🦆', name = "yazi" },
 	node = { icon = nf.dev_nodejs_small, name = "Node.js" },
 	python = { icon = nf.dev_python, name = "Python" },
 	cargo = { icon = '🦀', name = "cargo" },
