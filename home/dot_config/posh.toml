@@ -2,7 +2,7 @@ version = 3
 auto_upgrade = true
 final_space = true
 shell_integration = true
-console_title_template = "{{if .Root}} \u26a1 {{end}}{{ .Segments.Path.Path }}"
+# console_title_template = "{{if .Root}} \u26a1 {{end}}{{ .Segments.Path.Path }}"
 
 [secondary_prompt]
 template = '❯❯ '

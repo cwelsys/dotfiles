@@ -1,5 +1,13 @@
 set fish_greeting
 
+function fish_title
+    if [ $_ = 'fish' ]
+    echo (prompt_pwd)
+    else
+        echo $_
+    end
+end
+
 if test -f /home/linuxbrew/.linuxbrew/bin/brew
     eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 end

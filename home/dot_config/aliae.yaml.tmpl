@@ -130,7 +130,7 @@ alias:
     value: Set-Clipboard
     if: match .Shell "pwsh"
   - name: psget
-    value: Install-Modules
+    value: Install-Module
     if: match .Shell "pwsh"
   - name: json
     value: ConvertTo-Json
@@ -381,9 +381,6 @@ env:
   - name: HOMEBREW_NO_ENV_HINTS
     value: 'true'
     if: hasCommand "brew"
-  - name: SSH_AUTH_SOCK
-    value: \\.\pipe\openssh-ssh-agent
-    if: match .OS "windows"
   - name: YAZI_CONFIG_HOME
     value: '{{ .chezmoi.homeDir }}/.config/yazi'
     if: match .OS "windows"

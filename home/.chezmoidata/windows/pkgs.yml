@@ -239,6 +239,7 @@ pkgs:
       - 'PSFzf'
       - 'PSWriteColor'
       - 'PSScriptAnalyzer'
+      - 'DynamicTitle'
       - 'BurntToast'
       - 'DockerCompletion'
       - 'DotNetVersionLister'

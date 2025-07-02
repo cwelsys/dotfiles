@@ -66,7 +66,7 @@ function Import-Script {
         param ($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
 
         $Files = Get-ChildItem $PSScriptRoot -Filter *.ps1 | % BaseName
-            ($Files -like "$wordToComplete*"), ($Files -like "*$wordToComplete*") | Write-Output
+        ($Files -like "$wordToComplete*"), ($Files -like "*$wordToComplete*") | Write-Output
       })]
     [string[]]$Name
   )
@@ -129,18 +129,157 @@ function Invoke-Sarcastaball {
   $output = $null
 }
 
-# function Get-ChezmoiPackages {
-# 	[CmdletBinding(DefaultParameterSetName = 'Args')]
-# 	[Alias('cmpack')]
-# 	param(
-# 		[Parameter(ValueFromRemainingArguments = $true)]
-# 		$Args
-# 	)
-# 	$scriptPath = Join-Path $env:XDG_BIN_HOME 'update-manifest.ps1'
-# 	if (Test-Path $scriptPath) {
-# 		& $scriptPath @Args
-# 	}
-# }
+function PSDynTitle {
+  #Requires -Modules DynamicTitle
+
+  if ($IsLinux -or $IsMacOS) {
+    Write-Error -Message 'Runs only on Windows.' -Category InvalidOperation
+    return
+  }
+
+  $modulePath = Join-Path (Get-Module DynamicTitle).ModuleBase 'DynamicTitle.psd1'
+
+  $commandStartJob = Start-DTJobCommandPreExecutionCallback -ScriptBlock {
+    param($command)
+    $elevationCommands = @('su', 'sudo', 'gsudo', 'runas', 'elevate', 'admin')
+
+    if ($command) {
+      $commandName = $command.Split()[0]
+      if ($elevationCommands -contains $commandName.ToLower()) {
+        return
+      }
+    }
+
+    (Get-Date), $command
+  }
+
+  $promptJob = Start-DTJobPromptCallback -ScriptBlock {
+    (Get-Date), (Get-Location).Path
+  }
+
+  $initializationScript = {
+    param ($modulePath)
+    Import-Module $modulePath
+  }
+
+  $scriptBlock = {
+    param($commandStartJob, $promptJob)
+    $commandStartDate, $command = Get-DTJobLatestOutput $commandStartJob
+    $promptDate, $location = Get-DTJobLatestOutput $promptJob
+    $isCommandRunning = $false
+    if ($null -ne $commandStartDate) {
+      if (($null -eq $promptDate) -or ($promptDate -lt $commandStartDate)) {
+        $isCommandRunning = $true
+      }
+    }
+
+    if ($isCommandRunning -and $command) {
+      $commandName = $command.Split()[0]
+      return $commandName
+    }
+
+    if ($location) {
+      $homeDir = [System.Environment]::GetFolderPath('UserProfile')
+      $displayLocation = $location
+      if ($location.StartsWith($homeDir)) {
+        $displayLocation = $location -replace [regex]::Escape($homeDir), '~'
+      }
+      $displayLocation = $displayLocation -replace '\\', '/'
+      return $displayLocation
+    }
+  }
+
+  $params = @{
+    ScriptBlock                = $scriptBlock
+    ArgumentList               = $commandStartJob, $promptJob
+    InitializationScript       = $initializationScript
+    InitializationArgumentList = $modulePath
+  }
+
+  Start-DTTitle @params
+
+}
+
+function Set-ShellIntegration {
+  param
+  (
+    [ValidateSet('WindowsTerminal', 'ITerm2', 'WezTerm', 'vscode')]
+    [String]$TerminalProgram = $env:TERM_PROGRAM
+  )
+
+  # Write-Host 'Setting up shell integration...'
+  # Restore hooked functions in case this script is executed accidentally twice
+  if ($global:shellIntegrationGlobals) {
+    $function:global:PSConsoleHostReadLine = $global:shellIntegrationGlobals.originalPSConsoleHostReadLine
+    $function:global:Prompt = $global:shellIntegrationGlobals.originalPrompt
+  }
+
+  $global:shellIntegrationGlobals = @{
+    terminalProgram               = $TerminalProgram
+    originalPSConsoleHostReadLine = $function:global:PSConsoleHostReadLine
+    originalPrompt                = $function:global:Prompt
+    lastCommand                   = $null
+
+    getExitCode                   = {
+      param ($lastCommandStatus)
+      if ($lastCommandStatus -eq $true) {
+        return 0
+      }
+
+      if ($Error[0]) {
+        $lastHistory = Get-History -Count 1
+        $isPowerShellError = $Error[0].InvocationInfo.HistoryId -eq $lastHistory.Id
+      }
+
+      if ($isPowerShellError) {
+        return 1
+      }
+      else {
+        return $LastExitCode
+      }
+    }
+  }
+
+  $function:global:PSConsoleHostReadLine = {
+
+
+    $commandExecuted = "$([char]27)]133;C$([char]7)"
+    $command = $global:shellIntegrationGlobals.originalPSConsoleHostReadLine.Invoke()
+
+    $commandExecuted | Write-Host -NoNewline
+    $command
+
+    $global:shellIntegrationGlobals.lastCommand = $command
+  }
+
+  $function:global:Prompt = {
+    $lastCommandStatus = $?
+
+    if ($global:shellIntegrationGlobals.lastCommand) {
+      $exitCode = $global:shellIntegrationGlobals.getExitCode.Invoke($lastCommandStatus)
+      $commandFinished = "$([char]27)]133;D;$exitCode$([char]7)"
+    }
+    else {
+      $commandFinished = "$([char]27)]133;D$([char]7)"
+    }
+
+    $currentLocation = $ExecutionContext.SessionState.Path.CurrentLocation
+    switch ($global:shellIntegrationGlobals.terminalProgram) {
+      'WindowsTerminal' { $setWorkingDirectory = "$([char]27)]9;9;`"$currentLocation`"$([char]7)" }
+      'ITerm2' { $setWorkingDirectory = "$([char]27)]1337;CurrentDir=$currentLocation$([char]7)" }
+      'WezTerm' {
+        $provider_path = $currentLocation.ProviderPath -replace '\\', '/'
+        $setWorkingDirectory = "$([char]27)]7;file://${env:COMPUTERNAME}/${provider_path}$([char]27)\"
+      }
+    }
+
+    $promptStarted = "$([char]27)]133;A$([char]7)"
+    $commandStarted = "$([char]27)]133;B$([char]7)"
+    $prompt = $global:shellIntegrationGlobals.originalPrompt.Invoke()
+
+    $commandFinished + $promptStarted + $setWorkingDirectory + $prompt + $commandStarted
+  }
+}
 
 function Get-FileHashMD5 {
   [Alias('md5')]
@@ -1828,8 +1967,8 @@ function Update-ChezmoiManifest {
     }
 
     if ($inScoopSection -and
-            ($line -match '^\s*\w+:\s*$' -and $line -notmatch '^\s*apps:\s*$' -and $line -notmatch '^\s*buckets:\s*$' -and $line -notmatch '^\s*importRegistry:\s*$') ||
-            ($line -match '^\s*winget:\s*$')) {
+      ($line -match '^\s*\w+:\s*$' -and $line -notmatch '^\s*apps:\s*$' -and $line -notmatch '^\s*buckets:\s*$' -and $line -notmatch '^\s*importRegistry:\s*$') ||
+      ($line -match '^\s*winget:\s*$')) {
       $inScoopSection = $false
       $inBucketsSection = $false
       $inPkgsSection = $false

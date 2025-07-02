@@ -2,11 +2,20 @@
 $OutputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
+$global:term_app = $env:TERM_PROGRAM
+if ($null -ne $env:WT_SESSION) {
+	$global:term_app = 'WindowsTerminal'
+}
+
 $Env:PWSH = "$HOME/.config/powershell"
 
 if ($IsMacOS) {
-    $HOMEBREW_PREFIX = "/opt/homebrew"
-    & "$HOMEBREW_PREFIX/bin/brew" shellenv | Invoke-Expression
+	$HOMEBREW_PREFIX = '/opt/homebrew'
+	& "$HOMEBREW_PREFIX/bin/brew" shellenv | Invoke-Expression
+}
+
+if ($IsWindows) {
+	$env:SSH_AUTH_SOCK = '\\.\pipe\openssh-ssh-agent'
 }
 
 Remove-Item Alias:rm -Force -ErrorAction SilentlyContinue
@@ -54,10 +63,19 @@ if ($PSVersionTable.PSVersion.Major -ne 5) {
 	if (Get-Command mise -ErrorAction SilentlyContinue) {
 		mise activate pwsh | Out-String | Invoke-Expression
 	}
+	Set-ShellIntegration
+	if ($IsWindows) {
+		PSDynTitle
+	}
 }
+
 
 if (Get-Command aliae -ErrorAction SilentlyContinue) {
 	aliae init pwsh --config "$HOME/.config/aliae.yaml" | Invoke-Expression
+}
+
+if (Get-Command chezmoi -ErrorAction 'SilentlyContinue') {
+	chezmoi completion powershell | Out-String | Invoke-Expression
 }
 
 if (Get-Command carapace -ErrorAction SilentlyContinue) {

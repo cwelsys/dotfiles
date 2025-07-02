@@ -5,80 +5,182 @@ local M = {}
 
 local function extract_process_name(title)
 	if not title then return "" end
+
+	-- Clean up admin prefixes
 	title = title:gsub('^Administrator: ', '')
 	title = title:gsub(' %(Admin%)', '')
+
+	-- Extract filename from path (handles both / and \ separators)
 	local filename = title:match('.*[/\\]([^/\\]+)$') or title
-	filename = filename:gsub('%.exe$', '')
-	filename = filename:gsub('%.EXE$', '')
+
+	-- Remove extensions - handle both case variations and multiple extensions
+	filename = filename:gsub('%.exe$', ''):gsub('%.EXE$', ''):gsub('%.Exe$', '')
+
+	-- Also handle other common extensions
+	filename = filename:gsub('%.bat$', ''):gsub('%.BAT$', '')
+	filename = filename:gsub('%.cmd$', ''):gsub('%.CMD$', '')
+
 	return filename
 end
 
-local ICON_MAP = {
-	nvim = nf.custom_neovim,
-	lazygit = nf.dev_git,
-	lazydocker = nf.dev_docker,
-	pwsh = nf.seti_powershell,
-	powershell = nf.seti_powershell,
-	cmd = nf.md_console,
-	bash = nf.cod_terminal_bash,
-	zsh = nf.dev_terminal,
-	git = nf.dev_git_branch,
-	node = nf.dev_nodejs_small,
-	python = nf.dev_python,
-	cargo = '🦀',
-	npm = nf.dev_npm,
+-- Define shells separately for cleaner code
+local SHELLS = {
+	pwsh = { icon = nf.seti_powershell, name = "Pwsh" },
+	powershell = { icon = nf.seti_powershell, name = "PowerShell" },
+	cmd = { icon = nf.md_console, name = "Command Prompt" },
+	bash = { icon = nf.cod_terminal_bash, name = "Bash" },
+	zsh = { icon = nf.dev_terminal, name = "Zsh" },
+	fish = { icon = nf.md_fish, name = "Fish" },
+	wslhost = { icon = nf.cod_terminal_bash, name = "WSL" },
 }
 
-local APP_PATTERNS = {
-	{ pattern = "lazygit",    icon = nf.dev_git,       name = "Lazygit" },
-	{ pattern = "lazydocker", icon = nf.dev_docker,    name = "Lazydocker" },
-	{ pattern = "nvim",       icon = nf.custom_neovim, name = "nvim" },
+-- Non-shell processes (applications)
+local PROCESS_MAP = {
+	-- Editors
+	nvim = { icon = nf.custom_neovim, name = "Neovim" },
+	vim = { icon = nf.custom_vim, name = "Vim" },
+	vi = { icon = nf.custom_vim, name = "Vim" }, -- Common alias
+	code = { icon = nf.custom_vscode, name = "VS Code" },
+
+	-- Git tools
+	lazygit = { icon = nf.dev_git, name = "Lazygit" },
+	lg = { icon = nf.dev_git, name = "Lazygit" },
+
+	-- Docker tools
+	lazydocker = { icon = nf.dev_docker, name = "Lazydocker" },
+	ld = { icon = nf.dev_docker, name = "Lazydocker" },
+
+	-- Development tools
+	node = { icon = nf.dev_nodejs_small, name = "Node.js" },
+	python = { icon = nf.dev_python, name = "Python" },
+	cargo = { icon = '🦀', name = "Cargo" },
+	npm = { icon = nf.dev_npm, name = "npm" },
+	yarn = { icon = nf.seti_yarn, name = "Yarn" },
+
+	-- System tools
+	htop = { icon = nf.md_monitor, name = "htop" },
+	btop = { icon = nf.md_monitor, name = "btop" },
+	ranger = { icon = nf.custom_folder_open, name = "Ranger" },
 }
 
-local function get_icon_for_process(title)
+local function get_icon_for_process(title, process_name)
 	if not title then return nf.oct_terminal end
 
+	local process = extract_process_name(title):lower()
+
+	-- Check shells first
+	local shell_info = SHELLS[process]
+	if shell_info then
+		return shell_info.icon
+	end
+
+	-- Check non-shell processes
+	local process_info = PROCESS_MAP[process]
+	if process_info then
+		return process_info.icon
+	end
+
+	-- Check if title contains any known process patterns
 	local title_lower = title:lower()
-	for _, app in ipairs(APP_PATTERNS) do
-		if title_lower:find(app.pattern) then
-			return app.icon
+	for proc_name, info in pairs(PROCESS_MAP) do
+		if title_lower:find(proc_name) then
+			return info.icon
 		end
 	end
-	local process = extract_process_name(title):lower()
-	return ICON_MAP[process] or nf.oct_terminal
+
+	-- Check shell patterns
+	for shell_name, info in pairs(SHELLS) do
+		if title_lower:find(shell_name) then
+			return info.icon
+		end
+	end
+
+	return nf.oct_terminal
 end
 
-local function get_display_name(title)
+local function get_display_name(title, process_name)
 	if not title then return "" end
+
+	local process = extract_process_name(title):lower()
+
+	-- Check if it's a shell (shells return empty string for display name)
+	local shell_info = SHELLS[process]
+	if shell_info then
+		return ""
+	end
+
+	-- Check non-shell processes
+	local process_info = PROCESS_MAP[process]
+	if process_info then
+		return process_info.name
+	end
+
+	-- Check if title contains any known process patterns (handles commands in shell titles)
 	local title_lower = title:lower()
-	for _, app in ipairs(APP_PATTERNS) do
-		if title_lower:find(app.pattern) then
-			return app.name
+
+	-- Look for process names in the title (handles cases like "~/dir - nvim" or "vi ~/file")
+	for proc_name, info in pairs(PROCESS_MAP) do
+		-- Check if the command appears as a word (not just substring)
+		if title_lower:find("%f[%w]" .. proc_name .. "%f[%W]") then
+			return info.name
 		end
 	end
-	return extract_process_name(title)
+
+	local fallback = extract_process_name(title)
+	return fallback
 end
 
 local function get_tab_info(tab)
-	if tab.tab_title and #tab.tab_title > 0 then
-		return tab.tab_title, tab.tab_title
-	end
-
 	local pane_title = tab.active_pane.title or ""
+	local process_name = tab.active_pane.foreground_process_name or ""
 
-	if pane_title:match("^~") then
-		return nf.cod_home, pane_title
+	-- Handle explicit tab titles
+	if tab.tab_title and #tab.tab_title > 0 then
+		local icon = get_icon_for_process(pane_title, process_name)
+		if icon == nf.oct_terminal then
+			icon = get_icon_for_process(process_name, process_name)
+		end
+		return icon, tab.tab_title
 	end
 
-	if pane_title:match("^%.%.") then
-		local dir_name = pane_title:match("([^/\\]+)[/\\]?$") or ""
-		return nf.custom_folder_open, "../" .. dir_name
+	-- Try to get icon from pane title first (this catches when shells update title to show running apps)
+	local pane_icon = get_icon_for_process(pane_title, process_name)
+	local pane_display = get_display_name(pane_title, process_name)
+
+	-- If pane title doesn't give us a specific app icon, fall back to process name for shell icon
+	local final_icon = pane_icon
+	if pane_icon == nf.oct_terminal then
+		final_icon = get_icon_for_process(process_name, process_name)
 	end
 
-	local process_name = get_display_name(pane_title)
-	local icon = get_icon_for_process(pane_title)
+	-- For display name: Always start with pane title, but handle special cases
+	local final_name = pane_title
 
-	return icon, process_name
+	-- Check if pane title is just an executable path (when shell script isn't running)
+	if pane_title:match("^[A-Za-z]:[/\\].*%.exe$") or pane_title:match("^[A-Za-z]:[/\\].*%.EXE$") then
+		-- Extract just the executable name and map it to a friendly name
+		local exec_name = extract_process_name(pane_title):lower()
+		local shell_info = SHELLS[exec_name]
+		if shell_info then
+			final_name = shell_info.name
+		else
+			-- Fallback to just the executable name without path
+			final_name = extract_process_name(pane_title)
+		end
+	else
+		-- Normal case: check if we detected a specific application and override if so
+		if pane_display ~= "" then
+			local title_lower = pane_title:lower()
+			for proc_name, info in pairs(PROCESS_MAP) do
+				if title_lower:find("%f[%w]" .. proc_name .. "%f[%W]") then
+					final_name = info.name
+					break
+				end
+			end
+		end
+	end
+
+	return final_icon, final_name
 end
 
 local function tab_title(tab)
@@ -193,6 +295,8 @@ function M.setup()
 			tabline_c = { " " },
 			tab_active = { tab_title, '  ', process_name },
 			tab_inactive = { tab_title, '  ', process_name },
+			-- tab_active = { process_name },
+			-- tab_inactive = { process_name },
 			tabline_x = (function()
 				local components = {}
 				local has_battery = wezterm.battery_info()[1] ~= nil
