@@ -144,7 +144,7 @@ function PSDynTitle {
 
   $commandStartJob = Start-DTJobCommandPreExecutionCallback -ScriptBlock {
     param($command)
-    $ignoredCommands = @('su', 'sudo', 'gsudo', 'runas', 'elevate', 'admin', 'zsh', 'fish', 'bash')
+    $ignoredCommands = @('su', 'sudo', 'gsudo', 'runas', 'elevate', 'admin', 'zsh', 'fish', 'bash', 'powershell', 'nu', 'pwsh')
 
     if ($command) {
       $commandName = $command.Split()[0]
