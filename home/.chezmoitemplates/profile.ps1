@@ -55,6 +55,14 @@ else {
 if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 	oh-my-posh init pwsh --config "$HOME/.config/posh.toml" | Invoke-Expression
 }
+elseif (Get-Command starship -ErrorAction SilentlyContinue) {
+	function Invoke-Starship-TransientFunction {
+  &starship module character
+	}
+	Invoke-Expression (&starship init powershell)
+	Enable-TransientPrompt
+}
+
 
 if ($PSVersionTable.PSVersion.Major -ne 5) {
 	foreach ($file in $((Get-ChildItem -Path "$env:PWSH\lib\*" -Include *.ps1).FullName)) {
@@ -68,7 +76,6 @@ if ($PSVersionTable.PSVersion.Major -ne 5) {
 		PSDynTitle
 	}
 }
-
 
 if (Get-Command aliae -ErrorAction SilentlyContinue) {
 	aliae init pwsh --config "$HOME/.config/aliae.yaml" | Invoke-Expression

@@ -22,7 +22,6 @@ local function extract_process_name(title)
 end
 
 local SHELLS = {
-	["oh-my-posh"] = { icon = nf.seti_powershell, name = "OMP" },
 	ssh = { icon = nf.oct_globe, name = "ssh" },
 	pwsh = { icon = nf.seti_powershell, name = "Pwsh" },
 	powershell = { icon = nf.seti_powershell, name = "PowerShell" },
@@ -31,6 +30,7 @@ local SHELLS = {
 	zsh = { icon = nf.dev_terminal, name = "Zsh" },
 	fish = { icon = nf.md_fish, name = "Fish" },
 	wslhost = { icon = nf.md_linux, name = "WSL" },
+	nu = { icon = '🐚', name = "nu" },
 }
 
 local PROCESS_MAP = {
@@ -42,18 +42,32 @@ local PROCESS_MAP = {
 	lg = { icon = nf.dev_git, name = "Lazygit" },
 	lazydocker,
 	ld = { icon = nf.dev_docker, name = "Lazydocker" },
+	lazyjournal,
+	lj = { icon = nf.oct_log, name = "Lazyjournal" },
+	topgrade,
+	tg = { icon = nf.md_update, name = "Topgrade" },
 	node = { icon = nf.dev_nodejs_small, name = "Node.js" },
 	python = { icon = nf.dev_python, name = "Python" },
-	cargo = { icon = '🦀', name = "Cargo" },
+	cargo = { icon = '🦀', name = "cargo" },
 	npm = { icon = nf.dev_npm, name = "npm" },
-	yarn = { icon = nf.seti_yarn, name = "Yarn" },
+	yarn = { icon = nf.seti_yarn, name = "yarn" },
 	htop = { icon = nf.md_monitor, name = "htop" },
 	btop = { icon = nf.md_monitor, name = "btop" },
 	ranger = { icon = nf.custom_folder_open, name = "Ranger" },
 }
 
 local function get_icon_for_process(title, process_name)
-	if not title then return nf.oct_terminal end
+	if not title then
+		if process_name then
+			local process = extract_process_name(process_name):lower()
+			local shell_info = SHELLS[process]
+			if shell_info then
+				return shell_info.icon
+			end
+		end
+		return nil
+	end
+
 	local process = extract_process_name(title):lower()
 
 	local shell_info = SHELLS[process]
@@ -79,7 +93,15 @@ local function get_icon_for_process(title, process_name)
 		end
 	end
 
-	return nf.oct_terminal
+	if process_name then
+		local process = extract_process_name(process_name):lower()
+		local shell_info = SHELLS[process]
+		if shell_info then
+			return shell_info.icon
+		end
+	end
+
+	return nil
 end
 
 local function get_display_name(title, process_name)
@@ -99,7 +121,6 @@ local function get_display_name(title, process_name)
 
 	local title_lower = title:lower()
 	for proc_name, info in pairs(PROCESS_MAP) do
-		-- Check if the command appears as a word (not just substring)
 		if title_lower:find("%f[%w]" .. proc_name .. "%f[%W]") then
 			return info.name
 		end
@@ -116,20 +137,22 @@ local function get_tab_info(tab)
 	-- Handle explicit tab titles
 	if tab.tab_title and #tab.tab_title > 0 then
 		local icon = get_icon_for_process(pane_title, process_name)
-		if icon == nf.oct_terminal then
+		if not icon then
 			icon = get_icon_for_process(process_name, process_name)
 		end
 		return icon, tab.tab_title
 	end
 
-	-- Try to get icon from pane title first (this catches when shells update title to show running apps)
 	local pane_icon = get_icon_for_process(pane_title, process_name)
 	local pane_display = get_display_name(pane_title, process_name)
 
-	-- If pane title doesn't give us a specific app icon, fall back to process name for shell icon
 	local final_icon = pane_icon
-	if pane_icon == nf.oct_terminal then
+	if not final_icon then
 		final_icon = get_icon_for_process(process_name, process_name)
+	end
+
+	if not final_icon then
+		final_icon = nf.oct_terminal
 	end
 
 	local final_name = pane_title
