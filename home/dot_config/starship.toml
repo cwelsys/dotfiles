@@ -14,7 +14,7 @@ $git_state\
 $git_status\
 $git_metrics\
 $line_break\
-$sudo$username$character"""
+$sudo$character"""
 
 right_format = """$all"""
 
@@ -64,6 +64,8 @@ format = '[$path]($style)[$read_only]($read_only_style) '
 
 [hostname]
 ssh_symbol = "󰥛 "
+format = '[$ssh_symbol$hostname]($style)'
+style = 'bold dimmed green'
 
 [git_branch]
 style = "overlay2"
