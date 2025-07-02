@@ -46,6 +46,7 @@ local PROCESS_MAP = {
 	lj = { icon = nf.oct_log, name = "Lazyjournal" },
 	topgrade,
 	tg = { icon = nf.md_update, name = "Topgrade" },
+	scoop = { icon = '🥣', name = "scoop" },
 	node = { icon = nf.dev_nodejs_small, name = "Node.js" },
 	python = { icon = nf.dev_python, name = "Python" },
 	cargo = { icon = '🦀', name = "cargo" },
