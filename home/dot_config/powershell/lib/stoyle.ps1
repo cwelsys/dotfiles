@@ -2,24 +2,15 @@
 
 $Flavor = $Catppuccin['Mocha']
 
-$env:FZF_DEFAULT_OPTS = @"
---color=bg+:$($Flavor.Surface0),bg:$($Flavor.Base),spinner:$($Flavor.Rosewater)
---color=hl:$($Flavor.Red),fg:$($Flavor.Text),header:$($Flavor.Red)
---color=info:$($Flavor.Teal),pointer:$($Flavor.Rosewater),marker:$($Flavor.Rosewater)
---color=fg+:$($Flavor.Text),prompt:$($Flavor.Teal),hl+:$($Flavor.Red)
---color=border:$($Flavor.Surface2)
---layout=reverse --cycle --height=~80% --border=rounded --info=right
---bind=alt-w:toggle-preview-wrap
---bind=ctrl-e:toggle-preview
-"@
-
-$PSStyle.Formatting.TableHeader = $Flavor.Teal.Foreground()
-$PSStyle.Formatting.CustomTableHeaderLabel = $Flavor.Teal.Background() + $Flavor.Base.Foreground()
-$PSStyle.Formatting.Debug = $Flavor.Peach.Foreground()
-$PSStyle.Formatting.Verbose = $Flavor.Lavender.Foreground()
-$PSStyle.Formatting.FeedbackText = $Flavor.Sky.Foreground()
-$PSStyle.FileInfo.SymbolicLink = $Flavor.Blue.Foreground()
-$PSStyle.Progress.Style = $Flavor.Teal.Background() + $Flavor.Base.Foreground()
+if ($PSVersionTable.PSVersion.Major -ge 7) {
+	$PSStyle.Formatting.TableHeader = $Flavor.Teal.Foreground()
+	$PSStyle.Formatting.CustomTableHeaderLabel = $Flavor.Teal.Background() + $Flavor.Base.Foreground()
+	$PSStyle.Formatting.Debug = $Flavor.Peach.Foreground()
+	$PSStyle.Formatting.Verbose = $Flavor.Lavender.Foreground()
+	$PSStyle.Formatting.FeedbackText = $Flavor.Sky.Foreground()
+	$PSStyle.FileInfo.SymbolicLink = $Flavor.Blue.Foreground()
+	$PSStyle.Progress.Style = $Flavor.Teal.Background() + $Flavor.Base.Foreground()
+}
 
 $PSReadLineOptions = @{
 	BellStyle                     = 'None'
@@ -46,10 +37,13 @@ $PSReadLineOptions = @{
 	HistorySavePath               = "$Env:PWSH/history.txt"
 	HistoryNoDuplicates           = $True
 	HistorySearchCursorMovesToEnd = $True
-	PredictionSource              = 'HistoryAndPlugin'
-	PredictionViewStyle           = 'Inline'
 	PromptText                    = ''
 	ShowToolTips                  = $True
+}
+
+if ($PSVersionTable.PSVersion.Major -gt 7 -or ($PSVersionTable.PSVersion.Major -eq 7 -and $PSVersionTable.PSVersion.Minor -ge 2)) {
+	$PSReadLineOptions.PredictionSource = 'HistoryAndPlugin'
+	$PSReadLineOptions.PredictionViewStyle = 'Inline'
 }
 Set-PSReadLineOption @PSReadLineOptions
 

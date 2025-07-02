@@ -63,18 +63,16 @@ elseif (Get-Command starship -ErrorAction SilentlyContinue) {
 	Enable-TransientPrompt
 }
 
+if ((Get-Command mise -ErrorAction SilentlyContinue) -and ($PSVersionTable.PSVersion.Major -ge 7)) {
+	mise activate pwsh | Out-String | Invoke-Expression
+}
 
-if ($PSVersionTable.PSVersion.Major -ne 5) {
-	foreach ($file in $((Get-ChildItem -Path "$env:PWSH\lib\*" -Include *.ps1).FullName)) {
-		. "$file"
-	}
-	if (Get-Command mise -ErrorAction SilentlyContinue) {
-		mise activate pwsh | Out-String | Invoke-Expression
-	}
-	Set-ShellIntegration
-	if (($IsWindows) -and ( $env:TERM_PROGRAM -ne 'vscode')) {
-		PSDynTitle
-	}
+foreach ($file in $((Get-ChildItem -Path "$env:PWSH\lib\*" -Include *.ps1 -Exclude '7.ps1').FullName)) {
+	. "$file"
+}
+Set-ShellIntegration
+if (($IsWindows) -and ( $env:TERM_PROGRAM -ne 'vscode')) {
+	PSDynTitle
 }
 
 if (Get-Command aliae -ErrorAction SilentlyContinue) {
