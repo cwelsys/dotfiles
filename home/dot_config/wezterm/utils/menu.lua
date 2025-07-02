@@ -380,7 +380,7 @@ local SHELL_ICONS = {
 	['powershell'] = { icon = nf.seti_powershell, color = '#89b4fa' },
 	['cmd'] = { icon = nf.md_console, color = '#fab387' },
 	['bash'] = { icon = nf.cod_terminal_bash, color = '#326CE5' },
-	['fish'] = { icon = nf.dev_terminal, color = '#4E9A06' },
+	['fish'] = { icon = nf.md_fish, color = '#4E9A06' },
 	['nu'] = { icon = nf.dev_terminal, color = '#50C878' },
 	['elvish'] = { icon = nf.dev_terminal, color = '#FF6B35' },
 	['xonsh'] = { icon = nf.dev_python, color = '#306998' },
