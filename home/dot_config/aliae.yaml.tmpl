@@ -190,7 +190,11 @@ alias:
 
   - name: update
     value: brew update && brew upgrade
-    if: match .OS "darwin"
+    if: and (match .OS "darwin") (ne .Shell "nu")
+  - name: update
+    type: function
+    value: brew update; brew upgrade
+    if: and (match .OS "darwin") (match .Shell "nu")
   - name: install
     value: brew install
     if: match .OS "darwin"

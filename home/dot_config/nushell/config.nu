@@ -1,9 +1,14 @@
 source ./themes/catppuccin_mocha.nu
 overlay use ./scripts/git-aliases.nu
-
-aliae init nu --print | save ~/.cache/.aliae.nu --force
+source ~/.local/share/nu/aliae.nu
+source ~/.local/share/nu/carapace.nu
+source ~/.local/share/nu/atuin.nu
+source ~/.local/share/nu/mise.nu
+source ~/.local/share/nu/zoxide.nu
 
 $env.config.plugins.highlight.theme = "ansi"
+$env.ATUIN_NOBIND = "true"
+plugin use highlight
 $env.config.buffer_editor = "nvim"
 $env.config.show_banner = false
 $env.config.edit_mode = 'vi'
@@ -98,14 +103,3 @@ def E --env () {
         hide-env TARGET
     }
 }
-
-source ~/.cache/carapace/init.nu
-source ~/.local/share/atuin/init.nu
-
-plugin use highlight
-
-source ($nu.default-config-dir | path join mise.nu)
-
-source ~/.cache/.aliae.nu
-source ~/.cache/.zoxide.nu
-

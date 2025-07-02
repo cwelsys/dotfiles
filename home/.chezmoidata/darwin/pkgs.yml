@@ -5,6 +5,8 @@ pkgs:
       - git
       - gnupg
       - dockutil
+      - atuin
+      - carapace
       - pkg-config
       - pinentry-mac
       - spicetify-cli
