@@ -43,8 +43,7 @@ if [ -f ~/.local/share/blesh/ble.sh ]; then
 	ble-import -d integration/fzf-completion
 fi
 
-bleopt prompt_ps1_final=
-bleopt prompt_ps1_transient=
+bleopt prompt_ps1_final='$(starship module character)'
 
 if [ -f "$HOME/.config/bash" ]; then
 	for file in ~/.config/bash/*.bash; do
@@ -71,6 +70,14 @@ shopt -s nocaseglob
 unset MAILCHECK
 
 if command -v starship >/dev/null 2>&1; then
+	function set_win_title() {
+		local cwd="$PWD"
+		if [[ "$cwd" == "$HOME"* ]]; then
+			cwd="~${cwd#$HOME}"
+		fi
+		echo -ne "\033]0;$(basename "$cwd")\007"
+	}
+	starship_precmd_user_func="set_win_title"
 	eval "$(starship init bash)"
 elif command -v oh-my-posh >/dev/null 2>&1; then
 	eval "$(oh-my-posh init bash --config "$HOME/.config/posh.toml")"

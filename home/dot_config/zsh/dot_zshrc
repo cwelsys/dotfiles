@@ -147,6 +147,14 @@ HISTDUP=erase
 if [[ -f ~/.config/zsh/.p10k.zsh ]]; then
   source ~/.config/zsh/.p10k.zsh
 elif [[ -v commands[starship] ]]; then
+	function set_win_title() {
+		local cwd="$PWD"
+		if [[ "$cwd" == "$HOME"* ]]; then
+			cwd="~${cwd#$HOME}"
+		fi
+		echo -ne "\033]0;$(basename "$cwd")\007"
+	}
+	starship_precmd_user_func="set_win_title"
   eval "$(starship init zsh)"
 elif [[ -v commands['oh-my-posh'] ]]; then
   eval "$(oh-my-posh init zsh --config "$HOME"/.config/posh.toml)"
