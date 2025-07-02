@@ -386,7 +386,7 @@ local SHELL_ICONS = {
 	['xonsh'] = { icon = nf.dev_python, color = '#306998' },
 	['dash'] = { icon = nf.dev_terminal, color = '#757575' },
 	['sh'] = { icon = nf.dev_terminal, color = '#4EAA25' },
-	['zsh'] = { icon = nf.oct_terminal, color = '#89dceb' },
+	['zsh'] = { icon = nf.dev_terminal, color = '#89dceb' },
 	['tcsh'] = { icon = nf.dev_terminal, color = '#326CE5' },
 	['csh'] = { icon = nf.dev_terminal, color = '#326CE5' },
 	['ksh'] = { icon = nf.dev_terminal, color = '#FF6B6B' },
