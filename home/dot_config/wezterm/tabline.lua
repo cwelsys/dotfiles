@@ -312,11 +312,11 @@ function M.setup()
 			-- tab_inactive = { process_name },
 			tabline_x = (function()
 				local components = {}
-				local has_battery = wezterm.battery_info()[1] ~= nil
+				-- local has_battery = wezterm.battery_info()[1] ~= nil
 
-				if has_battery then
-					table.insert(components, { "battery" })
-				end
+				-- if has_battery then
+				-- 	table.insert(components, { "battery" })
+				-- end
 				-- table.insert(components, { "ram", icon = nf.fa_memory })
 				-- table.insert(components, { "cpu", icon = nf.oct_cpu })
 
