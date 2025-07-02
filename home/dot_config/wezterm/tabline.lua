@@ -358,8 +358,8 @@ function M.setup()
 			tabline_y = {
 				{
 					"datetime",
-					style = "%b %d / %I:%M %p",
-					icon = ' ',
+					style = " %b %d / %I:%M %p",
+					icon = nf.cod_calendar,
 					hour_to_icon = false,
 					padding = { left = 0, right = 1 },
 				},
