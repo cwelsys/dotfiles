@@ -139,22 +139,37 @@ function PSDynTitle {
 
   $modulePath = Join-Path (Get-Module DynamicTitle).ModuleBase 'DynamicTitle.psd1'
 
+  $script:isIgnoredCommandRunning = $false
+  $script:currentTitleJob = $null
+
   $commandStartJob = Start-DTJobCommandPreExecutionCallback -ScriptBlock {
     param($command)
-    $elevationCommands = @('su', 'sudo', 'gsudo', 'runas', 'elevate', 'admin')
+    $ignoredCommands = @('su', 'sudo', 'gsudo', 'runas', 'elevate', 'admin', 'zsh', 'fish', 'bash')
 
     if ($command) {
       $commandName = $command.Split()[0]
-      if ($elevationCommands -contains $commandName.ToLower()) {
-        return
+      if ($ignoredCommands -contains $commandName.ToLower()) {
+        # Set flag to indicate ignored command is running
+        $script:isIgnoredCommandRunning = $true
+        # Stop the current title job
+        if ($script:currentTitleJob) {
+          Stop-DTTitle $script:currentTitleJob
+          $script:currentTitleJob = $null
+        }
+        return @((Get-Date), $command, $true)
       }
     }
 
-    (Get-Date), $command
+    return @((Get-Date), $command, $false)
   }
 
   $promptJob = Start-DTJobPromptCallback -ScriptBlock {
-    (Get-Date), (Get-Location).Path
+    if ($script:isIgnoredCommandRunning) {
+      $script:isIgnoredCommandRunning = $false
+      if (-not $script:currentTitleJob) {
+      }
+    }
+    return @((Get-Date), (Get-Location).Path)
   }
 
   $initializationScript = {
@@ -164,28 +179,55 @@ function PSDynTitle {
 
   $scriptBlock = {
     param($commandStartJob, $promptJob)
-    $commandStartDate, $command = Get-DTJobLatestOutput $commandStartJob
-    $promptDate, $location = Get-DTJobLatestOutput $promptJob
-    $isCommandRunning = $false
-    if ($null -ne $commandStartDate) {
-      if (($null -eq $promptDate) -or ($promptDate -lt $commandStartDate)) {
-        $isCommandRunning = $true
-      }
-    }
 
-    if ($isCommandRunning -and $command) {
-      $commandName = $command.Split()[0]
-      return $commandName
-    }
+    try {
+      $commandOutput = Get-DTJobLatestOutput $commandStartJob
+      $promptOutput = Get-DTJobLatestOutput $promptJob
 
-    if ($location) {
-      $homeDir = [System.Environment]::GetFolderPath('UserProfile')
-      $displayLocation = $location
-      if ($location.StartsWith($homeDir)) {
-        $displayLocation = $location -replace [regex]::Escape($homeDir), '~'
+      $promptDate = $null
+      $location = $null
+      if ($promptOutput -and $promptOutput.Count -ge 2) {
+        $promptDate, $location = $promptOutput[0], $promptOutput[1]
       }
-      $displayLocation = $displayLocation -replace '\\', '/'
-      return $displayLocation
+
+      $isCommandRunning = $false
+      $isIgnoredCommand = $false
+      $commandStartDate = $null
+      $command = $null
+
+      if ($commandOutput -and $commandOutput.Count -ge 3) {
+        $commandStartDate, $command, $isIgnoredCommand = $commandOutput[0], $commandOutput[1], $commandOutput[2]
+
+        if ($commandStartDate) {
+          if ((-not $promptDate) -or ($promptDate -lt $commandStartDate)) {
+            $isCommandRunning = $true
+          }
+        }
+      }
+
+      if ($isCommandRunning -and $isIgnoredCommand) {
+        return
+      }
+
+      if ($isCommandRunning -and $command -and -not $isIgnoredCommand) {
+        $commandName = $command.Split()[0]
+        return $commandName
+      }
+
+      if ($location) {
+        $homeDir = [System.Environment]::GetFolderPath('UserProfile')
+        $displayLocation = $location
+        if ($location.StartsWith($homeDir)) {
+          $displayLocation = $location -replace [regex]::Escape($homeDir), '~'
+        }
+        $displayLocation = $displayLocation -replace '\\', '/'
+        return $displayLocation
+      }
+
+      return $null
+    }
+    catch {
+      return $null
     }
   }
 
@@ -196,8 +238,7 @@ function PSDynTitle {
     InitializationArgumentList = $modulePath
   }
 
-  Start-DTTitle @params
-
+  $script:currentTitleJob = Start-DTTitle @params
 }
 
 function Set-ShellIntegration {

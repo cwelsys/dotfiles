@@ -13,51 +13,40 @@ local function extract_process_name(title)
 	-- Extract filename from path (handles both / and \ separators)
 	local filename = title:match('.*[/\\]([^/\\]+)$') or title
 
-	-- Remove extensions - handle both case variations and multiple extensions
+	-- Remove extensions
 	filename = filename:gsub('%.exe$', ''):gsub('%.EXE$', ''):gsub('%.Exe$', '')
-
-	-- Also handle other common extensions
 	filename = filename:gsub('%.bat$', ''):gsub('%.BAT$', '')
 	filename = filename:gsub('%.cmd$', ''):gsub('%.CMD$', '')
 
 	return filename
 end
 
--- Define shells separately for cleaner code
 local SHELLS = {
+	["oh-my-posh"] = { icon = nf.seti_powershell, name = "OMP" },
+	ssh = { icon = nf.oct_globe, name = "ssh" },
 	pwsh = { icon = nf.seti_powershell, name = "Pwsh" },
 	powershell = { icon = nf.seti_powershell, name = "PowerShell" },
 	cmd = { icon = nf.md_console, name = "Command Prompt" },
 	bash = { icon = nf.cod_terminal_bash, name = "Bash" },
 	zsh = { icon = nf.dev_terminal, name = "Zsh" },
 	fish = { icon = nf.md_fish, name = "Fish" },
-	wslhost = { icon = nf.cod_terminal_bash, name = "WSL" },
+	wslhost = { icon = nf.md_linux, name = "WSL" },
 }
 
--- Non-shell processes (applications)
 local PROCESS_MAP = {
-	-- Editors
-	nvim = { icon = nf.custom_neovim, name = "Neovim" },
-	vim = { icon = nf.custom_vim, name = "Vim" },
-	vi = { icon = nf.custom_vim, name = "Vim" }, -- Common alias
+	nvim,
+	vim,
+	vi = { icon = nf.custom_neovim, name = "Neovim" },
 	code = { icon = nf.custom_vscode, name = "VS Code" },
-
-	-- Git tools
-	lazygit = { icon = nf.dev_git, name = "Lazygit" },
+	lazygit,
 	lg = { icon = nf.dev_git, name = "Lazygit" },
-
-	-- Docker tools
-	lazydocker = { icon = nf.dev_docker, name = "Lazydocker" },
+	lazydocker,
 	ld = { icon = nf.dev_docker, name = "Lazydocker" },
-
-	-- Development tools
 	node = { icon = nf.dev_nodejs_small, name = "Node.js" },
 	python = { icon = nf.dev_python, name = "Python" },
 	cargo = { icon = '🦀', name = "Cargo" },
 	npm = { icon = nf.dev_npm, name = "npm" },
 	yarn = { icon = nf.seti_yarn, name = "Yarn" },
-
-	-- System tools
 	htop = { icon = nf.md_monitor, name = "htop" },
 	btop = { icon = nf.md_monitor, name = "btop" },
 	ranger = { icon = nf.custom_folder_open, name = "Ranger" },
@@ -65,22 +54,18 @@ local PROCESS_MAP = {
 
 local function get_icon_for_process(title, process_name)
 	if not title then return nf.oct_terminal end
-
 	local process = extract_process_name(title):lower()
 
-	-- Check shells first
 	local shell_info = SHELLS[process]
 	if shell_info then
 		return shell_info.icon
 	end
 
-	-- Check non-shell processes
 	local process_info = PROCESS_MAP[process]
 	if process_info then
 		return process_info.icon
 	end
 
-	-- Check if title contains any known process patterns
 	local title_lower = title:lower()
 	for proc_name, info in pairs(PROCESS_MAP) do
 		if title_lower:find(proc_name) then
@@ -88,7 +73,6 @@ local function get_icon_for_process(title, process_name)
 		end
 	end
 
-	-- Check shell patterns
 	for shell_name, info in pairs(SHELLS) do
 		if title_lower:find(shell_name) then
 			return info.icon
@@ -103,22 +87,17 @@ local function get_display_name(title, process_name)
 
 	local process = extract_process_name(title):lower()
 
-	-- Check if it's a shell (shells return empty string for display name)
 	local shell_info = SHELLS[process]
 	if shell_info then
 		return ""
 	end
 
-	-- Check non-shell processes
 	local process_info = PROCESS_MAP[process]
 	if process_info then
 		return process_info.name
 	end
 
-	-- Check if title contains any known process patterns (handles commands in shell titles)
 	local title_lower = title:lower()
-
-	-- Look for process names in the title (handles cases like "~/dir - nvim" or "vi ~/file")
 	for proc_name, info in pairs(PROCESS_MAP) do
 		-- Check if the command appears as a word (not just substring)
 		if title_lower:find("%f[%w]" .. proc_name .. "%f[%W]") then
@@ -153,22 +132,17 @@ local function get_tab_info(tab)
 		final_icon = get_icon_for_process(process_name, process_name)
 	end
 
-	-- For display name: Always start with pane title, but handle special cases
 	local final_name = pane_title
 
-	-- Check if pane title is just an executable path (when shell script isn't running)
 	if pane_title:match("^[A-Za-z]:[/\\].*%.exe$") or pane_title:match("^[A-Za-z]:[/\\].*%.EXE$") then
-		-- Extract just the executable name and map it to a friendly name
 		local exec_name = extract_process_name(pane_title):lower()
 		local shell_info = SHELLS[exec_name]
 		if shell_info then
 			final_name = shell_info.name
 		else
-			-- Fallback to just the executable name without path
 			final_name = extract_process_name(pane_title)
 		end
 	else
-		-- Normal case: check if we detected a specific application and override if so
 		if pane_display ~= "" then
 			local title_lower = pane_title:lower()
 			for proc_name, info in pairs(PROCESS_MAP) do

@@ -7,7 +7,7 @@ function _fzf_search_history --description "Search command history. Replace the 
 
     if not set --query fzf_history_time_format
         # Reference https://devhints.io/strftime to understand strftime format symbols
-        set -f fzf_history_time_format "%m-%d %H:%M:%S"
+        set -f fzf_history_time_format ""
     end
 
     # Delinate time from command in history entries using the vertical box drawing char (U+2502).
@@ -16,7 +16,7 @@ function _fzf_search_history --description "Search command history. Replace the 
     set -f time_prefix_regex '^.*? │ '
     # Delinate commands throughout pipeline using null rather than newlines because commands can be multi-line
     set -f commands_selected (
-        builtin history --null --show-time="$fzf_history_time_format │ " |
+        builtin history --null --show-time="$fzf_history_time_format" |
         _fzf_wrapper --read0 \
             --print0 \
             --multi \

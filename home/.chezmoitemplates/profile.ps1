@@ -64,7 +64,7 @@ if ($PSVersionTable.PSVersion.Major -ne 5) {
 		mise activate pwsh | Out-String | Invoke-Expression
 	}
 	Set-ShellIntegration
-	if ($IsWindows) {
+	if (($IsWindows) -and ( $env:TERM_PROGRAM -ne 'vscode')) {
 		PSDynTitle
 	}
 }
