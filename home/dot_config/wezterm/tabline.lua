@@ -23,7 +23,7 @@ end
 
 local SHELLS = {
 	ssh = { icon = nf.oct_globe, name = "Ssh" },
-	pwsh = { icon = nf.seti_powershell, name = "Pwsh" },
+	pwsh = { icon = nf.cod_terminal_powershell, name = "Pwsh" },
 	powershell = { icon = nf.cod_terminal_powershell, name = "PowerShell" },
 	cmd = { icon = nf.cod_terminal_cmd, name = "Cmd" },
 	bash = { icon = nf.cod_terminal_bash, name = "Bash" },
