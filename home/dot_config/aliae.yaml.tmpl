@@ -118,6 +118,9 @@ alias:
   - name: su
     value: gsudo
     if: match .OS "windows"
+  - name: su
+    value: sudo su
+    if: .OS ne "windows"
 
   # pwsh
   - name: os
