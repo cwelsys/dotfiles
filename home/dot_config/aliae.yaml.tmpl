@@ -262,6 +262,7 @@ env:
   - !include priv.yaml
   - name: XDG_CONFIG_HOME
     value: '{{ .chezmoi.homeDir }}/.config'
+    persist: true
   - name: XDG_CACHE_HOME
     value: '{{ .chezmoi.homeDir }}/.cache'
     persist: true
@@ -276,6 +277,7 @@ env:
     persist: true
   - name: XDG_PROJECTS_DIR
     value: '{{ .chezmoi.homeDir }}/Projects'
+    persist: true
   - name: DOTS
     value: '{{ .chezmoi.sourceDir }}'
   - name: DOTFILES
@@ -314,14 +316,17 @@ env:
     value: '{{ .chezmoi.homeDir }}/.config/docker'
   - name: CARGO_HOME
     value: '{{ .chezmoi.homeDir }}/.local/share/cargo'
+    persist: true
   - name: RUSTUP_HOME
     value: '{{ .chezmoi.homeDir }}/.local/share/rustup'
+    persist: true
   - name: DOTNET_CLI_HOME
     value: '{{ .chezmoi.homeDir }}/.local/share/dotnet'
   - name: DOTNET_CLI_TELEMETRY_OPTOUT
     value: '1'
   - name: XAUTHORITY
     value: '{{ .chezmoi.homeDir }}/.local/state/.Xauthority'
+    persist: true
   - name: PYTHONSTARTUP
     value: '{{ .chezmoi.homeDir }}/.config/python/pythonrc'
   - name: PYTHON_HISTORY
@@ -344,8 +349,10 @@ env:
     value: '{{ .chezmoi.homeDir }}/.local/state/node_repl_history'
   - name: GOPATH
     value: '{{ .chezmoi.homeDir }}/.local/share/go'
+    persist: true
   - name: GOBIN
     value: '{{ .chezmoi.homeDir }}/.local/share/go/bin'
+    persist: true
   - name: RIPGREP_CONFIG_PATH
     value: '{{ .chezmoi.homeDir }}/.config/ripgrep/config'
   - name: LESSHISTFILE
@@ -394,7 +401,6 @@ env:
   - name: YAZI_FILE_ONE
     value: 'C:/Program Files/Git/usr/bin/file.exe'
     if: match .OS "windows"
-    persist: true
   - name: KOMOREBI_CONFIG_HOME
     value: '{{ .chezmoi.homeDir }}/.config/komorebi'
     if: match .OS "windows"
@@ -408,7 +414,6 @@ env:
   - name: EZA_CONFIG_DIR
     value: '{{ .chezmoi.homeDir }}/.config/eza'
     if: match .OS "windows"
-    persist: true
   - name: VBOX_USER_HOME
     value: '{{ .chezmoi.homeDir }}/.local/share/virtualbox'
     if: match .OS "windows"
@@ -452,22 +457,12 @@ env:
 
 path:
   - value: |
-      {{ env "XDG_DATA_HOME" }}/nvim-data/mason/bin
-    if: eq .OS "windows"
-
-  - value: |
       /usr/local/sbin
       /usr/bin
       /usr/local/bin
     if: eq .OS "linux" "darwin"
 
-{{ if eq .chezmoi.os "linux" }}
-  - value: /home/linuxbrew/.linuxbrew/bin
-    if: hasCommand "brew"
-{{ end }}
-
   - value: |
-      /opt/homebrew/bin
       /opt/vagrant/bin
     if: eq .OS "darwin"
 
