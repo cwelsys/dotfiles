@@ -1,10 +1,44 @@
-encryption = "age" # age, rage, gpg
-mode = "file" # file, symlink
+encryption = "age"
+mode = "file"
 progress = true
 
 {{ $gpgId := "061DF935B288405FF6B906169496153E284399EF" }}
 {{ $agePubKey := "age1wezwdvug6rdnwedvw8tk7npjm2rlmmewukxdat8v5y5garwvgdeq3ww5m9" }}
 {{ $sshId := "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXPGUiiFFBzqutbhNqi5RjykdlwvdFveB/XkSdg0BAM" }}
+
+{{- $shell := "" }}
+{{- if eq .chezmoi.os "windows" }}
+  {{- $shell = "pwsh" }}
+{{- else }}
+  {{- $shell = "zsh" }}
+{{- end }}
+
+{{- $editor := "nvim" }}
+{{ if lookPath "code" -}}
+{{- $editor = "code --wait" }}
+[edit]
+    args    = ["-r", "--wait"]
+    command = "code"
+    watch = true
+[merge]
+    command = "bash"
+    args = [
+        "-c",
+        "cp '{{ "{{" }} .Target {{ "}}" }}' '{{ "{{" }} .Target {{ "}}" }}.base' && code --new-window --wait --merge '{{ "{{" }} .Destination {{ "}}" }}' '{{ "{{" }} .Target {{ "}}" }}' '{{ "{{" }} .Target {{ "}}" }}.base' '{{ "{{" }} .Source {{ "}}" }}'",
+    ]
+{{ else -}}
+[edit]
+    command = "nvim"
+    watch = true
+[merge]
+  command = "nvim"
+  args = [
+    "-d",
+    "{{ "{{" }} .Destination {{ "}}" }}",
+    "{{ "{{" }} .Source {{ "}}" }}",
+    "{{ "{{" }} .Target {{ "}}" }}",
+  ]
+{{ end -}}
 
 [data]
 {{- $isLaptop := false }}
@@ -17,6 +51,7 @@ progress = true
     {{- $isLaptop = true }}
   {{- end }}
 {{- end }}
+editor = {{ $editor | quote }}
 isLaptop = {{ $isLaptop }}
 gpgId = {{ $gpgId | quote }}
 agePubKey = {{ $agePubKey | quote }}
@@ -32,35 +67,31 @@ sshId = {{ $sshId | quote }}
 isWSL = {{ $isWSL }}
 
 [age]
-identity = "~/.config/.key"
-recipient = {{ $agePubKey | quote }}
+  identity = "~/.config/.key"
+  recipient = {{ $agePubKey | quote }}
 
 [gpg]
-recipient = {{ $gpgId | quote }}
+  recipient = {{ $gpgId | quote }}
+  args = [ "--quiet", ]
 
 [git]
-autoAdd = true
-autoCommit = false
-autoPush = false
+  autoAdd = true
+  autoCommit = false
+  autoPush = false
+
+[diff]
+  format = "git"
+  pager = "delta"
 
 [onepassword]
-mode = "connect"
+  mode = "connect"
 
 [interpreters.ps1]
-command = "pwsh"
-args = ["-NoLogo"]
-
-[edit]
-watch = true
+  command = "pwsh"
+  args = ["-NoLogo"]
 
 [cd]
-{{- $shell := "" }}
-{{- if eq .chezmoi.os "windows" }}
-  {{- $shell = "pwsh" }}
-{{- else }}
-  {{- $shell = "zsh" }}
-{{- end }}
-command = {{ $shell | quote }}
+  command = {{ $shell | quote }}
 
 
 

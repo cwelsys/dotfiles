@@ -1,6 +1,5 @@
 # vim:ft=gitignore.chezmoitmpl
 
-.config/windows-terminal/
 {{ if (joinPath .chezmoi.homeDir ".config/.key" | lstat) }}
 .config/rclone/rclone.conf
 {{ end }}
@@ -29,10 +28,6 @@ Library/**
 {{ if eq .chezmoi.os "windows" }}
 .chezmoiscripts/posix/**
 .local/bin/*.sh
-{{ end }}
-
-{{ if eq .chezmoi.os "windows" }}
-.config/atuin/
 .config/powershell/profile.ps1
 .config/btop/
 .config/fd/
@@ -40,8 +35,6 @@ Library/**
 .config/fish/
 .config/topgrade.toml
 .font/
-.config/tmux/
-.config/tmux/**
 {{ else }}
 
 .config/komorebi/
@@ -53,7 +46,6 @@ Library/**
 scoop/
 AppData/
 Documents/
-.vsvimrc
 .wslconfig
 
 {{ end }}
@@ -62,11 +54,7 @@ Documents/
 
 .config/systemd/
 .config/systemd/**
-.config/tlp/
 
 {{ end }}
 
-{{ if not (lookPath "sddm") }}
-.config/sddm/
-.config/sddm/**
-{{ end }}
+.config/windows-terminal/

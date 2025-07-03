@@ -1,5 +1,5 @@
 [core]
-  editor = code --wait
+  editor = {{ .editor }}
   longpaths = true
   pager = delta
   excludesFile = ~/.config/git/ignore
@@ -14,7 +14,6 @@
 [gpg "ssh"]
 	program = ssh-keygen
 {{ end }}
-
 [am]
   threeWay = true
 
@@ -22,8 +21,13 @@
   tool = default-difftool
   colorMoved = default
 
+{{- if lookPath "code" }}
 [difftool "default-difftool"]
   cmd = code --wait --diff $LOCAL $REMOTE
+{{- else }}
+[difftool "default-difftool"]
+  cmd = nvim -d $LOCAL $REMOTE
+{{- end }}
 
 [delta]
   features = catppuccin-mocha
@@ -35,7 +39,7 @@
   tabs = 2
   true-color = always
   hyperlinks = true
-  line-numbers = true
+  line-numbers = false
   show-syntax-themes = true
 
 [interactive]
@@ -102,8 +106,20 @@
   enabled = true
 
 [merge]
+{{- if lookPath "code" }}
   tool = code
+{{- else }}
+  tool = nvim
+{{- end }}
   conflictstyle = zdiff3
+
+{{- if lookPath "code" }}
+[mergetool "code"]
+  cmd = code --wait --merge $REMOTE $LOCAL $BASE $MERGED
+{{- else }}
+[mergetool "nvim"]
+  cmd = nvim -d $LOCAL $BASE $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+{{- end }}
 
 [submodule]
   fetchJobs = 8
