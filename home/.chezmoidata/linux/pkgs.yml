@@ -41,8 +41,7 @@ pkgs:
       - neovim
       - dua-cli
       - tealdeer
-      - gh
+      - github-cli
       - git-delta
       - git-extras
-      - git-flow
       - git-lfs

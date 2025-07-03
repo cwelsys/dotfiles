@@ -11,8 +11,8 @@ if os.is_win then
 	opts.launch_menu = {
 		{ label = 'Pwsh', args = { 'pwsh', '-NoLogo' } },
 		{ label = 'Cmd', args = { 'cmd' } },
-		{ label = 'Zsh', args = { 'wsl' }, icon = nf.oct_terminal, color = '#89dceb' },
-		{ label = 'Fish', args = { 'wsl', '-e', 'fish' }, icon = nf.md_fish, color = '#4E9A06' },
+		{ label = 'Zsh', args = { 'wsl' }, icon = nf.md_console },
+		{ label = 'Fish', args = { 'wsl', '-e', 'fish' } },
 		{ label = 'Bash', args = { 'wsl', '-e', 'bash' } },
 		{ label = 'Nu', args = { 'nu' } },
 		{ label = 'Msys2', args = { 'ucrt64.cmd' }, icon = nf.md_pac_man, color = '#f9e2af' },
@@ -376,20 +376,20 @@ local WSL_DISTRO_ICONS = {
 
 -- Shell icons mapping
 local SHELL_ICONS = {
-	['pwsh'] = { icon = nf.dev_powershell, color = '#89b4fa' },
-	['powershell'] = { icon = nf.seti_powershell, color = '#89b4fa' },
-	['cmd'] = { icon = nf.md_console, color = '#fab387' },
-	['bash'] = { icon = nf.cod_terminal_bash, color = '#326CE5' },
-	['fish'] = { icon = nf.md_fish, color = '#4E9A06' },
-	['nu'] = { icon = nf.dev_terminal, color = '#50C878' },
-	['elvish'] = { icon = nf.dev_terminal, color = '#FF6B35' },
+	['pwsh'] = { icon = nf.seti_powershell, color = '#89b4fa' },
+	['powershell'] = { icon = nf.dev_powershell, color = '#89b4fa' },
+	['cmd'] = { icon = nf.cod_terminal_cmd, color = '#fab387' },
+	['bash'] = { icon = nf.cod_terminal_bash, color = '#4E9A06' },
+	['fish'] = { icon = nf.md_fish, color = '#89dceb' },
+	['nu'] = { icon = nf.md_console, color = '#50C878' },
+	['elvish'] = { icon = nf.md_console, color = '#FF6B35' },
 	['xonsh'] = { icon = nf.dev_python, color = '#306998' },
-	['dash'] = { icon = nf.dev_terminal, color = '#757575' },
-	['sh'] = { icon = nf.dev_terminal, color = '#4EAA25' },
-	['zsh'] = { icon = nf.dev_terminal, color = '#89dceb' },
-	['tcsh'] = { icon = nf.dev_terminal, color = '#326CE5' },
-	['csh'] = { icon = nf.dev_terminal, color = '#326CE5' },
-	['ksh'] = { icon = nf.dev_terminal, color = '#FF6B6B' },
+	['dash'] = { icon = nf.md_console, color = '#757575' },
+	['sh'] = { icon = nf.md_console, color = '#4EAA25' },
+	['zsh'] = { icon = nf.md_console, color = '#89dceb' },
+	['tcsh'] = { icon = nf.md_console, color = '#326CE5' },
+	['csh'] = { icon = nf.md_console, color = '#326CE5' },
+	['ksh'] = { icon = nf.md_console, color = '#FF6B6B' },
 }
 
 -- Helper function to detect shell from args
@@ -398,17 +398,42 @@ local function get_shell_from_args(args)
 		return nil
 	end
 
-	local first_arg = args[1]
-	if not first_arg then
-		return nil
+	-- Helper function to extract shell name from path
+	local function extract_shell_name(arg)
+		if not arg then return nil end
+		local normalized = arg:lower()
+		local shell_name = normalized:match('.*[/\\]([^/\\]+)$') or normalized
+		shell_name = shell_name:gsub('%.exe$', '')
+		return shell_name
 	end
 
-	first_arg = first_arg:lower()
+	for i = 1, #args do
+		local arg = args[i]
+		if arg == '-e' and i < #args then
+			local shell_candidate = extract_shell_name(args[i + 1])
+			if shell_candidate and SHELL_ICONS[shell_candidate] then
+				return shell_candidate
+			end
+		end
 
-	local shell_name = first_arg:match('.*[/\\]([^/\\]+)$') or first_arg
-	shell_name = shell_name:gsub('%.exe$', '')
+		local shell_candidate = extract_shell_name(arg)
+		if shell_candidate and SHELL_ICONS[shell_candidate] then
+			-- Skip common wrappers/launchers that aren't actual shells
+			if shell_candidate ~= 'wsl' and shell_candidate ~= 'ssh' and
+					shell_candidate ~= 'sudo' and shell_candidate ~= 'su' and
+					not shell_candidate:match('%.cmd$') then
+				return shell_candidate
+			end
+		end
+	end
 
-	return shell_name
+	-- If no shell found in the arguments, try the first argument as fallback
+	local first_shell = extract_shell_name(args[1])
+	if first_shell and SHELL_ICONS[first_shell] then
+		return first_shell
+	end
+
+	return nil
 end
 
 local cells_instance = nil
