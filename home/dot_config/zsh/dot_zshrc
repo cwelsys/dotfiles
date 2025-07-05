@@ -15,6 +15,7 @@ if [[ -f "/opt/homebrew/bin/brew" ]]; then
 fi
 
 if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
+  export WSLENV="$WSLENV:WSL_DISTRO_NAME"
   export ALIAE_WSL=1
 fi
 
