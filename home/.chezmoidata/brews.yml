@@ -12,6 +12,7 @@ pkgs:
       - gum
       - jq
       - wrk
+      - xdg-ninja
       - oh-my-posh
       - lazydocker
       - luarocks

@@ -13,6 +13,12 @@ else
     exit 1
 fi
 
+# Disable sudo admin flag to prevent .sudo_as_admin_successful file creation
+sudo tee /etc/sudoers.d/no-admin-flag > /dev/null <<'EOF'
+# Disable creation of .sudo_as_admin_successful file
+Defaults !admin_flag
+EOF
+
 # Set ZDOTDIR in global zsh configuration
 {{- if eq .chezmoi.osRelease.id "arch" }}
 sudo tee /etc/zsh/zshenv > /dev/null <<'EOF'
