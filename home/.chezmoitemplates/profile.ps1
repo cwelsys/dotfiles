@@ -52,6 +52,10 @@ else {
 	if (Get-Command nvim -ErrorAction SilentlyContinue) { $Env:EDITOR = 'nvim' }
 }
 
+foreach ($file in $((Get-ChildItem -Path "$env:PWSH\lib\*" -Include *.ps1 -Exclude '7.ps1').FullName)) {
+	. "$file"
+}
+
 if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 	oh-my-posh init pwsh --config "$HOME/.config/posh.toml" | Invoke-Expression
 }
@@ -63,13 +67,13 @@ elseif (Get-Command starship -ErrorAction SilentlyContinue) {
 	Enable-TransientPrompt
 }
 
-if ((Get-Command mise -ErrorAction SilentlyContinue) -and ($PSVersionTable.PSVersion.Major -ge 7)) {
-	mise activate pwsh | Out-String | Invoke-Expression
+if ($PSVersionTable.PSVersion.Major -ge 7) {
+	if (Get-Command mise -ErrorAction SilentlyContinue) {
+		mise activate pwsh | Out-String | Invoke-Expression
+	}
+	. "$env:PWSH\lib\7.ps1"
 }
 
-foreach ($file in $((Get-ChildItem -Path "$env:PWSH\lib\*" -Include *.ps1 -Exclude '7.ps1').FullName)) {
-	. "$file"
-}
 
 if (($IsWindows) -and ( $env:TERM_PROGRAM -ne 'vscode')) {
 	Set-ShellIntegration

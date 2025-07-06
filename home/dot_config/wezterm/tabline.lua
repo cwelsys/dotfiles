@@ -23,37 +23,75 @@ local function extract_process_name(title)
 	return filename
 end
 
--- Distro icon mapping using basic, known-working icons
+-- WSL distribution icons mapping (base distros only)
+local WSL_DISTRO_ICONS = {
+	['ubuntu'] = { icon = nf.linux_ubuntu, color = '#E95420' },
+	['debian'] = { icon = nf.linux_debian, color = '#A81D33' },
+	['arch'] = { icon = nf.linux_archlinux, color = '#1793D1' },
+	['alpine'] = { icon = nf.linux_alpine, color = '#0D597F' },
+	['fedora'] = { icon = nf.linux_fedora, color = '#b4befe' },
+	['opensuse'] = { icon = nf.linux_opensuse, color = '#73BA25' },
+	['suse'] = { icon = nf.linux_opensuse, color = '#73BA25' },
+	['centos'] = { icon = nf.linux_centos, color = '#932279' },
+	['redhat'] = { icon = nf.linux_redhat, color = '#EE0000' },
+	['kali'] = { icon = nf.linux_kali_linux, color = '#557C94' },
+	['manjaro'] = { icon = nf.linux_manjaro, color = '#35BF5C' },
+	['nixos'] = { icon = nf.linux_nixos, color = '#5277C3' },
+	['pengwin'] = { icon = nf.md_penguin, color = '#FF6B35' },
+	['oracle'] = { icon = nf.dev_oracle, color = '#F80000' },
+	['alma'] = { icon = nf.linux_almalinux, color = '#0F4266' },
+}
+
+-- Function to normalize distro name for matching
+local function normalize_distro_name(name)
+	if not name then return nil end
+
+	-- Convert to lowercase and remove common prefixes/suffixes
+	local normalized = name:lower()
+	normalized = normalized:gsub('wsl:', '')
+	normalized = normalized:gsub('linux', '')
+	normalized = normalized:gsub('%-.*', '')          -- Remove version numbers like -20.04, -42
+	normalized = normalized:gsub('%d+.*', '')         -- Remove version numbers at the end
+	normalized = normalized:gsub('^%s*(.-)%s*$', '%1') -- Trim whitespace
+
+	return normalized
+end
+
+-- Function to find distro info with proper fuzzy matching
+local function get_distro_info(distro_name)
+	if not distro_name then return nil end
+
+	local normalized = normalize_distro_name(distro_name)
+	if not normalized or normalized == '' then return nil end
+
+	-- Direct match on normalized name
+	local direct_match = WSL_DISTRO_ICONS[normalized]
+	if direct_match then return direct_match end
+
+	-- Fuzzy matching - check if normalized name contains any distro key
+	for key, info in pairs(WSL_DISTRO_ICONS) do
+		if normalized:find(key) or key:find(normalized) then
+			return info
+		end
+	end
+
+	return nil
+end
+
+-- Enhanced distro icon function with fuzzy matching
 local function get_distro_icon(domain_name)
 	if not domain_name then
 		return nf.md_linux
 	end
 
-	local domain_lower = domain_name:lower()
-
-	if domain_lower:find("ubuntu") then
-		return nf.fa_ubuntu
-	elseif domain_lower:find("debian") then
-		return nf.dev_debian
-	elseif domain_lower:find("fedora") then
-		return nf.linux_fedora
-	elseif domain_lower:find("centos") or domain_lower:find("rhel") or domain_lower:find("red hat") then
-		return nf.linux_redhat
-	elseif domain_lower:find("arch") then
-		return nf.linux_archlinux
-	elseif domain_lower:find("suse") or domain_lower:find("opensuse") then
-		return nf.linux_opensuse
-	elseif domain_lower:find("alpine") then
-		return nf.linux_alpine
-	elseif domain_lower:find("kali") then
-		return nf.dev_kali
-	elseif domain_lower:find("mint") then
-		return nf.linux_mint
-	elseif domain_lower:find("manjaro") then
-		return nf.linux_manjaro
-	else
-		return nf.dev_linux
+	-- Use the fuzzy matching logic
+	local distro_info = get_distro_info(domain_name)
+	if distro_info and distro_info.icon then
+		return distro_info.icon
 	end
+
+	-- Fallback to default Linux icon
+	return nf.dev_linux
 end
 
 local SHELLS = {
@@ -64,7 +102,7 @@ local SHELLS = {
 	bash = { icon = nf.cod_terminal_bash, name = "Bash" },
 	zsh = { icon = nf.dev_terminal, name = "Zsh" },
 	fish = { icon = nf.md_fish, name = "Fish" },
-	nu = { icon = '🐚', name = "nu" },
+	nu = { icon = nf.md_console, name = "Nu" }, -- Console icon for nu shell in tabs (🐚 is used in launch menu)
 	wslhost = {
 		icon = function(domain_name)
 			if domain_name and domain_name ~= "local" then
@@ -100,6 +138,8 @@ local PROCESS_MAP = {
 	htop = { icon = nf.md_monitor, name = "htop" },
 	btop = { icon = nf.md_monitor, name = "btop" },
 	ranger = { icon = nf.custom_folder_open, name = "Ranger" },
+	-- Special case for Launch Menu to override nu shell detection
+	["launch menu"] = { icon = '🐚', name = "Launch Menu" },
 }
 
 local tab_icons = {} -- Store icons per tab

@@ -740,7 +740,7 @@ M.setup = function()
 		if default_action and button == 'Right' then
 			window:perform_action(
 				act.InputSelector({
-					title = 'Launch Menu',
+					title = '🐚 Launch Menu',
 					choices = choices,
 					fuzzy = true,
 					-- fuzzy_description = nf.md_rocket .. ' Select a lauch item: ',

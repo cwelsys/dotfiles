@@ -171,6 +171,7 @@ pkgs:
         - 'extras/yasb'
         - 'main/pipx'
         - 'main/python'
+        - 'extras/micaforeveryone'
 
       importRegistry:
         - '$env:USERPROFILE\scoop\apps\7zip\current\install-context.reg'
@@ -191,7 +192,6 @@ pkgs:
       - 'AgileBits.1Password'
       - 'AngusJohnson.ResourceHacker'
       - 'AutoHotkey.AutoHotkey'
-      - 'AntibodySoftware.WizTree'
       - 'DuongDieuPhap.ImageGlass'
       - 'Flow-Launcher.Flow-Launcher'
       - 'Microsoft.PowerToys'
@@ -220,9 +220,7 @@ pkgs:
       - 'Bitwarden.Bitwarden'
       - 'GitHub.GitHubDesktop'
       - 'Playnite.Playnite'
-      - 'Rustlang.Rustup'
       - 'Proton.ProtonMail'
-      - 'Anysphere.Cursor'
       - 'Microsoft.Teams'
       - 'Microsoft.AppInstaller'
       - 'Microsoft.UI.Xaml.2.7'
@@ -231,6 +229,7 @@ pkgs:
       - 'Nextcloud.NextcloudDesktop'
       - 'Nvidia.PhysX'
       - 'JanDeDobbeleer.Aliae'
+      - 'KurtZimmermann.RegCool'
 
     psGallery:
       - 'PsReadLine'
@@ -263,3 +262,4 @@ pkgs:
           - 'seachicken/gh-poi'
           - 'Link-/gh-token'
           - 'Shresht7/gh-license'
+

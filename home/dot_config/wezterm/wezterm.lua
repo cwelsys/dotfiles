@@ -51,7 +51,7 @@ function scheme_for_appearance(appearance)
 end
 
 c.color_scheme = scheme_for_appearance(wez.gui.get_appearance())
-c.exit_behavior = "CloseOnCleanExit"
+c.exit_behavior = "Close"
 c.automatically_reload_config = true
 c.default_workspace = "~"
 c.default_domain = "local"
@@ -152,6 +152,18 @@ c.skip_close_confirmation_for_processes_named = {
   'pwsh.exe',
   'pwsh',
   'powershell.exe',
+  -- Add more process variations that might appear in SSH sessions
+  'wezterm-ssh',
+  'sshd',
+  'tail',
+  'less',
+  'more',
+  'cat',
+  'ls',
+  'vim',
+  'nano',
+  'htop',
+  'top',
 }
 c.window_decorations = "RESIZE"
 c.tab_max_width = 42
