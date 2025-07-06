@@ -45,7 +45,7 @@ function scheme_for_appearance(appearance)
 end
 
 c.color_scheme = scheme_for_appearance(wez.gui.get_appearance())
-c.exit_behavior = "Close"
+c.exit_behavior = "CloseOnCleanExit"
 c.automatically_reload_config = true
 c.default_workspace = "~"
 c.default_domain = "local"
@@ -108,7 +108,7 @@ c.font_rules = {
 }
 
 c.front_end = 'OpenGL'
-c.window_background_opacity = .8969
+c.window_background_opacity = os.is_mac and .690 or .8969
 c.macos_window_background_blur = 60
 -- c.win32_system_backdrop = "Tabbed"
 
@@ -147,7 +147,7 @@ c.skip_close_confirmation_for_processes_named = {
   'pwsh',
   'powershell.exe',
 }
-c.window_decorations = "RESIZE"
+c.window_decorations = "RESIZE | MACOS_FORCE_ENABLE_SHADOW"
 c.tab_max_width = 42
 c.initial_cols = 120
 c.initial_rows = 32
