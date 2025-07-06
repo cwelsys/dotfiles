@@ -60,3 +60,4 @@ $RECYCLE.BIN/
 \_.msm
 \*.msp
 \*.lnk
+**/.claude/settings.local.json
