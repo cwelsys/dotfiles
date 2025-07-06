@@ -77,7 +77,7 @@ zinit light atuinsh/atuin
 
 zinit ice wait"1" lucid
 zinit light denisidoro/navi
-zinit light olets/zsh-window-title
+zinit light amyreese/zsh-titles
 zinit light reegnz/jq-zsh-plugin
 zinit ice wait"1" lucid
 zinit light laggardkernel/zsh-thefuck
