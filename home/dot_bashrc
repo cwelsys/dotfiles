@@ -11,10 +11,6 @@ if [[ -f "/opt/homebrew/bin/brew" ]]; then
 	eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-if grep -qEi "(Microsoft|WSL)" /proc/version &>/dev/null; then
-	export ALIAE_WSL=1
-fi
-
 if [[ -z "$USER" ]]; then
 	export USER="${USERNAME:-$(whoami)}"
 fi
