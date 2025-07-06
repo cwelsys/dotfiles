@@ -144,7 +144,15 @@ function PSDynTitle {
 
   $commandStartJob = Start-DTJobCommandPreExecutionCallback -ScriptBlock {
     param($command)
-    $ignoredCommands = @('su', 'sudo', 'gsudo', 'runas', 'elevate', 'admin', 'zsh', 'fish', 'bash', 'powershell', 'nu', 'pwsh')
+    # Commands that should not be shown in title (shells and elevation commands)
+    $ignoredCommands = @(
+      # Elevation commands
+      'su', 'sudo', 'gsudo', 'runas', 'elevate', 'admin',
+      # Shells
+      'zsh', 'fish', 'bash', 'wsl', 'powershell', 'nu', 'pwsh', 'cmd', 'sh',
+      # Common utilities that shouldn't override the title
+      'which', 'where', 'type', 'get-command', 'scoop'
+    )
 
     if ($command) {
       $commandName = $command.Split()[0]
@@ -205,13 +213,46 @@ function PSDynTitle {
         }
       }
 
+      # If running an ignored command, fall back to showing location
       if ($isCommandRunning -and $isIgnoredCommand) {
-        return
+        # Don't return null, fall through to show location instead
       }
+      # Only show command if it's running and not ignored
+      elseif ($isCommandRunning -and $command -and -not $isIgnoredCommand) {
+        # Add timeout to prevent stale command detection (5 seconds)
+        $commandAge = (Get-Date) - $commandStartDate
+        if ($commandAge.TotalSeconds -gt 5) {
+          # Command has been running too long, fall back to location
+        }
+        else {
+          # Extract just the command name, handling complex command lines
+          $commandName = $command.Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)[0]
 
-      if ($isCommandRunning -and $command -and -not $isIgnoredCommand) {
-        $commandName = $command.Split()[0]
-        return $commandName
+          # Remove common prefixes that aren't the actual command
+          $commandName = $commandName -replace '^.*[\\/]', ''  # Remove path
+          $commandName = $commandName -replace '\.exe$', ''    # Remove .exe extension
+          $commandName = $commandName -replace '\.cmd$', ''    # Remove .cmd extension
+          $commandName = $commandName -replace '\.bat$', ''    # Remove .bat extension
+          $commandName = $commandName -replace '\.ps1$', ''    # Remove .ps1 extension
+
+          # Handle common aliases and ensure consistent naming for tabline detection
+          $aliasMap = @{
+            'lg'  = 'lazygit'
+            'ld'  = 'lazydocker'
+            'lj'  = 'lazyjournal'
+            'tg'  = 'topgrade'
+            'y'   = 'yazi'
+            'vi'  = 'nvim'
+            'vim' = 'nvim'
+          }
+
+          $normalizedName = $commandName.ToLower()
+          if ($aliasMap.ContainsKey($normalizedName)) {
+            $normalizedName = $aliasMap[$normalizedName]
+          }
+
+          return $normalizedName
+        }
       }
 
       if ($location) {

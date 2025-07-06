@@ -36,7 +36,7 @@ alias:
     value: cd {{ .chezmoi.sourceDir }}
   - name: cdw
     value: cd {{ env "WIN_HOME" }}
-    if: eq (env "ALIAE_WSL") "1"
+    if: env "WSLENV"
   - name: qq
     type: function
     value: |
@@ -376,7 +376,7 @@ env:
     value: '{{ .chezmoi.homeDir }}/.local/share/vagrant'
   - name: WIN_HOME
     value: /mnt/c/users/cwel
-    if: eq (env "ALIAE_WSL") "1"
+    if: env "WSLENV"
   - name: RUST
     value: '/mnt/media'
     if: eq (env "HOSTNAME") "pbox"
@@ -454,6 +454,12 @@ env:
   - name: MISE_RUBY_DEFAULT_PACKAGES_FILE
     value: '{{ .chezmoi.homeDir }}/.config/mise/default-gems'
     if: match .OS "windows"
+  - name: TERMINFO
+    value: '{{ .chezmoi.homeDir }}/.local/share/terminfo'
+    if: .OS ne "windows"
+  - name: TERMINFO_DIRS
+    value: '{{ .chezmoi.homeDir }}/.local/share/terminfo:/usr/share/terminfo'
+    if: .OS ne "windows"
 
 path:
   - value: |

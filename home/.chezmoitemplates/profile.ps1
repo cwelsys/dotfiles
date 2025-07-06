@@ -70,8 +70,9 @@ if ((Get-Command mise -ErrorAction SilentlyContinue) -and ($PSVersionTable.PSVer
 foreach ($file in $((Get-ChildItem -Path "$env:PWSH\lib\*" -Include *.ps1 -Exclude '7.ps1').FullName)) {
 	. "$file"
 }
-Set-ShellIntegration
+
 if (($IsWindows) -and ( $env:TERM_PROGRAM -ne 'vscode')) {
+	Set-ShellIntegration
 	PSDynTitle
 }
 

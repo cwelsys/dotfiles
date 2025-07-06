@@ -85,8 +85,8 @@
 
 	"monitors": [
 		{
-			"window_based_work_area_offset_limit": 2,
-			"window_based_work_area_offset": { "left": 800, "top": 0, "right": 1600, "bottom": 0 },
+			"window_based_work_area_offset_limit": 1,
+			"window_based_work_area_offset": { "left": 1400, "top": 0, "right": 2400, "bottom": 0 },
 			"workspaces": [
 				{
 					"name": "1",

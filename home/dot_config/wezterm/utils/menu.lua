@@ -9,17 +9,12 @@ local opts = {
 
 if os.is_win then
 	opts.launch_menu = {
-		{ label = 'Pwsh', args = { 'pwsh', '-NoLogo' } },
-		{ label = 'Cmd', args = { 'cmd' } },
-		{ label = 'Zsh', args = { 'wsl' }, icon = nf.md_console },
-		{ label = 'Fish', args = { 'wsl', '-e', 'fish' } },
-		{ label = 'Bash', args = { 'wsl', '-e', 'bash' } },
-		{ label = 'Nu', args = { 'nu' } },
-		{ label = 'Msys2', args = { 'ucrt64.cmd' }, icon = nf.md_pac_man, color = '#f9e2af' },
+		{ label = 'Pwsh',       args = { 'pwsh', '-NoLogo' } },
+		{ label = 'Cmd',        args = { 'cmd' } },
+		{ label = 'Nu',         args = { 'nu' } },
+		{ label = 'Msys2',      args = { 'ucrt64.cmd' },                            icon = nf.md_pac_man, color = '#f9e2af' },
 		{ label = 'PowerShell', args = { 'powershell.exe', '-NoLogo' } },
-		{ label = 'Git Bash', args = { 'C:\\Program Files\\git\\bin\\bash.exe' }, icon = nf.dev_git, color = '#94e2d5' },
-		{ label = 'pbox', args = { 'ssh', 'pbox' }, icon = "🌴", color = '#cdd6f4' },
-		{ label = 'mba', args = { 'ssh', 'mba' }, icon = nf.dev_apple, color = '#cdd6f4' },
+		{ label = 'Git Bash',   args = { 'C:\\Program Files\\git\\bin\\bash.exe' }, icon = nf.dev_git,    color = '#94e2d5' },
 		{
 			label = 'nvim',
 			args = { "nvim" },
@@ -29,13 +24,11 @@ if os.is_win then
 	}
 elseif os.is_mac then
 	opts.launch_menu = {
-		{ label = 'Zsh', args = { 'zsh', '-l' } },
+		{ label = 'Zsh',  args = { 'zsh', '-l' } },
 		{ label = 'Fish', args = { '/opt/homebrew/bin/fish', '-l' } },
 		{ label = 'Bash', args = { '/opt/homebrew/bin/bash', '-l' } },
 		{ label = 'Pwsh', args = { '/usr/local/bin/pwsh', '-NoLogo' } },
-		{ label = 'Nu', args = { '/opt/homebrew/bin/nu', '-l' } },
-		{ label = 'pbox', args = { 'ssh', 'pbox' }, icon = "🌴", color = '#cdd6f4' },
-		{ label = 'wini', args = { 'ssh', 'wini' }, icon = nf.dev_windows11, color = '#cdd6f4' },
+		{ label = 'Nu',   args = { '/opt/homebrew/bin/nu', '-l' } },
 		{
 			label = 'nvim',
 			args = { "/opt/homebrew/bin/nvim" },
@@ -48,78 +41,60 @@ elseif os.is_linux then
 		{ label = 'Zsh',  args = { 'zsh', '-l' } },
 		{ label = 'Fish', args = { 'fish', '-l' } },
 		{ label = 'Bash', args = { 'bash', '-l' } },
-		{ label = 'mba',  args = { 'ssh', 'mba' },  icon = nf.dev_apple,     color = '#cdd6f4' },
-		{ label = 'wini', args = { 'ssh', 'wini' }, icon = nf.dev_windows11, color = '#cdd6f4' },
 	}
 end
 
-local ssh_domains = {}
+-- SSH hosts to filter out from the launcher menu
+local SSH_HOSTS_TO_FILTER = {
+	'github.com',
+	'gitea',
+	'gitlab.com',
+	'bitbucket.org',
+}
+
+-- Function to check if an SSH host should be filtered
+local function should_filter_ssh_host(hostname)
+	for _, filtered_host in ipairs(SSH_HOSTS_TO_FILTER) do
+		if hostname:find(filtered_host) then
+			return true
+		end
+	end
+	return false
+end
+
+-- Function to extract hostname from SSH args
+local function extract_ssh_hostname(args)
+	if args and args[1] == 'ssh' and args[2] then
+		return args[2]
+	end
+	return nil
+end
+
+-- Function to build SSH domains from launch menu entries
+local function build_ssh_domains_from_launch_menu()
+	local ssh_domains = {}
+
+	for _, entry in ipairs(opts.launch_menu) do
+		local hostname = extract_ssh_hostname(entry.args)
+		if hostname and not should_filter_ssh_host(hostname) then
+			table.insert(ssh_domains, {
+				name = hostname,
+				remote_address = hostname,
+				username = nil, -- Will use current user or config
+			})
+		end
+	end
+
+	return ssh_domains
+end
+
+local ssh_domains = build_ssh_domains_from_launch_menu()
 local unix_domains = {}
-local wsl_domains = {}
-
-if os.is_win then
-	-- ssh_domains = {
-	-- 	{
-	-- 		name = 'pbox',
-	-- 		remote_address = 'pbox',
-	-- 		multiplexing = 'None',
-	-- 		assume_shell = "Posix"
-	-- 	},
-	-- 	{
-	-- 		name = 'mba',
-	-- 		remote_address = 'mba',
-	-- 		multiplexing = 'None',
-	-- 		assume_shell = "Posix"
-	-- 	},
-	-- }
-	wsl_domains = {
-		{
-			name = 'Fedora',
-			distribution = 'FedoraLinux-42',
-			username = 'cwel',
-			default_cwd = '~',
-		},
-		{
-			name = 'Arch',
-			distribution = 'archlinux',
-			username = 'cwel',
-			default_cwd = '~',
-		}
-	}
-	-- elseif os.is_mac then
-	-- 	ssh_domains = {
-	-- 		{
-	-- 			name = 'pbox',
-	-- 			remote_address = 'pbox',
-	-- 			multiplexing = 'None',
-	-- 			assume_shell = "Posix"
-	-- 		},
-	-- 		{
-	-- 			name = 'wini',
-	-- 			remote_address = 'wini',
-	-- 			multiplexing = 'None'
-	-- 		},
-	-- 	}
-	-- elseif os.is_linux then
-	-- 	ssh_domains = {
-	-- 		{
-	-- 			name = 'mba',
-	-- 			remote_address = 'mba',
-	-- 			multiplexing = 'None',
-	-- 			assume_shell = "Posix"
-	-- 		},
-	-- 		{
-	-- 			name = 'wini',
-	-- 			remote_address = 'wini',
-	-- 			multiplexing = 'None'
-	-- 		},
-	-- 	}
-end
 
 local domains = {
 	ssh_domains = ssh_domains,
 	unix_domains = unix_domains,
-	wsl_domains = wsl_domains,
+	wsl_domains = wez.default_wsl_domains(),
 }
 
 local M = {}
@@ -359,20 +334,60 @@ local colors = {
 	icon_unix    = { fg = '#CBA6F7' },
 }
 
--- WSL distribution icons mapping
+-- WSL distribution icons mapping (base distros only)
 local WSL_DISTRO_ICONS = {
-	['Ubuntu'] = { icon = nf.linux_ubuntu, color = '#E95420' },
-	['Debian'] = { icon = nf.linux_debian, color = '#A81D33' },
-	['Arch'] = { icon = nf.linux_archlinux, color = '#1793D1' },
-	['Alpine'] = { icon = nf.linux_alpine, color = '#0D597F' },
-	['Fedora'] = { icon = nf.linux_fedora, color = '#b4befe' },
-	['openSUSE'] = { icon = nf.linux_opensuse, color = '#73BA25' },
-	['SUSE'] = { icon = nf.linux_opensuse, color = '#73BA25' },
-	['CentOS'] = { icon = nf.linux_centos, color = '#932279' },
-	['RedHat'] = { icon = nf.linux_redhat, color = '#EE0000' },
-	['Kali'] = { icon = nf.linux_kali_linux, color = '#557C94' },
-	['Manjaro'] = { icon = nf.linux_manjaro, color = '#35BF5C' },
+	['ubuntu'] = { icon = nf.linux_ubuntu, color = '#E95420' },
+	['debian'] = { icon = nf.linux_debian, color = '#A81D33' },
+	['arch'] = { icon = nf.linux_archlinux, color = '#1793D1' },
+	['alpine'] = { icon = nf.linux_alpine, color = '#0D597F' },
+	['fedora'] = { icon = nf.linux_fedora, color = '#b4befe' },
+	['opensuse'] = { icon = nf.linux_opensuse, color = '#73BA25' },
+	['suse'] = { icon = nf.linux_opensuse, color = '#73BA25' },
+	['centos'] = { icon = nf.linux_centos, color = '#932279' },
+	['redhat'] = { icon = nf.linux_redhat, color = '#EE0000' },
+	['kali'] = { icon = nf.linux_kali_linux, color = '#557C94' },
+	['manjaro'] = { icon = nf.linux_manjaro, color = '#35BF5C' },
+	['nixos'] = { icon = nf.linux_nixos, color = '#5277C3' },
+	['pengwin'] = { icon = nf.md_penguin, color = '#FF6B35' },
+	['oracle'] = { icon = nf.dev_oracle, color = '#F80000' },
+	['alma'] = { icon = nf.linux_almalinux, color = '#0F4266' },
 }
+
+-- Function to normalize distro name for matching
+local function normalize_distro_name(name)
+	if not name then return nil end
+
+	-- Convert to lowercase and remove common prefixes/suffixes
+	local normalized = name:lower()
+	normalized = normalized:gsub('wsl:', '')
+	normalized = normalized:gsub('linux', '')
+	normalized = normalized:gsub('%-.*', '')          -- Remove version numbers like -20.04, -42
+	normalized = normalized:gsub('%d+.*', '')         -- Remove version numbers at the end
+	normalized = normalized:gsub('^%s*(.-)%s*$', '%1') -- Trim whitespace
+
+	return normalized
+end
+
+-- Function to find distro info with proper fuzzy matching
+local function get_distro_info(distro_name)
+	if not distro_name then return nil end
+
+	local normalized = normalize_distro_name(distro_name)
+	if not normalized or normalized == '' then return nil end
+
+	-- Direct match on normalized name
+	local direct_match = WSL_DISTRO_ICONS[normalized]
+	if direct_match then return direct_match end
+
+	-- Fuzzy matching - check if normalized name contains any distro key
+	for key, info in pairs(WSL_DISTRO_ICONS) do
+		if normalized:find(key) or key:find(normalized) then
+			return info
+		end
+	end
+
+	return nil
+end
 
 -- Shell icons mapping
 local SHELL_ICONS = {
@@ -512,10 +527,14 @@ local function build_choices()
 
 	-- WSL domains
 	for _, v in ipairs(domains.wsl_domains) do
-		cells_instance:update_segment_text('label_text', v.name)
+		local distro_info = get_distro_info(v.distribution) or get_distro_info(v.name)
+
+		-- Use just the distro name (without "WSL: " prefix)
+		local display_name = v.distribution or v.name
+
+		cells_instance:update_segment_text('label_text', display_name)
 
 		local icon_segment = 'icon_wsl'
-		local distro_info = WSL_DISTRO_ICONS[v.distribution] or WSL_DISTRO_ICONS[v.name]
 
 		if distro_info and distro_info.icon and distro_info.color then
 			local custom_icon_id = 'custom_wsl_icon_' .. idx
@@ -534,6 +553,7 @@ local function build_choices()
 			domain = { DomainName = v.name },
 		})
 
+		-- Clean up temporary segment
 		if distro_info then
 			cells_instance.segments['custom_wsl_icon_' .. idx] = nil
 		end
@@ -543,16 +563,31 @@ local function build_choices()
 
 	-- SSH domains
 	for _, v in ipairs(domains.ssh_domains) do
-		cells_instance:update_segment_text('label_text', v.name)
+		-- Filter out unwanted SSH hosts
+		if not should_filter_ssh_host(v.name) then
+			-- Use just the hostname/name
+			cells_instance:update_segment_text('label_text', v.name)
 
-		table.insert(choices, {
-			id = tostring(idx),
-			label = wez.format(cells_instance:render({ 'icon_ssh', 'label_text' })),
-		})
-		table.insert(choices_data, {
-			domain = { DomainName = v.name },
-		})
-		idx = idx + 1
+			-- Create custom SSH icon with consistent styling
+			local custom_icon_id = 'custom_ssh_icon_' .. idx
+			local ssh_color = { fg = '#cdd6f4' } -- Light blue color
+			local ssh_icon = nf.md_server_network
+
+			cells_instance:add_segment(custom_icon_id, ' ' .. ssh_icon .. ' ', ssh_color)
+
+			table.insert(choices, {
+				id = tostring(idx),
+				label = wez.format(cells_instance:render({ custom_icon_id, 'label_text' })),
+			})
+			table.insert(choices_data, {
+				domain = { DomainName = v.name },
+			})
+
+			-- Clean up temporary segment
+			cells_instance.segments[custom_icon_id] = nil
+
+			idx = idx + 1
+		end
 	end
 
 	-- Unix domains

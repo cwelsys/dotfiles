@@ -1,5 +1,7 @@
-local wezterm = require('wezterm')
-local nf = wezterm.nerdfonts
+-- i should have just forked tabline atp
+local wez = require('wezterm')
+local nf = wez.nerdfonts
+local os = require('utils/os')
 
 local M = {}
 
@@ -21,6 +23,39 @@ local function extract_process_name(title)
 	return filename
 end
 
+-- Distro icon mapping using basic, known-working icons
+local function get_distro_icon(domain_name)
+	if not domain_name then
+		return nf.md_linux
+	end
+
+	local domain_lower = domain_name:lower()
+
+	if domain_lower:find("ubuntu") then
+		return nf.fa_ubuntu
+	elseif domain_lower:find("debian") then
+		return nf.dev_debian
+	elseif domain_lower:find("fedora") then
+		return nf.linux_fedora
+	elseif domain_lower:find("centos") or domain_lower:find("rhel") or domain_lower:find("red hat") then
+		return nf.linux_redhat
+	elseif domain_lower:find("arch") then
+		return nf.linux_archlinux
+	elseif domain_lower:find("suse") or domain_lower:find("opensuse") then
+		return nf.linux_opensuse
+	elseif domain_lower:find("alpine") then
+		return nf.linux_alpine
+	elseif domain_lower:find("kali") then
+		return nf.dev_kali
+	elseif domain_lower:find("mint") then
+		return nf.linux_mint
+	elseif domain_lower:find("manjaro") then
+		return nf.linux_manjaro
+	else
+		return nf.dev_linux
+	end
+end
+
 local SHELLS = {
 	ssh = { icon = nf.oct_globe, name = "Ssh" },
 	pwsh = { icon = nf.cod_terminal_powershell, name = "Pwsh" },
@@ -29,25 +64,33 @@ local SHELLS = {
 	bash = { icon = nf.cod_terminal_bash, name = "Bash" },
 	zsh = { icon = nf.dev_terminal, name = "Zsh" },
 	fish = { icon = nf.md_fish, name = "Fish" },
-	wslhost = { icon = nf.md_linux, name = "WSL" },
 	nu = { icon = '🐚', name = "nu" },
+	wslhost = {
+		icon = function(domain_name)
+			if domain_name and domain_name ~= "local" then
+				return get_distro_icon(domain_name)
+			end
+			return nf.md_linux
+		end,
+		name = "WSL"
+	},
 }
 
 local PROCESS_MAP = {
-	nvim,
-	vim,
+	nvim = { icon = nf.custom_neovim, name = "Neovim" },
+	vim = { icon = nf.custom_neovim, name = "Neovim" },
 	vi = { icon = nf.custom_neovim, name = "Neovim" },
 	code = { icon = nf.custom_vscode, name = "VS Code" },
-	lazygit,
+	lazygit = { icon = nf.dev_git, name = "Lazygit" },
 	lg = { icon = nf.dev_git, name = "Lazygit" },
-	lazydocker,
+	lazydocker = { icon = nf.dev_docker, name = "Lazydocker" },
 	ld = { icon = nf.dev_docker, name = "Lazydocker" },
-	lazyjournal,
+	lazyjournal = { icon = nf.oct_log, name = "Lazyjournal" },
 	lj = { icon = nf.oct_log, name = "Lazyjournal" },
-	topgrade,
+	topgrade = { icon = nf.md_update, name = "Topgrade" },
 	tg = { icon = nf.md_update, name = "Topgrade" },
-	scoop = { icon = '🥣', name = "scoop" },
-	yazi,
+	-- scoop = { icon = '🥣', name = "scoop" }, --scoop hook in pwsh profile is causing interference
+	yazi = { icon = '🦆', name = "yazi" },
 	y = { icon = '🦆', name = "yazi" },
 	node = { icon = nf.dev_nodejs_small, name = "Node.js" },
 	python = { icon = nf.dev_python, name = "Python" },
@@ -61,12 +104,16 @@ local PROCESS_MAP = {
 
 local tab_icons = {} -- Store icons per tab
 
-local function get_icon_for_process(title, process_name)
+local function get_icon_for_process(title, process_name, domain_name)
 	if not title then
 		if process_name then
 			local process = extract_process_name(process_name):lower()
 			local shell_info = SHELLS[process]
 			if shell_info then
+				-- Handle function icons (like wslhost)
+				if type(shell_info.icon) == "function" then
+					return shell_info.icon(domain_name)
+				end
 				return shell_info.icon
 			end
 		end
@@ -77,6 +124,10 @@ local function get_icon_for_process(title, process_name)
 
 	local shell_info = SHELLS[process]
 	if shell_info then
+		-- Handle function icons (like wslhost)
+		if type(shell_info.icon) == "function" then
+			return shell_info.icon(domain_name)
+		end
 		return shell_info.icon
 	end
 
@@ -94,6 +145,10 @@ local function get_icon_for_process(title, process_name)
 
 	for shell_name, info in pairs(SHELLS) do
 		if title_lower:find(shell_name) then
+			-- Handle function icons (like wslhost)
+			if type(info.icon) == "function" then
+				return info.icon(domain_name)
+			end
 			return info.icon
 		end
 	end
@@ -102,6 +157,10 @@ local function get_icon_for_process(title, process_name)
 		local process = extract_process_name(process_name):lower()
 		local shell_info = SHELLS[process]
 		if shell_info then
+			-- Handle function icons (like wslhost)
+			if type(shell_info.icon) == "function" then
+				return shell_info.icon(domain_name)
+			end
 			return shell_info.icon
 		end
 	end
@@ -140,11 +199,19 @@ local function get_tab_info(tab)
 	local process_name = tab.active_pane.foreground_process_name or ""
 	local tab_id = tab.tab_id
 
+	-- Try to get domain name - check multiple possible ways
+	local domain_name = nil
+	if tab.active_pane.domain_name then
+		domain_name = tab.active_pane.domain_name
+	elseif tab.active_pane.get_domain and type(tab.active_pane.get_domain) == "function" then
+		pcall(function() domain_name = tab.active_pane:get_domain().name end)
+	end
+
 	-- Handle explicit tab titles
 	if tab.tab_title and #tab.tab_title > 0 then
-		local icon = get_icon_for_process(pane_title, process_name)
+		local icon = get_icon_for_process(pane_title, process_name, domain_name)
 		if not icon then
-			icon = get_icon_for_process(process_name, process_name)
+			icon = get_icon_for_process(process_name, process_name, domain_name)
 		end
 		-- Store the icon if we found one, otherwise keep the previous one
 		if icon then
@@ -156,9 +223,9 @@ local function get_tab_info(tab)
 	local pane_display = get_display_name(pane_title, process_name)
 
 	-- Try to get icon from pane title first, then process name
-	local final_icon = get_icon_for_process(pane_title, process_name)
+	local final_icon = get_icon_for_process(pane_title, process_name, domain_name)
 	if not final_icon then
-		final_icon = get_icon_for_process(process_name, process_name)
+		final_icon = get_icon_for_process(process_name, process_name, domain_name)
 	end
 
 	local final_name = pane_title
@@ -168,8 +235,12 @@ local function get_tab_info(tab)
 		local shell_info = SHELLS[exec_name]
 		if shell_info then
 			final_name = shell_info.name
-			-- Update icon if we found a shell match
-			final_icon = shell_info.icon
+			-- Update icon if we found a shell match - handle function icons
+			if type(shell_info.icon) == "function" then
+				final_icon = shell_info.icon(domain_name)
+			else
+				final_icon = shell_info.icon
+			end
 		else
 			final_name = extract_process_name(pane_title)
 		end
@@ -209,7 +280,7 @@ end
 local tabline_instance = nil
 
 local function get_dynamic_theme_overrides(colorscheme_name)
-	local schemes = wezterm.color.get_builtin_schemes()
+	local schemes = wez.color.get_builtin_schemes()
 	local scheme = schemes[colorscheme_name]
 
 	if not scheme then
@@ -252,7 +323,7 @@ end
 -- end
 
 function M.setup()
-	tabline_instance = wezterm.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
+	tabline_instance = wez.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
 
 	local initial_theme_overrides = get_dynamic_theme_overrides(c.color_scheme)
 	tabline_instance.setup({
@@ -312,7 +383,7 @@ function M.setup()
 			-- tab_inactive = { process_name },
 			tabline_x = (function()
 				local components = {}
-				-- local has_battery = wezterm.battery_info()[1] ~= nil
+				-- local has_battery = wez.battery_info()[1] ~= nil
 
 				-- if has_battery then
 				-- 	table.insert(components, { "battery" })
@@ -364,12 +435,35 @@ function M.setup()
 					padding = { left = 0, right = 1 },
 				},
 			},
-			tabline_z = { { "domain", padding = 0, icons_only = true }, "hostname" },
+			tabline_z = {
+				{
+					"domain",
+					padding = 0,
+					icons_enabled = false, -- Disable plugin's automatic icons
+					fmt = function(domain_name, window)
+						if domain_name and domain_name ~= "local" then
+							-- WSL domains - show distro icon + name
+							local icon = get_distro_icon(domain_name)
+							return icon .. " " .. domain_name
+						else
+							-- Local domain - show OS-specific icon + hostname
+							local hostname = wez.hostname() or "local"
+							if os.is_win then
+								return nf.md_microsoft_windows .. " " .. hostname
+							elseif os.is_mac then
+								return nf.dev_apple .. " " .. hostname
+							else
+								return nf.dev_linux .. " " .. hostname
+							end
+						end
+					end
+				}
+			},
 		},
 		extensions = {}
 	})
 
-	wezterm.on('update-status', function(window, pane)
+	wez.on('update-status', function(window, pane)
 		local overrides = window:get_config_overrides() or {}
 		local current_scheme = overrides.color_scheme or c.color_scheme
 		if not _G._last_tabline_theme then

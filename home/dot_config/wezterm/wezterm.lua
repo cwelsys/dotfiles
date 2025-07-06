@@ -8,9 +8,14 @@ end
 -- key/mouse bindings
 require('binds').apply(c)
 
+c.set_environment_variables = {
+  TERMINFO_DIRS = '/home/user/cwel/.local/share/terminfo',
+  WSLENV = 'TERMINFO_DIRS',
+}
+c.term = 'wezterm'
+
 -- shells
 if os.is_win then
-  -- c.default_prog = { 'wsl' }
   c.default_prog = { 'pwsh', '-NoLogo' }
 elseif os.is_mac then
   c.default_prog = { 'zsh' }
