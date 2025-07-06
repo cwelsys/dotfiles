@@ -8,12 +8,6 @@ end
 -- key/mouse bindings
 require('binds').apply(c)
 
-c.set_environment_variables = {
-  TERMINFO_DIRS = '/home/user/cwel/.local/share/terminfo',
-  WSLENV = 'TERMINFO_DIRS',
-}
-c.term = 'wezterm'
-
 -- shells
 if os.is_win then
   c.default_prog = { 'pwsh', '-NoLogo' }
@@ -152,18 +146,6 @@ c.skip_close_confirmation_for_processes_named = {
   'pwsh.exe',
   'pwsh',
   'powershell.exe',
-  -- Add more process variations that might appear in SSH sessions
-  'wezterm-ssh',
-  'sshd',
-  'tail',
-  'less',
-  'more',
-  'cat',
-  'ls',
-  'vim',
-  'nano',
-  'htop',
-  'top',
 }
 c.window_decorations = "RESIZE"
 c.tab_max_width = 42
