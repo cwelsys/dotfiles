@@ -5,9 +5,9 @@ if [[ "$SHELL" =~ .*zsh$ ]]; then
 fi
 
 if grep -q "^/bin/zsh$" /etc/shells; then
-    sudo chsh -s /bin/zsh
+    chsh -s /bin/zsh
 elif grep -q "^/usr/bin/zsh$" /etc/shells; then
-    sudo chsh -s /usr/bin/zsh
+    chsh -s /usr/bin/zsh
 else
     echo "Error: zsh not found in /etc/shells"
     exit 1
@@ -33,7 +33,7 @@ EOF
     fi
 fi
 
-{{- else if eq .chezmoi.osRelease.id "debian" "ubuntu" }}
+{{- else if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") }}
 sudo tee /etc/zsh/zshenv > /dev/null <<'EOF'
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
