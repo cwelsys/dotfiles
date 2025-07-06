@@ -9,8 +9,7 @@ if grep -q "^/bin/zsh$" /etc/shells; then
 elif grep -q "^/usr/bin/zsh$" /etc/shells; then
     chsh -s /usr/bin/zsh
 else
-    echo "Error: zsh not found in /etc/shells"
-    exit 1
+    chsh -s $(which zsh)
 fi
 
 # Disable sudo admin flag to prevent .sudo_as_admin_successful file creation

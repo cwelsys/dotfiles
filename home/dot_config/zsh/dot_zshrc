@@ -64,7 +64,6 @@ omzPlugin mise
 omzPlugin git-flow wait"1"
 omzPlugin github wait"1"
 omzPlugin command-not-found wait"1"
-omzPlugin zoxide
 
 zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
     atclone"./atuin init zsh > init.zsh; ./atuin gen-completions --shell zsh > _atuin" \
@@ -96,6 +95,8 @@ zinit light zsh-users/zsh-completions
 
 autoload -Uz compinit && compinit
 zinit cdreplay -q
+
+[ -x "$(command -v zoxide)" ] && eval "$(zoxide init --cmd cd zsh)"
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=247
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
