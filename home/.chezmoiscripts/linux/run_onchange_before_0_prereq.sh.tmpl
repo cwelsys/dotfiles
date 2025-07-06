@@ -1,7 +1,7 @@
 #!/bin/bash
 
 {{ if eq .chezmoi.os "linux" -}}
-  {{- if eq .chezmoi.osRelease.id "debian" -}}
+  {{- if eq .chezmoi.osRelease.id "debian" "ubuntu" -}}
 sudo apt update -y
 sudo apt-get install build-essential procps wget curl file git zsh age -y
   {{- else if eq .chezmoi.osRelease.id "fedora" -}}
