@@ -498,6 +498,8 @@ env:
   - name: TERMINFO_DIRS
     value: '{{ .chezmoi.homeDir }}/.local/share/terminfo:/usr/share/terminfo'
     if: .OS ne "windows"
+  - name: CLAUDE_CONFIG_DIR
+    value: '{{ .chezmoi.homeDir }}/.claude'
 
 path:
   - value: |
