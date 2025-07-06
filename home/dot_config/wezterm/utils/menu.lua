@@ -3,6 +3,17 @@ local os = require('utils.os')
 local nf = wez.nerdfonts
 local act = wez.action
 
+-- Configuration options
+local menu_config = {
+	-- Set to true to show SSHMUX domains (multiplexing SSH connections)
+	-- Set to false to only show plain SSH domains
+	show_ssh_mux_domains = false,
+
+	-- Set to true to show SSH: and SSHMUX: prefixes in domain names
+	-- Set to false to show clean hostnames
+	show_ssh_prefixes = false,
+}
+
 local opts = {
 	launch_menu = {},
 }
@@ -44,6 +55,26 @@ elseif os.is_linux then
 	}
 end
 
+-- Get current hostname for filtering
+local function get_current_hostname()
+	-- Try multiple methods to get hostname
+	local hostname = wez.hostname()
+	if hostname then
+		return hostname
+	end
+
+	-- Fallback methods
+	local success, result = pcall(function()
+		return wez.run_child_process({ 'hostname' })
+	end)
+
+	if success and result.stdout then
+		return result.stdout:gsub('%s+', '')
+	end
+
+	return nil
+end
+
 -- SSH hosts to filter out from the launcher menu
 local SSH_HOSTS_TO_FILTER = {
 	'github.com',
@@ -51,6 +82,12 @@ local SSH_HOSTS_TO_FILTER = {
 	'gitlab.com',
 	'bitbucket.org',
 }
+
+-- Add current hostname to filter list
+local current_hostname = get_current_hostname()
+if current_hostname then
+	table.insert(SSH_HOSTS_TO_FILTER, current_hostname)
+end
 
 -- Function to check if an SSH host should be filtered
 local function should_filter_ssh_host(hostname)
@@ -62,6 +99,28 @@ local function should_filter_ssh_host(hostname)
 	return false
 end
 
+-- Function to check if SSH domain should be included based on mux settings
+local function should_include_ssh_domain(domain_name)
+	local is_mux_domain = domain_name:match('^SSHMUX:')
+	local is_plain_ssh = domain_name:match('^SSH:')
+
+	if is_mux_domain and not menu_config.show_ssh_mux_domains then
+		return false
+	end
+
+	-- Always include plain SSH domains and custom domains
+	return true
+end
+
+-- Function to clean up SSH domain display name
+local function clean_ssh_domain_name(domain_name)
+	if not menu_config.show_ssh_prefixes then
+		-- Remove SSH: and SSHMUX: prefixes
+		return domain_name:gsub('^SSH:', ''):gsub('^SSHMUX:', 'MUX')
+	end
+	return domain_name
+end
+
 -- Function to extract hostname from SSH args
 local function extract_ssh_hostname(args)
 	if args and args[1] == 'ssh' and args[2] then
@@ -69,6 +128,19 @@ local function extract_ssh_hostname(args)
 	end
 	return nil
 end
+
+-- Custom SSH domains configuration (optional - for hosts not in SSH config)
+local custom_ssh_domains = {
+	-- Add your SSH hosts here manually if needed
+	-- {
+	--   name = 'example-server',
+	--   remote_address = 'example.com',
+	--   username = 'myuser',
+	--   ssh_option = {
+	--     identityfile = '~/.ssh/id_rsa',
+	--   },
+	-- },
+}
 
 -- Function to build SSH domains from launch menu entries
 local function build_ssh_domains_from_launch_menu()
@@ -88,11 +160,55 @@ local function build_ssh_domains_from_launch_menu()
 	return ssh_domains
 end
 
-local ssh_domains = build_ssh_domains_from_launch_menu()
+-- Merge all SSH domains
+local function get_all_ssh_domains()
+	local all_ssh_domains = {}
+
+	-- Add default SSH domains (from ~/.ssh/config)
+	for _, domain in ipairs(wez.default_ssh_domains()) do
+		table.insert(all_ssh_domains, domain)
+	end
+
+	-- Add custom SSH domains (if any)
+	for _, domain in ipairs(custom_ssh_domains) do
+		table.insert(all_ssh_domains, domain)
+	end
+
+	return all_ssh_domains
+end
+
 local unix_domains = {}
 
+-- Configure SSH domains with better shell integration
+local function configure_ssh_domains()
+	local ssh_domains = get_all_ssh_domains()
+
+	-- Enhance SSH domains with better configuration for tab titles
+	for _, domain in ipairs(ssh_domains) do
+		-- Set assume_shell based on hostname
+		if not domain.assume_shell then
+			local hostname = domain.name:gsub('^SSH:', ''):gsub('^SSHMUX:', '')
+
+			-- Set assume_shell based on known host types
+			if hostname:match('wini') then
+				-- Windows host
+				domain.assume_shell = 'Unknown'
+			else
+				domain.assume_shell = 'Posix'
+			end
+		end
+
+		-- Disable multiplexing for better integration unless explicitly set
+		if domain.multiplexing == nil then
+			domain.multiplexing = 'None'
+		end
+	end
+
+	return ssh_domains
+end
+
 local domains = {
-	ssh_domains = ssh_domains,
+	ssh_domains = configure_ssh_domains(),
 	unix_domains = unix_domains,
 	wsl_domains = wez.default_wsl_domains(),
 }
@@ -563,15 +679,21 @@ local function build_choices()
 
 	-- SSH domains
 	for _, v in ipairs(domains.ssh_domains) do
-		-- Filter out unwanted SSH hosts
-		if not should_filter_ssh_host(v.name) then
-			-- Use just the hostname/name
-			cells_instance:update_segment_text('label_text', v.name)
+		-- Filter based on hostname and mux settings
+		local clean_hostname = clean_ssh_domain_name(v.name)
+		if should_include_ssh_domain(v.name) and not should_filter_ssh_host(clean_hostname) then
+			-- Create display name - use clean name
+			local display_name = clean_hostname
+			if v.remote_address and v.remote_address ~= clean_hostname then
+				display_name = clean_hostname .. ' (' .. v.remote_address .. ')'
+			end
 
-			-- Create custom SSH icon with consistent styling
+			cells_instance:update_segment_text('label_text', display_name)
+
+			-- Create custom SSH icon with enhanced styling
 			local custom_icon_id = 'custom_ssh_icon_' .. idx
-			local ssh_color = { fg = '#cdd6f4' } -- Light blue color
-			local ssh_icon = nf.md_server_network
+			local ssh_color = colors.icon_ssh -- Use consistent SSH color
+			local ssh_icon = nf.cod_remote_explorer
 
 			cells_instance:add_segment(custom_icon_id, ' ' .. ssh_icon .. ' ', ssh_color)
 
@@ -580,7 +702,7 @@ local function build_choices()
 				label = wez.format(cells_instance:render({ custom_icon_id, 'label_text' })),
 			})
 			table.insert(choices_data, {
-				domain = { DomainName = v.name },
+				domain = { DomainName = v.name }, -- Keep original name for WezTerm
 			})
 
 			-- Clean up temporary segment
