@@ -30,7 +30,8 @@ local keys = function()
       keybind({ mod.l }, "s", act.SplitVertical({ domain = "CurrentPaneDomain" })),
       keybind({ mod.l }, "v", act.SplitHorizontal({ domain = "CurrentPaneDomain" })),
       keybind({ mod.l }, "z", act.TogglePaneZoomState),
-      keybind({ mod.l }, "x", act.CloseCurrentPane({ confirm = true })),
+      keybind({ mod.l }, "x", act.CloseCurrentPane({ confirm = false })),
+      keybind({ mod.l }, "X", act.CloseCurrentTab({ confirm = false })),
       keybind({ mod.l }, "c", act.SpawnTab("CurrentPaneDomain")),
       --- move between panes
       keybind({ mod.l }, "h", act.ActivatePaneDirection("Left")),
@@ -45,6 +46,8 @@ local keys = function()
       keybind({ mod.SUPER }, "Backspace", act.SendString '\u{15}'),
       -- spawn new tab
       keybind({ mod.SUPER }, "t", act.SpawnTab('CurrentPaneDomain')),
+      -- close tab without confirmation
+      keybind({ mod.SUPER }, "w", act.CloseCurrentTab({ confirm = false })),
       --- rename tab
       keybind(
          { mod.l },
