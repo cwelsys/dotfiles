@@ -1,7 +1,7 @@
 {{ if or (eq .chezmoi.os "linux") -}}
 #!/bin/bash
 
-{{   if eq .chezmoi.osRelease.id "debian" }}
+{{   if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") }}
 {{ $pkgs := .pkgs.debian.apt }}
 sudo apt install {{ $pkgs | quoteList | join " " }} -y
 {{   else if eq .chezmoi.osRelease.id "fedora" }}
