@@ -1,7 +1,7 @@
 -- i should have just forked tabline atp
 local wez = require('wezterm')
 local nf = wez.nerdfonts
-local os = require('utils/os')
+local os = require('utils.os')
 
 local M = {}
 
@@ -91,6 +91,95 @@ local function get_distro_icon(domain_name)
 	end
 
 	-- Fallback to default Linux icon
+	return nf.dev_linux
+end
+
+-- Cache for remote OS detection results
+local remote_os_cache = {}
+
+-- Function to detect remote OS using multiple methods
+local function get_remote_os_icon(hostname, pane)
+	if not hostname then
+		return nf.dev_linux
+	end
+
+	-- Check cache first
+	if remote_os_cache[hostname] then
+		return remote_os_cache[hostname]
+	end
+
+	-- Method 1: Try to get OS info from pane environment/metadata
+	if pane then
+		local pane_info = pane:get_metadata()
+		if pane_info and pane_info.environment then
+			local env = pane_info.environment
+			-- Check for Windows environment variables
+			if env.WINDIR or env.SYSTEMROOT or env.OS == "Windows_NT" then
+				remote_os_cache[hostname] = nf.md_microsoft_windows
+				return nf.md_microsoft_windows
+			end
+			-- Check for macOS
+			if env.TERM_PROGRAM == "Apple_Terminal" or env.DARWIN_VERSION then
+				remote_os_cache[hostname] = nf.dev_apple
+				return nf.dev_apple
+			end
+		end
+	end
+
+	-- Method 2: Try to detect via shell/process info
+	if pane then
+		local process_name = pane.foreground_process_name or ""
+		if process_name:match("powershell") or process_name:match("pwsh") or process_name:match("cmd%.exe") then
+			remote_os_cache[hostname] = nf.md_microsoft_windows
+			return nf.md_microsoft_windows
+		end
+	end
+
+	-- Method 3: Fallback to hostname pattern matching (improved)
+	local hostname_lower = hostname:lower()
+	
+	-- Windows patterns
+	if hostname_lower:match('win') or 
+	   hostname_lower:match('windows') or
+	   hostname_lower:match('w10') or
+	   hostname_lower:match('w11') or
+	   hostname_lower:match('srv') or
+	   hostname_lower:match('server') or
+	   hostname_lower:match('dc%d') or  -- Domain controllers
+	   hostname_lower:match('ad%d') then -- Active Directory servers
+		remote_os_cache[hostname] = nf.md_microsoft_windows
+		return nf.md_microsoft_windows
+	end
+	
+	-- Mac patterns  
+	if hostname_lower:match('mac') or
+	   hostname_lower:match('osx') or
+	   hostname_lower:match('darwin') or
+	   hostname_lower:match('macos') or
+	   hostname_lower:match('imac') or
+	   hostname_lower:match('macbook') or
+	   hostname_lower:match('mba') or  -- MacBook Air
+	   hostname_lower:match('mbp') then -- MacBook Pro
+		remote_os_cache[hostname] = nf.dev_apple
+		return nf.dev_apple
+	end
+	
+	-- Linux patterns (more specific distributions)
+	if hostname_lower:match('ubuntu') or
+	   hostname_lower:match('debian') or
+	   hostname_lower:match('centos') or
+	   hostname_lower:match('rhel') or
+	   hostname_lower:match('fedora') or
+	   hostname_lower:match('arch') or
+	   hostname_lower:match('linux') or
+	   hostname_lower:match('pi') or    -- Raspberry Pi
+	   hostname_lower:match('rpi') then
+		remote_os_cache[hostname] = nf.dev_linux
+		return nf.dev_linux
+	end
+	
+	-- Default to Linux for unknown Unix-like systems
+	remote_os_cache[hostname] = nf.dev_linux
 	return nf.dev_linux
 end
 
@@ -365,11 +454,15 @@ end
 function M.setup()
 	tabline_instance = wez.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
 
-	local initial_theme_overrides = get_dynamic_theme_overrides(c.color_scheme)
+	-- Get the global config
+	local config = wez.config_builder and wez.config_builder() or {}
+	local current_scheme = config.color_scheme or "Catppuccin Mocha"
+	
+	local initial_theme_overrides = get_dynamic_theme_overrides(current_scheme)
 	tabline_instance.setup({
 		options = {
 			icons_enabled = true,
-			theme = c.color_scheme,
+			theme = current_scheme,
 			section_separators = {
 				left = nf.ple_right_half_circle_thick,
 				right = nf.ple_left_half_circle_thick,
@@ -482,12 +575,25 @@ function M.setup()
 					icons_enabled = false, -- Disable plugin's automatic icons
 					fmt = function(domain_name, window)
 						if domain_name and domain_name ~= "local" then
-							-- WSL domains - show distro icon + name
-							local icon = get_distro_icon(domain_name)
-							return icon .. " " .. domain_name
+							-- Check if it's a WSL domain (starts with WSL:)
+							if domain_name:match("^WSL:") then
+								-- WSL domains - show distro icon + name
+								local icon = get_distro_icon(domain_name)
+								return icon .. " " .. domain_name
+							else
+								-- SSH domains - show target OS icon + hostname
+								local hostname = domain_name
+								-- Clean up SSH domain name (remove SSH: prefix if present)
+								hostname = hostname:gsub("^SSH:", "")
+								local pane = window:active_pane()
+								local remote_os_icon = get_remote_os_icon(hostname, pane)
+								return remote_os_icon .. " " .. hostname
+							end
 						else
 							-- Local domain - show OS-specific icon + hostname
 							local hostname = wez.hostname() or "local"
+							-- Remove .local suffix on macOS
+							hostname = hostname:gsub("%.local$", "")
 							if os.is_win then
 								return nf.md_microsoft_windows .. " " .. hostname
 							elseif os.is_mac then
@@ -505,13 +611,13 @@ function M.setup()
 
 	wez.on('update-status', function(window, pane)
 		local overrides = window:get_config_overrides() or {}
-		local current_scheme = overrides.color_scheme or c.color_scheme
+		local scheme = overrides.color_scheme or current_scheme
 		if not _G._last_tabline_theme then
-			_G._last_tabline_theme = current_scheme
-		elseif _G._last_tabline_theme ~= current_scheme then
-			local new_theme_overrides = get_dynamic_theme_overrides(current_scheme)
-			tabline_instance.set_theme(current_scheme, new_theme_overrides)
-			_G._last_tabline_theme = current_scheme
+			_G._last_tabline_theme = scheme
+		elseif _G._last_tabline_theme ~= scheme then
+			local new_theme_overrides = get_dynamic_theme_overrides(scheme)
+			tabline_instance.set_theme(scheme, new_theme_overrides)
+			_G._last_tabline_theme = scheme
 		end
 	end)
 end
