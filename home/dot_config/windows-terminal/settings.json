@@ -16,10 +16,6 @@
             "id": "User.paste"
         },
         {
-            "command": "find",
-            "id": "User.find"
-        },
-        {
             "command": 
             {
                 "action": "splitPane",
@@ -27,6 +23,10 @@
                 "splitMode": "duplicate"
             },
             "id": "User.splitPane.A6751878"
+        },
+        {
+            "command": "find",
+            "id": "User.find"
         }
     ],
     "centerOnLaunch": true,
@@ -46,12 +46,12 @@
             "keys": "ctrl+c"
         },
         {
-            "id": "User.paste",
-            "keys": "ctrl+v"
-        },
-        {
             "id": "User.find",
             "keys": "ctrl+shift+f"
+        },
+        {
+            "id": "User.paste",
+            "keys": "ctrl+v"
         },
         {
             "id": "User.splitPane.A6751878",
@@ -194,6 +194,18 @@
                 "guid": "{fdb3bcaf-ecad-5c32-8010-afc445a84b84}",
                 "hidden": false,
                 "name": "Debian",
+                "source": "Microsoft.WSL"
+            },
+            {
+                "guid": "{4c9c02a2-d618-5f5a-8d39-9e5c9265d3d6}",
+                "hidden": false,
+                "name": "Ubuntu",
+                "source": "Microsoft.WSL"
+            },
+            {
+                "guid": "{c5b3f208-009f-5ea3-bd3a-639a0240968e}",
+                "hidden": false,
+                "name": "openSUSE-Tumbleweed",
                 "source": "Microsoft.WSL"
             }
         ]
