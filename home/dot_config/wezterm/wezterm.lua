@@ -149,7 +149,7 @@ c.skip_close_confirmation_for_processes_named = {
 }
 
 if os.is_mac then
-  c.window_decorations = "TITLE|RESIZE|MACOS_FORCE_ENABLE_SHADOW|MACOS_USE_BACKGROUND_COLOR_AS_TITLEBAR_COLOR"
+  c.window_decorations = "RESIZE | MACOS_FORCE_ENABLE_SHADOW"
 else
   c.window_decorations = "RESIZE"
 end
@@ -166,18 +166,18 @@ c.visual_bell = {
   target = 'CursorColor',
 }
 
-if os.is_mac then
-  c.window_frame = {
-    border_left_width = '2px',
-    border_right_width = '2px',
-    border_bottom_height = '2px',
-    border_top_height = '0px',
-    border_left_color = '#585b70',
-    border_right_color = '#585b70',
-    border_bottom_color = '#585b70',
-    border_top_color = '#585b70',
-  }
-end
+-- if os.is_mac then
+--   c.window_frame = {
+--     border_left_width = '2px',
+--     border_right_width = '2px',
+--     border_bottom_height = '2px',
+--     border_top_height = '0px',
+--     border_left_color = '#585b70',
+--     border_right_color = '#585b70',
+--     border_bottom_color = '#585b70',
+--     border_top_color = '#585b70',
+--   }
+-- end
 
 -- todo fix the new tab button why is just a block?
 c.colors = {
