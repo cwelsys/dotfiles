@@ -171,7 +171,7 @@ if os.is_mac then
     border_left_width = '2px',
     border_right_width = '2px',
     border_bottom_height = '2px',
-    border_top_height = '2px',
+    border_top_height = '0px',
     border_left_color = '#585b70',
     border_right_color = '#585b70',
     border_bottom_color = '#585b70',
