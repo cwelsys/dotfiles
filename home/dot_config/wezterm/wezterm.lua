@@ -147,7 +147,13 @@ c.skip_close_confirmation_for_processes_named = {
   'pwsh',
   'powershell.exe',
 }
-c.window_decorations = "RESIZE | MACOS_FORCE_ENABLE_SHADOW"
+
+if os.is_mac then
+  c.window_decorations = "TITLE|RESIZE|MACOS_FORCE_ENABLE_SHADOW|MACOS_USE_BACKGROUND_COLOR_AS_TITLEBAR_COLOR"
+else
+  c.window_decorations = "RESIZE"
+end
+
 c.tab_max_width = 42
 c.initial_cols = 120
 c.initial_rows = 32
