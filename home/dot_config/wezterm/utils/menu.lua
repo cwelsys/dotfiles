@@ -446,7 +446,7 @@ local colors = {
 	label_text   = { fg = '#CDD6F4' },
 	icon_default = { fg = '#89B4FA' },
 	icon_wsl     = { fg = '#FAB387' },
-	icon_ssh     = { fg = '#F38BA8' },
+	icon_ssh     = { fg = '#a6e3a1' },
 	icon_unix    = { fg = '#CBA6F7' },
 }
 
@@ -507,7 +507,7 @@ end
 
 -- Shell icons mapping
 local SHELL_ICONS = {
-	['pwsh'] = { icon = nf.seti_powershell, color = '#89b4fa' },
+	['pwsh'] = { icon = nf.dev_powershell, color = '#89b4fa' },
 	['powershell'] = { icon = nf.dev_powershell, color = '#89b4fa' },
 	['cmd'] = { icon = nf.cod_terminal_cmd, color = '#fab387' },
 	['bash'] = { icon = nf.cod_terminal_bash, color = '#4E9A06' },
@@ -574,7 +574,7 @@ local function initialize_cells()
 		cells_instance = Cells:new()
 				:add_segment('icon_default', ' ' .. nf.oct_terminal .. ' ', colors.icon_default)
 				:add_segment('icon_wsl', ' ' .. nf.md_linux .. ' ', colors.icon_wsl)
-				:add_segment('icon_ssh', ' ' .. nf.cod_remote_explorer .. ' ', colors.icon_ssh)
+				:add_segment('icon_ssh', ' ' .. nf.cod_remote .. ' ', colors.icon_ssh)
 				:add_segment('icon_unix', ' ' .. nf.dev_gnu .. ' ', colors.icon_unix)
 				:add_segment('label_text', '', colors.label_text, attr(attr.intensity('Bold')))
 	end
@@ -693,7 +693,7 @@ local function build_choices()
 			-- Create custom SSH icon with enhanced styling
 			local custom_icon_id = 'custom_ssh_icon_' .. idx
 			local ssh_color = colors.icon_ssh -- Use consistent SSH color
-			local ssh_icon = nf.cod_remote_explorer
+			local ssh_icon = nf.cod_remote
 
 			cells_instance:add_segment(custom_icon_id, ' ' .. ssh_icon .. ' ', ssh_color)
 
@@ -743,8 +743,7 @@ M.setup = function()
 					title = '🐚 Launch Menu',
 					choices = choices,
 					fuzzy = true,
-					-- fuzzy_description = nf.md_rocket .. ' Select a lauch item: ',
-					fuzzy_description = '',
+					fuzzy_description = nf.md_rocket .. '  : ',
 					action = wez.action_callback(function(_window, _pane, id, label)
 						if not id and not label then
 							return
