@@ -1,29 +1,31 @@
--- i should have just forked tabline atp
 local wez = require('wezterm')
 local nf = wez.nerdfonts
 local os = require('utils.os')
 
 local M = {}
 
+local process_name_cache = {}
+
 local function extract_process_name(title)
 	if not title then return "" end
 
-	-- Clean up admin prefixes
-	title = title:gsub('^Administrator: ', '')
-	title = title:gsub(' %(Admin%)', '')
+	if process_name_cache[title] then
+		return process_name_cache[title]
+	end
 
-	-- Extract filename from path (handles both / and \ separators)
-	local filename = title:match('.*[/\\]([^/\\]+)$') or title
+	local clean_title = title:gsub('^Administrator: ', '')
+	clean_title = clean_title:gsub(' %(Admin%)', '')
 
-	-- Remove extensions
-	filename = filename:gsub('%.exe$', ''):gsub('%.EXE$', ''):gsub('%.Exe$', '')
-	filename = filename:gsub('%.bat$', ''):gsub('%.BAT$', '')
-	filename = filename:gsub('%.cmd$', ''):gsub('%.CMD$', '')
+	local filename = clean_title:match('.*[/\\]([^/\\]+)$') or clean_title
 
+	filename = filename:gsub('%.exe$', '', 1):gsub('%.EXE$', '', 1):gsub('%.Exe$', '', 1)
+	filename = filename:gsub('%.bat$', '', 1):gsub('%.BAT$', '', 1)
+	filename = filename:gsub('%.cmd$', '', 1):gsub('%.CMD$', '', 1)
+
+	process_name_cache[title] = filename
 	return filename
 end
 
--- WSL distribution icons mapping (base distros only)
 local WSL_DISTRO_ICONS = {
 	['ubuntu'] = { icon = nf.linux_ubuntu, color = '#E95420' },
 	['debian'] = { icon = nf.linux_debian, color = '#A81D33' },
@@ -42,11 +44,46 @@ local WSL_DISTRO_ICONS = {
 	['alma'] = { icon = nf.linux_almalinux, color = '#0F4266' },
 }
 
--- Function to normalize distro name for matching
+local function calculate_fuzzy_score(target, candidate)
+	if not target or not candidate then return 0 end
+
+	local target_lower = target:lower()
+	local candidate_lower = candidate:lower()
+
+	if target_lower == candidate_lower then return 100 end
+
+	if target_lower:find('^' .. candidate_lower) or candidate_lower:find('^' .. target_lower) then
+		return 90
+	end
+
+	if target_lower:find(candidate_lower) or candidate_lower:find(target_lower) then
+		return 70
+	end
+
+	local score = 0
+	local target_len = #target_lower
+	local candidate_len = #candidate_lower
+	local i, j = 1, 1
+
+	while i <= target_len and j <= candidate_len do
+		if target_lower:sub(i, i) == candidate_lower:sub(j, j) then
+			score = score + 1
+			j = j + 1
+		end
+		i = i + 1
+	end
+
+	return math.floor((score / math.max(target_len, candidate_len)) * 50)
+end
+
+local normalize_cache = {}
 local function normalize_distro_name(name)
 	if not name then return nil end
 
-	-- Convert to lowercase and remove common prefixes/suffixes
+	if normalize_cache[name] then
+		return normalize_cache[name]
+	end
+
 	local normalized = name:lower()
 	normalized = normalized:gsub('wsl:', '')
 	normalized = normalized:gsub('linux', '')
@@ -54,56 +91,64 @@ local function normalize_distro_name(name)
 	normalized = normalized:gsub('%d+.*', '')         -- Remove version numbers at the end
 	normalized = normalized:gsub('^%s*(.-)%s*$', '%1') -- Trim whitespace
 
+	normalize_cache[name] = normalized
 	return normalized
 end
 
--- Function to find distro info with proper fuzzy matching
+local distro_match_cache = {}
 local function get_distro_info(distro_name)
 	if not distro_name then return nil end
+
+	if distro_match_cache[distro_name] then
+		return distro_match_cache[distro_name]
+	end
 
 	local normalized = normalize_distro_name(distro_name)
 	if not normalized or normalized == '' then return nil end
 
-	-- Direct match on normalized name
 	local direct_match = WSL_DISTRO_ICONS[normalized]
-	if direct_match then return direct_match end
+	if direct_match then
+		distro_match_cache[distro_name] = direct_match
+		return direct_match
+	end
 
-	-- Fuzzy matching - check if normalized name contains any distro key
+	local best_match = nil
+	local best_score = 0
+
 	for key, info in pairs(WSL_DISTRO_ICONS) do
-		if normalized:find(key) or key:find(normalized) then
-			return info
+		local score = calculate_fuzzy_score(normalized, key)
+		if score > best_score and score >= 50 then -- Minimum threshold
+			best_score = score
+			best_match = info
 		end
 	end
 
-	return nil
+	distro_match_cache[distro_name] = best_match
+	return best_match
 end
 
--- Enhanced distro icon function with fuzzy matching
 local function get_distro_icon(domain_name)
 	if not domain_name then
 		return nf.md_linux
 	end
 
-	-- Use the fuzzy matching logic
 	local distro_info = get_distro_info(domain_name)
 	if distro_info and distro_info.icon then
 		return distro_info.icon
 	end
 
-	-- Fallback to default Linux icon
 	return nf.dev_linux
 end
 
--- Cache for remote OS detection results
+-- Simplified cache for remote OS detection (no TTL for now)
 local remote_os_cache = {}
 
--- Function to detect remote OS using multiple methods
+-- Enhanced remote OS detection with improved patterns
 local function get_remote_os_icon(hostname, pane)
 	if not hostname then
 		return nf.dev_linux
 	end
 
-	-- Check cache first
 	if remote_os_cache[hostname] then
 		return remote_os_cache[hostname]
 	end
@@ -120,8 +165,9 @@ local function get_remote_os_icon(hostname, pane)
 			end
 			-- Check for macOS
 			if env.TERM_PROGRAM == "Apple_Terminal" or env.DARWIN_VERSION then
-				remote_os_cache[hostname] = nf.dev_apple
-				return nf.dev_apple
+				local result = nf.dev_apple
+				remote_os_cache[hostname] = result
+				return result
 			end
 		end
 	end
@@ -130,57 +176,62 @@ local function get_remote_os_icon(hostname, pane)
 	if pane then
 		local process_name = pane.foreground_process_name or ""
 		if process_name:match("powershell") or process_name:match("pwsh") or process_name:match("cmd%.exe") then
-			remote_os_cache[hostname] = nf.md_microsoft_windows
-			return nf.md_microsoft_windows
+			local result = nf.md_microsoft_windows
+			remote_os_cache[hostname] = result
+			return result
 		end
 	end
 
 	-- Method 3: Fallback to hostname pattern matching (improved)
 	local hostname_lower = hostname:lower()
-	
+
 	-- Windows patterns
-	if hostname_lower:match('win') or 
-	   hostname_lower:match('windows') or
-	   hostname_lower:match('w10') or
-	   hostname_lower:match('w11') or
-	   hostname_lower:match('srv') or
-	   hostname_lower:match('server') or
-	   hostname_lower:match('dc%d') or  -- Domain controllers
-	   hostname_lower:match('ad%d') then -- Active Directory servers
-		remote_os_cache[hostname] = nf.md_microsoft_windows
-		return nf.md_microsoft_windows
+	if hostname_lower:match('win') or
+			hostname_lower:match('windows') or
+			hostname_lower:match('w10') or
+			hostname_lower:match('w11') or
+			hostname_lower:match('srv') or
+			hostname_lower:match('server') or
+			hostname_lower:match('dc%d') or -- Domain controllers
+			hostname_lower:match('ad%d') then -- Active Directory servers
+		local result = nf.md_microsoft_windows
+		remote_os_cache[hostname] = result
+		return result
 	end
-	
-	-- Mac patterns  
+
+	-- Mac patterns
 	if hostname_lower:match('mac') or
-	   hostname_lower:match('osx') or
-	   hostname_lower:match('darwin') or
-	   hostname_lower:match('macos') or
-	   hostname_lower:match('imac') or
-	   hostname_lower:match('macbook') or
-	   hostname_lower:match('mba') or  -- MacBook Air
-	   hostname_lower:match('mbp') then -- MacBook Pro
-		remote_os_cache[hostname] = nf.dev_apple
-		return nf.dev_apple
+			hostname_lower:match('osx') or
+			hostname_lower:match('darwin') or
+			hostname_lower:match('macos') or
+			hostname_lower:match('imac') or
+			hostname_lower:match('macbook') or
+			hostname_lower:match('mba') or -- MacBook Air
+			hostname_lower:match('mbp') then -- MacBook Pro
+		local result = nf.dev_apple
+		remote_os_cache[hostname] = result
+		return result
 	end
-	
+
 	-- Linux patterns (more specific distributions)
 	if hostname_lower:match('ubuntu') or
-	   hostname_lower:match('debian') or
-	   hostname_lower:match('centos') or
-	   hostname_lower:match('rhel') or
-	   hostname_lower:match('fedora') or
-	   hostname_lower:match('arch') or
-	   hostname_lower:match('linux') or
-	   hostname_lower:match('pi') or    -- Raspberry Pi
-	   hostname_lower:match('rpi') then
-		remote_os_cache[hostname] = nf.dev_linux
-		return nf.dev_linux
+			hostname_lower:match('debian') or
+			hostname_lower:match('centos') or
+			hostname_lower:match('rhel') or
+			hostname_lower:match('fedora') or
+			hostname_lower:match('arch') or
+			hostname_lower:match('linux') or
+			hostname_lower:match('pi') or -- Raspberry Pi
+			hostname_lower:match('rpi') then
+		local result = nf.dev_linux
+		remote_os_cache[hostname] = result
+		return result
 	end
-	
+
 	-- Default to Linux for unknown Unix-like systems
-	remote_os_cache[hostname] = nf.dev_linux
-	return nf.dev_linux
+	local result = nf.dev_linux
+	remote_os_cache[hostname] = result
+	return result
 end
 
 local SHELLS = {
@@ -231,169 +282,154 @@ local PROCESS_MAP = {
 	["launch menu"] = { icon = '🐚', name = "Launch Menu" },
 }
 
-local tab_icons = {} -- Store icons per tab
+local tab_icon_cache = {}
 
 local function get_icon_for_process(title, process_name, domain_name)
-	if not title then
-		if process_name then
-			local process = extract_process_name(process_name):lower()
-			local shell_info = SHELLS[process]
-			if shell_info then
-				-- Handle function icons (like wslhost)
-				if type(shell_info.icon) == "function" then
-					return shell_info.icon(domain_name)
+	local process_key = extract_process_name(title or process_name or ""):lower()
+	if process_key ~= "" and tab_icon_cache[process_key] then
+		return tab_icon_cache[process_key]
+	end
+
+	local result = nil
+
+	local function resolve_icon(info, domain_name)
+		if type(info.icon) == "function" then
+			return info.icon(domain_name)
+		end
+		return info.icon
+	end
+
+	if title then
+		local process = extract_process_name(title):lower()
+		local shell_info = SHELLS[process]
+		if shell_info then
+			result = resolve_icon(shell_info, domain_name)
+		else
+			local process_info = PROCESS_MAP[process]
+			if process_info then
+				result = process_info.icon
+			else
+				local title_lower = title:lower()
+				for proc_name, info in pairs(PROCESS_MAP) do
+					if title_lower:find(proc_name) then
+						result = info.icon
+						break
+					end
 				end
-				return shell_info.icon
+
+				if not result then
+					for shell_name, info in pairs(SHELLS) do
+						if title_lower:find(shell_name) then
+							result = resolve_icon(info, domain_name)
+							break
+						end
+					end
+				end
 			end
 		end
-		return nil
 	end
 
-	local process = extract_process_name(title):lower()
-
-	local shell_info = SHELLS[process]
-	if shell_info then
-		-- Handle function icons (like wslhost)
-		if type(shell_info.icon) == "function" then
-			return shell_info.icon(domain_name)
-		end
-		return shell_info.icon
-	end
-
-	local process_info = PROCESS_MAP[process]
-	if process_info then
-		return process_info.icon
-	end
-
-	local title_lower = title:lower()
-	for proc_name, info in pairs(PROCESS_MAP) do
-		if title_lower:find(proc_name) then
-			return info.icon
-		end
-	end
-
-	for shell_name, info in pairs(SHELLS) do
-		if title_lower:find(shell_name) then
-			-- Handle function icons (like wslhost)
-			if type(info.icon) == "function" then
-				return info.icon(domain_name)
-			end
-			return info.icon
-		end
-	end
-
-	if process_name then
+	if not result and process_name then
 		local process = extract_process_name(process_name):lower()
 		local shell_info = SHELLS[process]
 		if shell_info then
-			-- Handle function icons (like wslhost)
-			if type(shell_info.icon) == "function" then
-				return shell_info.icon(domain_name)
-			end
-			return shell_info.icon
+			result = resolve_icon(shell_info, domain_name)
 		end
 	end
 
-	return nil
+	if process_key ~= "" and result then
+		tab_icon_cache[process_key] = result
+	end
+
+	return result
 end
 
-local function get_display_name(title, process_name)
+local display_name_cache = {}
+
+local function get_display_name(title)
 	if not title then return "" end
 
+	if display_name_cache[title] then
+		return display_name_cache[title]
+	end
+
 	local process = extract_process_name(title):lower()
+	local result = ""
 
 	local shell_info = SHELLS[process]
 	if shell_info then
-		return ""
-	end
-
-	local process_info = PROCESS_MAP[process]
-	if process_info then
-		return process_info.name
-	end
-
-	local title_lower = title:lower()
-	for proc_name, info in pairs(PROCESS_MAP) do
-		if title_lower:find("%f[%w]" .. proc_name .. "%f[%W]") then
-			return info.name
-		end
-	end
-
-	local fallback = extract_process_name(title)
-	return fallback
-end
-
-local function get_tab_info(tab)
-	local pane_title = tab.active_pane.title or ""
-	local process_name = tab.active_pane.foreground_process_name or ""
-	local tab_id = tab.tab_id
-
-	-- Try to get domain name - check multiple possible ways
-	local domain_name = nil
-	if tab.active_pane.domain_name then
-		domain_name = tab.active_pane.domain_name
-	elseif tab.active_pane.get_domain and type(tab.active_pane.get_domain) == "function" then
-		pcall(function() domain_name = tab.active_pane:get_domain().name end)
-	end
-
-	-- Handle explicit tab titles
-	if tab.tab_title and #tab.tab_title > 0 then
-		local icon = get_icon_for_process(pane_title, process_name, domain_name)
-		if not icon then
-			icon = get_icon_for_process(process_name, process_name, domain_name)
-		end
-		-- Store the icon if we found one, otherwise keep the previous one
-		if icon then
-			tab_icons[tab_id] = icon
-		end
-		return tab_icons[tab_id], tab.tab_title
-	end
-
-	local pane_display = get_display_name(pane_title, process_name)
-
-	-- Try to get icon from pane title first, then process name
-	local final_icon = get_icon_for_process(pane_title, process_name, domain_name)
-	if not final_icon then
-		final_icon = get_icon_for_process(process_name, process_name, domain_name)
-	end
-
-	local final_name = pane_title
-
-	if pane_title:match("^[A-Za-z]:[/\\].*%.exe$") or pane_title:match("^[A-Za-z]:[/\\].*%.EXE$") then
-		local exec_name = extract_process_name(pane_title):lower()
-		local shell_info = SHELLS[exec_name]
-		if shell_info then
-			final_name = shell_info.name
-			-- Update icon if we found a shell match - handle function icons
-			if type(shell_info.icon) == "function" then
-				final_icon = shell_info.icon(domain_name)
-			else
-				final_icon = shell_info.icon
-			end
-		else
-			final_name = extract_process_name(pane_title)
-		end
+		result = ""
 	else
-		if pane_display ~= "" then
-			local title_lower = pane_title:lower()
+		local process_info = PROCESS_MAP[process]
+		if process_info then
+			result = process_info.name
+		else
+			local title_lower = title:lower()
 			for proc_name, info in pairs(PROCESS_MAP) do
 				if title_lower:find("%f[%w]" .. proc_name .. "%f[%W]") then
-					final_name = info.name
-					-- Update icon if we found a process match
-					final_icon = info.icon
+					result = info.name
 					break
 				end
 			end
+
+			if result == "" then
+				result = extract_process_name(title)
+			end
 		end
 	end
 
-	-- Only update the stored icon if we found a new one
-	if final_icon then
-		tab_icons[tab_id] = final_icon
+	display_name_cache[title] = result
+	return result
+end
+
+local tab_icons = {}
+
+local function get_tab_info(tab)
+	local tab_id = tab.tab_id
+	local pane_title = tab.active_pane.title or ""
+	local process_name = tab.active_pane.foreground_process_name or ""
+
+	local domain_name = tab.active_pane.domain_name
+	if not domain_name and tab.active_pane.get_domain and type(tab.active_pane.get_domain) == "function" then
+		local success, domain = pcall(function() return tab.active_pane:get_domain().name end)
+		if success then domain_name = domain end
 	end
 
-	-- Return the stored icon (preserves last known icon) or fallback
-	return tab_icons[tab_id] or nf.cod_terminal, final_name
+	local final_icon, final_name
+
+	if tab.tab_title and #tab.tab_title > 0 then
+		final_icon = get_icon_for_process(pane_title, process_name, domain_name) or
+				get_icon_for_process(process_name, process_name, domain_name)
+		final_name = tab.tab_title
+	else
+		final_icon = get_icon_for_process(pane_title, process_name, domain_name)
+
+		if pane_title:match("^[A-Za-z]:[/\\].*%.exe$") or pane_title:match("^[A-Za-z]:[/\\].*%.EXE$") then
+			local exec_name = extract_process_name(pane_title):lower()
+			local shell_info = SHELLS[exec_name]
+			if shell_info then
+				final_name = shell_info.name
+				if type(shell_info.icon) == "function" then
+					final_icon = shell_info.icon(domain_name)
+				else
+					final_icon = shell_info.icon
+				end
+			else
+				final_name = extract_process_name(pane_title)
+			end
+		else
+			final_name = get_display_name(pane_title)
+			if final_name == "" then
+				final_name = pane_title
+			end
+		end
+	end
+
+	final_icon = final_icon or tab_icons[tab_id] or nf.cod_terminal
+
+	tab_icons[tab_id] = final_icon
+
+	return final_icon, final_name
 end
 
 local function tab_title(tab)
@@ -417,39 +453,7 @@ local function get_dynamic_theme_overrides(colorscheme_name)
 	end
 end
 
--- todo fix dynamic mode color generation
--- 	local bg = scheme.background or '#000000'
--- 	local fg = scheme.foreground or '#ffffff'
 
--- 	local bg_hex = bg:gsub('#', '')
--- 	local bg_num = tonumber(bg_hex, 16) or 0
--- 	local is_dark = bg_num < 0x808080
-
--- 	local pick_bg, font_bg, mid_bg
-
--- 	if is_dark then
--- 		pick_bg = '#4c7fd9'
--- 		font_bg = '#5cb85c'
--- 		mid_bg = '#404040'
--- 	else
--- 		pick_bg = '#2563eb'
--- 		font_bg = '#16a34a'
--- 		mid_bg = '#d1d5db'
--- 	end
-
--- 	return {
--- 		pick_mode = {
--- 			a = { fg = fg, bg = pick_bg },
--- 			b = { fg = pick_bg, bg = mid_bg },
--- 			c = { fg = fg, bg = bg },
--- 		},
--- 		font_mode = {
--- 			a = { fg = fg, bg = font_bg },
--- 			b = { fg = font_bg, bg = mid_bg },
--- 			c = { fg = fg, bg = bg },
--- 		},
--- 	}
--- end
 
 function M.setup()
 	tabline_instance = wez.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
@@ -457,7 +461,7 @@ function M.setup()
 	-- Get the global config
 	local config = wez.config_builder and wez.config_builder() or {}
 	local current_scheme = config.color_scheme or "Catppuccin Mocha"
-	
+
 	local initial_theme_overrides = get_dynamic_theme_overrides(current_scheme)
 	tabline_instance.setup({
 		options = {
@@ -609,7 +613,7 @@ function M.setup()
 		extensions = {}
 	})
 
-	wez.on('update-status', function(window, pane)
+	wez.on('update-status', function(window, _)
 		local overrides = window:get_config_overrides() or {}
 		local scheme = overrides.color_scheme or current_scheme
 		if not _G._last_tabline_theme then
