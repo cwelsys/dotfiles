@@ -131,7 +131,8 @@ process_package_manager() {
                 installed_packages=($(apt-mark showmanual | sort))
                 ;;
             dnf)
-                installed_packages=($(dnf history userinstalled | tail -n +2 | sort))
+                # Get user-installed packages (not dependencies)
+                installed_packages=($(dnf repoquery --userinstalled --qf '%{name}' | sort | uniq))
                 ;;
             zypper)
                 installed_packages=($(zypper search -i --userinstalled | awk 'NR>2 && /^i/ {print $3}' | sort))
