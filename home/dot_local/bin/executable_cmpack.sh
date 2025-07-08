@@ -86,7 +86,55 @@ fi
 
 # Check if package manager is installed
 if ! command -v "$PKG_MANAGER" &> /dev/null; then
-    print_color "$RED" "❌ Package manager '$PKG_MANAGER' not found. Please install it first."
+    if [[ "$PKG_MANAGER" == "brew" ]]; then
+        # Check if Homebrew is installed but not in PATH
+        if [[ -x "/opt/homebrew/bin/brew" ]] || [[ -x "/usr/local/bin/brew" ]]; then
+            # Determine which Homebrew installation exists
+            if [[ -x "/opt/homebrew/bin/brew" ]]; then
+                HOMEBREW_PREFIX="/opt/homebrew"
+            else
+                HOMEBREW_PREFIX="/usr/local"
+            fi
+            
+            # Determine shell RC file
+            case "${SHELL}" in
+                */bash*)
+                    if [[ -r "${HOME}/.bash_profile" ]]; then
+                        shell_rcfile="${HOME}/.bash_profile"
+                    else
+                        shell_rcfile="${HOME}/.profile"
+                    fi
+                    ;;
+                */zsh*)
+                    shell_rcfile="${HOME}/.zprofile"
+                    ;;
+                */fish*)
+                    shell_rcfile="${HOME}/.config/fish/config.fish"
+                    ;;
+                *)
+                    shell_rcfile="${HOME}/.profile"
+                    ;;
+            esac
+            
+            print_color "$YELLOW" "⚠️  Homebrew is installed but not in PATH."
+            
+            # Check if shellenv is already in RC file
+            if grep -qs "eval \"\$(${HOMEBREW_PREFIX}/bin/brew shellenv)\"" "${shell_rcfile}" 2>/dev/null; then
+                print_color "$CYAN" "Run this command to add Homebrew to your PATH:"
+                print_color "$CYAN" "  eval \"\$(${HOMEBREW_PREFIX}/bin/brew shellenv)\""
+            else
+                print_color "$CYAN" "Run these commands to add Homebrew to your PATH:"
+                print_color "$CYAN" "  echo >> ${shell_rcfile}"
+                print_color "$CYAN" "  echo 'eval \"\$(${HOMEBREW_PREFIX}/bin/brew shellenv)\"' >> ${shell_rcfile}"
+                print_color "$CYAN" "  eval \"\$(${HOMEBREW_PREFIX}/bin/brew shellenv)\""
+            fi
+        else
+            print_color "$RED" "❌ Homebrew not found. Install it with:"
+            print_color "$CYAN" '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+        fi
+    else
+        print_color "$RED" "❌ Package manager '$PKG_MANAGER' not found."
+    fi
     exit 1
 fi
 
@@ -123,8 +171,8 @@ print_color "$GRAY" "💾 Created backup at $BACKUP_PATH"
 if [[ "$USE_BREW" == true ]]; then
     print_color "$BLUE" "🔍 Getting installed brew packages..."
     # Use 'brew leaves' to get only top-level formulas (not dependencies)
-    INSTALLED_BREWS=($(brew leaves | sort))
-    INSTALLED_CASKS=($(brew list --cask | sort))
+    INSTALLED_BREWS=($(brew leaves))
+    INSTALLED_CASKS=($(brew list --cask))
     print_color "$CYAN" "Found ${#INSTALLED_BREWS[@]} installed formulas and ${#INSTALLED_CASKS[@]} casks"
 else
     print_color "$BLUE" "🔍 Getting installed $PKG_MANAGER packages..."
@@ -238,13 +286,13 @@ REMOVED_CASKS=()
 
 # Find new packages (deduplicate as we go)
 for pkg in "${INSTALLED_BREWS[@]}"; do
-    if [[ ! " ${CURRENT_BREWS[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${NEW_BREWS[*]:-} " =~ " ${pkg} " ]]; then
+    if [[ ! " ${CURRENT_BREWS[*]:-} " =~ " ${pkg} " ]]; then
         NEW_BREWS+=("$pkg")
     fi
 done
 
 for pkg in "${INSTALLED_CASKS[@]}"; do
-    if [[ ! " ${CURRENT_CASKS[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${NEW_CASKS[*]:-} " =~ " ${pkg} " ]]; then
+    if [[ ! " ${CURRENT_CASKS[*]:-} " =~ " ${pkg} " ]]; then
         NEW_CASKS+=("$pkg")
     fi
 done
@@ -295,31 +343,15 @@ if [[ ${#NEW_BREWS[@]} -eq 0 && ${#NEW_CASKS[@]} -eq 0 && ${#REMOVED_BREWS[@]} -
     exit 0
 fi
 
-# Report changes
-if [[ "$USE_BREW" == true ]]; then
-    if [[ ${#NEW_BREWS[@]} -gt 0 ]]; then
-        print_color "$BLUE" "📝 Adding ${#NEW_BREWS[@]} new brew formulas to manifest..."
-    fi
-    if [[ ${#NEW_CASKS[@]} -gt 0 ]]; then
-        print_color "$BLUE" "📝 Adding ${#NEW_CASKS[@]} new casks to manifest..."
-    fi
-    if [[ ${#REMOVED_BREWS[@]} -gt 0 ]]; then
-        print_color "$YELLOW" "🗑️  Removing ${#REMOVED_BREWS[@]} uninstalled formulas from manifest..."
-    fi
-    if [[ ${#REMOVED_CASKS[@]} -gt 0 ]]; then
-        print_color "$YELLOW" "🗑️  Removing ${#REMOVED_CASKS[@]} uninstalled casks from manifest..."
-    fi
-else
-    if [[ ${#NEW_BREWS[@]} -gt 0 ]]; then
-        print_color "$BLUE" "📝 Adding ${#NEW_BREWS[@]} new $PKG_MANAGER packages to manifest..."
-    fi
-    if [[ ${#REMOVED_BREWS[@]} -gt 0 ]]; then
-        print_color "$YELLOW" "🗑️  Removing ${#REMOVED_BREWS[@]} uninstalled packages from manifest..."
-    fi
-fi
+# Store pre-deduplication counts for comparison
+PRE_DEDUP_NEW_BREWS=${#NEW_BREWS[@]}
+PRE_DEDUP_NEW_CASKS=${#NEW_CASKS[@]}
+PRE_DEDUP_REMOVED_BREWS=${#REMOVED_BREWS[@]}
+PRE_DEDUP_REMOVED_CASKS=${#REMOVED_CASKS[@]}
 
 # Create updated content
 TEMP_FILE=$(mktemp)
+trap 'rm -f "$TEMP_FILE"* "$NEW_PACKAGES_FILE" "$NEW_CASKS_FILE" 2>/dev/null' EXIT
 IN_OS_SECTION=false
 IN_OS_BREWS=false
 IN_OS_CASKS=false
@@ -410,7 +442,6 @@ if [[ ${#NEW_BREWS[@]} -gt 0 ]]; then
     ' "$TEMP_FILE" > "$TEMP_FILE.new"
     
     mv "$TEMP_FILE.new" "$TEMP_FILE"
-    rm "$NEW_PACKAGES_FILE"
 fi
 
 if [[ ${#NEW_CASKS[@]} -gt 0 ]]; then
@@ -435,53 +466,123 @@ if [[ ${#NEW_CASKS[@]} -gt 0 ]]; then
     rm "$NEW_CASKS_FILE"
 fi
 
-# Replace original file
+# Replace original file and perform final deduplication
 mv "$TEMP_FILE" "$YAML_FILE"
 
-# Report success
+# Store original file for comparison
+ORIGINAL_PACKAGES=$(mktemp)
 if [[ "$USE_BREW" == true ]]; then
-    if [[ ${#NEW_BREWS[@]} -gt 0 ]]; then
-        print_color "$GREEN" "✅ Successfully added new brew formulas:"
-        for pkg in "${NEW_BREWS[@]}"; do
-            print_color "$CYAN" "  + $pkg"
-        done
-    fi
-
-    if [[ ${#NEW_CASKS[@]} -gt 0 ]]; then
-        print_color "$GREEN" "✅ Successfully added new casks:"
-        for pkg in "${NEW_CASKS[@]}"; do
-            print_color "$CYAN" "  + $pkg"
-        done
-    fi
-
-    if [[ ${#REMOVED_BREWS[@]} -gt 0 ]]; then
-        print_color "$GREEN" "✅ Successfully removed uninstalled formulas:"
-        for pkg in "${REMOVED_BREWS[@]}"; do
-            print_color "$RED" "  - $pkg"
-        done
-    fi
-
-    if [[ ${#REMOVED_CASKS[@]} -gt 0 ]]; then
-        print_color "$GREEN" "✅ Successfully removed uninstalled casks:"
-        for pkg in "${REMOVED_CASKS[@]}"; do
-            print_color "$RED" "  - $pkg"
-        done
-    fi
+    # Extract current packages from original file
+    grep -E "^[[:space:]]*-[[:space:]]+" "$BACKUP_PATH" | sed 's/^[[:space:]]*-[[:space:]]*//' | sort > "$ORIGINAL_PACKAGES"
 else
-    if [[ ${#NEW_BREWS[@]} -gt 0 ]]; then
-        print_color "$GREEN" "✅ Successfully added new $PKG_MANAGER packages:"
-        for pkg in "${NEW_BREWS[@]}"; do
-            print_color "$CYAN" "  + $pkg"
-        done
-    fi
-
-    if [[ ${#REMOVED_BREWS[@]} -gt 0 ]]; then
-        print_color "$GREEN" "✅ Successfully removed uninstalled packages:"
-        for pkg in "${REMOVED_BREWS[@]}"; do
-            print_color "$RED" "  - $pkg"
-        done
-    fi
+    grep -E "^[[:space:]]*-[[:space:]]+" "$BACKUP_PATH" | sed 's/^[[:space:]]*-[[:space:]]*//' | sort > "$ORIGINAL_PACKAGES"
 fi
+
+# Deduplication using gawk
+gawk '
+BEGIN { 
+    in_list = 0
+    current_section = ""
+}
+/^[[:space:]]*-[[:space:]]+/ {
+    if (in_list) {
+        # Extract package name
+        gsub(/^[[:space:]]*-[[:space:]]+/, "")
+        pkg = $0
+        if (!(current_section SUBSEP pkg in seen)) {
+            packages[current_section][++count[current_section]] = pkg
+            seen[current_section SUBSEP pkg] = 1
+        }
+        next
+    }
+}
+/^[[:space:]]*[a-zA-Z][a-zA-Z0-9_-]*:[[:space:]]*$/ {
+    # Print any accumulated packages from previous section
+    if (in_list && current_section != "") {
+        # Sort and print packages for the previous section
+        n = asort(packages[current_section], sorted_pkgs)
+        for (i = 1; i <= n; i++) {
+            print "      - " sorted_pkgs[i]
+        }
+        delete packages[current_section]
+        count[current_section] = 0
+    }
+    
+    # Check if this line indicates start of a package list section
+    if (/^[[:space:]]*(brews|casks|pacman|apt|dnf|zypper):[[:space:]]*$/) {
+        in_list = 1
+        current_section = $0
+        print $0
+        next
+    } else {
+        in_list = 0
+        current_section = ""
+    }
+}
+{
+    # For non-package lines, just print them
+    if (!in_list || !/^[[:space:]]*-[[:space:]]+/) {
+        print $0
+    }
+}
+END {
+    # Print any remaining packages from the last section
+    if (in_list && current_section != "") {
+        n = asort(packages[current_section], sorted_pkgs)
+        for (i = 1; i <= n; i++) {
+            print "      - " sorted_pkgs[i]
+        }
+    }
+}
+' "$YAML_FILE" > "$YAML_FILE.tmp" && mv "$YAML_FILE.tmp" "$YAML_FILE"
+
+# Compare before and after to show actual changes
+NEW_PACKAGES=$(mktemp)
+if [[ "$USE_BREW" == true ]]; then
+    grep -E "^[[:space:]]*-[[:space:]]+" "$YAML_FILE" | sed 's/^[[:space:]]*-[[:space:]]*//' | sort > "$NEW_PACKAGES"
+else
+    grep -E "^[[:space:]]*-[[:space:]]+" "$YAML_FILE" | sed 's/^[[:space:]]*-[[:space:]]*//' | sort > "$NEW_PACKAGES"
+fi
+
+# Find actual additions and removals
+ACTUAL_ADDED=$(mktemp)
+ACTUAL_REMOVED=$(mktemp)
+comm -13 "$ORIGINAL_PACKAGES" "$NEW_PACKAGES" > "$ACTUAL_ADDED"
+comm -23 "$ORIGINAL_PACKAGES" "$NEW_PACKAGES" > "$ACTUAL_REMOVED"
+
+# Report actual changes
+ADDED_COUNT=$(wc -l < "$ACTUAL_ADDED" | tr -d ' ')
+REMOVED_COUNT=$(wc -l < "$ACTUAL_REMOVED" | tr -d ' ')
+
+if [[ "$ADDED_COUNT" -gt 0 ]]; then
+    if [[ "$USE_BREW" == true ]]; then
+        print_color "$GREEN" "✅ Added $ADDED_COUNT new packages:"
+    else
+        print_color "$GREEN" "✅ Added $ADDED_COUNT new $PKG_MANAGER packages:"
+    fi
+    while IFS= read -r pkg; do
+        print_color "$CYAN" "  + $pkg"
+    done < "$ACTUAL_ADDED"
+fi
+
+if [[ "$REMOVED_COUNT" -gt 0 ]]; then
+    if [[ "$USE_BREW" == true ]]; then
+        print_color "$GREEN" "✅ Removed $REMOVED_COUNT uninstalled packages:"
+    else
+        print_color "$GREEN" "✅ Removed $REMOVED_COUNT uninstalled packages:"
+    fi
+    while IFS= read -r pkg; do
+        print_color "$RED" "  - $pkg"
+    done < "$ACTUAL_REMOVED"
+fi
+
+if [[ "$ADDED_COUNT" -eq 0 && "$REMOVED_COUNT" -eq 0 ]]; then
+    print_color "$GREEN" "✅ No changes needed - manifest is up to date"
+fi
+
+# Cleanup temp files
+rm -f "$ORIGINAL_PACKAGES" "$NEW_PACKAGES" "$ACTUAL_ADDED" "$ACTUAL_REMOVED"
+
 
 echo ""
 print_color "$GREEN" "✨ DONE! Run 'chezmoi apply' to apply your changes."
