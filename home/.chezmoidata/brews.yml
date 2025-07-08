@@ -1,21 +1,30 @@
 pkgs:
   darwin:
     brews:
-      - coreutils
       - armadillo
+      - atuin
       - bear
       - boost
+      - carapace
       - colima
+      - coreutils
       - docker
+      - dockutil
       - dooit
       - ducker
       - dust
+      - fastfetch
       - felixkratz/formulae/borders
       - felixkratz/formulae/sketchybar
+      - fish
       - gawk
+      - ghostscript
+      - git
+      - gnupg
       - go
       - gsl
       - ifstat
+      - imagemagick
       - jandedobbeleer/aliae/aliae
       - lazyjournal
       - llvm
@@ -25,30 +34,20 @@ pkgs:
       - nushell
       - openjdk@11
       - php
+      - pinentry-mac
       - pkgconf
       - pngpaste
+      - rclone
+      - restic
       - rsync
       - sf
       - sniffnet
+      - spicetify-cli
       - switchaudio-osx
+      - topgrade
       - wakeonlan
       - wget
-      - git
-      - gnupg
-      - dockutil
-      - atuin
-      - carapace
-      - pinentry-mac
-      - spicetify-cli
-      - fish
-      - rclone
-      - imagemagick
-      - ghostscript
-      - restic
-      - topgrade
-      - fastfetch
     casks:
-      - 1password-cli
       - 1password-cli
       - alt-tab
       - betterdisplay
@@ -95,58 +94,41 @@ pkgs:
       - wezterm@nightly
       - zed
       - zoom
-      - spotify
-      - tailscale
-      - vagrant
-      - transmission
-      - visual-studio-code
-      - moonlight
-      - karabiner-elements
-      - vlc
-      - wezterm@nightly
-      - hammerspoon
-      - zed
-      - discord
-      - obsidian
-      - zoom
-      - slack
-      - steam
   shared:
     brews:
       - age
+      - bash-completion@2
       - bat
+      - bat-extras
       - btop
       - chezmoi
       - dua-cli
       - eza
       - fd
       - fzf
+      - gh
+      - git-cliff
+      - git-delta
+      - git-extras
+      - git-flow
+      - git-lfs
       - gum
       - jq
-      - wrk
-      - xdg-ninja
-      - oh-my-posh
       - lazydocker
+      - lazygit
       - luarocks
       - navi
       - neovim
+      - oh-my-posh
       - rich-cli
       - ripgrep
       - shellcheck
       - starship
       - tealdeer
-      - git-cliff
       - thefuck
       - wrk
+      - xdg-ninja
       - yazi
       - yq
       - zoxide
-      - gh
-      - git-delta
-      - git-extras
-      - git-flow
-      - git-lfs
-      - lazygit
-      - bat-extras
-      - bash-completion@2
     casks:
