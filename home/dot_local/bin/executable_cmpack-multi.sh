@@ -329,14 +329,14 @@ print_color "$BLUE" "🚀 Starting package manifest update..."
 
 # Process Homebrew if available
 if [[ "$USE_BREW" == true ]]; then
-    local brew_os_section
+    brew_os_section=""
     if [[ "$OS" == "darwin" ]]; then
         brew_os_section="darwin"
     else
         brew_os_section="shared"
     fi
     
-    local brew_yaml_file
+    brew_yaml_file=""
     if [[ -n "${DOTS:-}" ]]; then
         brew_yaml_file="$DOTS/.chezmoidata/brews.yml"
     else
@@ -352,7 +352,7 @@ fi
 
 # Process native package manager if available
 if [[ "$USE_NATIVE" == true ]]; then
-    local native_yaml_file
+    native_yaml_file=""
     if [[ -n "${DOTS:-}" ]]; then
         native_yaml_file="$DOTS/.chezmoidata/pkgs.yml"
     else
