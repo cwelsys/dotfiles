@@ -63,7 +63,14 @@ alias:
     value: xdg-open .
     type: function
     if: hasCommand "xdg-open"
-
+  - name: npm-ls
+    value: npm list -g
+  - name: pnpm-ls
+    value: pnpm list -g
+  - name: bun-ls
+    value: bun pm ls -g
+  - name: go-ls
+    value: go-global-update --dry-runs
   - name: cm
     value: chezmoi
   - name: cma
@@ -90,7 +97,6 @@ alias:
     value: fastfetch -c all
   - name: mobo
     value: fastfetch --logo none --structure board
-
   - name: ls
     value: eza --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
   - name: l
@@ -118,9 +124,6 @@ alias:
   - name: su
     value: gsudo
     if: match .OS "windows"
-  - name: su
-    value: sudo su
-    if: .OS ne "windows"
 
   # pwsh
   - name: os
@@ -165,32 +168,31 @@ alias:
   - name: winutil
     value: iwr -useb https://christitus.com/win | iex
     type: function
-    if: match .Shell "pwsh"
+    if: and (match .OS "windows ") (match .Shell "pwsh")
   - name: getnf
     value: |
       & ([scriptblock]::Create((iwr 'https://to.loredo.me/Install-NerdFont.ps1')))
     type: function
-    if: match .Shell "pwsh"
+    if: and (match .OS "windows ") (match .Shell "pwsh")
   - name: ms-activate
     value: irm https://get.activated.win | iex
     type: function
-    if: match .Shell "pwsh"
+    if: and (match .OS "windows ") (match .Shell "pwsh")
 
   # Linux
   - name: scl
     value: systemctl
     if: match .OS "linux"
 
-  # Package Managers
-  - name: npm-ls
-    value: npm list -g
-  - name: pnpm-ls
-    value: pnpm list -g
-  - name: bun-ls
-    value: bun pm ls -g
-  - name: go-ls
-    value: go-global-update --dry-runs
+  # Posix
+  - name: cmpack
+    value: cmpack.sh
+    if: .OS ne "windows"
+  - name: su
+    value: sudo su
+    if: .OS ne "windows"
 
+  # Package Managers
   - name: update
     value: brew update && brew upgrade
     if: and (match .OS "darwin") (ne .Shell "nu")
