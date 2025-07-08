@@ -51,10 +51,18 @@ if ! command -v wsl2-ssh-agent &> /dev/null; then
   curl -L https://github.com/mame/wsl2-ssh-agent/releases/latest/download/wsl2-ssh-agent -o ~/.local/bin/wsl2-ssh-agent
   chmod +x ~/.local/bin/wsl2-ssh-agent
 fi
+# Ensure permissions are always correct even if file exists
+if [ -f ~/.local/bin/wsl2-ssh-agent ]; then
+  chmod +x ~/.local/bin/wsl2-ssh-agent
+fi
     {{- else }}
 if ! command -v wsl2-ssh-agent &> /dev/null; then
   mkdir -p ~/.local/bin
   curl -L https://github.com/mame/wsl2-ssh-agent/releases/latest/download/wsl2-ssh-agent -o ~/.local/bin/wsl2-ssh-agent
+  chmod +x ~/.local/bin/wsl2-ssh-agent
+fi
+# Ensure permissions are always correct even if file exists
+if [ -f ~/.local/bin/wsl2-ssh-agent ]; then
   chmod +x ~/.local/bin/wsl2-ssh-agent
 fi
     {{- end }}
