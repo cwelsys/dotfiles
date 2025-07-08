@@ -236,15 +236,15 @@ NEW_CASKS=()
 REMOVED_BREWS=()
 REMOVED_CASKS=()
 
-# Find new packages
+# Find new packages (deduplicate as we go)
 for pkg in "${INSTALLED_BREWS[@]}"; do
-    if [[ ! " ${CURRENT_BREWS[*]:-} " =~ " ${pkg} " ]]; then
+    if [[ ! " ${CURRENT_BREWS[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${NEW_BREWS[*]:-} " =~ " ${pkg} " ]]; then
         NEW_BREWS+=("$pkg")
     fi
 done
 
 for pkg in "${INSTALLED_CASKS[@]}"; do
-    if [[ ! " ${CURRENT_CASKS[*]:-} " =~ " ${pkg} " ]]; then
+    if [[ ! " ${CURRENT_CASKS[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${NEW_CASKS[*]:-} " =~ " ${pkg} " ]]; then
         NEW_CASKS+=("$pkg")
     fi
 done
@@ -278,13 +278,13 @@ while IFS= read -r line; do
 done < "$YAML_FILE"
 
 for pkg in "${CURRENT_OS_BREWS[@]}"; do
-    if [[ ! " ${INSTALLED_BREWS[*]:-} " =~ " ${pkg} " ]]; then
+    if [[ ! " ${INSTALLED_BREWS[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${REMOVED_BREWS[*]:-} " =~ " ${pkg} " ]]; then
         REMOVED_BREWS+=("$pkg")
     fi
 done
 
 for pkg in "${CURRENT_OS_CASKS[@]}"; do
-    if [[ ! " ${INSTALLED_CASKS[*]:-} " =~ " ${pkg} " ]]; then
+    if [[ ! " ${INSTALLED_CASKS[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${REMOVED_CASKS[*]:-} " =~ " ${pkg} " ]]; then
         REMOVED_CASKS+=("$pkg")
     fi
 done
