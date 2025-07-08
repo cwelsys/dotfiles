@@ -36,6 +36,5 @@ pkgs:
       - git-lfs
       - lazygit
       - bat-extras
-      - jandedobbeleer/aliae/aliae
       - bash-completion@2
     casks:

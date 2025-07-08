@@ -1,40 +1,25 @@
-{{ if or (eq .chezmoi.os "darwin") (and (eq .chezmoi.os "linux") (ne .chezmoi.osRelease.id "arch")) -}}
+{{ if and (or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux")) (ne .chezmoi.osRelease.id "arch") -}}
 #!/bin/bash
 
-# First, add all required taps
+brew bundle --file=/dev/stdin <<EOF
 {{- range .pkgs.shared.brews }}
-{{- if (contains . "/") }}
-brew tap {{ (splitList "/" . | slice 0 2 | join "/") }}
-{{- end }}
+brew {{ . | quote }}
 {{- end }}
 
 {{- if eq .chezmoi.os "darwin" }}
 {{- range .pkgs.darwin.brews }}
-{{- if (contains . "/") }}
-brew tap {{ (splitList "/" . | slice 0 2 | join "/") }}
-{{- end }}
-{{- end }}
-{{- end }}
-
-# Install packages using individual brew commands for better error handling
-{{- range .pkgs.shared.brews }}
-brew install {{ . | quote }}
-{{- end }}
-
-{{- if eq .chezmoi.os "darwin" }}
-{{- range .pkgs.darwin.brews }}
-brew install {{ . | quote }}
+brew {{ . | quote }}
 {{- end }}
 {{- end }}
 
-# Install casks
 {{- range .pkgs.shared.casks }}
-brew install --cask {{ . | quote }}
+cask {{ . | quote }}
 {{- end }}
 
 {{- if eq .chezmoi.os "darwin" }}
 {{- range .pkgs.darwin.casks }}
-brew install --cask {{ . | quote }}
+cask {{ . | quote }}
 {{- end }}
 {{- end }}
+EOF
 {{- end }}
