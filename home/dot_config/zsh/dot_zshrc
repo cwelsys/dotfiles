@@ -87,8 +87,8 @@ zinit wait lucid as"completion" for \
     OMZP::docker/completions/_docker \
     OMZP::docker-compose/_docker-compose
 
-zinit light zdharma-continuum/fast-syntax-highlighting
 zinit light Aloxaf/fzf-tab
+zinit light zdharma-continuum/fast-syntax-highlighting
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
