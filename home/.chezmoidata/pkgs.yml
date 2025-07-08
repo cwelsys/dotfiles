@@ -1,12 +1,4 @@
 pkgs:
-  debian:
-    apt:
-      - fish
-
-  fedora:
-    dnf:
-      - fish
-
   arch:
     pacman:
       - fish
@@ -45,6 +37,14 @@ pkgs:
       - git-delta
       - git-extras
       - git-lfs
+
+  debian:
+    apt:
+      - fish
+
+  fedora:
+    dnf:
+      - fish
 
   opensuse:
     zypper:
