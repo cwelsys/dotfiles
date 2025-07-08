@@ -164,7 +164,7 @@ local function get_remote_os_icon(hostname, pane)
 				return nf.md_microsoft_windows
 			end
 			-- Check for macOS
-			if env.TERM_PROGRAM == "Apple_Terminal" or env.DARWIN_VERSION then
+			if env.DARWIN_VERSION then
 				local result = nf.dev_apple
 				remote_os_cache[hostname] = result
 				return result
