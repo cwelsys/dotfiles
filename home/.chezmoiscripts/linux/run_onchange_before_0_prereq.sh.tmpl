@@ -31,6 +31,12 @@ yay -Y --gendb
 yay -Syu --devel
 yay -Y --devel --save
 curl -s https://aliae.dev/install.sh | sudo bash -s
+  {{- else if or (eq .chezmoi.osRelease.id "opensuse-leap") (eq .chezmoi.osRelease.id "opensuse-tumbleweed") -}}
+sudo zypper refresh
+sudo zypper install -y -t pattern devel_basis
+sudo zypper install -y procps wget curl file git zsh age openssh
+sudo localectl set-locale LANG=en_US.UTF-8
+curl -s https://aliae.dev/install.sh | sudo bash -s
   {{- else -}}
 echo "Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
   {{- end -}}
@@ -39,6 +45,12 @@ echo "Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
     {{- if eq .chezmoi.osRelease.id "arch" }}
 if ! command -v wsl2-ssh-agent &> /dev/null; then
   yay -S wsl2-ssh-agent --needed --noconfirm
+fi
+    {{- else if or (eq .chezmoi.osRelease.id "opensuse-leap") (eq .chezmoi.osRelease.id "opensuse-tumbleweed") }}
+if ! command -v wsl2-ssh-agent &> /dev/null; then
+  mkdir -p ~/.local/bin
+  curl -L https://github.com/mame/wsl2-ssh-agent/releases/latest/download/wsl2-ssh-agent -o ~/.local/bin/wsl2-ssh-agent
+  chmod +x ~/.local/bin/wsl2-ssh-agent
 fi
     {{- else }}
 if ! command -v wsl2-ssh-agent &> /dev/null; then

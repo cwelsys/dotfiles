@@ -2,10 +2,50 @@ pkgs:
   debian:
     apt:
       - fish
+      - bat
+      - eza
+      - starship
+      - fd-find
+      - fzf
+      - yazi
+      - yq
+      - jq
+      - btop
+      - bash-completion
+      - ripgrep
+      - zoxide
+      - rsync
+      - shellcheck
+      - glow
+      - less
+      - neovim
+      - tealdeer
+      - gh
+      - git-extras
 
   fedora:
     dnf:
       - fish
+      - bat
+      - eza
+      - starship
+      - fd-find
+      - fzf
+      - yazi
+      - yq
+      - jq
+      - btop
+      - bash-completion
+      - ripgrep
+      - zoxide
+      - rsync
+      - ShellCheck
+      - glow
+      - less
+      - neovim
+      - tealdeer
+      - gh
+      - git-extras
 
   arch:
     pacman:
@@ -42,6 +82,42 @@ pkgs:
       - dua-cli
       - tealdeer
       - github-cli
+      - git-delta
+      - git-extras
+      - git-lfs
+
+  opensuse:
+    zypper:
+      - fish
+      - bat
+      - chezmoi
+      - eza
+      - starship
+      - fastfetch
+      - fd
+      - fzf
+      - thefuck
+      - yazi
+      - yq
+      - jq
+      - gum
+      - mise
+      - btop
+      - git-cliff
+      - bash-completion
+      - ripgrep
+      - zoxide
+      - rsync
+      - ShellCheck
+      - glow
+      - less
+      - navi
+      - lazydocker
+      - lazygit
+      - neovim
+      - dua-cli
+      - tealdeer
+      - gh
       - git-delta
       - git-extras
       - git-lfs

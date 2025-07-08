@@ -3,6 +3,10 @@
 {{ if eq .chezmoi.osRelease.id "fedora" }}
 sudo dnf config-manager --add-repo https://pkgs.tailscale.com/stable/fedora/tailscale.repo
 sudo dnf install -y tailscale
+{{ else if or (eq .chezmoi.osRelease.id "opensuse-leap") (eq .chezmoi.osRelease.id "opensuse-tumbleweed") }}
+sudo zypper addrepo https://pkgs.tailscale.com/stable/opensuse/tumbleweed/tailscale.repo
+sudo zypper refresh tailscale
+sudo zypper install -y tailscale
 {{ else if and (eq .chezmoi.os "linux") (not .isWSL) }}
 curl -fsSL https://tailscale.com/install.sh | sh
 {{   end }}

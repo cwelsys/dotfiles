@@ -10,5 +10,8 @@ sudo dnf install {{ $pkgs | quoteList | join " " }} -y
 {{   else if eq .chezmoi.osRelease.id "arch" }}
 {{ $pkgs := .pkgs.arch.pacman }}
 yay -S {{ $pkgs | quoteList | join " " }} --needed --noconfirm
+{{   else if or (eq .chezmoi.osRelease.id "opensuse-leap") (eq .chezmoi.osRelease.id "opensuse-tumbleweed") }}
+{{ $pkgs := .pkgs.opensuse.zypper }}
+sudo zypper install -y {{ $pkgs | quoteList | join " " }}
 {{   end }}
 {{ end }}
