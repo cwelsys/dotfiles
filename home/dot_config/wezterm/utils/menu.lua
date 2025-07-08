@@ -86,6 +86,10 @@ local SSH_HOSTS_TO_FILTER = {
 -- Add current hostname to filter list
 local current_hostname = get_current_hostname()
 if current_hostname then
+	-- Strip .local suffix on macOS to match tabline.lua hostname normalization
+	if os.is_mac then
+		current_hostname = current_hostname:gsub("%.local$", "")
+	end
 	table.insert(SSH_HOSTS_TO_FILTER, current_hostname)
 end
 
