@@ -1,7 +1,34 @@
 {{ if or (eq .chezmoi.os "darwin") (and (eq .chezmoi.os "linux") (ne .chezmoi.osRelease.id "arch")) -}}
 #!/bin/bash
 
+# Extract and add taps from formulae
+{{- $taps := list }}
+{{- range .pkgs.shared.brews }}
+  {{- if contains "/" . }}
+    {{- $parts := . | splitList "/" }}
+    {{- if eq (len $parts) 3 }}
+      {{- $tap := printf "%s/%s" (index $parts 0) (index $parts 1) }}
+      {{- $taps = $taps | append $tap }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- if eq .chezmoi.os "darwin" }}
+{{- range .pkgs.darwin.brews }}
+  {{- if contains "/" . }}
+    {{- $parts := . | splitList "/" }}
+    {{- if eq (len $parts) 3 }}
+      {{- $tap := printf "%s/%s" (index $parts 0) (index $parts 1) }}
+      {{- $taps = $taps | append $tap }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
+
 brew bundle --file=/dev/stdin <<EOF
+{{- range ($taps | uniq) }}
+tap {{ . | quote }}
+{{- end }}
+
 {{- range .pkgs.shared.brews }}
 brew {{ . | quote }}
 {{- end }}

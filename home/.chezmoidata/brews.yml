@@ -2,16 +2,45 @@ pkgs:
   darwin:
     brews:
       - coreutils
+      - armadillo
+      - bear
+      - boost
+      - colima
+      - docker
+      - dooit
+      - ducker
+      - dust
+      - felixkratz/formulae/borders
+      - felixkratz/formulae/sketchybar
+      - gawk
+      - go
+      - gsl
+      - ifstat
+      - jandedobbeleer/aliae/aliae
+      - lazyjournal
+      - llvm
+      - mas
+      - nmap
+      - nowplaying-cli
+      - nushell
+      - openjdk@11
+      - php
+      - pkgconf
+      - pngpaste
+      - rsync
+      - sf
+      - sniffnet
+      - switchaudio-osx
+      - wakeonlan
+      - wget
       - git
       - gnupg
       - dockutil
       - atuin
       - carapace
-      - pkg-config
       - pinentry-mac
       - spicetify-cli
       - fish
-      - glow
       - rclone
       - imagemagick
       - ghostscript
@@ -20,6 +49,52 @@ pkgs:
       - fastfetch
     casks:
       - 1password-cli
+      - 1password-cli
+      - alt-tab
+      - betterdisplay
+      - blockblock
+      - claude
+      - devtoys
+      - discord
+      - font-fira-code
+      - font-jetbrains-mono
+      - font-monaspace
+      - font-sf-mono
+      - font-sf-pro
+      - hammerspoon
+      - iina
+      - jordanbaird-ice
+      - karabiner-elements
+      - knockknock
+      - lulu
+      - meetingbar
+      - middleclick
+      - moonlight
+      - obsidian
+      - onyx
+      - pearcleaner
+      - pictogram
+      - powershell
+      - processmonitor
+      - proton-mail-bridge
+      - protonvpn
+      - runelite
+      - rustdesk
+      - sf-symbols
+      - slack
+      - spotify
+      - stats
+      - steam
+      - tailscale
+      - taskexplorer
+      - transmission
+      - upic
+      - vagrant
+      - visual-studio-code
+      - vlc
+      - wezterm@nightly
+      - zed
+      - zoom
       - spotify
       - tailscale
       - vagrant
