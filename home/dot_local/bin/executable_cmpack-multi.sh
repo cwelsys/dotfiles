@@ -132,7 +132,15 @@ process_package_manager() {
                 ;;
             dnf)
                 # Get user-installed packages (not dependencies)
-                installed_packages=($(dnf repoquery --userinstalled --qf '%{name}' | sort | uniq))
+                # Filter out common system packages
+                mapfile -t all_packages < <(dnf repoquery --userinstalled --qf '%{name}' | sort | uniq)
+                installed_packages=()
+                for pkg in "${all_packages[@]}"; do
+                    # Skip common system packages that shouldn't be in manifest
+                    if [[ ! "$pkg" =~ ^(kernel|glibc|systemd|NetworkManager|firefox|gnome|gtk|lib.*|.*-firmware|.*-devel|python3-.*|perl-.*|rpm.*|selinux.*|audit|authselect|bash|coreutils|util-linux|fedora-.*|.*-libs?)$ ]]; then
+                        installed_packages+=("$pkg")
+                    fi
+                done
                 ;;
             zypper)
                 installed_packages=($(zypper search -i --userinstalled | awk 'NR>2 && /^i/ {print $3}' | sort))
