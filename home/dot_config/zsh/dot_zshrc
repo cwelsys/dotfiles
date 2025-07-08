@@ -108,7 +108,7 @@ zstyle ':completion:*:git-checkout:*' sort false
 zstyle ':completion:*:descriptions' format '[%d]'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
-zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
+zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=shift-tab:accept
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza --icons --group-directories-first --color=always --git --oneline --all $realpath'
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
 zstyle ':fzf-tab:*' switch-group ',' '.'
@@ -136,6 +136,8 @@ bindkey '^[[1;5C' end-of-line
 bindkey "^N" insert-last-word
 bindkey '^[w' kill-region
 bindkey '^Y' redo
+bindkey '^I' autosuggest-accept
+bindkey '^[[Z' fzf-tab-complete
 
 HISTSIZE=290000
 SAVEHIST=$HISTSIZE
