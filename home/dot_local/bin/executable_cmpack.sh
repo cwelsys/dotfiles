@@ -47,35 +47,35 @@ elif [[ "$OS" == "linux" ]]; then
     elif [[ -f /etc/SuSE-release ]]; then
         DISTRO="opensuse"
     fi
-
+    
     # Check if brew is available on Linux
-    if command -v brew &>/dev/null; then
+    if command -v brew &> /dev/null; then
         PKG_MANAGER="brew"
         OS_SECTION="shared"
         USE_BREW=true
     else
         # Use native package manager
         case "$DISTRO" in
-        arch)
-            PKG_MANAGER="pacman"
-            OS_SECTION="arch"
-            ;;
-        debian | ubuntu)
-            PKG_MANAGER="apt"
-            OS_SECTION="debian"
-            ;;
-        fedora)
-            PKG_MANAGER="dnf"
-            OS_SECTION="fedora"
-            ;;
-        opensuse*)
-            PKG_MANAGER="zypper"
-            OS_SECTION="opensuse"
-            ;;
-        *)
-            print_color "$RED" "❌ Unsupported Linux distribution: $DISTRO"
-            exit 1
-            ;;
+            arch)
+                PKG_MANAGER="pacman"
+                OS_SECTION="arch"
+                ;;
+            debian|ubuntu)
+                PKG_MANAGER="apt"
+                OS_SECTION="debian"
+                ;;
+            fedora)
+                PKG_MANAGER="dnf"
+                OS_SECTION="fedora"
+                ;;
+            opensuse*)
+                PKG_MANAGER="zypper"
+                OS_SECTION="opensuse"
+                ;;
+            *)
+                print_color "$RED" "❌ Unsupported Linux distribution: $DISTRO"
+                exit 1
+                ;;
         esac
         USE_BREW=false
     fi
@@ -85,7 +85,7 @@ else
 fi
 
 # Check if package manager is installed
-if ! command -v "$PKG_MANAGER" &>/dev/null; then
+if ! command -v "$PKG_MANAGER" &> /dev/null; then
     print_color "$RED" "❌ Package manager '$PKG_MANAGER' not found. Please install it first."
     exit 1
 fi
@@ -130,26 +130,26 @@ else
     print_color "$BLUE" "🔍 Getting installed $PKG_MANAGER packages..."
     INSTALLED_BREWS=()
     INSTALLED_CASKS=()
-
+    
     case "$PKG_MANAGER" in
-    pacman)
-        # Get explicitly installed packages (not dependencies)
-        INSTALLED_BREWS=($(pacman -Qe | awk '{print $1}' | sort))
-        ;;
-    apt)
-        # Get manually installed packages
-        INSTALLED_BREWS=($(apt-mark showmanual | sort))
-        ;;
-    dnf)
-        # Get user-installed packages
-        INSTALLED_BREWS=($(dnf history userinstalled | tail -n +2 | sort))
-        ;;
-    zypper)
-        # Get user-installed packages
-        INSTALLED_BREWS=($(zypper search -i --userinstalled | awk 'NR>2 && /^i/ {print $3}' | sort))
-        ;;
+        pacman)
+            # Get explicitly installed packages (not dependencies)
+            INSTALLED_BREWS=($(pacman -Qe | awk '{print $1}' | sort))
+            ;;
+        apt)
+            # Get manually installed packages
+            INSTALLED_BREWS=($(apt-mark showmanual | sort))
+            ;;
+        dnf)
+            # Get user-installed packages
+            INSTALLED_BREWS=($(dnf history userinstalled | tail -n +2 | sort))
+            ;;
+        zypper)
+            # Get user-installed packages
+            INSTALLED_BREWS=($(zypper search -i --userinstalled | awk 'NR>2 && /^i/ {print $3}' | sort))
+            ;;
     esac
-
+    
     print_color "$CYAN" "Found ${#INSTALLED_BREWS[@]} installed packages"
 fi
 
@@ -202,12 +202,12 @@ if [[ "$USE_BREW" == true ]]; then
                 CURRENT_CASKS+=("$PKG")
             fi
         fi
-    done <"$YAML_FILE"
+    done < "$YAML_FILE"
 else
-    # Parse pkgs.yml structure
+    # Parse pkgs.yml structure  
     IN_OS_SECTION=false
     IN_PKG_SECTION=false
-
+    
     while IFS= read -r line; do
         # Check section headers
         if [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]]; then
@@ -227,7 +227,7 @@ else
             PKG="${BASH_REMATCH[1]}"
             CURRENT_BREWS+=("$PKG")
         fi
-    done <"$YAML_FILE"
+    done < "$YAML_FILE"
 fi
 
 # Find differences
@@ -275,7 +275,7 @@ while IFS= read -r line; do
             fi
         fi
     fi
-done <"$YAML_FILE"
+done < "$YAML_FILE"
 
 for pkg in "${CURRENT_OS_BREWS[@]}"; do
     if [[ ! " ${INSTALLED_BREWS[*]:-} " =~ " ${pkg} " ]]; then
@@ -356,32 +356,32 @@ while IFS= read -r line; do
     fi
 
     if [[ "$SKIP_LINE" == false ]]; then
-        echo "$line" >>"$TEMP_FILE"
+        echo "$line" >> "$TEMP_FILE"
     fi
 
     # Add new packages at the end of each section
     if [[ "$IN_OS_BREWS" == true && "$line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
         # Check if this is the last brew in the section
-        NEXT_LINE=$(sed -n "$((NR + 1))p" "$YAML_FILE" 2>/dev/null || echo "")
+        NEXT_LINE=$(sed -n "$((NR+1))p" "$YAML_FILE" 2>/dev/null || echo "")
         if [[ ! "$NEXT_LINE" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
             # Add new brews
             for pkg in "${NEW_BREWS[@]}"; do
-                echo "      - $pkg" >>"$TEMP_FILE"
+                echo "      - $pkg" >> "$TEMP_FILE"
             done
-            NEW_BREWS=() # Clear array to avoid duplicates
+            NEW_BREWS=()  # Clear array to avoid duplicates
         fi
     elif [[ "$IN_OS_CASKS" == true && "$line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
         # Check if this is the last cask in the section
-        NEXT_LINE=$(sed -n "$((NR + 1))p" "$YAML_FILE" 2>/dev/null || echo "")
+        NEXT_LINE=$(sed -n "$((NR+1))p" "$YAML_FILE" 2>/dev/null || echo "")
         if [[ ! "$NEXT_LINE" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
             # Add new casks
             for pkg in "${NEW_CASKS[@]}"; do
-                echo "      - $pkg" >>"$TEMP_FILE"
+                echo "      - $pkg" >> "$TEMP_FILE"
             done
-            NEW_CASKS=() # Clear array to avoid duplicates
+            NEW_CASKS=()  # Clear array to avoid duplicates
         fi
     fi
-done <"$YAML_FILE"
+done < "$YAML_FILE"
 
 # Handle case where sections are empty and we need to add first packages
 if [[ ${#NEW_BREWS[@]} -gt 0 ]]; then
