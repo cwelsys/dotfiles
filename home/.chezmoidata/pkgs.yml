@@ -1,6 +1,26 @@
 pkgs:
   arch:
     pacman:
+      - 1password-cli
+      - age
+      - base
+      - base-devel
+      - docker
+      - docker-buildx
+      - docker-compose
+      - ducker
+      - dust
+      - git
+      - nano
+      - openssh
+      - sudo
+      - topgrade
+      - wget
+      - wsl2-ssh-agent
+      - xdg-ninja
+      - yay
+      - yay-debug
+      - zsh
       - fish
       - bat
       - chezmoi

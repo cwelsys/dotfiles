@@ -386,14 +386,53 @@ done < "$YAML_FILE"
 # Handle case where sections are empty and we need to add first packages
 if [[ ${#NEW_BREWS[@]} -gt 0 ]]; then
     # Find the brews section and add packages
-    sed -i '' '/^[[:space:]]*brews:[[:space:]]*$/a\
-'"$(printf '      - %s\n' "${NEW_BREWS[@]}")" "$TEMP_FILE"
+    if [[ "$USE_BREW" == true ]]; then
+        SECTION_NAME="brews"
+    else
+        SECTION_NAME="$PKG_MANAGER"
+    fi
+    
+    # Create a temporary file with the new packages
+    NEW_PACKAGES_FILE=$(mktemp)
+    printf '      - %s\n' "${NEW_BREWS[@]}" > "$NEW_PACKAGES_FILE"
+    
+    # Use awk to insert after the section header
+    awk -v section="$SECTION_NAME" -v newfile="$NEW_PACKAGES_FILE" '
+        /^[[:space:]]*'"$SECTION_NAME"':[[:space:]]*$/ {
+            print $0
+            while ((getline line < newfile) > 0) {
+                print line
+            }
+            close(newfile)
+            next
+        }
+        {print}
+    ' "$TEMP_FILE" > "$TEMP_FILE.new"
+    
+    mv "$TEMP_FILE.new" "$TEMP_FILE"
+    rm "$NEW_PACKAGES_FILE"
 fi
 
 if [[ ${#NEW_CASKS[@]} -gt 0 ]]; then
     # Find the casks section and add packages
-    sed -i '' '/^[[:space:]]*casks:[[:space:]]*$/a\
-'"$(printf '      - %s\n' "${NEW_CASKS[@]}")" "$TEMP_FILE"
+    NEW_CASKS_FILE=$(mktemp)
+    printf '      - %s\n' "${NEW_CASKS[@]}" > "$NEW_CASKS_FILE"
+    
+    # Use awk to insert after the casks section header
+    awk -v newfile="$NEW_CASKS_FILE" '
+        /^[[:space:]]*casks:[[:space:]]*$/ {
+            print $0
+            while ((getline line < newfile) > 0) {
+                print line
+            }
+            close(newfile)
+            next
+        }
+        {print}
+    ' "$TEMP_FILE" > "$TEMP_FILE.new"
+    
+    mv "$TEMP_FILE.new" "$TEMP_FILE"
+    rm "$NEW_CASKS_FILE"
 fi
 
 # Replace original file
