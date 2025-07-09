@@ -23,11 +23,8 @@ Get-AppxPackage -AllUsers Microsoft.MicrosoftOfficeHub | Remove-AppxPackage
 Get-AppxPackage -AllUsers Microsoft.MicrosoftSolitaireCollection | Remove-AppxPackage
 Get-AppxPackage -AllUsers Microsoft.MicrosoftStickyNotes | Remove-AppxPackage
 Get-AppxPackage -AllUsers Microsoft.MixedReality.Portal | Remove-AppxPackage
-Get-AppxPackage -AllUsers Microsoft.MSPaint | Remove-AppxPackage
 Get-AppxPackage -AllUsers Microsoft.OutlookForWindows | Remove-AppxPackage
-Get-AppxPackage -AllUsers Microsoft.Paint | Remove-AppxPackage
 Get-AppxPackage -AllUsers Microsoft.People | Remove-AppxPackage
-Get-AppxPackage -AllUsers Microsoft.ScreenSketch | Remove-AppxPackage
 Get-AppxPackage -AllUsers Microsoft.SkypeApp | Remove-AppxPackage
 Get-AppxPackage -AllUsers Microsoft.StorePurchaseApp | Remove-AppxPackage
 Get-AppxPackage -AllUsers Microsoft.Windows.Photos | Remove-AppxPackage

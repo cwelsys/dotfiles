@@ -26,13 +26,13 @@ SetCapslockState, AlwaysOff
 return
 
 ;; stop bare winkey from opening start menu
-LWin::
-    Send {LWin Down}
-return
+; LWin::
+;     Send {LWin Down}
+; return
 
-LWin Up::
-    Send {Blind}{vkE8}{LWin Up}
-return
+; LWin Up::
+;     Send {Blind}{vkE8}{LWin Up}
+; return
 
 ;; Toggle hidden files with Alt+Shift+.
 !+.::GoSub,CheckActiveWindow

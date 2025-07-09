@@ -168,16 +168,16 @@ alias:
   - name: winutil
     value: iwr -useb https://christitus.com/win | iex
     type: function
-    if: and (match .OS "windows ") (match .Shell "pwsh")
+    if: (match .OS "windows ") (match .Shell "pwsh")
   - name: getnf
     value: |
       & ([scriptblock]::Create((iwr 'https://to.loredo.me/Install-NerdFont.ps1')))
     type: function
-    if: and (match .OS "windows ") (match .Shell "pwsh")
+    if: (match .OS "windows ") (match .Shell "pwsh")
   - name: ms-activate
     value: irm https://get.activated.win | iex
     type: function
-    if: and (match .OS "windows ") (match .Shell "pwsh")
+    if: (match .OS "windows ") (match .Shell "pwsh")
 
   # Linux
   - name: scl
@@ -195,11 +195,11 @@ alias:
   # Package Managers
   - name: update
     value: brew update && brew upgrade
-    if: and (match .OS "darwin") (ne .Shell "nu")
+    if: (match .OS "darwin") (ne .Shell "nu")
   - name: update
     type: function
     value: brew update; brew upgrade
-    if: and (match .OS "darwin") (match .Shell "nu")
+    if: (match .OS "darwin") (match .Shell "nu")
   - name: install
     value: brew install
     if: match .OS "darwin"
