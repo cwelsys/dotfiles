@@ -168,16 +168,16 @@ alias:
   - name: winutil
     value: iwr -useb https://christitus.com/win | iex
     type: function
-    if: (match .OS "windows ") (match .Shell "pwsh")
+    if: and (eq .OS "windows") (eq .Shell "pwsh")
   - name: getnf
     value: |
       & ([scriptblock]::Create((iwr 'https://to.loredo.me/Install-NerdFont.ps1')))
     type: function
-    if: (match .OS "windows ") (match .Shell "pwsh")
+    if: and (eq .OS "windows") (eq .Shell "pwsh")
   - name: ms-activate
     value: irm https://get.activated.win | iex
     type: function
-    if: (match .OS "windows ") (match .Shell "pwsh")
+    if: and (eq .OS "windows") (eq .Shell "pwsh")
 
   # Linux
   - name: scl
