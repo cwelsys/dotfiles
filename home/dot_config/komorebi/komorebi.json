@@ -37,6 +37,7 @@
 	"transparency_ignore_rules": [{ "kind": "Title", "id": "Youtube", "matching_strategy": "Contains" }],
 	"manage_rules": [{ "kind": "Exe", "id": "MTGA.exe", "matching_strategy": "Equals" }],
 	"ignore_rules": [
+		{ "kind": "Exe", "id": "Microsoft.CmdPal.UI.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "ShareX", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "uninstall.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "Toolbox.exe", "matching_strategy": "Equals" },
@@ -61,6 +62,7 @@
 		{ "kind": "Exe", "id": "ResourceHacker.exe", "matching_strategy": "Equals" }
 	],
 	"floating_applications": [
+		{ "kind": "Exe", "id": "PowerToys.Settings.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "explorer.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "ImageGlass.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "WinRAR.exe", "matching_strategy": "Equals" },

@@ -71,6 +71,9 @@ if ($PSVersionTable.PSVersion.Major -ge 7) {
 	if (Get-Command mise -ErrorAction SilentlyContinue) {
 		mise activate pwsh | Out-String | Invoke-Expression
 	}
+	if ($IsWindows) {
+		Import-Module -Name Microsoft.WinGet.CommandNotFound
+	}
 	. "$env:PWSH\lib\7.ps1"
 }
 
