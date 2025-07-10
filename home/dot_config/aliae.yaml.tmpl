@@ -195,11 +195,11 @@ alias:
   # Package Managers
   - name: update
     value: brew update && brew upgrade
-    if: (match .OS "darwin") (ne .Shell "nu")
+    if: and (eq .OS "darwin") (ne .Shell "nu")
   - name: update
     type: function
     value: brew update; brew upgrade
-    if: (match .OS "darwin") (match .Shell "nu")
+    if: and (eq .OS "darwin") (eq .Shell "nu")
   - name: install
     value: brew install
     if: match .OS "darwin"
