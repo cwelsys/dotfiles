@@ -37,6 +37,7 @@
 	"transparency_ignore_rules": [{ "kind": "Title", "id": "Youtube", "matching_strategy": "Contains" }],
 	"manage_rules": [{ "kind": "Exe", "id": "MTGA.exe", "matching_strategy": "Equals" }],
 	"ignore_rules": [
+		{ "kind": "Exe", "id": "Ueli.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "Flow.Launcher.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "Microsoft.CmdPal.UI.exe", "matching_strategy": "Equals" },
 		{ "kind": "Exe", "id": "ShareX", "matching_strategy": "Equals" },

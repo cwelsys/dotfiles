@@ -12,7 +12,10 @@
 .vscode
 /tmp
 node_modules/
+CLAUDE.md
+cache
 
+**/.claude/settings.local.json
 # Linux
 
 kls\*database.db
@@ -48,6 +51,7 @@ Temporary Items
 
 # Windows
 
+*C*
 Thumbs.db
 Thumbs.db:encryptable
 ehthumbs.db
@@ -61,4 +65,3 @@ $RECYCLE.BIN/
 \_.msm
 \*.msp
 \*.lnk
-**/.claude/settings.local.json
