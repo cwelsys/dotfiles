@@ -502,6 +502,9 @@ env:
     if: .OS ne "windows"
   - name: CLAUDE_CONFIG_DIR
     value: '{{ .chezmoi.homeDir }}/.claude'
+  - name: CUDA_CACHE_PATH
+    value: '{{ env "XDG_CACHE_HOME" }}/nv'
+    if: match .OS "linux"
 
 path:
   - value: |
