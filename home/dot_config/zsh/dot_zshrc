@@ -42,10 +42,6 @@ fi
 
 [ -z "$HISTFILE" ] && export HISTFILE="$XDG_STATE_HOME/zsh/history"
 
-if command -v wsl2-ssh-agent &> /dev/null; then
-  eval "$(wsl2-ssh-agent)"
-fi
-
 zinit ice depth=1; zinit light romkatv/powerlevel10k
 zinit light ryanccn/vivid-zsh
 

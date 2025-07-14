@@ -39,33 +39,5 @@ sudo localectl set-locale LANG=en_US.UTF-8
   {{- else -}}
 echo "Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
   {{- end -}}
-
-  {{- if .isWSL }}
-    {{- if eq .chezmoi.osRelease.id "arch" }}
-if ! command -v wsl2-ssh-agent &> /dev/null; then
-  yay -S wsl2-ssh-agent --needed --noconfirm
-fi
-    {{- else if or (eq .chezmoi.osRelease.id "opensuse-leap") (eq .chezmoi.osRelease.id "opensuse-tumbleweed") }}
-if ! command -v wsl2-ssh-agent &> /dev/null; then
-  mkdir -p ~/.local/bin
-  curl -L https://github.com/mame/wsl2-ssh-agent/releases/latest/download/wsl2-ssh-agent -o ~/.local/bin/wsl2-ssh-agent
-  chmod +x ~/.local/bin/wsl2-ssh-agent
-fi
-# Ensure permissions are always correct even if file exists
-if [ -f ~/.local/bin/wsl2-ssh-agent ]; then
-  chmod +x ~/.local/bin/wsl2-ssh-agent
-fi
-    {{- else }}
-if ! command -v wsl2-ssh-agent &> /dev/null; then
-  mkdir -p ~/.local/bin
-  curl -L https://github.com/mame/wsl2-ssh-agent/releases/latest/download/wsl2-ssh-agent -o ~/.local/bin/wsl2-ssh-agent
-  chmod +x ~/.local/bin/wsl2-ssh-agent
-fi
-# Ensure permissions are always correct even if file exists
-if [ -f ~/.local/bin/wsl2-ssh-agent ]; then
-  chmod +x ~/.local/bin/wsl2-ssh-agent
-fi
-    {{- end }}
-  {{- end -}}
 {{- end }}
 

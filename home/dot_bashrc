@@ -64,10 +64,6 @@ if [ -f "$HOME/.config/bash" ]; then
 	unset file
 fi
 
-if command -v wsl2-ssh-agent &>/dev/null; then
-	eval "$(wsl2-ssh-agent)"
-fi
-
 if [[ $BASH_VERSION =~ ^[4-9] ]]; then
 	shopt -s autocd
 	shopt -s direxpand dirspell
