@@ -1,0 +1,45 @@
+[settings]
+experimental = true
+yes = true
+trusted_config_paths = ["{{ env.XDG_PROJECTS_DIR }}"]
+go_set_gobin = false
+go_set_goroot = true
+
+[settings.npm]
+bun = true
+
+[settings.python]
+uv_venv_auto = true
+
+[settings.pipx]
+uvx = true
+
+[settings.cargo]
+binstall = true
+
+[tools]
+node = { version = "latest", postinstall = "corepack enable && corepack prepare pnpm@latest --activate" }
+go = { version = "latest", preinstall = "mkdir -p $GOPATH/bin" }
+php = "8.4.5"
+cargo-binstall = "latest"
+rust = "beta"
+java = "corretto-21"
+maven = "latest"
+uv = "latest"
+pipenv = "latest"
+python = { version = "3.13", postinstall = "pip install --upgrade pip" }
+
+[env]
+MISE_RUSTUP_HOME = "{{ env.XDG_DATA_HOME }}/rustup"
+MISE_CARGO_HOME = "{{ env.XDG_DATA_HOME }}/cargo"
+npm_config_cache = "{{ env.XDG_CACHE_HOME }}/npm"
+YARN_CACHE_FOLDER = "{{ env.XDG_CACHE_HOME }}/npm"
+PNPM_HOME = "{{ env.XDG_DATA_HOME }}/pnpm"
+UV_LINK_MODE = { value = "symlink", tools = true }
+GOPATH = "{{ env.XDG_DATA_HOME }}/go"
+GOBIN = "{{ env.GOPATH }}/bin"
+MISE_NODE_DEFAULT_PACKAGES_FILE = "{{ env.XDG_CONFIG_HOME }}/mise/default-npm-packages"
+MISE_RUBY_DEFAULT_PACKAGES_FILE = "{{ env.XDG_CONFIG_HOME }}/mise/default-gems"
+MISE_PYTHON_DEFAULT_PACKAGES_FILE = "{{ env.XDG_CONFIG_HOME }}/mise/default-python-packages"
+MISE_GO_DEFAULT_PACKAGES_FILE = "{{ env.XDG_CONFIG_HOME }}/mise/default-go-packages"
+_.path = ["{{ env.PNPM_HOME }}", "{{ env.GOBIN }}"]
