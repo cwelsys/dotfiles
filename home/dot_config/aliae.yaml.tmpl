@@ -279,23 +279,27 @@ alias:
     value: zypper info
     if: hasCommand "zypper"
 
+
+  - name: pacman
+    value: sudo pacman
+    if: hasCommand "pacman"
   - name: clean
-    value: yay -Yc --noconfirm
+    value: yay -Qtdq | yay -Rnsu - --noconfirm 1> /dev/null; yay -Sc --noconfirm
     if: hasCommand "yay"
-  - name: update
-    value: yay -Syu --noconfirm
+  - name: pupdate
+    value: yay -Syyu --noconfirm
     if: hasCommand "yay"
   - name: install
-    value: yay -S --needed --noconfirm
+    value: yay -S $1 --needed
     if: hasCommand "yay"
   - name: remove
-    value: sudo pacman -Rcns --noconfirm
-    if: hasCommand "pacman"
-  - name: search
-    value: yay -Ss
+    value: yay -Rnsu $1
     if: hasCommand "yay"
-  - name: info
-    value: yay -Si
+  - name: search
+    value: yay -Ss $1
+    if: hasCommand "yay"
+  - name: list
+    value: yay -Qq $1
     if: hasCommand "yay"
 
 env:
