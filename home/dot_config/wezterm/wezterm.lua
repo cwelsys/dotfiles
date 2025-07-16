@@ -148,6 +148,9 @@ c.skip_close_confirmation_for_processes_named = {
   'powershell.exe',
 }
 
+
+c.enable_wayland = false
+
 if os.is_mac then
   c.window_decorations = "RESIZE | MACOS_FORCE_ENABLE_SHADOW"
 else

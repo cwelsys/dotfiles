@@ -52,7 +52,7 @@ pkgs:
       - luarocks
       - neovim
       - dua-cli
-      - tealdeer
+      # - tealdeer
       - github-cli
       - git-delta
       - git-extras
