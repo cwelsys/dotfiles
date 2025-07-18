@@ -290,7 +290,7 @@ alias:
     value: yay -Syyu --noconfirm
     if: hasCommand "yay"
   - name: install
-    value: yay -S $1 --needed
+    value: yay -S $1 --needed --noconfirm
     if: hasCommand "yay"
   - name: remove
     value: yay -Rnsu $1

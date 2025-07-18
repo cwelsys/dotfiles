@@ -4,30 +4,8 @@ ServerAliveInterval 86400
 ServerAliveCountMax 4
 {{ if eq .chezmoi.os "darwin" }}
 IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-{{ else if eq .chezmoi.os "linux" }}
-IdentityAgent ~/.1password/agent.sock
 {{ else }}
 IdentityFile ~/.ssh/cwel
 {{ end }}
 
-Host github.com
-User git
-PreferredAuthentications publickey
 
-Host gitea
-HostName git.cwel.casa
-User git
-PreferredAuthentications publickey
-
-Host wini
-HostName wini
-User cwel
-
-Host mba
-HostName mba
-User cwel
-
-Host pbox
-HostName pbox
-user cwel
-ForwardX11 yes
