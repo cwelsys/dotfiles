@@ -23,7 +23,6 @@ go = { version = "latest", preinstall = "mkdir -p $GOPATH/bin" }
 cargo-binstall = "latest"
 rust = "beta"
 java = "corretto-21"
-maven = "latest"
 uv = "latest"
 pipenv = "latest"
 python = { version = "3.13", postinstall = "pip install --upgrade pip" }

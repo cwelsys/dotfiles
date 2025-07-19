@@ -3,6 +3,7 @@ if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
 fi
 
 if [[ -f "/opt/homebrew/bin/brew" ]]; then
+  export PATH="/opt/homebrew/opt/ncurses/bin:$PATH"
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
