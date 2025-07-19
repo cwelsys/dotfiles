@@ -22,7 +22,7 @@ disable = [
 	"microsoft_store",
 	"winget",
 	"pipx",
-	"zinit",
+	"shell",
 	"yarn",
 	"bun",
 	"helm",
@@ -53,7 +53,7 @@ ignore_failures = ["powershell"]
 # assume_yes = true
 
 # Do not ask to retry failed steps (default: false)
-# no_retry = true
+no_retry = true
 
 # Run inside tmux (default: false)
 # run_in_tmux = true
@@ -78,25 +78,12 @@ skip_notify = true
 # this will be ignored if the binary is built without self update support
 #
 # available also via setting the environment variable TOPGRADE_NO_SELF_UPGRADE)
-no_self_update = true
+no_self_update = false
 # Extra tracing filter directives
 # These are prepended to the `--log-filter` argument
 # See: https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html#directives
 # log_filters = ["topgrade::command=debug", "warn"]
 # Commands to run before anything
-{{ if eq .chezmoi.os "windows" }}
-[pre_commands]
-"Stop Komorebi" = "komorebic stop --whkd 2>$null; $true"
-# Commands to run after anything
-[post_commands]
-"Start Komorebi" = "komorebic start --whkd"
-"Reload Yasb" = "yasbc reload"
-
-# Custom commands
-[commands]
-"Fetch Komorebi" = "komorebic fetch-asc"
-{{ else }}
-
 # Commands to run before anything
 [pre_commands]
 
@@ -105,8 +92,6 @@ no_self_update = true
 
 # Custom commands
 [commands]
-
-{{ end }}
 # "Python Environment" = "~/dev/.env/bin/pip install -i https://pypi.python.org/simple -U --upgrade-strategy eager jupyter"
 # "Custom command using interactive shell (unix)" = "-i vim_upgrade"
 [python]
@@ -145,7 +130,7 @@ autoremove = true
 arch_package_manager = "autodetect"
 
 # Arguments to pass yay (or paru) when updating packages
-yay_arguments = "--noconfirm"
+yay_arguments = "--needed --noconfirm"
 
 # Arguments to pass dnf when updating packages
 # dnf_arguments = "--refresh"
