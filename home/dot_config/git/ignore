@@ -9,6 +9,8 @@
 .svn
 *.bak
 *.log
+.sfdx
+.sf
 .vscode
 /tmp
 node_modules/
