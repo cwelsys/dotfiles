@@ -55,13 +55,13 @@ omzLib git.zsh
 omzPlugin sudo
 omzPlugin colored-man-pages
 omzPlugin rsync
+omzPlugin mise
 omzPlugin gpg-agent
 omzPlugin git
 omzPlugin git-flow wait"1"
 omzPlugin github wait"1"
 omzPlugin command-not-found wait"1"
 
-eval "$(mise activate zsh)"
 
 zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
     atclone"./atuin init zsh > init.zsh; ./atuin gen-completions --shell zsh > _atuin" \
