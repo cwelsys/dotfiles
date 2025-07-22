@@ -32,7 +32,7 @@ wl-paste --watch cliphist store &
 easyeffects --gapplication-service &
 
 # Random Wallpaper
-"$HOME"/.config/hypr/scripts/random_wallpaper &
+# "$HOME"/.config/hypr/scripts/random_wallpaper &
 
 # Screen sharing and portals
 "$HOME"/.config/hypr/scripts/portal &

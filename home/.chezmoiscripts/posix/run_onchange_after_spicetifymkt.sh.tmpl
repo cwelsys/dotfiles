@@ -1,3 +1,4 @@
 #!/bin/bash
-
+{{ if lookPath "spicetify" }}
 curl -fsSL https://raw.githubusercontent.com/spicetify/spicetify-marketplace/main/resources/install.sh | sh
+{{ end }}
