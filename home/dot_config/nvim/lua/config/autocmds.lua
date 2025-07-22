@@ -1,13 +1,13 @@
 local ac = vim.api.nvim_create_autocmd
 local ag = vim.api.nvim_create_augroup
 
--- Disable diagnostics in a .env file
-ac("BufRead", {
-  pattern = ".env",
-  callback = function()
-    vim.diagnostic.disable(false)
-  end,
-})
+-- -- Disable diagnostics in a .env file
+-- ac("BufRead", {
+--   pattern = ".env",
+--   callback = function()
+--     vim.diagnostic.disable(false)
+--   end,
+-- })
 
 local auto_close_filetype = {
   "lazy",
@@ -70,14 +70,14 @@ ac("BufEnter", {
   end,
 })
 
--- Disable eslint on node_modules
-ac({ "BufNewFile", "BufRead" }, {
-  group = ag("DisableEslintOnNodeModules", { clear = true }),
-  pattern = { "**/node_modules/**", "node_modules", "/node_modules/*" },
-  callback = function()
-    vim.diagnostic.disable(false)
-  end,
-})
+-- -- Disable eslint on node_modules
+-- ac({ "BufNewFile", "BufRead" }, {
+--   group = ag("DisableEslintOnNodeModules", { clear = true }),
+--   pattern = { "**/node_modules/**", "node_modules", "/node_modules/*" },
+--   callback = function()
+--     vim.diagnostic.disable(false)
+--   end,
+-- })
 
 -- Toggle between relative/absolute line numbers
 local numbertoggle = ag("numbertoggle", { clear = true })
@@ -111,17 +111,5 @@ ac("BufWritePre", {
     end
     local file = vim.uv.fs_realpath(args.match) or args.match
     vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
-  end,
-})
-
--- Toggle lazygit instead of closing
-ac("TermOpen", {
-  pattern = "*",
-  callback = function()
-    local term_title = vim.b.term_title
-    if term_title and term_title:match("lazygit") then
-      -- Create lazygit specific mappings
-      vim.keymap.set("t", "q", "<cmd>close<cr>", { buffer = true })
-    end
   end,
 })
