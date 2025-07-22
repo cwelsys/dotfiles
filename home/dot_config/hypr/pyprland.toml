@@ -6,7 +6,6 @@ command = "pavucontrol"
 unfocus = "hide"
 position = "1% 8%"
 lazy = true
-force_monitor = "DP-1"
 
 [scratchpads.bluetooth]
 command = "overskride"
@@ -24,4 +23,12 @@ lazy = true
 command = "nm-connection-editor"
 animation = "fromRight"
 margin = 20
+lazy = true
+
+[scratchpads.topgrade-system]
+command = "kitty --class scratchpad-large topgrade -k --only system"
+lazy = true
+
+[scratchpads.topgrade-all]
+command = "kitty --class scratchpad-large topgrade -k --no-self-update"
 lazy = true

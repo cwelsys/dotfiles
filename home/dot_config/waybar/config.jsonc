@@ -1,5 +1,5 @@
 {
-	"include": "~/.config/waybar/bars/unified-bar.jsonc",
+	"include": "~/.config/waybar/bars/bar.jsonc",
 	"height": 48,
 	"layer": "top",
 	"mode": "dock",
