@@ -8,6 +8,31 @@
 .chezmoiscripts/linux/**
 {{ end }}
 
+{{ if ne .chezmoi.osRelease.id "arch" }}
+.config/yay/
+.config/pacman/
+.config/gammastep/
+.config/cava/
+.config/Kvantum/
+.config/pacseek/
+.config/swaync/
+.config/satty/
+.config/mpv/
+.config/qimgv/
+.config/qt5ct/
+.config/rofi/
+.config/waybar/
+.config/zathura/
+.config/nwg-look/
+.config/MangoHud/
+.config/gtk-*/
+.config/keyb/
+.config/hypr/
+*.conf
+*.list
+dolphinrc
+{{ end }}
+
 {{ if ne .chezmoi.os "windows" }}
 .chezmoiscripts/windows/**
 .local/bin/*.bat
@@ -31,9 +56,9 @@ Library/**
 .local/bin/*.sh
 .config/powershell/profile.ps1
 .config/btop/
-.config/fd/
 .config/gdu/
 .config/fish/
+.config/kitty/
 .config/topgrade.toml
 .font/
 {{ else }}
