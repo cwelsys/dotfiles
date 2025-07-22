@@ -86,7 +86,7 @@ no_self_update = false
 # Commands to run before anything
 # Commands to run before anything
 [pre_commands]
-
+hyprpm = "hyprpm update -v"
 # Commands to run after anything
 [post_commands]
 

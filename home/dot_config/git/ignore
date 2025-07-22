@@ -1,5 +1,46 @@
 # General
 
+*.swp
+*.swo
+*.swn
+*.swm
+*.swl
+*.swk
+*.bak
+*.backup
+*.orig
+*.ref
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.msi
+*~
+__pycache__/
+*.pyc
+**/*.rs.bk
+**/*.rl.bk
+.vscode
+.idea
+.iml
+*.sublime-workspace
+*.sqlite
+log.txt
+build/
+target/
+dist/
+
+*.env
+*.key
+*.pem
+*.credentials
+*.password
+*.secret
+
 .Python
 .envrc
 .idea
@@ -32,6 +73,7 @@ tag
 
 # Darwin
 
+.LSOverride
 .DS\*Store
 .DS_Store
 .AppleDouble

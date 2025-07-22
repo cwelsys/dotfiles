@@ -1,3 +1,11 @@
-{{- if eq .chezmoi.os "darwin" }}
+default-cache-ttl 21600 # 6 hours
+max-cache-ttl 64800 # 18 hours
+# SSH
+enable-ssh-support
+default-cache-ttl-ssh 21600 # 6 hours
+max-cache-ttl-ssh 64800 # 18 hours
+{{ if eq .chezmoi.os "darwin" }}
 pinentry-program /opt/homebrew/bin/pinentry-mac
-{{- end }}
+{{ else }}
+pinentry-program /usr/bin/pinentry-gnome3
+{{ end }}

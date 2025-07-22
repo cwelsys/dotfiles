@@ -1,0 +1,27 @@
+[pyprland]
+plugins = ["scratchpads", "magnify"]
+
+[scratchpads.volume]
+command = "pavucontrol"
+unfocus = "hide"
+position = "1% 8%"
+lazy = true
+force_monitor = "DP-1"
+
+[scratchpads.bluetooth]
+command = "overskride"
+animation = "fromRight"
+margin = 20
+lazy = true
+
+[scratchpads.wifi]
+command = "iwgtk"
+animation = "fromRight"
+margin = 20
+lazy = true
+
+[scratchpads.network]
+command = "nm-connection-editor"
+animation = "fromRight"
+margin = 20
+lazy = true

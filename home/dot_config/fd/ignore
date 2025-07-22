@@ -1,7 +1,12 @@
+# vim: filetype=gitignore
+
 **/*.egg-info/**
 **/*bin*/**
 **/*cache*/**
 **/*debug*/**
+**/*.app/*
+**/*.pxd/*
+*INFO*
 **/*obj*/**
 **/.dart_tool/**
 **/.git/**
@@ -14,3 +19,21 @@
 **/build/**
 **/dist/**
 **/node_modules/**
+.vscode
+__init__.py
+pyproject.toml
+requirements.txt
+stylua.toml
+package.json
+.prettierrc
+.eslintrc
+.eslintrc.json
+package-lock.json
+versions.json
+manifest.json
+tsconfig.json
+jsconfig.json
+esbuild.config.mjs
+biome.json
+LICENSE
+.editorconfig
