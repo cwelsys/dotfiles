@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Apps
-spotify &
-obsidian &
+# spotify &
+# obsidian &
 
 # Terminal Apps
 # kitty --class btop btop &
