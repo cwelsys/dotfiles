@@ -19,9 +19,10 @@ config:
         - name: 'kb'
           target: 'C:\Users\cwel\.local\bin\kb.ahk'
 
-        - name: 'VcXsrv'
-          target: 'C:\Users\cwel\scoop\apps\vcxsrv\current\vcxsrv.exe'
-          args: '-multiwindow -clipboard -wgl -auth %XAUTHORITY%'
-
     symlinks:
       '%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json': 'home\dot_config\windows-terminal\settings.json'
+      '%HOME%\Documents\Powershell\Microsoft.PowerShell_profile.ps1': '%HOME%\.config\powershell\profile.ps1'
+      '%HOME%\Documents\Powershell\Microsoft.VSCode_profile.ps1': '%HOME%\.config\powershell\profile.ps1'
+      '%HOME%\Documents\Powershell\powershell.config.json': '%HOME%\.config\powershell\powershell.config.json'
+      '%HOME%\Documents\WindowsPowershell\Microsoft.PowerShell_profile.ps1': '%HOME%\.config\powershell\profile.ps1'
+      '%HOME%\Documents\WindowsPowershell\powershell.config.json': '%HOME%\.config\powershell\powershell.config.json'

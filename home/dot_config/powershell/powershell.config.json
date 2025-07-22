@@ -1,8 +1,5 @@
-
 {
-	{{ if eq .chezmoi.os "windows" }}
 	"Microsoft.PowerShell:ExecutionPolicy": "RemoteSigned",
-	{{ end }}
 	"ExperimentalFeatures": [
 		"PSFeedbackProvider",
 		"PSNativeWindowsTildeExpansion",
