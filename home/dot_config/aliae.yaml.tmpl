@@ -185,9 +185,6 @@ alias:
     if: match .OS "linux"
 
   # Posix
-  - name: cmpack
-    value: cmpack.sh
-    if: .OS ne "windows"
   - name: su
     value: sudo su
     if: .OS ne "windows"
