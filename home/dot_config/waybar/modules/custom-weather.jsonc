@@ -1,7 +1,7 @@
 {
 	"custom/weather": {
 		"exec-if": "which wttrbar",
-		"exec": "wttrbar --mph --fahrenheit --ampm --location arlington,va",
+		"exec": "wttrbar --mph --fahrenheit --ampm",
 		"restart-interval": 300,
 		"tooltip": true,
 		"format": "{}°",

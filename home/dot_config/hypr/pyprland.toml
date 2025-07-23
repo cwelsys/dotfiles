@@ -3,8 +3,8 @@ plugins = ["scratchpads", "magnify"]
 
 [scratchpads.volume]
 command = "pavucontrol"
-unfocus = "hide"
-position = "1% 8%"
+# unfocus = "hide"
+position = "69% 8%"
 lazy = true
 
 [scratchpads.bluetooth]
