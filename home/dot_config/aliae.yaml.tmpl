@@ -113,6 +113,9 @@ alias:
     value: eza --tree --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
   - name: lt
     value: tree
+  - name: wget
+    value: wget --hsts-file="$XDG_DATA_HOME/wget-hsts"
+    if: hasCommand "wget"
 
   # Windows
   - name: zsh
@@ -509,6 +512,14 @@ env:
   - name: CUDA_CACHE_PATH
     value: '{{ env "XDG_CACHE_HOME" }}/nv'
     if: match .OS "linux"
+  - name: GTK2_RC_FILES
+    value: '{{ env "XDG_CONFIG_HOME" }}/gtk-2.0/gtkrc'
+    if: match .OS "linux"
+  - name: PARALLEL_HOME
+    value: '{{ env "XDG_CONFIG_HOME" }}/parallel'
+    if: .OS ne "windows"
+  - name: WAKATIME_HOME
+    value: '{{ env "XDG_CONFIG_HOME" }}/wakatime'
 
 path:
   - value: |
