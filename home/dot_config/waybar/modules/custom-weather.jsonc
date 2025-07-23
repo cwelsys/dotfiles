@@ -1,13 +1,12 @@
 {
 	"custom/weather": {
 		"exec-if": "which wttrbar",
-		"exec": "wttrbar --fahrenheit",
+		"exec": "wttrbar --mph --fahrenheit --ampm --location arlington,va",
 		"restart-interval": 300,
 		"tooltip": true,
 		"format": "{}°",
 		"return-type": "json",
-		"on-click": "kitty --hold --class center-float fish -c 'wttr -u'",
-		"on-click-right": "kitty --hold --class center-float fish -c 'wttr -u -v2'",
+		"on-click": "kitty --hold --class center-float fish -c 'wttr'",
 		"on-click-middle": "xdg-open https://wttr.in/"
 	}
 }
