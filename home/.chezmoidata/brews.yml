@@ -1,23 +1,64 @@
 pkgs:
   darwin:
     brews:
+      - armadillo
+      - bear
+      - boost
+      - carapace
+      - colima
+      - coreutils
+      - docker
+      - dockutil
+      - dooit
       - dust
-      - go
-      - jandedobbeleer/aliae/aliae
-      - lazyjournal
+      - fastfetch
+      - fish
+      - gawk
+      - ghostscript
+      - git
+      - gnupg
+      - gsl
+      - ifstat
+      - imagemagick
+      - llvm
+      - mas
+      - mise
+      - nmap
+      - nowplaying-cli
+      - nushell
+      - oh-my-posh
+      - openjdk@11
+      - php
+      - pinentry-mac
+      - pkgconf
+      - pngpaste
+      - rclone
+      - restic
+      - rsync
+      - sf
+      - sniffnet
+      - spicetify-cli
+      - switchaudio-osx
+      - tmux
+      - topgrade
+      - wakeonlan
+      - wget
     casks:
       - 1password-cli
+      - alacritty
       - alt-tab
+      - background-music
+      - battery
       - betterdisplay
       - blockblock
       - claude
       - devtoys
-      - discord
       - font-fira-code
       - font-jetbrains-mono
       - font-monaspace
       - font-sf-mono
       - font-sf-pro
+      - ghostty
       - hammerspoon
       - iina
       - jordanbaird-ice
@@ -27,10 +68,12 @@ pkgs:
       - meetingbar
       - middleclick
       - moonlight
+      - neat
       - obsidian
       - onyx
       - pearcleaner
       - pictogram
+      - pokemon-tcg-live
       - powershell
       - processmonitor
       - proton-mail-bridge
@@ -42,14 +85,18 @@ pkgs:
       - spotify
       - stats
       - steam
+      - syncthing-app
       - tailscale
+      - tailscale-app
       - taskexplorer
       - transmission
       - upic
       - vagrant
+      - vesktop
       - visual-studio-code
       - vlc
       - wezterm@nightly
+      - yellowdot
       - zed
       - zoom
   shared:
@@ -70,23 +117,17 @@ pkgs:
       - git-flow
       - git-lfs
       - gum
-      - jandedobbeleer/oh-my-posh/oh-my-posh
-      - k3d
-      - kind
-      - kustomize
       - lazydocker
       - lazygit
+      - lazyjournal
       - lesspipe
       - luarocks
-      - minikube
       - navi
       - neovim
       - rich-cli
       - ripgrep
       - shellcheck
       - starship
-      - stow
-      - tea
       - tealdeer
       - thefuck
       - wrk
