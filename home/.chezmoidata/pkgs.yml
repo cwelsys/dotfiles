@@ -11,7 +11,6 @@ pkgs:
       - amd-ucode
       - ark
       - aspell
-      - auto-cpufreq
       - b43-fwcutter
       - base
       - base-devel
@@ -128,6 +127,7 @@ pkgs:
       - hwdetect
       - hwinfo
       - hypridle
+      - hyprland-protocols
       - hyprlock
       - hyprpaper
       - hyprpicker
