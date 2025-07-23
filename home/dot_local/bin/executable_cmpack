@@ -44,7 +44,7 @@ elif [[ "$OS" == "linux" ]]; then
         print_color "$RED" "❌ Only Arch Linux and Fedora are supported on Linux systems"
         exit 1
     fi
-    
+
     # Check if brew is also available on Linux
     if command -v brew &> /dev/null; then
         USE_BREW=true
@@ -138,7 +138,7 @@ mkdir -p "$BACKUP_DIR"
 BACKUP_FILENAME=$(basename "$YAML_FILE")
 BACKUP_PATH="$BACKUP_DIR/${BACKUP_FILENAME}.bak.$TIMESTAMP"
 cp "$YAML_FILE" "$BACKUP_PATH"
-print_color "$GRAY" "💾 Created backup at $BACKUP_PATH"
+# print_color "$GRAY" "💾 Created backup at $BACKUP_PATH"
 
 # Clean up old backups (keep only the 10 most recent)
 MAX_BACKUPS=10
@@ -147,7 +147,7 @@ if ls "$BACKUP_DIR"/${BACKUP_FILENAME}.bak.* >/dev/null 2>&1; then
     if [[ $BACKUP_COUNT -gt $MAX_BACKUPS ]]; then
         EXCESS_COUNT=$((BACKUP_COUNT - MAX_BACKUPS))
         ls -1t "$BACKUP_DIR"/${BACKUP_FILENAME}.bak.* | tail -n $EXCESS_COUNT | xargs rm -f
-        print_color "$GRAY" "🧹 Cleaned up $EXCESS_COUNT old backup(s), keeping $MAX_BACKUPS most recent"
+        # print_color "$GRAY" "🧹 Cleaned up $EXCESS_COUNT old backup(s), keeping $MAX_BACKUPS most recent"
     fi
 fi
 
@@ -165,10 +165,10 @@ if [[ "$USE_BREW" == true ]]; then
     print_color "$CYAN" "Found ${#INSTALLED_BREWS[@]} installed formulas and ${#INSTALLED_CASKS[@]} casks"
 fi
 
-# Get native packages if available  
+# Get native packages if available
 if [[ "$USE_NATIVE" == true ]]; then
     print_color "$BLUE" "🔍 Getting installed $NATIVE_PKG_MANAGER packages..."
-    
+
     case "$NATIVE_PKG_MANAGER" in
         pacman)
             # Get explicitly installed packages (not dependencies)
@@ -179,7 +179,7 @@ if [[ "$USE_NATIVE" == true ]]; then
             INSTALLED_NATIVE_WITH_REPOS=($(dnf repoquery --userinstalled --qf '%{name}|%{from_repo}\n' | sort | uniq))
             INSTALLED_NATIVE=()
             INSTALLED_NATIVE_REPOS=()
-            
+
             # Parse package names and repos
             for pkg_repo in "${INSTALLED_NATIVE_WITH_REPOS[@]}"; do
                 pkg_name="${pkg_repo%|*}"
@@ -187,13 +187,13 @@ if [[ "$USE_NATIVE" == true ]]; then
                 INSTALLED_NATIVE+=("$pkg_name")
                 INSTALLED_NATIVE_REPOS+=("$repo_name")
             done
-            
+
             # Collect unique repositories (excluding default ones)
             UNIQUE_REPOS=()
             for repo in "${INSTALLED_NATIVE_REPOS[@]}"; do
                 # Skip default repos and unknown/commandline installs
-                if [[ "$repo" != "anaconda" && "$repo" != "fedora" && "$repo" != "updates" && 
-                      "$repo" != "<unknown>" && "$repo" != "@commandline" && 
+                if [[ "$repo" != "anaconda" && "$repo" != "fedora" && "$repo" != "updates" &&
+                      "$repo" != "<unknown>" && "$repo" != "@commandline" &&
                       ! " ${UNIQUE_REPOS[*]:-} " =~ " ${repo} " ]]; then
                     UNIQUE_REPOS+=("$repo")
                 fi
@@ -270,7 +270,7 @@ if [[ "$USE_NATIVE" == true ]]; then
     else
         NATIVE_YAML_FILE="$HOME/.local/share/chezmoi/home/.chezmoidata/pkgs.yml"
     fi
-    
+
     if [[ -f "$NATIVE_YAML_FILE" ]]; then
         # Parse pkgs.yml structure
         IN_OS_SECTION=false
@@ -376,7 +376,7 @@ update_brew_manifest() {
     local in_os_casks=false
     local in_shared_brews=false
     local in_shared_casks=false
-    
+
     while IFS= read -r line; do
         # Track sections
         if [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]]; then
@@ -484,13 +484,13 @@ update_brew_manifest() {
     mv "$temp_file" "$file"
 }
 
-# Function to update native package manifest file  
+# Function to update native package manifest file
 update_native_manifest() {
     local file="$1"
     local temp_file="$(mktemp)"
     local in_os_section=false
     local in_pkg_section=false
-    
+
     while IFS= read -r line; do
         # Track sections
         if [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]]; then
@@ -555,24 +555,24 @@ update_native_manifest() {
 # Function to add repos section to native manifest
 add_repos_section() {
     local file="$1"
-    
+
     if [[ ${#UNIQUE_REPOS[@]} -eq 0 ]]; then
         return
     fi
-    
+
     # Check if repos section already exists
     if grep -q "^[[:space:]]*repos:[[:space:]]*$" "$file"; then
         print_color "$BLUE" "📦 Repos section already exists, skipping..."
         return
     fi
-    
+
     print_color "$BLUE" "📦 Adding repos section with ${#UNIQUE_REPOS[@]} repositories..."
-    
+
     # Find the fedora section and add repos before dnf
     local temp_file="$(mktemp)"
     local in_fedora_section=false
     local added_repos=false
-    
+
     while IFS= read -r line; do
         if [[ "$line" =~ ^[[:space:]]*fedora:[[:space:]]*$ ]]; then
             in_fedora_section=true
@@ -593,7 +593,7 @@ add_repos_section() {
             fi
         fi
     done < "$file"
-    
+
     mv "$temp_file" "$file"
 }
 
@@ -610,11 +610,11 @@ if [[ "$USE_NATIVE" == true ]]; then
     else
         NATIVE_YAML_FILE="$HOME/.local/share/chezmoi/home/.chezmoidata/pkgs.yml"
     fi
-    
+
     if [[ -f "$NATIVE_YAML_FILE" ]]; then
         print_color "$BLUE" "🔄 Updating native package manifest..."
         update_native_manifest "$NATIVE_YAML_FILE"
-        
+
         # Add repos section if we have unique repos
         if [[ "$NATIVE_PKG_MANAGER" == "dnf" && ${#UNIQUE_REPOS[@]} -gt 0 ]]; then
             add_repos_section "$NATIVE_YAML_FILE"

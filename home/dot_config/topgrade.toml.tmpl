@@ -89,7 +89,9 @@ no_self_update = false
 # Commands to run before anything
 # Commands to run before anything
 [pre_commands]
+{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.osRelease.id "arch") }}
 hyprpm = "hyprpm update -v"
+{{ end }}
 # Commands to run after anything
 [post_commands]
 
