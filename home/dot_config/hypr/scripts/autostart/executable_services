@@ -20,7 +20,7 @@ swaync &
 swayosd-server &
 
 # Idle daemon to screen lock
-hypridle &
+#hypridle &
 
 # Clipboard
 wl-paste --watch cliphist store &

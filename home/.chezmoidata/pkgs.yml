@@ -23,6 +23,7 @@ pkgs:
       - blueman
       - bluez
       - bluez-utils
+      - brightnessctl
       - btop
       - btrfs-progs
       - cantarell-fonts
@@ -31,6 +32,7 @@ pkgs:
       - checkupdates-with-aur
       - chezmoi
       - claude-code
+      - cliphist
       - cockpit
       - cockpit-docker
       - cockpit-files
@@ -125,7 +127,10 @@ pkgs:
       - htop
       - hwdetect
       - hwinfo
+      - hypridle
+      - hyprlock
       - hyprpaper
+      - hyprpicker
       - hyprpolkitagent
       - hyprshade
       - hyprsunset
@@ -293,6 +298,7 @@ pkgs:
       - wget
       - which
       - wl-clip-persist
+      - wl-clipboard
       - wlr-randr
       - wmctrl
       - wpa_supplicant
@@ -300,6 +306,7 @@ pkgs:
       - xcape
       - xclip
       - xdg-desktop-portal-gnome
+      - xdg-desktop-portal-hyprland
       - xdg-ninja
       - xdg-utils
       - xf86-input-libinput
@@ -337,8 +344,14 @@ pkgs:
       - copr:copr.fedorainfracloud.org:lilay:topgrade
       - copr:copr.fedorainfracloud.org:lihaohong:yazi
     dnf:
-      - fish
       - 1password-cli
+      - Nessus
+      - NetworkManager
+      - NetworkManager-bluetooth
+      - NetworkManager-team
+      - NetworkManager-wifi
+      - NetworkManager-wwan
+      - PackageKit
       - abrt-cli
       - acl
       - age
@@ -377,8 +390,8 @@ pkgs:
       - cifs-utils
       - cirrus-audio-firmware
       - cockpit
-      - cockpit-files
       - cockpit-file-sharing
+      - cockpit-files
       - cockpit-machines
       - cockpit-networkmanager
       - cockpit-packagekit
@@ -400,10 +413,10 @@ pkgs:
       - dhcp-client
       - diffstat
       - dmg2img
+      - dnf-plugins-core
       - dnf5
       - dnf5-plugin-automatic
       - dnf5-plugins
-      - dnf-plugins-core
       - dnsmasq
       - docker-buildx-plugin
       - docker-ce
@@ -431,6 +444,7 @@ pkgs:
       - firefox
       - firefox-langpacks
       - firewalld
+      - fish
       - flatpak-libs
       - flite
       - fpaste
@@ -584,13 +598,7 @@ pkgs:
       - ncdu
       - ncurses
       - ndctl-libs
-      - Nessus
       - net-tools
-      - NetworkManager
-      - NetworkManager-bluetooth
-      - NetworkManager-team
-      - NetworkManager-wifi
-      - NetworkManager-wwan
       - nfs-utils
       - nmap
       - nmap-ncat
@@ -603,13 +611,12 @@ pkgs:
       - nvme-cli
       - nxpwireless-firmware
       - oniguruma-devel
+      - open-vm-tools
       - openal-soft
       - opensc
       - openssh-clients
       - openssh-server
-      - open-vm-tools
       - ostree-libs
-      - PackageKit
       - parted
       - pass
       - passwdqc
@@ -686,6 +693,7 @@ pkgs:
       - rsyslog
       - rubberband-libs
       - rustup
+      - s-nail
       - samba
       - scrub
       - seabios-bin
@@ -698,7 +706,6 @@ pkgs:
       - shim-x64
       - slang
       - smartmontools
-      - s-nail
       - snapper
       - snapraid
       - sord
