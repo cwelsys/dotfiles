@@ -5,6 +5,26 @@
 {{ $pkgs := .pkgs.debian.apt }}
 sudo apt install {{ $pkgs | quoteList | join " " }} -y
 {{   else if eq .chezmoi.osRelease.id "fedora" }}
+{{     if hasKey .pkgs.fedora "repos" }}
+# Enable required repositories
+{{ range .pkgs.fedora.repos }}
+if ! dnf repolist --enabled | grep -q "{{ . }}"; then
+    echo "Enabling repository: {{ . }}"
+{{       if hasPrefix . "copr:" }}
+    # COPR repository
+{{         $coprName := . | replace "copr:copr.fedorainfracloud.org:" "" }}
+    sudo dnf copr enable {{ $coprName }} -y
+{{       else }}
+    # Non-COPR repository - show manual instruction
+    echo "Repository '{{ . }}' needs to be enabled manually."
+    echo "This repository was detected by cmpack but requires manual setup."
+    echo "Please refer to the repository documentation for enabling '{{ . }}'"
+{{       end }}
+fi
+{{ end }}
+{{     end }}
+
+# Install packages
 {{ $pkgs := .pkgs.fedora.dnf }}
 sudo dnf install {{ $pkgs | quoteList | join " " }} -y
 {{   else if eq .chezmoi.osRelease.id "arch" }}

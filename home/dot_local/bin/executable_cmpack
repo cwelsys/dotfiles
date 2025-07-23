@@ -23,31 +23,34 @@ PKG_MANAGER=""
 OS_SECTION=""
 YAML_FILE=""
 USE_BREW=false
+USE_NATIVE=false
+NATIVE_PKG_MANAGER=""
 
 if [[ "$OS" == "darwin" ]]; then
     PKG_MANAGER="brew"
     OS_SECTION="darwin"
     USE_BREW=true
 elif [[ "$OS" == "linux" ]]; then
-    # Check if brew is available on Linux
-    if command -v brew &> /dev/null; then
-        PKG_MANAGER="brew"
-        OS_SECTION="shared"
-        USE_BREW=true
+    # Detect native package manager first
+    if [[ -f /etc/arch-release ]] || [[ -f /etc/os-release && $(grep -E '^ID=arch$' /etc/os-release) ]]; then
+        NATIVE_PKG_MANAGER="pacman"
+        OS_SECTION="arch"
+        USE_NATIVE=true
+    elif [[ -f /etc/fedora-release ]] || [[ -f /etc/os-release && $(grep -E '^ID=fedora$' /etc/os-release) ]]; then
+        NATIVE_PKG_MANAGER="dnf"
+        OS_SECTION="fedora"
+        USE_NATIVE=true
     else
-        # Support Arch Linux and Fedora
-        if [[ -f /etc/arch-release ]] || [[ -f /etc/os-release && $(grep -E '^ID=arch$' /etc/os-release) ]]; then
-            PKG_MANAGER="pacman"
-            OS_SECTION="arch"
-            USE_BREW=false
-        elif [[ -f /etc/fedora-release ]] || [[ -f /etc/os-release && $(grep -E '^ID=fedora$' /etc/os-release) ]]; then
-            PKG_MANAGER="dnf"
-            OS_SECTION="fedora"
-            USE_BREW=false
-        else
-            print_color "$RED" "❌ Only Arch Linux and Fedora are supported on Linux systems"
-            exit 1
-        fi
+        print_color "$RED" "❌ Only Arch Linux and Fedora are supported on Linux systems"
+        exit 1
+    fi
+    
+    # Check if brew is also available on Linux
+    if command -v brew &> /dev/null; then
+        USE_BREW=true
+        PKG_MANAGER="brew"  # Primary for file selection logic
+    else
+        PKG_MANAGER="$NATIVE_PKG_MANAGER"
     fi
 else
     print_color "$RED" "❌ Unsupported operating system: $OS (only Darwin, Arch, and Fedora are supported)"
@@ -149,43 +152,72 @@ if ls "$BACKUP_DIR"/${BACKUP_FILENAME}.bak.* >/dev/null 2>&1; then
 fi
 
 # Get currently installed packages
+INSTALLED_BREWS=()
+INSTALLED_CASKS=()
+INSTALLED_NATIVE=()
+
+# Get brew packages if available
 if [[ "$USE_BREW" == true ]]; then
     print_color "$BLUE" "🔍 Getting installed brew packages..."
     # Use 'brew leaves' to get only top-level formulas (not dependencies)
     INSTALLED_BREWS=($(brew leaves))
     INSTALLED_CASKS=($(brew list --cask))
     print_color "$CYAN" "Found ${#INSTALLED_BREWS[@]} installed formulas and ${#INSTALLED_CASKS[@]} casks"
-else
-    print_color "$BLUE" "🔍 Getting installed $PKG_MANAGER packages..."
-    INSTALLED_BREWS=()
-    INSTALLED_CASKS=()
+fi
 
-    case "$PKG_MANAGER" in
+# Get native packages if available  
+if [[ "$USE_NATIVE" == true ]]; then
+    print_color "$BLUE" "🔍 Getting installed $NATIVE_PKG_MANAGER packages..."
+    
+    case "$NATIVE_PKG_MANAGER" in
         pacman)
             # Get explicitly installed packages (not dependencies)
-            INSTALLED_BREWS=($(pacman -Qe | awk '{print $1}' | sort))
+            INSTALLED_NATIVE=($(pacman -Qe | awk '{print $1}' | sort))
             ;;
         dnf)
-            # Get installed packages
-            INSTALLED_BREWS=($(dnf repoquery --installed --qf '%{name}' | sort | uniq))
+            # Get explicitly installed packages (not dependencies) with repo info
+            INSTALLED_NATIVE_WITH_REPOS=($(dnf repoquery --userinstalled --qf '%{name}|%{from_repo}\n' | sort | uniq))
+            INSTALLED_NATIVE=()
+            INSTALLED_NATIVE_REPOS=()
+            
+            # Parse package names and repos
+            for pkg_repo in "${INSTALLED_NATIVE_WITH_REPOS[@]}"; do
+                pkg_name="${pkg_repo%|*}"
+                repo_name="${pkg_repo#*|}"
+                INSTALLED_NATIVE+=("$pkg_name")
+                INSTALLED_NATIVE_REPOS+=("$repo_name")
+            done
+            
+            # Collect unique repositories (excluding default ones)
+            UNIQUE_REPOS=()
+            for repo in "${INSTALLED_NATIVE_REPOS[@]}"; do
+                # Skip default repos and unknown/commandline installs
+                if [[ "$repo" != "anaconda" && "$repo" != "fedora" && "$repo" != "updates" && 
+                      "$repo" != "<unknown>" && "$repo" != "@commandline" && 
+                      ! " ${UNIQUE_REPOS[*]:-} " =~ " ${repo} " ]]; then
+                    UNIQUE_REPOS+=("$repo")
+                fi
+            done
             ;;
         *)
-            print_color "$RED" "❌ Unsupported package manager: $PKG_MANAGER"
+            print_color "$RED" "❌ Unsupported package manager: $NATIVE_PKG_MANAGER"
             exit 1
             ;;
     esac
 
-    print_color "$CYAN" "Found ${#INSTALLED_BREWS[@]} installed packages"
+    print_color "$CYAN" "Found ${#INSTALLED_NATIVE[@]} installed $NATIVE_PKG_MANAGER packages"
 fi
 
 # Parse current manifest to get existing packages
 CURRENT_BREWS=()
 CURRENT_CASKS=()
+CURRENT_NATIVE=()
 IN_OS_BREWS=false
 IN_OS_CASKS=false
 IN_SHARED_BREWS=false
 IN_SHARED_CASKS=false
 
+# Parse brew packages if available
 if [[ "$USE_BREW" == true ]]; then
     # Parse brews.yml structure
     while IFS= read -r line; do
@@ -228,68 +260,101 @@ if [[ "$USE_BREW" == true ]]; then
             fi
         fi
     done < "$YAML_FILE"
-else
-    # Parse pkgs.yml structure
-    IN_OS_SECTION=false
-    IN_PKG_SECTION=false
+fi
 
-    while IFS= read -r line; do
-        # Check section headers
-        if [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]]; then
-            IN_OS_SECTION=true
-            IN_PKG_SECTION=false
-        elif [[ "$line" =~ ^[[:space:]]*${PKG_MANAGER}:[[:space:]]*$ ]] && [[ "$IN_OS_SECTION" == true ]]; then
-            IN_PKG_SECTION=true
-        elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]] && [[ "$IN_OS_SECTION" == true ]]; then
-            # Different package manager section
-            IN_PKG_SECTION=false
-        elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]] && [[ "$IN_OS_SECTION" == false ]]; then
-            # Different OS section
-            IN_OS_SECTION=false
-            IN_PKG_SECTION=false
-        # Parse package entries
-        elif [[ "$line" =~ ^[[:space:]]*-[[:space:]]+([^[:space:]]+) ]] && [[ "$IN_PKG_SECTION" == true ]]; then
-            PKG="${BASH_REMATCH[1]}"
-            CURRENT_BREWS+=("$PKG")
-        fi
-    done < "$YAML_FILE"
+# Parse native packages if available and file exists
+if [[ "$USE_NATIVE" == true ]]; then
+    NATIVE_YAML_FILE=""
+    if [[ -n "${DOTS:-}" ]]; then
+        NATIVE_YAML_FILE="$DOTS/.chezmoidata/pkgs.yml"
+    else
+        NATIVE_YAML_FILE="$HOME/.local/share/chezmoi/home/.chezmoidata/pkgs.yml"
+    fi
+    
+    if [[ -f "$NATIVE_YAML_FILE" ]]; then
+        # Parse pkgs.yml structure
+        IN_OS_SECTION=false
+        IN_PKG_SECTION=false
 
+        while IFS= read -r line; do
+            # Check section headers
+            if [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]]; then
+                IN_OS_SECTION=true
+                IN_PKG_SECTION=false
+            elif [[ "$line" =~ ^[[:space:]]*${NATIVE_PKG_MANAGER}:[[:space:]]*$ ]] && [[ "$IN_OS_SECTION" == true ]]; then
+                IN_PKG_SECTION=true
+            elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]] && [[ "$IN_OS_SECTION" == true ]]; then
+                # Different package manager section
+                IN_PKG_SECTION=false
+            elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]] && [[ "$IN_OS_SECTION" == false ]]; then
+                # Different OS section
+                IN_OS_SECTION=false
+                IN_PKG_SECTION=false
+            # Parse package entries
+            elif [[ "$line" =~ ^[[:space:]]*-[[:space:]]+([^[:space:]]+) ]] && [[ "$IN_PKG_SECTION" == true ]]; then
+                PKG="${BASH_REMATCH[1]}"
+                CURRENT_NATIVE+=("$PKG")
+            fi
+        done < "$NATIVE_YAML_FILE"
+    fi
 fi
 
 # Find differences
 NEW_BREWS=()
 NEW_CASKS=()
+NEW_NATIVE=()
 REMOVED_BREWS=()
 REMOVED_CASKS=()
+REMOVED_NATIVE=()
 
 # Find new packages (deduplicate as we go)
-for pkg in "${INSTALLED_BREWS[@]}"; do
-    if [[ ! " ${CURRENT_BREWS[*]:-} " =~ " ${pkg} " ]]; then
-        NEW_BREWS+=("$pkg")
-    fi
-done
+if [[ "$USE_BREW" == true ]]; then
+    for pkg in "${INSTALLED_BREWS[@]}"; do
+        if [[ ! " ${CURRENT_BREWS[*]:-} " =~ " ${pkg} " ]]; then
+            NEW_BREWS+=("$pkg")
+        fi
+    done
 
-for pkg in "${INSTALLED_CASKS[@]}"; do
-    if [[ ! " ${CURRENT_CASKS[*]:-} " =~ " ${pkg} " ]]; then
-        NEW_CASKS+=("$pkg")
-    fi
-done
+    for pkg in "${INSTALLED_CASKS[@]}"; do
+        if [[ ! " ${CURRENT_CASKS[*]:-} " =~ " ${pkg} " ]]; then
+            NEW_CASKS+=("$pkg")
+        fi
+    done
+fi
 
-# Find removed packages - use the already parsed CURRENT_BREWS and CURRENT_CASKS
-for pkg in "${CURRENT_BREWS[@]}"; do
-    if [[ ! " ${INSTALLED_BREWS[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${REMOVED_BREWS[*]:-} " =~ " ${pkg} " ]]; then
-        REMOVED_BREWS+=("$pkg")
-    fi
-done
+if [[ "$USE_NATIVE" == true ]]; then
+    for pkg in "${INSTALLED_NATIVE[@]}"; do
+        if [[ ! " ${CURRENT_NATIVE[*]:-} " =~ " ${pkg} " ]]; then
+            NEW_NATIVE+=("$pkg")
+        fi
+    done
+fi
 
-for pkg in "${CURRENT_CASKS[@]}"; do
-    if [[ ! " ${INSTALLED_CASKS[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${REMOVED_CASKS[*]:-} " =~ " ${pkg} " ]]; then
-        REMOVED_CASKS+=("$pkg")
-    fi
-done
+# Find removed packages - use the already parsed CURRENT arrays
+if [[ "$USE_BREW" == true ]]; then
+    for pkg in "${CURRENT_BREWS[@]}"; do
+        if [[ ! " ${INSTALLED_BREWS[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${REMOVED_BREWS[*]:-} " =~ " ${pkg} " ]]; then
+            REMOVED_BREWS+=("$pkg")
+        fi
+    done
+
+    for pkg in "${CURRENT_CASKS[@]}"; do
+        if [[ ! " ${INSTALLED_CASKS[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${REMOVED_CASKS[*]:-} " =~ " ${pkg} " ]]; then
+            REMOVED_CASKS+=("$pkg")
+        fi
+    done
+fi
+
+if [[ "$USE_NATIVE" == true ]]; then
+    for pkg in "${CURRENT_NATIVE[@]}"; do
+        if [[ ! " ${INSTALLED_NATIVE[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${REMOVED_NATIVE[*]:-} " =~ " ${pkg} " ]]; then
+            REMOVED_NATIVE+=("$pkg")
+        fi
+    done
+fi
 
 # Check if any changes are needed
-if [[ ${#NEW_BREWS[@]} -eq 0 && ${#NEW_CASKS[@]} -eq 0 && ${#REMOVED_BREWS[@]} -eq 0 && ${#REMOVED_CASKS[@]} -eq 0 ]]; then
+if [[ ${#NEW_BREWS[@]} -eq 0 && ${#NEW_CASKS[@]} -eq 0 && ${#NEW_NATIVE[@]} -eq 0 && ${#REMOVED_BREWS[@]} -eq 0 && ${#REMOVED_CASKS[@]} -eq 0 && ${#REMOVED_NATIVE[@]} -eq 0 ]]; then
     print_color "$GREEN" "✅ No changes needed - manifest is up to date"
     exit 0
 fi
@@ -297,135 +362,265 @@ fi
 # Store pre-deduplication counts for comparison
 PRE_DEDUP_NEW_BREWS=${#NEW_BREWS[@]}
 PRE_DEDUP_NEW_CASKS=${#NEW_CASKS[@]}
+PRE_DEDUP_NEW_NATIVE=${#NEW_NATIVE[@]}
 PRE_DEDUP_REMOVED_BREWS=${#REMOVED_BREWS[@]}
 PRE_DEDUP_REMOVED_CASKS=${#REMOVED_CASKS[@]}
+PRE_DEDUP_REMOVED_NATIVE=${#REMOVED_NATIVE[@]}
 
-# Create updated content
-TEMP_FILE=$(mktemp)
-trap 'rm -f "$TEMP_FILE"* "$NEW_PACKAGES_FILE" "$NEW_CASKS_FILE" 2>/dev/null' EXIT
-IN_OS_SECTION=false
-IN_OS_BREWS=false
-IN_OS_CASKS=false
-
-while IFS= read -r line; do
-    # Track sections
-    if [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]]; then
-        IN_OS_SECTION=true
-        IN_OS_BREWS=false
-        IN_OS_CASKS=false
-    elif [[ "$line" =~ ^[[:space:]]*shared:[[:space:]]*$ ]]; then
-        IN_OS_SECTION=false
-        IN_OS_BREWS=false
-        IN_OS_CASKS=false
-    elif [[ "$IN_OS_SECTION" == true ]]; then
-        if [[ "$USE_BREW" == true ]]; then
-            if [[ "$line" =~ ^[[:space:]]*brews:[[:space:]]*$ ]]; then
-                IN_OS_BREWS=true
-                IN_OS_CASKS=false
-            elif [[ "$line" =~ ^[[:space:]]*casks:[[:space:]]*$ ]]; then
-                IN_OS_BREWS=false
-                IN_OS_CASKS=true
+# Function to update brew manifest file
+update_brew_manifest() {
+    local file="$1"
+    local temp_file="$(mktemp)"
+    local in_os_section=false
+    local in_os_brews=false
+    local in_os_casks=false
+    local in_shared_brews=false
+    local in_shared_casks=false
+    
+    while IFS= read -r line; do
+        # Track sections
+        if [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]]; then
+            in_os_section=true
+            in_os_brews=false
+            in_os_casks=false
+            in_shared_brews=false
+            in_shared_casks=false
+        elif [[ "$line" =~ ^[[:space:]]*shared:[[:space:]]*$ ]]; then
+            in_os_section=false
+            in_os_brews=false
+            in_os_casks=false
+            in_shared_brews=false
+            in_shared_casks=false
+        elif [[ "$line" =~ ^[[:space:]]*brews:[[:space:]]*$ ]]; then
+            if [[ "$in_os_section" == true ]]; then
+                in_os_brews=true
+                in_os_casks=false
+            else
+                in_shared_brews=true
+                in_shared_casks=false
             fi
+        elif [[ "$line" =~ ^[[:space:]]*casks:[[:space:]]*$ ]]; then
+            if [[ "$in_os_section" == true ]]; then
+                in_os_brews=false
+                in_os_casks=true
+            else
+                in_shared_brews=false
+                in_shared_casks=true
+            fi
+        fi
+
+        # Skip removed packages
+        local skip_line=false
+        if [[ "$line" =~ ^[[:space:]]*-[[:space:]]+([^[:space:]]+) ]]; then
+            local pkg="${BASH_REMATCH[1]}"
+            if [[ ("$in_os_brews" == true || "$in_shared_brews" == true) && " ${REMOVED_BREWS[*]:-} " =~ " ${pkg} " ]]; then
+                skip_line=true
+            elif [[ ("$in_os_casks" == true || "$in_shared_casks" == true) && " ${REMOVED_CASKS[*]:-} " =~ " ${pkg} " ]]; then
+                skip_line=true
+            fi
+        fi
+
+        if [[ "$skip_line" == false ]]; then
+            echo "$line" >> "$temp_file"
+        fi
+
+        # Add new packages at the end of each section
+        if [[ ("$in_os_brews" == true || "$in_shared_brews" == true) && "$line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
+            local next_line=$(sed -n "$((NR+1))p" "$file" 2>/dev/null || echo "")
+            if [[ ! "$next_line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
+                for pkg in "${NEW_BREWS[@]}"; do
+                    echo "      - $pkg" >> "$temp_file"
+                done
+                NEW_BREWS=()
+            fi
+        elif [[ ("$in_os_casks" == true || "$in_shared_casks" == true) && "$line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
+            local next_line=$(sed -n "$((NR+1))p" "$file" 2>/dev/null || echo "")
+            if [[ ! "$next_line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
+                for pkg in "${NEW_CASKS[@]}"; do
+                    echo "      - $pkg" >> "$temp_file"
+                done
+                NEW_CASKS=()
+            fi
+        fi
+    done < "$file"
+
+    # Handle empty sections
+    if [[ ${#NEW_BREWS[@]} -gt 0 ]]; then
+        local new_packages_file=$(mktemp)
+        printf '      - %s\n' "${NEW_BREWS[@]}" > "$new_packages_file"
+        awk -v newfile="$new_packages_file" '
+            /^[[:space:]]*brews:[[:space:]]*$/ {
+                print $0
+                while ((getline line < newfile) > 0) {
+                    print line
+                }
+                close(newfile)
+                next
+            }
+            {print}
+        ' "$temp_file" > "$temp_file.new"
+        mv "$temp_file.new" "$temp_file"
+        rm -f "$new_packages_file"
+    fi
+
+    if [[ ${#NEW_CASKS[@]} -gt 0 ]]; then
+        local new_casks_file=$(mktemp)
+        printf '      - %s\n' "${NEW_CASKS[@]}" > "$new_casks_file"
+        awk -v newfile="$new_casks_file" '
+            /^[[:space:]]*casks:[[:space:]]*$/ {
+                print $0
+                while ((getline line < newfile) > 0) {
+                    print line
+                }
+                close(newfile)
+                next
+            }
+            {print}
+        ' "$temp_file" > "$temp_file.new"
+        mv "$temp_file.new" "$temp_file"
+        rm -f "$new_casks_file"
+    fi
+
+    mv "$temp_file" "$file"
+}
+
+# Function to update native package manifest file  
+update_native_manifest() {
+    local file="$1"
+    local temp_file="$(mktemp)"
+    local in_os_section=false
+    local in_pkg_section=false
+    
+    while IFS= read -r line; do
+        # Track sections
+        if [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]]; then
+            in_os_section=true
+            in_pkg_section=false
+        elif [[ "$line" =~ ^[[:space:]]*${NATIVE_PKG_MANAGER}:[[:space:]]*$ ]] && [[ "$in_os_section" == true ]]; then
+            in_pkg_section=true
+        elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]] && [[ "$in_os_section" == true ]]; then
+            in_pkg_section=false
+        elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]] && [[ "$in_os_section" == false ]]; then
+            in_os_section=false
+            in_pkg_section=false
+        fi
+
+        # Skip removed packages
+        local skip_line=false
+        if [[ "$line" =~ ^[[:space:]]*-[[:space:]]+([^[:space:]]+) ]] && [[ "$in_pkg_section" == true ]]; then
+            local pkg="${BASH_REMATCH[1]}"
+            if [[ " ${REMOVED_NATIVE[*]:-} " =~ " ${pkg} " ]]; then
+                skip_line=true
+            fi
+        fi
+
+        if [[ "$skip_line" == false ]]; then
+            echo "$line" >> "$temp_file"
+        fi
+
+        # Add new packages at the end of the section
+        if [[ "$in_pkg_section" == true && "$line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
+            local next_line=$(sed -n "$((NR+1))p" "$file" 2>/dev/null || echo "")
+            if [[ ! "$next_line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
+                for pkg in "${NEW_NATIVE[@]}"; do
+                    echo "      - $pkg" >> "$temp_file"
+                done
+                NEW_NATIVE=()
+            fi
+        fi
+    done < "$file"
+
+    # Handle empty sections
+    if [[ ${#NEW_NATIVE[@]} -gt 0 ]]; then
+        local new_packages_file=$(mktemp)
+        printf '      - %s\n' "${NEW_NATIVE[@]}" > "$new_packages_file"
+        awk -v section="$NATIVE_PKG_MANAGER" -v newfile="$new_packages_file" '
+            /^[[:space:]]*'"$NATIVE_PKG_MANAGER"':[[:space:]]*$/ {
+                print $0
+                while ((getline line < newfile) > 0) {
+                    print line
+                }
+                close(newfile)
+                next
+            }
+            {print}
+        ' "$temp_file" > "$temp_file.new"
+        mv "$temp_file.new" "$temp_file"
+        rm -f "$new_packages_file"
+    fi
+
+    mv "$temp_file" "$file"
+}
+
+# Function to add repos section to native manifest
+add_repos_section() {
+    local file="$1"
+    
+    if [[ ${#UNIQUE_REPOS[@]} -eq 0 ]]; then
+        return
+    fi
+    
+    # Check if repos section already exists
+    if grep -q "^[[:space:]]*repos:[[:space:]]*$" "$file"; then
+        print_color "$BLUE" "📦 Repos section already exists, skipping..."
+        return
+    fi
+    
+    print_color "$BLUE" "📦 Adding repos section with ${#UNIQUE_REPOS[@]} repositories..."
+    
+    # Find the fedora section and add repos before dnf
+    local temp_file="$(mktemp)"
+    local in_fedora_section=false
+    local added_repos=false
+    
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^[[:space:]]*fedora:[[:space:]]*$ ]]; then
+            in_fedora_section=true
+            echo "$line" >> "$temp_file"
+        elif [[ "$in_fedora_section" == true && "$line" =~ ^[[:space:]]*dnf:[[:space:]]*$ ]]; then
+            # Add repos section before dnf
+            echo "    repos:" >> "$temp_file"
+            for repo in "${UNIQUE_REPOS[@]}"; do
+                echo "      - $repo" >> "$temp_file"
+            done
+            echo "$line" >> "$temp_file"
+            added_repos=true
+            in_fedora_section=false
         else
-            if [[ "$line" =~ ^[[:space:]]*${PKG_MANAGER}:[[:space:]]*$ ]]; then
-                IN_OS_BREWS=true
-                IN_OS_CASKS=false
+            echo "$line" >> "$temp_file"
+            if [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]] && [[ "$in_fedora_section" == true ]]; then
+                in_fedora_section=false
             fi
         fi
-    fi
+    done < "$file"
+    
+    mv "$temp_file" "$file"
+}
 
-    # Skip removed packages
-    SKIP_LINE=false
-    if [[ "$line" =~ ^[[:space:]]*-[[:space:]]+([^[:space:]]+) ]]; then
-        PKG="${BASH_REMATCH[1]}"
-        if [[ "$IN_OS_BREWS" == true && " ${REMOVED_BREWS[*]:-} " =~ " ${PKG} " ]]; then
-            SKIP_LINE=true
-        elif [[ "$IN_OS_CASKS" == true && " ${REMOVED_CASKS[*]:-} " =~ " ${PKG} " ]]; then
-            SKIP_LINE=true
-        fi
-    fi
+# Update manifest files
+if [[ "$USE_BREW" == true ]]; then
+    print_color "$BLUE" "🔄 Updating brew manifest..."
+    update_brew_manifest "$YAML_FILE"
+fi
 
-    if [[ "$SKIP_LINE" == false ]]; then
-        echo "$line" >> "$TEMP_FILE"
-    fi
-
-    # Add new packages at the end of each section
-    if [[ "$IN_OS_BREWS" == true && "$line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
-        # Check if this is the last brew in the section
-        NEXT_LINE=$(sed -n "$((NR+1))p" "$YAML_FILE" 2>/dev/null || echo "")
-        if [[ ! "$NEXT_LINE" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
-            # Add new brews
-            for pkg in "${NEW_BREWS[@]}"; do
-                echo "      - $pkg" >> "$TEMP_FILE"
-            done
-            NEW_BREWS=()  # Clear array to avoid duplicates
-        fi
-    elif [[ "$IN_OS_CASKS" == true && "$line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
-        # Check if this is the last cask in the section
-        NEXT_LINE=$(sed -n "$((NR+1))p" "$YAML_FILE" 2>/dev/null || echo "")
-        if [[ ! "$NEXT_LINE" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
-            # Add new casks
-            for pkg in "${NEW_CASKS[@]}"; do
-                echo "      - $pkg" >> "$TEMP_FILE"
-            done
-            NEW_CASKS=()  # Clear array to avoid duplicates
-        fi
-    fi
-done < "$YAML_FILE"
-
-# Handle case where sections are empty and we need to add first packages
-if [[ ${#NEW_BREWS[@]} -gt 0 ]]; then
-    # Find the brews section and add packages
-    if [[ "$USE_BREW" == true ]]; then
-        SECTION_NAME="brews"
+if [[ "$USE_NATIVE" == true ]]; then
+    NATIVE_YAML_FILE=""
+    if [[ -n "${DOTS:-}" ]]; then
+        NATIVE_YAML_FILE="$DOTS/.chezmoidata/pkgs.yml"
     else
-        SECTION_NAME="$PKG_MANAGER"
+        NATIVE_YAML_FILE="$HOME/.local/share/chezmoi/home/.chezmoidata/pkgs.yml"
     fi
-
-    # Create a temporary file with the new packages
-    NEW_PACKAGES_FILE=$(mktemp)
-    printf '      - %s\n' "${NEW_BREWS[@]}" > "$NEW_PACKAGES_FILE"
-
-    # Use awk to insert after the section header
-    awk -v section="$SECTION_NAME" -v newfile="$NEW_PACKAGES_FILE" '
-        /^[[:space:]]*'"$SECTION_NAME"':[[:space:]]*$/ {
-            print $0
-            while ((getline line < newfile) > 0) {
-                print line
-            }
-            close(newfile)
-            next
-        }
-        {print}
-    ' "$TEMP_FILE" > "$TEMP_FILE.new"
-
-    mv "$TEMP_FILE.new" "$TEMP_FILE"
+    
+    if [[ -f "$NATIVE_YAML_FILE" ]]; then
+        print_color "$BLUE" "🔄 Updating native package manifest..."
+        update_native_manifest "$NATIVE_YAML_FILE"
+        
+        # Add repos section if we have unique repos
+        if [[ "$NATIVE_PKG_MANAGER" == "dnf" && ${#UNIQUE_REPOS[@]} -gt 0 ]]; then
+            add_repos_section "$NATIVE_YAML_FILE"
+        fi
+    fi
 fi
-
-if [[ ${#NEW_CASKS[@]} -gt 0 ]]; then
-    # Find the casks section and add packages
-    NEW_CASKS_FILE=$(mktemp)
-    printf '      - %s\n' "${NEW_CASKS[@]}" > "$NEW_CASKS_FILE"
-
-    # Use awk to insert after the casks section header
-    awk -v newfile="$NEW_CASKS_FILE" '
-        /^[[:space:]]*casks:[[:space:]]*$/ {
-            print $0
-            while ((getline line < newfile) > 0) {
-                print line
-            }
-            close(newfile)
-            next
-        }
-        {print}
-    ' "$TEMP_FILE" > "$TEMP_FILE.new"
-
-    mv "$TEMP_FILE.new" "$TEMP_FILE"
-    rm "$NEW_CASKS_FILE"
-fi
-
-# Replace original file and perform final deduplication
-mv "$TEMP_FILE" "$YAML_FILE"
 
 # Store original file for comparison
 ORIGINAL_PACKAGES=$(mktemp)

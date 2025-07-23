@@ -1,52 +1,10 @@
 pkgs:
   darwin:
     brews:
-      - armadillo
-      - atuin
-      - bear
-      - boost
-      - carapace
-      - colima
-      - coreutils
-      - docker
-      - dockutil
-      - dooit
-      - ducker
       - dust
-      - fastfetch
-      - felixkratz/formulae/borders
-      - felixkratz/formulae/sketchybar
-      - fish
-      - gawk
-      - ghostscript
-      - git
-      - gnupg
       - go
-      - gsl
-      - ifstat
-      - imagemagick
       - jandedobbeleer/aliae/aliae
       - lazyjournal
-      - llvm
-      - mas
-      - nmap
-      - nowplaying-cli
-      - nushell
-      - openjdk@11
-      - php
-      - pinentry-mac
-      - pkgconf
-      - pngpaste
-      - rclone
-      - restic
-      - rsync
-      - sf
-      - sniffnet
-      - spicetify-cli
-      - switchaudio-osx
-      - topgrade
-      - wakeonlan
-      - wget
     casks:
       - 1password-cli
       - alt-tab
@@ -105,7 +63,6 @@ pkgs:
       - dua-cli
       - eza
       - fd
-      - fzf
       - gh
       - git-cliff
       - git-delta
@@ -113,21 +70,28 @@ pkgs:
       - git-flow
       - git-lfs
       - gum
-      - jq
+      - jandedobbeleer/oh-my-posh/oh-my-posh
+      - k3d
+      - kind
+      - kustomize
       - lazydocker
       - lazygit
+      - lesspipe
       - luarocks
+      - minikube
       - navi
       - neovim
-      - oh-my-posh
       - rich-cli
       - ripgrep
       - shellcheck
       - starship
+      - stow
+      - tea
       - tealdeer
       - thefuck
       - wrk
       - xdg-ninja
+      - xxh
       - yazi
       - yq
       - zoxide
