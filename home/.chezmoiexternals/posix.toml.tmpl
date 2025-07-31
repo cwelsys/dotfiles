@@ -1,11 +1,5 @@
 {{ if eq .chezmoi.os "linux" "darwin" }}
 
-[".config/ghostty/themes/catppuccin-mocha.conf"]
-type = "file"
-url = "https://github.com/catppuccin/ghostty/raw/refs/heads/main/themes/catppuccin-mocha.conf"
-clone.args = ['--depth', '1']
-pull.args = ['--depth', '1']
-
 [".config/btop/themes"]
 type = "archive"
 url = "https://github.com/catppuccin/btop/archive/refs/heads/main.zip"

@@ -1,8 +1,13 @@
-font-family = JetBrainsMono Nerd Font
+font-family = FantasqueSansM Nerd Font
 background-blur = true
-font-size = 14
+font-size = 16
 background-opacity = .8969
-theme = catppuccin-mocha.conf
+theme = catppuccin-mocha
 confirm-close-surface = false
 bold-is-bright = false
-cursor-style-blink = false
+cursor-style-blink = true
+quick-terminal-autohide = true
+#quick-terminal-position = center
+#macos-titlebar-style = tabs
+
+keybind = global:cmd+grave_accent=toggle_quick_terminal
