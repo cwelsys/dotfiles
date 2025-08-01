@@ -433,9 +433,6 @@ env:
   - name: BRICK
     value: '/mnt/backup'
     if: eq (env "HOSTNAME") "pbox"
-  - name: DOCKER_HOST
-    value: tcp://psock:2375
-    if: ne (env "HOSTNAME") "pbox"
   - name: OP_BIOMETRIC_UNLOCK_ENABLED
     value: 'true'
     if: match .OS "darwin"
