@@ -1,4 +1,29 @@
-﻿{{- if not .isVM -}}
+﻿clink installscripts "$HOME\.config\clink\scripts"
+
+if (!(Get-Process -Name komorebi -ErrorAction SilentlyContinue)) {
+	komorebic enable-autostart --whkd
+}
+
+if (!(Get-Process -Name yasb -ErrorAction SilentlyContinue)) {
+	yasbc.exe enable-autostart --task
+}
+
+if (Get-Command cargo -ErrorAction SilentlyContinue) {
+	cargo install cargo-update
+	cargo install cargo-cache
+}
+
+if (Get-Command spicetify -ErrorAction SilentlyContinue) {
+	Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/spicetify/spicetify-marketplace/main/resources/install.ps1" | Invoke-Expression
+}
+
+if (Get-Command bat -ErrorAction SilentlyContinue) {
+	Write-Verbose "Building bat theme"
+	bat cache --clear
+	bat cache --build
+}
+
+{{- if not .isVM -}}
 $colors = @{
 	Info    = 'Cyan'
 	Success = 'Green'
@@ -25,7 +50,9 @@ if (Test-Path -Path $soundsPath) {
 	}
 }
 
-Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/spicetify/spicetify-marketplace/main/resources/install.ps1" | Invoke-Expression
+{{- else -}}
+Write-Host "running in vm, skipping sounds" -ForegroundColor Yellow
+{{- end -}}
 
 Write-Host "`n📝 Cursor theme manual installation:" -ForegroundColor $colors.Info
 Write-Host "  1. Download the cursor theme: https://github.com/cwelsys/clicks/raw/refs/heads/main/Bibata/Bibata-Modern.zip" -ForegroundColor $colors.Info
@@ -36,6 +63,4 @@ Write-Host "  5. Open Control Panel → Mouse → Pointers tab" -ForegroundColor
 Write-Host "  6. Select 'Bibata Modern' from the Scheme dropdown" -ForegroundColor $colors.Details
 Write-Host "  7. Click Apply and OK" -ForegroundColor $colors.Details
 
-{{- else -}}
-Write-Host "running in vm, Skipping rice script" -ForegroundColor Yellow
-{{- end -}}
+
