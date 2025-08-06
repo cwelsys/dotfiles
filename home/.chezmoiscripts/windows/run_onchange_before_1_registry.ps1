@@ -113,6 +113,27 @@ Set-ItemProperty -Path $policiesPath -Name "NoDrives" -Value 32 -Type DWord
 Write-Host "...sike" -ForegroundColor DarkGray
 Write-Host "  Set NoDrives value to 32 (hiding F drive)" -ForegroundColor DarkGray
 
+# Set dark theme
+Write-Host "Setting dark theme..." -ForegroundColor Gray
+Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'AppsUseLightTheme' -Value 0
+Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'SystemUsesLightTheme' -Value 0
+
+# Configure dark title bars
+Write-Host "Configuring dark title bars..." -ForegroundColor Gray
+$dwmPath = 'HKCU:\Software\Microsoft\Windows\DWM'
+if (-not (Test-Path $dwmPath)) {
+    New-Item -Path $dwmPath -Force | Out-Null
+}
+
+# Enable color prevalence for title bars
+Set-ItemProperty -Path $dwmPath -Name 'ColorPrevalence' -Value 1 -Type DWord
+
+# Set dark grey accent color for active title bars
+Set-ItemProperty -Path $dwmPath -Name 'AccentColor' -Value 0xff262626 -Type DWord
+
+# Set dark grey accent color for inactive title bars  
+Set-ItemProperty -Path $dwmPath -Name 'AccentColorInactive' -Value 0xff262626 -Type DWord
+
 Write-Host "Registry tweaks applied successfully!" -ForegroundColor Green
 
 

@@ -47,6 +47,9 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Pr
 
 Get-Service sshd | Restart-Service -Force
 
+Write-Host "Disabling UAC..."
+Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableLUA' -Value 0
+
 Write-Host "Enabling Dev mode..."
 Add-WindowsCapability -Online -Name DeveloperMode
 
