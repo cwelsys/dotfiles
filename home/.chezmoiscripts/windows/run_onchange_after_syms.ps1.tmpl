@@ -15,6 +15,9 @@ Write-Color -Text "Processing symbolic links..." -Color DarkMagenta
 $symlinkCount++
 
 try {
+    # Debug: Show what we're processing
+    Write-Color -Text "[symlink] ", "Processing: ", '{{ $targetPath }}', " → ", '{{ $sourcePath }}' -Color Blue, Gray, White, Gray, White
+    
     # Expand environment variables in target path, handle %HOME% -> %USERPROFILE%
     $targetPathExpanded = '{{ $targetPath }}' -replace '%HOME%', '%USERPROFILE%'
     $targetPath = [Environment]::ExpandEnvironmentVariables($targetPathExpanded)
@@ -26,6 +29,10 @@ try {
     } else {
         "$chezmoidir\$sourcePathTemplate"
     }
+    
+    # Debug: Show resolved paths
+    Write-Color -Text "[symlink] ", "Target: ", $targetPath -Color Blue, Gray, White
+    Write-Color -Text "[symlink] ", "Source: ", $sourcePath -Color Blue, Gray, White
 
     # Create target directory if it doesn't exist
     $targetDir = Split-Path -Path $targetPath -Parent
