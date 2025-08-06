@@ -65,6 +65,36 @@ sshId = {{ $sshId | quote }}
   {{- end }}
 {{- end }}
 isWSL = {{ $isWSL }}
+{{- $isVM := false }}
+{{- if eq .chezmoi.os "windows" }}
+  {{- /* Check for VM using multiple methods for robustness */ -}}
+  {{- $computerSystem := output "wmic" "computersystem" "get" "Model" "/value" | trim }}
+  {{- $manufacturer := output "wmic" "computersystem" "get" "Manufacturer" "/value" | trim }}
+  {{- if or (contains $computerSystem "Virtual") (contains $computerSystem "VMware") (contains $manufacturer "VMware") (contains $manufacturer "Microsoft Corporation Virtual") (contains $computerSystem "VirtualBox") (contains $manufacturer "QEMU") }}
+    {{- $isVM = true }}
+  {{- end }}
+{{- else if eq .chezmoi.os "linux" }}
+  {{- /* For Linux systems, check DMI info */ -}}
+  {{- if lookPath "dmidecode" }}
+    {{- $dmiSystem := output "dmidecode" "-s" "system-manufacturer" | trim }}
+    {{- $dmiProduct := output "dmidecode" "-s" "system-product-name" | trim }}
+    {{- if or (contains $dmiSystem "VMware") (contains $dmiSystem "QEMU") (contains $dmiSystem "Microsoft Corporation") (contains $dmiProduct "Virtual") (contains $dmiProduct "VMware") }}
+      {{- $isVM = true }}
+    {{- end }}
+  {{- else if lookPath "systemd-detect-virt" }}
+    {{- $virtCheck := output "systemd-detect-virt" | trim }}
+    {{- if ne $virtCheck "none" }}
+      {{- $isVM = true }}
+    {{- end }}
+  {{- end }}
+{{- else if eq .chezmoi.os "darwin" }}
+  {{- /* For macOS, check if running under virtualization */ -}}
+  {{- $ioreg := output "ioreg" "-l" | toString }}
+  {{- if or (contains $ioreg "VMware") (contains $ioreg "Parallels") (contains $ioreg "VirtualBox") }}
+    {{- $isVM = true }}
+  {{- end }}
+{{- end }}
+isVM = {{ $isVM }}
 
 [age]
   identity = "~/.config/.key"

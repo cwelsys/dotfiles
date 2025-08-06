@@ -1,7 +1,6 @@
 pkgs:
   darwin:
     brews:
-      # Shared brews from brews.yml
       - age
       - armadillo
       - bash-completion@2
@@ -85,7 +84,6 @@ pkgs:
       - yq
       - zoxide
     casks:
-
       - 1password-cli
       - alt-tab
       - atv-remote
@@ -93,6 +91,7 @@ pkgs:
       - betterdisplay
       - blockblock
       - claude
+      - claude-code
       - devtoys
       - dolphin
       - font-fira-code
@@ -140,9 +139,6 @@ pkgs:
       - zoom
   arch:
     pacman:
-      # NOTE: Complete arch package list was truncated in source files
-      # Please add the remaining arch packages from your complete list here
-
       - 1password
       - 1password-cli
       - accountsservice
@@ -203,7 +199,6 @@ pkgs:
       - copr:copr.fedorainfracloud.org:lilay:topgrade
       - copr:copr.fedorainfracloud.org:lihaohong:yazi
     dnf:
-
       - 1password-cli
       - Nessus
       - NetworkManager
@@ -913,23 +908,22 @@ pkgs:
 
 yazi:
   plugins:
-    - "yazi-rs/plugins:chmod"
-    - "yazi-rs/plugins:diff"
-    - "yazi-rs/plugins:full-border"
-    - "yazi-rs/plugins:hide-preview"
-    - "imsi32/yatline"
-    - "imsi32/yatline-githead"
-    - "yazi-rs/plugins:max-preview"
-    - "yazi-rs/plugins:smart-filter"
-    - "yazi-rs/plugins:smart-enter"
-    - "KKV9/compress"
-    - "DreamMaoMao/searchjump"
-    - "DreamMaoMao/fg"
-    - "Reledia/glow"
-    - "KKV9/command"
-    - "pirafrank/what-size"
-    - "Ape/open-with-cmd"
-    - "yazi-rs/plugins:git"
-    - "AnirudhG07/custom-shell"
-    - "yazi-rs/flavors:catppuccin-mocha"
-
+    - 'yazi-rs/plugins:chmod'
+    - 'yazi-rs/plugins:diff'
+    - 'yazi-rs/plugins:full-border'
+    - 'yazi-rs/plugins:hide-preview'
+    - 'imsi32/yatline'
+    - 'imsi32/yatline-githead'
+    - 'yazi-rs/plugins:max-preview'
+    - 'yazi-rs/plugins:smart-filter'
+    - 'yazi-rs/plugins:smart-enter'
+    - 'KKV9/compress'
+    - 'DreamMaoMao/searchjump'
+    - 'DreamMaoMao/fg'
+    - 'Reledia/glow'
+    - 'KKV9/command'
+    - 'pirafrank/what-size'
+    - 'Ape/open-with-cmd'
+    - 'yazi-rs/plugins:git'
+    - 'AnirudhG07/custom-shell'
+    - 'yazi-rs/flavors:catppuccin-mocha'

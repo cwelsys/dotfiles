@@ -1,4 +1,5 @@
-﻿# Self-elevate
+﻿{{- if not .isVM -}}
+# Self-elevate
 if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator'))
 {
   if ([int](Get-CimInstance -Class Win32_OperatingSystem | Select-Object -ExpandProperty BuildNumber) -ge 6000)
@@ -57,4 +58,5 @@ Enable-WindowsOptionalFeature -Online -FeatureName '{{ $feature }}'
 {{ range $feature := .config.windows.features.disable }}
 Write-Host 'Disable {{ $feature }}...'
 Disable-WindowsOptionalFeature -Online -FeatureName '{{ $feature }}'
+{{ end }}
 {{ end }}

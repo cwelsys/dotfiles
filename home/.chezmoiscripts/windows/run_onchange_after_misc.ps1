@@ -19,6 +19,3 @@ if (Get-Command bat -ErrorAction SilentlyContinue) {
 	bat cache --build
 }
 
-
-Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/spicetify/spicetify-marketplace/main/resources/install.ps1" | Invoke-Expression
-

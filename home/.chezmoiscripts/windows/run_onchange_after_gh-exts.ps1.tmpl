@@ -1,4 +1,4 @@
-{{ if (index .pkgs.windows.addons "gh") }}
+{{ if and (index .pkgs.windows.addons "gh") (not .isVM) }}
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
 Write-Host ""
@@ -93,4 +93,6 @@ if ($desiredExtensions.Count -eq 0) {
 Write-Host ""
 Write-Color -Text "`n👍 ", "GitHub CLI extension setup process completed.", "`n" -Color White, DarkGray, White
 
+{{ else if .isVM }}
+Write-Host "Skipping GitHub CLI extensions installation - running in virtual machine" -ForegroundColor Yellow
 {{ end }}

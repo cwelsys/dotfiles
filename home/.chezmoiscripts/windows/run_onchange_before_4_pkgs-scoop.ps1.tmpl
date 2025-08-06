@@ -1,3 +1,4 @@
+{{- if not .isVM -}}
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
 
@@ -270,3 +271,6 @@ Write-Host ""
 {{ if or .pkgs.windows.scoop.buckets .pkgs.windows.scoop.apps .pkgs.windows.scoop.importRegistry }}
 Write-Color -Text "`n✅ ", "Scoop configuration completed", "`n" -Color White, Green, White
 {{ end }}
+{{- else -}}
+Write-Host "Skipping Scoop package installation - running in virtual machine" -ForegroundColor Yellow
+{{- end -}}

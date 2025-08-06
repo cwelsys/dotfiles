@@ -1,4 +1,4 @@
-{{ if .pkgs.windows.winget }}
+{{ if and .pkgs.windows.winget (not .isVM) }}
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
 Write-Host ""
@@ -100,4 +100,6 @@ foreach ($packageIdToProcess in $wingetPkgs) {
 
 Write-Color -Text "`n✅ ", "WinGet package installation completed", "`n" -Color White, Green, White
 
+{{ else if .isVM }}
+Write-Host "Skipping WinGet package installation - running in virtual machine" -ForegroundColor Yellow
 {{ end }}

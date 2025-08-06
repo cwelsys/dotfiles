@@ -113,8 +113,7 @@ Set-ItemProperty -Path $policiesPath -Name "NoDrives" -Value 32 -Type DWord
 Write-Host "...sike" -ForegroundColor DarkGray
 Write-Host "  Set NoDrives value to 32 (hiding F drive)" -ForegroundColor DarkGray
 
-
-
 Write-Host "Registry tweaks applied successfully!" -ForegroundColor Green
+
 
 
