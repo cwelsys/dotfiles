@@ -1,4 +1,4 @@
-{{ if or (eq .chezmoi.os "darwin") (and (eq .chezmoi.os "linux") (ne .chezmoi.osRelease.id "arch")) -}}
+{{ if and (lookPath "brew") (or (eq .chezmoi.os "darwin") (and (eq .chezmoi.os "linux") (ne .chezmoi.osRelease.id "arch"))) -}}
 #!/bin/bash
 
 # Extract and add taps from formulae
