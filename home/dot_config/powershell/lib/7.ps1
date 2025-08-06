@@ -5,7 +5,7 @@
 
 	$env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path', 'User')
 
-	$yamlFilePath = Join-Path $env:DOTS '.chezmoidata\windows\pkgs.yml'
+	$yamlFilePath = Join-Path $env:DOTS '.chezmoidata\pkgs.yml'
 
 	if (-not (Test-Path $yamlFilePath)) {
 		Write-Color -Text "❌ Manifest file not found at: $yamlFilePath" -Color Red
@@ -20,9 +20,11 @@
 
 	$currentPackages = @()
 	$registryPaths = @()
+	$inPkgsSection = $false
+	$inWindowsSection = $false
 	$inScoopSection = $false
 	$inBucketsSection = $false
-	$inPkgsSection = $false
+	$inAppsSection = $false
 	$inRegistrySection = $false
 	$manifestLines = $manifestContent -split "`n"
 	$scoopPkgsStartIndex = -1
@@ -31,20 +33,32 @@
 
 	foreach ($i in 0..($manifestLines.Count - 1)) {
 		$line = $manifestLines[$i]
-		if ($line -match '^\s*scoop:\s*$') {
+		
+		# Navigate through the new pkgs.windows.scoop structure
+		if ($line -match '^\s*pkgs:\s*$') {
+			$inPkgsSection = $true
+			continue
+		}
+		
+		if ($inPkgsSection -and $line -match '^\s*windows:\s*$') {
+			$inWindowsSection = $true
+			continue
+		}
+		
+		if ($inWindowsSection -and $line -match '^\s*scoop:\s*$') {
 			$inScoopSection = $true
 			continue
 		}
 
 		if ($inScoopSection -and $line -match '^\s*buckets:\s*$') {
 			$inBucketsSection = $true
-			$inPkgsSection = $false
+			$inAppsSection = $false
 			continue
 		}
 
 		if ($inScoopSection -and $line -match '^\s*apps:\s*$') {
 			$inBucketsSection = $false
-			$inPkgsSection = $true
+			$inAppsSection = $true
 			$scoopPkgsStartIndex = $i
 
 			if ($i + 1 -lt $manifestLines.Count) {
@@ -58,12 +72,12 @@
 
 		if ($inScoopSection -and $line -match '^\s*importRegistry:\s*$') {
 			$inBucketsSection = $false
-			$inPkgsSection = $false
+			$inAppsSection = $false
 			$inRegistrySection = $true
 			continue
 		}
 
-		if ($inPkgsSection -and $line -match '^\s*-\s+''([^'']+)''') {
+		if ($inAppsSection -and $line -match '^\s*-\s+''([^'']+)''') {
 			$pkg = $Matches[1]
 			$currentPackages += $pkg
 			$scoopPkgsEndIndex = $i
@@ -73,20 +87,41 @@
 			$registryPaths += $regPath
 		}
 
-		if ($inScoopSection -and
-			($line -match '^\s*\w+:\s*$' -and $line -notmatch '^\s*apps:\s*$' -and $line -notmatch '^\s*buckets:\s*$' -and $line -notmatch '^\s*importRegistry:\s*$') ||
-			($line -match '^\s*winget:\s*$')) {
+		# Handle section transitions - need to account for new nested structure
+		if ($line -match '^\s*winget:\s*$') {
+			# Moving from scoop to winget within windows section
 			$inScoopSection = $false
 			$inBucketsSection = $false
-			$inPkgsSection = $false
+			$inAppsSection = $false
 			$inRegistrySection = $false
 			if ($scoopPkgsEndIndex -eq -1) {
 				$scoopPkgsEndIndex = $i - 1
 			}
 		}
+		elseif ($line -match '^\s*[a-zA-Z]+:\s*$' -and 
+			$line -notmatch '^\s*apps:\s*$' -and 
+			$line -notmatch '^\s*buckets:\s*$' -and 
+			$line -notmatch '^\s*importRegistry:\s*$' -and
+			$line -notmatch '^\s*scoop:\s*$' -and
+			$line -notmatch '^\s*winget:\s*$') {
+			# We've hit a different top-level section
+			if ($inWindowsSection) {
+				$inPkgsSection = $false
+				$inWindowsSection = $false
+				$inScoopSection = $false
+				$inBucketsSection = $false
+				$inAppsSection = $false
+				$inRegistrySection = $false
+				if ($scoopPkgsEndIndex -eq -1) {
+					$scoopPkgsEndIndex = $i - 1
+				}
+			}
+		}
 	}
 
 	$currentWingetPackages = @()
+	$inWingetPkgsSection = $false
+	$inWingetWindowsSection = $false
 	$inWingetSection = $false
 	$wingetPkgsStartIndex = -1
 	$wingetPkgsEndIndex = -1
@@ -94,7 +129,19 @@
 
 	foreach ($i in 0..($manifestLines.Count - 1)) {
 		$line = $manifestLines[$i]
-		if ($line -match '^\s*winget:\s*$') {
+		
+		# Navigate through the new pkgs.windows.winget structure  
+		if ($line -match '^\s*pkgs:\s*$') {
+			$inWingetPkgsSection = $true
+			continue
+		}
+		
+		if ($inWingetPkgsSection -and $line -match '^\s*windows:\s*$') {
+			$inWingetWindowsSection = $true
+			continue
+		}
+		
+		if ($inWingetWindowsSection -and $line -match '^\s*winget:\s*$') {
 			$inWingetSection = $true
 			$wingetPkgsStartIndex = $i
 
@@ -113,11 +160,19 @@
 			$wingetPkgsEndIndex = $i
 		}
 
-		if ($inWingetSection -and $wingetPkgsStartIndex -ne -1 -and
-			$line -match '^\s*\w+:\s*$') {
-			$inWingetSection = $false
-			if ($wingetPkgsEndIndex -eq -1) {
-				$wingetPkgsEndIndex = $i - 1
+		# Handle section transitions for winget
+		if ($line -match '^\s*[a-zA-Z]+:\s*$' -and 
+			$line -notmatch '^\s*winget:\s*$' -and
+			$line -notmatch '^\s*pkgs:\s*$' -and  
+			$line -notmatch '^\s*windows:\s*$') {
+			# We've hit a different section
+			if ($inWingetSection -and $wingetPkgsStartIndex -ne -1) {
+				$inWingetSection = $false
+				$inWingetWindowsSection = $false
+				$inWingetPkgsSection = $false
+				if ($wingetPkgsEndIndex -eq -1) {
+					$wingetPkgsEndIndex = $i - 1
+				}
 			}
 		}
 	}
@@ -127,7 +182,7 @@
 	if (-not (Test-Path $backupDir)) {
 		New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
 	}
-	$backupPath = Join-Path $backupDir "win_pkgs.yml.bak.$timestamp"
+	$backupPath = Join-Path $backupDir "pkgs.yml.bak.$timestamp"
 	Copy-Item -Path $yamlFilePath -Destination $backupPath -Force
 	Write-Color -Text "💾 Created backup at $backupPath" -Color Gray
 
@@ -378,20 +433,28 @@
 		for ($i = 0; $i -lt $manifestLines.Count; $i++) {
 			$line = $manifestLines[$i]
 
-			if ($line -match '^\s*scoop:\s*$') {
+			if ($line -match '^\s*pkgs:\s*$') {
+				$currentSection = 'pkgs'
+				$currentSubSection = ''
+			}
+			elseif ($currentSection -eq 'pkgs' && $line -match '^\s*windows:\s*$') {
+				$currentSection = 'windows'
+				$currentSubSection = ''
+			}
+			elseif ($currentSection -eq 'windows' && $line -match '^\s*scoop:\s*$') {
 				$currentSection = 'scoop'
 				$currentSubSection = ''
 			}
 			elseif ($currentSection -eq 'scoop' && $line -match '^\s*buckets:\s*$') {
 				$currentSubSection = 'buckets'
 			}
-			elseif ($currentSection -eq 'scoop' && $line -match '^\s*pkgs:\s*$') {
-				$currentSubSection = 'pkgs'
+			elseif ($currentSection -eq 'scoop' && $line -match '^\s*apps:\s*$') {
+				$currentSubSection = 'apps'
 			}
 			elseif ($currentSection -eq 'scoop' && $line -match '^\s*importRegistry:\s*$') {
 				$currentSubSection = 'importRegistry'
 			}
-			elseif ($line -match '^\s*winget:\s*$') {
+			elseif ($currentSection -eq 'windows' && $line -match '^\s*winget:\s*$') {
 				$currentSection = 'winget'
 				$currentSubSection = ''
 			}
@@ -407,7 +470,7 @@
 			$shouldSkipLine = $false
 			if ($packagesToRemove.Count -gt 0 &&
 				$currentSection -eq 'scoop' &&
-				$currentSubSection -eq 'pkgs' &&
+				$currentSubSection -eq 'apps' &&
 				$line -match '^\s*-\s+''([^'']+)''') {
 				$packageInLine = $Matches[1]
 				if ($packageInLine -in $packagesToRemove) {

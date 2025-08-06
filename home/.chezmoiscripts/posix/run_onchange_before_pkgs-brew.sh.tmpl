@@ -3,15 +3,6 @@
 
 # Extract and add taps from formulae
 {{- $taps := list }}
-{{- range .pkgs.shared.brews }}
-  {{- if contains "/" . }}
-    {{- $parts := . | splitList "/" }}
-    {{- if eq (len $parts) 3 }}
-      {{- $tap := printf "%s/%s" (index $parts 0) (index $parts 1) }}
-      {{- $taps = append $taps $tap }}
-    {{- end }}
-  {{- end }}
-{{- end }}
 {{- if eq .chezmoi.os "darwin" }}
 {{- range .pkgs.darwin.brews }}
   {{- if contains "/" . }}
@@ -29,21 +20,10 @@ brew bundle --file=/dev/stdin <<EOF
 tap {{ . | quote }}
 {{- end }}
 
-{{- range .pkgs.shared.brews }}
-brew {{ . | quote }}
-{{- end }}
-
 {{- if eq .chezmoi.os "darwin" }}
 {{- range .pkgs.darwin.brews }}
 brew {{ . | quote }}
 {{- end }}
-{{- end }}
-
-{{- range .pkgs.shared.casks }}
-cask {{ . | quote }}
-{{- end }}
-
-{{- if eq .chezmoi.os "darwin" }}
 {{- range .pkgs.darwin.casks }}
 cask {{ . | quote }}
 {{- end }}

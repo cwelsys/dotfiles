@@ -31,26 +31,20 @@ if [[ "$OS" == "darwin" ]]; then
     OS_SECTION="darwin"
     USE_BREW=true
 elif [[ "$OS" == "linux" ]]; then
-    # Detect native package manager first
+    # Use native package managers only on Linux
     if [[ -f /etc/arch-release ]] || [[ -f /etc/os-release && $(grep -E '^ID=arch$' /etc/os-release) ]]; then
         NATIVE_PKG_MANAGER="pacman"
         OS_SECTION="arch"
         USE_NATIVE=true
+        PKG_MANAGER="$NATIVE_PKG_MANAGER"
     elif [[ -f /etc/fedora-release ]] || [[ -f /etc/os-release && $(grep -E '^ID=fedora$' /etc/os-release) ]]; then
         NATIVE_PKG_MANAGER="dnf"
         OS_SECTION="fedora"
         USE_NATIVE=true
+        PKG_MANAGER="$NATIVE_PKG_MANAGER"
     else
         print_color "$RED" "❌ Only Arch Linux and Fedora are supported on Linux systems"
         exit 1
-    fi
-
-    # Check if brew is also available on Linux
-    if command -v brew &> /dev/null; then
-        USE_BREW=true
-        PKG_MANAGER="brew"  # Primary for file selection logic
-    else
-        PKG_MANAGER="$NATIVE_PKG_MANAGER"
     fi
 else
     print_color "$RED" "❌ Unsupported operating system: $OS (only Darwin, Arch, and Fedora are supported)"
@@ -111,19 +105,11 @@ if ! command -v "$PKG_MANAGER" &> /dev/null; then
     exit 1
 fi
 
-# Determine the manifest file path
-if [[ "$USE_BREW" == true ]]; then
-    if [[ -n "${DOTS:-}" ]]; then
-        YAML_FILE="$DOTS/.chezmoidata/brews.yml"
-    else
-        YAML_FILE="$HOME/.local/share/chezmoi/home/.chezmoidata/brews.yml"
-    fi
+# Determine the manifest file path - now everything uses pkgs.yml
+if [[ -n "${DOTS:-}" ]]; then
+    YAML_FILE="$DOTS/.chezmoidata/pkgs.yml"
 else
-    if [[ -n "${DOTS:-}" ]]; then
-        YAML_FILE="$DOTS/.chezmoidata/pkgs.yml"
-    else
-        YAML_FILE="$HOME/.local/share/chezmoi/home/.chezmoidata/pkgs.yml"
-    fi
+    YAML_FILE="$HOME/.local/share/chezmoi/home/.chezmoidata/pkgs.yml"
 fi
 
 if [[ ! -f "$YAML_FILE" ]]; then
@@ -156,8 +142,8 @@ INSTALLED_BREWS=()
 INSTALLED_CASKS=()
 INSTALLED_NATIVE=()
 
-# Get brew packages if available
-if [[ "$USE_BREW" == true ]]; then
+# Get brew packages if on macOS
+if [[ "$OS" == "darwin" ]]; then
     print_color "$BLUE" "🔍 Getting installed brew packages..."
     # Use 'brew leaves' to get only top-level formulas (not dependencies)
     INSTALLED_BREWS=($(brew leaves))
@@ -165,8 +151,8 @@ if [[ "$USE_BREW" == true ]]; then
     print_color "$CYAN" "Found ${#INSTALLED_BREWS[@]} installed formulas and ${#INSTALLED_CASKS[@]} casks"
 fi
 
-# Get native packages if available
-if [[ "$USE_NATIVE" == true ]]; then
+# Get native packages if on Linux
+if [[ "$OS" == "linux" ]]; then
     print_color "$BLUE" "🔍 Getting installed $NATIVE_PKG_MANAGER packages..."
 
     case "$NATIVE_PKG_MANAGER" in
@@ -217,86 +203,96 @@ IN_OS_CASKS=false
 IN_SHARED_BREWS=false
 IN_SHARED_CASKS=false
 
-# Parse brew packages if available
-if [[ "$USE_BREW" == true ]]; then
-    # Parse brews.yml structure
+# Parse brew packages if on macOS - using new pkgs.yml structure
+if [[ "$OS" == "darwin" ]]; then
+    # Parse pkgs.yml structure for darwin packages
+    IN_PKG_SECTION=false
+    IN_OS_SECTION=false
+    IN_BREWS_SECTION=false
+    IN_CASKS_SECTION=false
+
     while IFS= read -r line; do
-        # Check section headers
-        if [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]]; then
-            IN_OS_BREWS=false
-            IN_OS_CASKS=false
-            IN_SHARED_BREWS=false
-            IN_SHARED_CASKS=false
-        elif [[ "$line" =~ ^[[:space:]]*shared:[[:space:]]*$ ]]; then
-            IN_OS_BREWS=false
-            IN_OS_CASKS=false
-            IN_SHARED_BREWS=false
-            IN_SHARED_CASKS=false
-        elif [[ "$line" =~ ^[[:space:]]*brews:[[:space:]]*$ ]]; then
-            if [[ "$IN_OS_BREWS" == false && "$IN_SHARED_BREWS" == false ]]; then
-                # Determine if we're in OS-specific or shared section
-                if grep -B10 "brews:" "$YAML_FILE" | tail -10 | grep -q "${OS_SECTION}:"; then
-                    IN_OS_BREWS=true
-                else
-                    IN_SHARED_BREWS=true
-                fi
-            fi
-        elif [[ "$line" =~ ^[[:space:]]*casks:[[:space:]]*$ ]]; then
-            if [[ "$IN_OS_CASKS" == false && "$IN_SHARED_CASKS" == false ]]; then
-                # Determine if we're in OS-specific or shared section
-                if grep -B10 "casks:" "$YAML_FILE" | tail -10 | grep -q "${OS_SECTION}:"; then
-                    IN_OS_CASKS=true
-                else
-                    IN_SHARED_CASKS=true
-                fi
+        # Check for pkgs section first
+        if [[ "$line" =~ ^[[:space:]]*pkgs:[[:space:]]*$ ]]; then
+            IN_PKG_SECTION=true
+            IN_OS_SECTION=false
+        # Check section headers within pkgs
+        elif [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]] && [[ "$IN_PKG_SECTION" == true ]]; then
+            IN_OS_SECTION=true
+            IN_BREWS_SECTION=false
+            IN_CASKS_SECTION=false
+        elif [[ "$line" =~ ^[[:space:]]*brews:[[:space:]]*$ ]] && [[ "$IN_OS_SECTION" == true ]]; then
+            IN_BREWS_SECTION=true
+            IN_CASKS_SECTION=false
+        elif [[ "$line" =~ ^[[:space:]]*casks:[[:space:]]*$ ]] && [[ "$IN_OS_SECTION" == true ]]; then
+            IN_BREWS_SECTION=false
+            IN_CASKS_SECTION=true
+        elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]]; then
+            # Different section - reset flags appropriately
+            if [[ "$IN_PKG_SECTION" == true && "$IN_OS_SECTION" == true ]]; then
+                # Different package type within same OS
+                IN_BREWS_SECTION=false
+                IN_CASKS_SECTION=false
+            elif [[ "$IN_PKG_SECTION" == true ]]; then
+                # Different OS section
+                IN_OS_SECTION=false
+                IN_BREWS_SECTION=false
+                IN_CASKS_SECTION=false
+            else
+                # Different top-level section
+                IN_PKG_SECTION=false
+                IN_OS_SECTION=false
+                IN_BREWS_SECTION=false
+                IN_CASKS_SECTION=false
             fi
         # Parse package entries
         elif [[ "$line" =~ ^[[:space:]]*-[[:space:]]+([^[:space:]]+) ]]; then
             PKG="${BASH_REMATCH[1]}"
-            if [[ "$IN_OS_BREWS" == true || "$IN_SHARED_BREWS" == true ]]; then
+            if [[ "$IN_BREWS_SECTION" == true ]]; then
                 CURRENT_BREWS+=("$PKG")
-            elif [[ "$IN_OS_CASKS" == true || "$IN_SHARED_CASKS" == true ]]; then
+            elif [[ "$IN_CASKS_SECTION" == true ]]; then
                 CURRENT_CASKS+=("$PKG")
             fi
         fi
     done < "$YAML_FILE"
 fi
 
-# Parse native packages if available and file exists
-if [[ "$USE_NATIVE" == true ]]; then
-    NATIVE_YAML_FILE=""
-    if [[ -n "${DOTS:-}" ]]; then
-        NATIVE_YAML_FILE="$DOTS/.chezmoidata/pkgs.yml"
-    else
-        NATIVE_YAML_FILE="$HOME/.local/share/chezmoi/home/.chezmoidata/pkgs.yml"
-    fi
+# Parse native packages if on Linux - using same pkgs.yml file
+if [[ "$OS" == "linux" ]]; then
+    # Parse pkgs.yml structure for native packages
+    IN_PKG_SECTION=false
+    IN_OS_SECTION=false
 
-    if [[ -f "$NATIVE_YAML_FILE" ]]; then
-        # Parse pkgs.yml structure
-        IN_OS_SECTION=false
-        IN_PKG_SECTION=false
-
-        while IFS= read -r line; do
-            # Check section headers
-            if [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]]; then
-                IN_OS_SECTION=true
-                IN_PKG_SECTION=false
-            elif [[ "$line" =~ ^[[:space:]]*${NATIVE_PKG_MANAGER}:[[:space:]]*$ ]] && [[ "$IN_OS_SECTION" == true ]]; then
-                IN_PKG_SECTION=true
-            elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]] && [[ "$IN_OS_SECTION" == true ]]; then
-                # Different package manager section
-                IN_PKG_SECTION=false
-            elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]] && [[ "$IN_OS_SECTION" == false ]]; then
+    while IFS= read -r line; do
+        # Check for pkgs section first
+        if [[ "$line" =~ ^[[:space:]]*pkgs:[[:space:]]*$ ]]; then
+            IN_PKG_SECTION=true
+            IN_OS_SECTION=false
+        # Check section headers within pkgs
+        elif [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]] && [[ "$IN_PKG_SECTION" == true ]]; then
+            IN_OS_SECTION=true
+        elif [[ "$line" =~ ^[[:space:]]*${NATIVE_PKG_MANAGER}:[[:space:]]*$ ]] && [[ "$IN_OS_SECTION" == true ]]; then
+            # We're now in the right package manager section
+            continue
+        elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]]; then
+            # Different section - reset flags appropriately
+            if [[ "$IN_PKG_SECTION" == true && "$IN_OS_SECTION" == true ]]; then
+                # Different package manager within same OS
+                continue
+            elif [[ "$IN_PKG_SECTION" == true ]]; then
                 # Different OS section
                 IN_OS_SECTION=false
+            else
+                # Different top-level section
                 IN_PKG_SECTION=false
-            # Parse package entries
-            elif [[ "$line" =~ ^[[:space:]]*-[[:space:]]+([^[:space:]]+) ]] && [[ "$IN_PKG_SECTION" == true ]]; then
-                PKG="${BASH_REMATCH[1]}"
-                CURRENT_NATIVE+=("$PKG")
+                IN_OS_SECTION=false
             fi
-        done < "$NATIVE_YAML_FILE"
-    fi
+        # Parse package entries
+        elif [[ "$line" =~ ^[[:space:]]*-[[:space:]]+([^[:space:]]+) ]] && [[ "$IN_OS_SECTION" == true ]]; then
+            PKG="${BASH_REMATCH[1]}"
+            CURRENT_NATIVE+=("$PKG")
+        fi
+    done < "$YAML_FILE"
 fi
 
 # Find differences
@@ -308,7 +304,7 @@ REMOVED_CASKS=()
 REMOVED_NATIVE=()
 
 # Find new packages (deduplicate as we go)
-if [[ "$USE_BREW" == true ]]; then
+if [[ "$OS" == "darwin" ]]; then
     for pkg in "${INSTALLED_BREWS[@]}"; do
         if [[ ! " ${CURRENT_BREWS[*]:-} " =~ " ${pkg} " ]]; then
             NEW_BREWS+=("$pkg")
@@ -322,7 +318,7 @@ if [[ "$USE_BREW" == true ]]; then
     done
 fi
 
-if [[ "$USE_NATIVE" == true ]]; then
+if [[ "$OS" == "linux" ]]; then
     for pkg in "${INSTALLED_NATIVE[@]}"; do
         if [[ ! " ${CURRENT_NATIVE[*]:-} " =~ " ${pkg} " ]]; then
             NEW_NATIVE+=("$pkg")
@@ -331,7 +327,7 @@ if [[ "$USE_NATIVE" == true ]]; then
 fi
 
 # Find removed packages - use the already parsed CURRENT arrays
-if [[ "$USE_BREW" == true ]]; then
+if [[ "$OS" == "darwin" ]]; then
     for pkg in "${CURRENT_BREWS[@]}"; do
         if [[ ! " ${INSTALLED_BREWS[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${REMOVED_BREWS[*]:-} " =~ " ${pkg} " ]]; then
             REMOVED_BREWS+=("$pkg")
@@ -345,7 +341,7 @@ if [[ "$USE_BREW" == true ]]; then
     done
 fi
 
-if [[ "$USE_NATIVE" == true ]]; then
+if [[ "$OS" == "linux" ]]; then
     for pkg in "${CURRENT_NATIVE[@]}"; do
         if [[ ! " ${INSTALLED_NATIVE[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${REMOVED_NATIVE[*]:-} " =~ " ${pkg} " ]]; then
             REMOVED_NATIVE+=("$pkg")
@@ -598,38 +594,23 @@ add_repos_section() {
 }
 
 # Update manifest files
-if [[ "$USE_BREW" == true ]]; then
+if [[ "$OS" == "darwin" ]]; then
     print_color "$BLUE" "🔄 Updating brew manifest..."
     update_brew_manifest "$YAML_FILE"
-fi
+elif [[ "$OS" == "linux" ]]; then
+    print_color "$BLUE" "🔄 Updating native package manifest..."
+    update_native_manifest "$YAML_FILE"
 
-if [[ "$USE_NATIVE" == true ]]; then
-    NATIVE_YAML_FILE=""
-    if [[ -n "${DOTS:-}" ]]; then
-        NATIVE_YAML_FILE="$DOTS/.chezmoidata/pkgs.yml"
-    else
-        NATIVE_YAML_FILE="$HOME/.local/share/chezmoi/home/.chezmoidata/pkgs.yml"
-    fi
-
-    if [[ -f "$NATIVE_YAML_FILE" ]]; then
-        print_color "$BLUE" "🔄 Updating native package manifest..."
-        update_native_manifest "$NATIVE_YAML_FILE"
-
-        # Add repos section if we have unique repos
-        if [[ "$NATIVE_PKG_MANAGER" == "dnf" && ${#UNIQUE_REPOS[@]} -gt 0 ]]; then
-            add_repos_section "$NATIVE_YAML_FILE"
-        fi
+    # Add repos section if we have unique repos  
+    if [[ "$NATIVE_PKG_MANAGER" == "dnf" && ${#UNIQUE_REPOS[@]} -gt 0 ]]; then
+        add_repos_section "$YAML_FILE"
     fi
 fi
 
 # Store original file for comparison
 ORIGINAL_PACKAGES=$(mktemp)
-if [[ "$USE_BREW" == true ]]; then
-    # Extract current packages from original file
-    grep -E "^[[:space:]]*-[[:space:]]+" "$BACKUP_PATH" | sed 's/^[[:space:]]*-[[:space:]]*//' | sort > "$ORIGINAL_PACKAGES"
-else
-    grep -E "^[[:space:]]*-[[:space:]]+" "$BACKUP_PATH" | sed 's/^[[:space:]]*-[[:space:]]*//' | sort > "$ORIGINAL_PACKAGES"
-fi
+# Extract current packages from original file
+grep -E "^[[:space:]]*-[[:space:]]+" "$BACKUP_PATH" | sed 's/^[[:space:]]*-[[:space:]]*//' | sort > "$ORIGINAL_PACKAGES"
 
 # Deduplication using gawk
 gawk '
@@ -691,11 +672,7 @@ END {
 
 # Compare before and after to show actual changes
 NEW_PACKAGES=$(mktemp)
-if [[ "$USE_BREW" == true ]]; then
-    grep -E "^[[:space:]]*-[[:space:]]+" "$YAML_FILE" | sed 's/^[[:space:]]*-[[:space:]]*//' | sort > "$NEW_PACKAGES"
-else
-    grep -E "^[[:space:]]*-[[:space:]]+" "$YAML_FILE" | sed 's/^[[:space:]]*-[[:space:]]*//' | sort > "$NEW_PACKAGES"
-fi
+grep -E "^[[:space:]]*-[[:space:]]+" "$YAML_FILE" | sed 's/^[[:space:]]*-[[:space:]]*//' | sort > "$NEW_PACKAGES"
 
 # Find actual additions and removals
 ACTUAL_ADDED=$(mktemp)
@@ -708,7 +685,7 @@ ADDED_COUNT=$(wc -l < "$ACTUAL_ADDED" | tr -d ' ')
 REMOVED_COUNT=$(wc -l < "$ACTUAL_REMOVED" | tr -d ' ')
 
 if [[ "$ADDED_COUNT" -gt 0 ]]; then
-    if [[ "$USE_BREW" == true ]]; then
+    if [[ "$OS" == "darwin" ]]; then
         print_color "$GREEN" "✅ Added $ADDED_COUNT new packages:"
     else
         print_color "$GREEN" "✅ Added $ADDED_COUNT new $PKG_MANAGER packages:"
@@ -719,11 +696,7 @@ if [[ "$ADDED_COUNT" -gt 0 ]]; then
 fi
 
 if [[ "$REMOVED_COUNT" -gt 0 ]]; then
-    if [[ "$USE_BREW" == true ]]; then
-        print_color "$GREEN" "✅ Removed $REMOVED_COUNT uninstalled packages:"
-    else
-        print_color "$GREEN" "✅ Removed $REMOVED_COUNT uninstalled packages:"
-    fi
+    print_color "$GREEN" "✅ Removed $REMOVED_COUNT uninstalled packages:"
     while IFS= read -r pkg; do
         print_color "$RED" "  - $pkg"
     done < "$ACTUAL_REMOVED"

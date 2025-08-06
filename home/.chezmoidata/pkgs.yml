@@ -1,6 +1,114 @@
 pkgs:
+  darwin:
+    brews:
+      # Shared brews from brews.yml
+      - age
+      - bash-completion@2
+      - bat
+      - bat-extras
+      - btop
+      - chezmoi
+      - dua-cli
+      - dust
+      - eza
+      - fd
+      - gh
+      - git-cliff
+      - git-delta
+      - git-extras
+      - git-flow
+      - git-lfs
+      - go
+      - gum
+      - jandedobbeleer/aliae/aliae
+      - jandedobbeleer/oh-my-posh/oh-my-posh
+      - k3d
+      - kind
+      - kustomize
+      - lazydocker
+      - lazygit
+      - lazyjournal
+      - lesspipe
+      - luarocks
+      - minikube
+      - navi
+      - neovim
+      - rich-cli
+      - ripgrep
+      - shellcheck
+      - starship
+      - stow
+      - tea
+      - tealdeer
+      - thefuck
+      - wrk
+      - xdg-ninja
+      - xxh
+      - yazi
+      - yq
+      - zoxide
+    casks:
+
+      - 1password-cli
+      - alacritty
+      - alt-tab
+      - background-music
+      - battery
+      - betterdisplay
+      - blockblock
+      - claude
+      - devtoys
+      - font-fira-code
+      - font-jetbrains-mono
+      - font-monaspace
+      - font-sf-mono
+      - font-sf-pro
+      - ghostty
+      - hammerspoon
+      - iina
+      - jordanbaird-ice
+      - karabiner-elements
+      - knockknock
+      - lulu
+      - meetingbar
+      - middleclick
+      - moonlight
+      - neat
+      - obsidian
+      - onyx
+      - pearcleaner
+      - pictogram
+      - pokemon-tcg-live
+      - powershell
+      - processmonitor
+      - proton-mail-bridge
+      - protonvpn
+      - runelite
+      - rustdesk
+      - sf-symbols
+      - slack
+      - spotify
+      - stats
+      - steam
+      - syncthing-app
+      - tailscale
+      - tailscale-app
+      - taskexplorer
+      - transmission
+      - upic
+      - vagrant
+      - vesktop
+      - visual-studio-code
+      - vlc
+      - wezterm@nightly
+      - yellowdot
+      - zed
+      - zoom
   arch:
     pacman:
+      # NOTE: Complete arch package list was truncated in source files
+      # Please add the remaining arch packages from your complete list here
+
       - 1password
       - 1password-cli
       - accountsservice
@@ -48,302 +156,20 @@ pkgs:
       - device-mapper
       - devify
       - dex
-      - diffutils
-      - dmidecode
-      - dmraid
-      - dnsmasq
-      - docker
-      - docker-buildx
-      - docker-compose
-      - dosfstools
-      - downgrade
-      - dracut
-      - dua-cli
-      - ducker
-      - duf
-      - dunst
-      - dust
-      - e2fsprogs
-      - easyeffects
-      - efibootmgr
-      - efitools
-      - ethtool
-      - exfatprogs
-      - eza
-      - f2fs-tools
-      - fastfetch
-      - ffmpegthumbnailer
-      - ffmpegthumbs
-      - figlet
-      - file-roller
-      - firewalld
-      - fish
-      - flatpak
-      - foomatic-db
-      - foomatic-db-engine
-      - foomatic-db-gutenprint-ppds
-      - foomatic-db-nonfree
-      - foomatic-db-nonfree-ppds
-      - foomatic-db-ppds
-      - fwupd
-      - gamemode
-      - getnf
-      - ghostscript
-      - ghostty
-      - git
-      - git-cliff
-      - git-delta
-      - git-extras
-      - git-lfs
-      - github-cli
-      - glances
-      - glow
-      - gnome-bluetooth-3.0
-      - gnome-session
-      - gnome-settings-daemon
-      - gnome-shell
-      - gnome-shell-extensions
-      - gnome-themes-extra
-      - gparted
-      - gpu-screen-recorder-git
-      - greetd
-      - greetd-gtkgreet
-      - grimblast-git
-      - gsfonts
-      - gst-libav
-      - gst-plugin-pipewire
-      - gst-plugins-bad
-      - gst-plugins-ugly
-      - gtk-engine-murrine
-      - gtk2
-      - gum
-      - gutenprint
-      - gvfs
-      - haruna
-      - haveged
-      - hdparm
-      - hplip
-      - htop
-      - hwdetect
-      - hwinfo
-      - hypridle
-      - hyprland-protocols
-      - hyprlock
-      - hyprpaper
-      - hyprpicker
-      - hyprpolkitagent
-      - hyprshade
-      - hyprsunset
-      - inetutils
-      - inxi
-      - iptables-nft
-      - isd
-      - iwd
-      - jfsutils
-      - kernel-install-for-dracut
-      - keyd
-      - kitty
-      - kvantum
-      - kvantum-qt5
-      - kwayland-integration
-      - lazydocker
-      - lazygit
-      - lazyjournal
-      - less
-      - libappindicator-gtk3
-      - libdvdcss
-      - libgsf
-      - libopenraw
-      - libwnck3
-      - linux-firmware
-      - linux-headers
-      - linux-zen
-      - linux-zen-headers
-      - logrotate
-      - loupe
-      - lsb-release
-      - lsscsi
-      - luarocks
-      - lvm2
-      - maliit-keyboard
-      - man-db
-      - man-pages
-      - mangohud
-      - maplemono-nf-unhinted
-      - mdadm
-      - meld
-      - mesa-utils
-      - mise
-      - modemmanager
-      - mtools
-      - nano
-      - nano-syntax-highlighting
-      - nautilus
-      - navi
-      - nemo
-      - neovim
-      - netctl
-      - network-manager-applet
-      - networkmanager-openconnect
-      - networkmanager-openvpn
-      - nfs-utils
-      - nilfs-utils
-      - noto-fonts
-      - noto-fonts-cjk
-      - noto-fonts-emoji
-      - noto-fonts-extra
-      - nss-mdns
-      - ntfs-3g
-      - ntp
-      - nvidia-dkms
-      - nwg-displays
-      - nwg-dock-hyprland
-      - nwg-look
-      - obsidian
-      - openssh
-      - otf-font-awesome
-      - pacman-contrib
-      - pacseek
-      - pamixer
-      - papirus-icon-theme
-      - perl
-      - perl-term-animation
-      - pipewire-alsa
-      - pipewire-jack
-      - pipewire-pulse
-      - pkgfile
-      - plocate
-      - poppler-glib
-      - power-profiles-daemon
-      - pv
-      - pyprland
-      - python
-      - python-defusedxml
-      - python-jinja
-      - python-packaging
-      - python-pip
-      - python-pyqt5
-      - python-pyqt6
-      - python-pywalfox
-      - python-reportlab
-      - python-requests
-      - python-screeninfo
-      - qimgv-light
-      - qt5-imageformats
-      - qt6ct
-      - rebuild-detector
-      - reflector
-      - rofi-wayland
-      - rsync
-      - rtkit
-      - s-nail
-      - sane
-      - satty
-      - seahorse
-      - selectdefaultapplication-fork-git
-      - sf
-      - sg3_utils
-      - shellcheck
-      - slack-bin
-      - smartmontools
-      - sof-firmware
-      - speedtest-cli
-      - spicetify-cli
-      - splix
-      - spotify
-      - starship
-      - steam
-      - sudo
-      - swaync
-      - swayosd-git
-      - syncthing-gtk
-      - sysfsutils
-      - system-config-printer
-      - systemctl-tui
-      - systemd-sysvcompat
-      - tailscale
-      - texinfo
-      - thefuck
-      - tldr
-      - tmux
-      - topgrade
-      - ttf-bitstream-vera
-      - ttf-dejavu
-      - ttf-fira-code
-      - ttf-fira-sans
-      - ttf-firacode-nerd
-      - ttf-font-awesome
-      - ttf-jetbrains-mono
-      - ttf-liberation
-      - ttf-ms-win11-auto
-      - ttf-nerd-fonts-symbols-mono
-      - ttf-opensans
-      - tumbler
-      - udiskie
-      - unrar
-      - unzip
-      - upscayl-bin
-      - usb_modeswitch
-      - usbutils
-      - uwsm
-      - vesktop-bin
-      - vi
-      - vim
-      - visual-studio-code-bin
-      - vivid
-      - waybar
-      - waybar-updates
-      - waypaper-git
-      - wezterm-nightly-bin
-      - wget
-      - which
-      - wl-clip-persist
-      - wl-clipboard
-      - wlr-randr
-      - wmctrl
-      - wpa_supplicant
-      - wttrbar
-      - xcape
-      - xclip
-      - xdg-desktop-portal-gnome
-      - xdg-desktop-portal-hyprland
-      - xdg-ninja
-      - xdg-utils
-      - xf86-input-libinput
-      - xf86-video-amdgpu
-      - xf86-video-ati
-      - xfsprogs
-      - xl2tpd
-      - xorg-server
-      - xorg-xdpyinfo
-      - xorg-xinit
-      - xorg-xinput
-      - xorg-xkill
-      - xorg-xrandr
-      - xsettingsd
-      - xterm
-      - yay
-      - yazi
-      - yq
-      - zathura
-      - zathura-pdf-mupdf
-      - zen-browser-bin
-      - zoxide
-      - zsh
-  debian:
-    apt:
-      - fish
   fedora:
     repos:
       - rpmfusion-nonfree-updates
       - docker-ce-stable
+      - copr:copr.fedorainfracloud.org:scottames:ghostty
       - copr:copr.fedorainfracloud.org:atim:lazygit
       - mise-repo
       - nvidia-container-toolkit
+      - copr:copr.fedorainfracloud.org:atim:starship
       - tailscale-stable
       - copr:copr.fedorainfracloud.org:lilay:topgrade
       - copr:copr.fedorainfracloud.org:lihaohong:yazi
     dnf:
+
       - 1password-cli
       - Nessus
       - NetworkManager
@@ -352,6 +178,7 @@ pkgs:
       - NetworkManager-wifi
       - NetworkManager-wwan
       - PackageKit
+      - ShellCheck
       - abrt-cli
       - acl
       - age
@@ -390,7 +217,7 @@ pkgs:
       - cifs-utils
       - cirrus-audio-firmware
       - cockpit
-      - cockpit-file-sharing
+      - cockpit-docker
       - cockpit-files
       - cockpit-machines
       - cockpit-networkmanager
@@ -412,21 +239,21 @@ pkgs:
       - deltarpm
       - dhcp-client
       - diffstat
+      - dkms
       - dmg2img
       - dnf-plugins-core
       - dnf5
       - dnf5-plugin-automatic
       - dnf5-plugins
       - dnsmasq
-      - docker-buildx-plugin
-      - docker-ce
-      - docker-ce-cli
       - docker-compose-plugin
       - dos2unix
       - dosfstools
       - dotconf
       - doxygen
       - dracut-config-rescue
+      - du-dust
+      - dua-cli
       - e2fsprogs
       - ed
       - edk2-ovmf
@@ -458,6 +285,7 @@ pkgs:
       - gdm
       - gettext
       - gh
+      - ghostty
       - git
       - git-delta
       - git-lfs
@@ -472,6 +300,7 @@ pkgs:
       - grub2-tools
       - grub2-tools-extra
       - grubby
+      - gum
       - hd-idle
       - hdparm
       - hostname
@@ -499,15 +328,16 @@ pkgs:
       - kernel-modules
       - kernel-modules-core
       - kf5-filesystem
-      - kmod-nvidia-6.15.3-200.fc42.x86_64
-      - kmod-nvidia-6.15.4-200.fc42.x86_64
-      - kmod-nvidia-6.15.5-200.fc42.x86_64
+      - kmod-nvidia-6.15.6-200.fc42.x86_64
+      - kmod-nvidia-6.15.9-201.fc42.x86_64
+      - kubernetes1.29-client
       - langpacks-en
       - langtable
       - lazygit
       - leptonica
       - less
       - libao
+      - libappstream-glib
       - libass
       - libattr-devel
       - libavc1394
@@ -598,6 +428,7 @@ pkgs:
       - ncdu
       - ncurses
       - ndctl-libs
+      - neovim
       - net-tools
       - nfs-utils
       - nmap
@@ -607,7 +438,6 @@ pkgs:
       - ntfsprogs
       - numad
       - nvidia-container-toolkit
-      - nvidia-gpu-firmware
       - nvme-cli
       - nxpwireless-firmware
       - oniguruma-devel
@@ -720,6 +550,7 @@ pkgs:
       - sssd-common
       - sssd-kcm
       - sssd-proxy
+      - starship
       - stow
       - subversion
       - sudo
@@ -784,6 +615,287 @@ pkgs:
       - zram-generator-defaults
       - zsh
       - zstd
-  opensuse:
-    zypper:
-      - fish
+  windows:
+    scoop:
+      buckets:
+        - 'main'
+        - 'extras'
+        - 'nonportable'
+        - 'sysinternals'
+        - 'java'
+        - 'nerd-fonts'
+        - 'versions'
+        - 'games'
+      apps:
+        - 'main/chezmoi'
+        - 'main/aria2'
+        - 'main/cacert'
+        - 'main/innounp'
+        - 'main/wixtoolset'
+        - 'main/docker'
+        - 'main/dust'
+        - 'main/ghostscript'
+        - 'main/opentofu'
+        - 'main/tree-sitter'
+        - 'main/bfg'
+        - 'main/diffutils'
+        - 'extras/git-aliases'
+        - 'main/git-crypt'
+        - 'main/git-lfs'
+        - 'main/git-sizer'
+        - 'main/gitleaks'
+        - 'main/mise'
+        - 'main/msys2'
+        - 'main/7zip'
+        - 'main/topgrade'
+        - 'main/wget'
+        - 'main/neovim'
+        - 'main/oh-my-posh'
+        - 'main/btop'
+        - 'main/upx'
+        - 'main/chafa'
+        - 'main/charm-gum'
+        - 'extras/scoop-completion'
+        - 'extras/keyboard-chatter-blocker'
+        - 'extras/unigetui'
+        - 'games/sudachi'
+        - 'versions/komorebi-nightly'
+        - 'extras/qbittorrent'
+        - 'versions/systeminformer-nightly'
+        - 'extras/nirlauncher'
+        - 'extras/altsnap'
+        - 'extras/audacity'
+        - 'extras/whkd'
+        - 'extras/nilesoft-shell'
+        - 'extras/everything'
+        - 'extras/openrgb'
+        - 'extras/obsidian'
+        - 'extras/krita'
+        - 'extras/fancontrol'
+        - 'extras/spotify'
+        - 'games/pathofbuilding-community'
+        - 'extras/via'
+        - 'extras/lazygit'
+        - 'extras/depends'
+        - 'main/bat'
+        - 'main/delta'
+        - 'main/eza'
+        - 'main/fastfetch'
+        - 'main/fd'
+        - 'main/ffmpeg'
+        - 'main/fzf'
+        - 'main/gh'
+        - 'main/glow'
+        - 'main/gzip'
+        - 'main/termusic'
+        - 'main/speedtest-cli'
+        - 'extras/nextcloud'
+        - 'main/shfmt'
+        - 'main/jq'
+        - 'main/lazydocker'
+        - 'main/poppler'
+        - 'extras/onefetch'
+        - 'extras/mpv'
+        - 'main/rclone'
+        - 'main/ripgrep'
+        - 'main/just'
+        - 'main/task'
+        - 'main/clink'
+        - 'main/clink-completions'
+        - 'main/sd'
+        - 'main/starship'
+        - 'main/sudo'
+        - 'main/tealdeer'
+        - 'main/unar'
+        - 'main/win32yank'
+        - 'main/xh'
+        - 'main/yazi'
+        - 'extras/vcxsrv'
+        - 'main/yq'
+        - 'main/imagemagick'
+        - 'main/gsudo'
+        - 'main/yt-dlp'
+        - 'main/zoxide'
+        - 'main/aws'
+        - 'main/restic'
+        - 'main/navi'
+        - 'extras/slack'
+        - 'sysinternals/whois'
+        - 'sysinternals/process-explorer'
+        - 'sysinternals/procmon'
+        - 'sysinternals/pskill'
+        - 'sysinternals/pslist'
+        - 'sysinternals/psservice'
+        - 'sysinternals/autoruns'
+        - 'sysinternals/autologon'
+        - 'main/spicetify-cli'
+        - 'extras/silentcmd'
+        - 'extras/vencord-installer'
+        - 'extras/winaero-tweaker'
+        - 'main/openssl'
+        - 'nonportable/k-lite-codec-pack-standard-np'
+        - 'extras/age'
+        - 'games/azahar'
+        - 'main/bind'
+        - 'main/biome'
+        - 'extras/bulk-crap-uninstaller'
+        - 'games/cemu'
+        - 'main/cmake'
+        - 'main/curl'
+        - 'extras/ds4windows'
+        - 'main/git-cliff'
+        - 'main/git-filter-repo'
+        - 'main/gpg'
+        - 'main/hugo-extended'
+        - 'main/iperf3'
+        - 'extras/librehardwaremonitor'
+        - 'main/lua'
+        - 'main/luarocks'
+        - 'main/make'
+        - 'nerd-fonts/Maple-Mono'
+        - 'main/mariadb'
+        - 'main/neo-cowsay'
+        - 'main/perl'
+        - 'extras/protonmail-bridge'
+        - 'games/ps3-system-software'
+        - 'extras/retroarch'
+        - 'games/RPCS3'
+        - 'main/scoop-search'
+        - 'games/scummvm'
+        - 'extras/secureuxtheme'
+        - 'games/shadps4'
+        - 'extras/sharpkeys'
+        - 'main/sops'
+        - 'main/sqlite'
+        - 'main/tea'
+        - 'main/unzip'
+        - 'extras/vcredist2022'
+        - 'games/xemu'
+        - 'games/xenia'
+        - 'extras/zed'
+        - 'main/zig'
+        - 'nonportable/winfsp-np'
+        - 'main/1password-cli'
+        - 'main/traefik'
+        - 'extras/carapace-bin'
+        - 'games/legendary'
+        - 'main/nu'
+        - 'games/runelite'
+        - 'main/syncthing'
+        - 'versions/wezterm-nightly'
+        - 'extras/yasb'
+        - 'main/pipx'
+        - 'main/python'
+        - 'extras/micaforeveryone'
+      importRegistry:
+        - '$env:USERPROFILE\scoop\apps\7zip\current\install-context.reg'
+        - '$env:USERPROFILE\scoop\apps\python\current\install-pep-514.reg'
+
+    winget:
+      - 'Microsoft.PowerShell'
+      - 'Microsoft.WindowsTerminal'
+      - 'Microsoft.DotNet.SDK.8'
+      - 'Microsoft.DotNet.SDK.9'
+      - 'Microsoft.VisualStudioCode'
+      - 'Microsoft.VisualStudio.2022.Community'
+      - 'ONLYOFFICE.DesktopEditors'
+      - 'Zen-Team.Zen-Browser'
+      - 'eloston.ungoogled-chromium'
+      - 'Tailscale.Tailscale'
+      - 'Proton.ProtonVPN'
+      - 'AgileBits.1Password'
+      - 'AngusJohnson.ResourceHacker'
+      - 'AutoHotkey.AutoHotkey'
+      - 'DuongDieuPhap.ImageGlass'
+      - 'Flow-Launcher.Flow-Launcher'
+      - 'Microsoft.PowerToys'
+      - 'ShareX.ShareX'
+      - 'BlueBubbles.BlueBubbles'
+      - 'Valve.Steam'
+      - 'Hashicorp.Vagrant'
+      - 'Oracle.VirtualBox'
+      - 'File-New-Project.EarTrumpet'
+      - 'RamenSoftware.Windhawk'
+      - 'StartIsBack.StartAllBack'
+      - 'LesFerch.WinSetView'
+      - 'Logitech.GHUB'
+      - 'RARLab.WinRAR'
+      - 'ClassicOldSong.Apollo'
+      - 'Git.Git'
+      - 'TigerVNC.TigerVNC'
+      - 'Google.Chrome'
+      - 'Zoom.Zoom'
+      - 'ViGEm.ViGEmBus'
+      - 'CodecGuide.K-LiteCodecPack.Standard'
+      - 'Microsoft.Edge'
+      - 'Microsoft.VisualStudio.2022.BuildTools'
+      - 'WinFsp.WinFsp'
+      - 'Microsoft.DotNet.Runtime.5'
+      - 'Bitwarden.Bitwarden'
+      - 'GitHub.GitHubDesktop'
+      - 'Playnite.Playnite'
+      - 'Proton.ProtonMail'
+      - 'Microsoft.Teams'
+      - 'Microsoft.AppInstaller'
+      - 'Microsoft.UI.Xaml.2.7'
+      - 'Microsoft.UI.Xaml.2.8'
+      - 'Microsoft.WSL'
+      - 'Nextcloud.NextcloudDesktop'
+      - 'Nvidia.PhysX'
+      - 'JanDeDobbeleer.Aliae'
+      - 'KurtZimmermann.RegCool'
+
+    psGallery:
+      - 'PsReadLine'
+      - 'Terminal-Icons'
+      - 'CompletionPredictor'
+      - 'PSFzf'
+      - 'PSWriteColor'
+      - 'PSScriptAnalyzer'
+      - 'DynamicTitle'
+      - 'BurntToast'
+      - 'DockerCompletion'
+      - 'DotNetVersionLister'
+      - 'PSWindowsUpdate'
+      - 'posh-git'
+      - 'ps-color-scripts'
+      - 'PSScriptTools'
+      - 'PSParseHTML'
+      - 'PSToml'
+      - 'Microsoft.PowerShell.SecretManagement'
+      - 'Microsoft.PowerShell.SecretStore'
+      - 'Microsoft.WinGet.CommandNotFound'
+
+    addons:
+      gh:
+        command: 'gh'
+        command_check: 'gh extension list'
+        command_invoke: 'gh extension install'
+        packages:
+          - 'dlvhdr/gh-dash'
+          - 'seachicken/gh-poi'
+          - 'Link-/gh-token'
+          - 'Shresht7/gh-license'
+
+yazi:
+  plugins:
+    - "yazi-rs/plugins:chmod"
+    - "yazi-rs/plugins:diff"
+    - "yazi-rs/plugins:full-border"
+    - "yazi-rs/plugins:hide-preview"
+    - "imsi32/yatline"
+    - "imsi32/yatline-githead"
+    - "yazi-rs/plugins:max-preview"
+    - "yazi-rs/plugins:smart-filter"
+    - "yazi-rs/plugins:smart-enter"
+    - "KKV9/compress"
+    - "DreamMaoMao/searchjump"
+    - "DreamMaoMao/fg"
+    - "Reledia/glow"
+    - "KKV9/command"
+    - "pirafrank/what-size"
+    - "Ape/open-with-cmd"
+    - "yazi-rs/plugins:git"
+    - "AnirudhG07/custom-shell"
+    - "yazi-rs/flavors:catppuccin-mocha"
+
