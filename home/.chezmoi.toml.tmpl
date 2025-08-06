@@ -67,12 +67,7 @@ sshId = {{ $sshId | quote }}
 isWSL = {{ $isWSL }}
 {{- $isVM := false }}
 {{- if eq .chezmoi.os "windows" }}
-  {{- /* Check for VM using multiple methods for robustness */ -}}
-  {{- $computerSystem := output "wmic" "computersystem" "get" "Model" "/value" | trim | lower }}
-  {{- $manufacturer := output "wmic" "computersystem" "get" "Manufacturer" "/value" | trim | lower }}
-  {{- if or (contains $computerSystem "virtual") (contains $computerSystem "vmware") (contains $manufacturer "vmware") (contains $manufacturer "microsoft corporation virtual") (contains $computerSystem "virtualbox") (contains $manufacturer "qemu") (contains $manufacturer "parallels") (contains $computerSystem "parallels") }}
-    {{- $isVM = true }}
-  {{- end }}
+  {{- $isVM = promptBoolOnce . "isVM" "VM" }}
 {{- else if eq .chezmoi.os "linux" }}
   {{- /* For Linux systems, check DMI info */ -}}
   {{- if lookPath "dmidecode" }}
