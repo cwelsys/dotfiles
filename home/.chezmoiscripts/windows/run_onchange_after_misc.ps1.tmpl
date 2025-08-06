@@ -52,9 +52,9 @@ if (Test-Path -Path $soundsPath) {
 	}
 }
 
-{{- else -}}
+{{- else }}
 Write-Host "running in vm, skipping sounds" -ForegroundColor Yellow
-{{- end -}}
+{{- end }}
 
 Write-Host "`n📝 Cursor theme manual installation:" -ForegroundColor $colors.Info
 Write-Host "  1. Download the cursor theme: https://github.com/cwelsys/clicks/raw/refs/heads/main/Bibata/Bibata-Modern.zip" -ForegroundColor $colors.Info
