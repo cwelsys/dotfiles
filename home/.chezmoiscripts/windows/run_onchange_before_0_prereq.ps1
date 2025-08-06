@@ -152,3 +152,6 @@ else {
 Write-Host ''
 
 Write-Color -Text "`n👍 ", 'WinGet configuration process completed.', "`n" -Color White, DarkRed, White
+
+scoop install git
+scoop install 1password-cli
