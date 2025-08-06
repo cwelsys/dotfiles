@@ -150,9 +150,6 @@
   insteadOf = "gitea:"
   pushInsteadOf = "git://git.cwel.casa/"
 
-[url "git@github.com:"]
-  insteadOf = https://github.com/
-
 {{- if eq .chezmoi.os "windows" }}
 [credential "helperselector"]
   selected = manager
