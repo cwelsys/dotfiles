@@ -15,9 +15,17 @@ Write-Color -Text "Processing symbolic links..." -Color DarkMagenta
 $symlinkCount++
 
 try {
-    # Expand environment variables in target path
-    $targetPath = [Environment]::ExpandEnvironmentVariables('{{ $targetPath }}')
-    $sourcePath = "$chezmoidir\{{ $sourcePath }}"
+    # Expand environment variables in target path, handle %HOME% -> %USERPROFILE%
+    $targetPathExpanded = '{{ $targetPath }}' -replace '%HOME%', '%USERPROFILE%'
+    $targetPath = [Environment]::ExpandEnvironmentVariables($targetPathExpanded)
+    
+    # Handle source path environment variables too
+    $sourcePathTemplate = '{{ $sourcePath }}' -replace '%HOME%', '%USERPROFILE%'
+    $sourcePath = if ($sourcePathTemplate -match '^%') {
+        [Environment]::ExpandEnvironmentVariables($sourcePathTemplate)
+    } else {
+        "$chezmoidir\$sourcePathTemplate"
+    }
 
     # Create target directory if it doesn't exist
     $targetDir = Split-Path -Path $targetPath -Parent
