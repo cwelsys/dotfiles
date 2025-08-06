@@ -134,6 +134,21 @@ Set-ItemProperty -Path $dwmPath -Name 'AccentColor' -Value 0xff262626 -Type DWor
 # Set dark grey accent color for inactive title bars  
 Set-ItemProperty -Path $dwmPath -Name 'AccentColorInactive' -Value 0xff262626 -Type DWord
 
+# Hide Gallery in File Explorer
+Write-Host "Hiding Gallery in File Explorer..." -ForegroundColor Gray
+$galleryNamespacePath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}'
+if (-not (Test-Path $galleryNamespacePath)) {
+    New-Item -Path $galleryNamespacePath -Force | Out-Null
+}
+Set-ItemProperty -Path $galleryNamespacePath -Name '(Default)' -Value 'Gallery' -Type String
+Set-ItemProperty -Path $galleryNamespacePath -Name 'HiddenByDefault' -Value 1 -Type DWord
+
+$galleryPoliciesPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\NonEnum'
+if (-not (Test-Path $galleryPoliciesPath)) {
+    New-Item -Path $galleryPoliciesPath -Force | Out-Null
+}
+Set-ItemProperty -Path $galleryPoliciesPath -Name '{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}' -Value 1 -Type DWord
+
 Write-Host "Registry tweaks applied successfully!" -ForegroundColor Green
 
 
