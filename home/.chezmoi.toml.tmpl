@@ -70,7 +70,7 @@ isWSL = {{ $isWSL }}
   {{- /* Check for VM using multiple methods for robustness */ -}}
   {{- $computerSystem := output "wmic" "computersystem" "get" "Model" "/value" | trim }}
   {{- $manufacturer := output "wmic" "computersystem" "get" "Manufacturer" "/value" | trim }}
-  {{- if or (contains $computerSystem "Virtual") (contains $computerSystem "VMware") (contains $manufacturer "VMware") (contains $manufacturer "Microsoft Corporation Virtual") (contains $computerSystem "VirtualBox") (contains $manufacturer "QEMU") }}
+  {{- if or (contains $computerSystem "Virtual") (contains $computerSystem "VMware") (contains $manufacturer "VMware") (contains $manufacturer "Microsoft Corporation Virtual") (contains $computerSystem "VirtualBox") (contains $manufacturer "QEMU") (contains $manufacturer "Parallels") (contains $computerSystem "Parallels") }}
     {{- $isVM = true }}
   {{- end }}
 {{- else if eq .chezmoi.os "linux" }}
