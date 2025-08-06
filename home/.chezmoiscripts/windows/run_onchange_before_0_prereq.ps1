@@ -154,4 +154,4 @@ Write-Host ''
 Write-Color -Text "`n👍 ", 'WinGet configuration process completed.', "`n" -Color White, DarkRed, White
 
 scoop bucket add nerd-fonts
-scoop install git 1password-cli gpg yazi fzf scoop-search starship FantasqueSansMono-NF
+scoop install git 1password-cli gpg yazi fzf oh-my-posh scoop-search FantasqueSansMono-NF
