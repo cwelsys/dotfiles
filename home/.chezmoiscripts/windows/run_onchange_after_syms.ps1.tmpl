@@ -4,19 +4,6 @@ Write-Color -Text "** CREATING SYMBOLIC LINKS **" -Color DarkMagenta
 Write-Color -Text "******************************************" -Color DarkMagenta
 Write-Host ""
 
-# Self-elevate
-if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) {
-    if ([int](Get-CimInstance -Class Win32_OperatingSystem | Select-Object -ExpandProperty BuildNumber) -ge 6000) {
-        $CommandLine = "-File `"" + $MyInvocation.MyCommand.Path + "`" " + $MyInvocation.UnboundArguments
-        Start-Process -Wait -FilePath PowerShell.exe -Verb Runas -ArgumentList $CommandLine
-        Exit
-    }
-}
-
-Import-Module Microsoft.PowerShell.Security
-Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
-Set-ExecutionPolicy Bypass -Scope Process -Force
-
 $chezmoidir = "$env:USERPROFILE\.local\share\chezmoi"
 $symlinkCount = 0
 $successCount = 0
