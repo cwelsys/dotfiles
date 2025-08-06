@@ -1,4 +1,21 @@
-﻿Write-Host ''
+﻿# make sure we have colors
+if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
+    Write-Host 'PSWriteColor module not found. Installing...' -ForegroundColor Yellow
+    try {
+        Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction Stop
+        Write-Host 'PSWriteColor module installed successfully.' -ForegroundColor Green
+    }
+    catch {
+        Write-Host "Failed to install PSWriteColor module: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host 'Script will continue with basic Write-Host commands.' -ForegroundColor Yellow
+    }
+}
+
+if (Get-Module -ListAvailable -Name PSWriteColor) {
+    Import-Module PSWriteColor -ErrorAction SilentlyContinue
+}
+
+Write-Host ''
 Write-Color -Text '***********************************' -Color Cyan
 Write-Color -Text '**       INSTALLING SCOOP        **' -Color Cyan
 Write-Color -Text '***********************************' -Color Cyan
