@@ -190,7 +190,7 @@ alias:
   # Posix
   - name: su
     value: sudo su
-    if: .OS ne "windows"
+    if: ne .OS "windows"
 
   # Package Managers
   - name: update
@@ -344,16 +344,16 @@ env:
     value: ''
   - name: GPG_TTY
     value: '$(tty)'
-    if: .OS ne "windows"
+    if: ne .OS "windows"
   - name: LANG
     value: en_US.UTF-8
-    if: .OS ne "windows"
+    if: ne .OS "windows"
   - name: LC_ALL
     value: en_US.UTF-8
-    if: .OS ne "windows"
+    if: ne .OS "windows"
   - name: LC_CTYPE
     value: en_US.UTF-8
-    if: .OS ne "windows"
+    if: ne .OS "windows"
   - name: PASSWORD_STORE_DIR
     value: '{{ .chezmoi.homeDir }}/.local/share/pass'
     if: match .OS "linux"
@@ -500,10 +500,10 @@ env:
     if: match .OS "windows"
   - name: TERMINFO
     value: '{{ .chezmoi.homeDir }}/.local/share/terminfo'
-    if: .OS ne "windows"
+    if: ne .OS "windows"
   - name: TERMINFO_DIRS
     value: '{{ .chezmoi.homeDir }}/.local/share/terminfo:/usr/share/terminfo'
-    if: .OS ne "windows"
+    if: ne .OS "windows"
   - name: CLAUDE_CONFIG_DIR
     value: '{{ .chezmoi.homeDir }}/.claude'
   - name: CUDA_CACHE_PATH
@@ -514,7 +514,7 @@ env:
     if: match .OS "linux"
   - name: PARALLEL_HOME
     value: '{{ env "XDG_CONFIG_HOME" }}/parallel'
-    if: .OS ne "windows"
+    if: ne .OS "windows"
   - name: WAKATIME_HOME
     value: '{{ env "XDG_CONFIG_HOME" }}/wakatime'
 
