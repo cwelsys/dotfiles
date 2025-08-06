@@ -3,44 +3,81 @@ pkgs:
     brews:
       # Shared brews from brews.yml
       - age
+      - armadillo
       - bash-completion@2
       - bat
       - bat-extras
+      - bear
+      - boost
       - btop
+      - carapace
       - chezmoi
+      - colima
+      - coreutils
+      - docker
+      - dockutil
+      - dooit
       - dua-cli
       - dust
       - eza
+      - fastfetch
       - fd
+      - fish
+      - gawk
       - gh
+      - ghostscript
+      - git
       - git-cliff
       - git-delta
       - git-extras
       - git-flow
       - git-lfs
-      - go
+      - gnupg
+      - gromgit/fuse/sshfs-mac
+      - gsl
       - gum
+      - ifstat
+      - imagemagick
       - jandedobbeleer/aliae/aliae
-      - jandedobbeleer/oh-my-posh/oh-my-posh
-      - k3d
-      - kind
-      - kustomize
       - lazydocker
       - lazygit
       - lazyjournal
       - lesspipe
+      - llvm
       - luarocks
-      - minikube
+      - mas
+      - mgba
+      - mise
       - navi
       - neovim
+      - nmap
+      - nowplaying-cli
+      - nushell
+      - oh-my-posh
+      - openjdk@11
+      - php
+      - pinentry-mac
+      - pipx
+      - pkgconf
+      - pngpaste
+      - rclone
+      - restic
       - rich-cli
       - ripgrep
+      - rsync
+      - sf
       - shellcheck
+      - sniffnet
+      - spicetify-cli
       - starship
-      - stow
-      - tea
+      - switchaudio-osx
+      - tailscale
       - tealdeer
       - thefuck
+      - tmux
+      - topgrade
+      - wakeonlan
+      - wget
       - wrk
       - xdg-ninja
       - xxh
@@ -50,14 +87,14 @@ pkgs:
     casks:
 
       - 1password-cli
-      - alacritty
       - alt-tab
+      - atv-remote
       - background-music
-      - battery
       - betterdisplay
       - blockblock
       - claude
       - devtoys
+      - dolphin
       - font-fira-code
       - font-jetbrains-mono
       - font-monaspace
@@ -66,12 +103,12 @@ pkgs:
       - ghostty
       - hammerspoon
       - iina
+      - jellyfin-media-player
       - jordanbaird-ice
       - karabiner-elements
       - knockknock
       - lulu
-      - meetingbar
-      - middleclick
+      - macfuse
       - moonlight
       - neat
       - obsidian
@@ -83,25 +120,22 @@ pkgs:
       - processmonitor
       - proton-mail-bridge
       - protonvpn
+      - qbittorrent
       - runelite
       - rustdesk
       - sf-symbols
       - slack
       - spotify
-      - stats
       - steam
       - syncthing-app
       - tailscale
       - tailscale-app
       - taskexplorer
-      - transmission
-      - upic
       - vagrant
       - vesktop
       - visual-studio-code
       - vlc
       - wezterm@nightly
-      - yellowdot
       - zed
       - zoom
   arch:
