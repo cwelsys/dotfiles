@@ -1,3 +1,4 @@
+{{- if not .isVM -}}
 {{ $config := .config.windows.startup.shortcuts }}
 {{ if $config }}
 
@@ -126,4 +127,5 @@ if ($successCount -eq $shortcutCount) {
 
 {{ else }}
 Write-Host "No startup shortcuts defined in config. Skipping." -ForegroundColor "Yellow"
+{{ end }}
 {{ end }}
