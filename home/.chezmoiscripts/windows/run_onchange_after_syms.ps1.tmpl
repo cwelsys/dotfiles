@@ -68,10 +68,19 @@ try {
         Remove-Item -Path $targetPath -Force -Recurse
     }
 
-    # Create the symlink
-    New-Item -ItemType SymbolicLink -Path $targetPath -Target $sourcePath -Force | Out-Null
-    Write-Color -Text "[symlink] ", "(success) ", $targetPath, " → ", $sourcePath -Color Blue, Green, White, Gray, White
-    $successCount++
+    # Create the symlink - force creation and handle any remaining files
+    try {
+        if (Test-Path $targetPath) {
+            Remove-Item -Path $targetPath -Force -Recurse -ErrorAction Stop
+            Write-Color -Text "[symlink] ", "Removed existing: ", $targetPath -Color Blue, Gray, White
+        }
+        New-Item -ItemType SymbolicLink -Path $targetPath -Target $sourcePath -Force -ErrorAction Stop | Out-Null
+        Write-Color -Text "[symlink] ", "(success) ", $targetPath, " → ", $sourcePath -Color Blue, Green, White, Gray, White
+        $successCount++
+    } catch {
+        Write-Color -Text "[symlink] ", "(creation failed) ", $targetPath, ": ", $_.Exception.Message -Color Blue, Red, White, Gray, White
+        throw $_
+    }
 } catch {
     Write-Color -Text "[symlink] ", "(failed) ", $targetPath, ": ", $_.Exception.Message -Color Blue, Red, White, Gray, White
 

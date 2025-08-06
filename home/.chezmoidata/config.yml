@@ -20,8 +20,7 @@ config:
           target: 'C:\Users\cwel\.local\bin\kb.ahk'
 
     symlinks:
-      "C:\\temp\\test.txt": "home\\dot_config\\windows-terminal\\settings.json"
-      "%LOCALAPPDATA%\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json": "home\\dot_config\\windows-terminal\\settings.json"
+      "%HOME%\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json": "%HOME%\\.local\\share\\chezmoi\\home\\dot_config\\windows-terminal\\settings.json"
       "%HOME%\\Documents\\Powershell\\Microsoft.PowerShell_profile.ps1": "%HOME%\\.config\\powershell\\profile.ps1"
       "%HOME%\\Documents\\Powershell\\Microsoft.VSCode_profile.ps1": "%HOME%\\.config\\powershell\\profile.ps1"
       "%HOME%\\Documents\\Powershell\\powershell.config.json": "%HOME%\\.config\\powershell\\powershell.config.json"
