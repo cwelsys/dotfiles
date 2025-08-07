@@ -18,17 +18,17 @@ sudo tee /etc/sudoers.d/no-admin-flag > /dev/null <<'EOF'
 Defaults !admin_flag
 EOF
 
-{{- if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") -}}
+{{- if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") }}
 sudo apt update -y
 sudo apt-get install build-essential procps wget curl file git zsh age locales -y
 sudo locale-gen en_US.UTF-8
 sudo update-locale LANG=en_US.UTF-8
-  {{- else if eq .chezmoi.osRelease.id "fedora" -}}
+{{- else if eq .chezmoi.osRelease.id "fedora" }}
 sudo dnf update -y
 sudo dnf group install development-tools -y
 sudo dnf install procps-ng wget curl file git age zsh glibc-locale-source -y
 sudo localedef -i en_US -f UTF-8 en_US.UTF-8
-  {{- else if eq .chezmoi.osRelease.id "arch" -}}
+{{- else if eq .chezmoi.osRelease.id "arch" }}
 sudo sed -i 's/#Color/Color/' /etc/pacman.conf
 sudo sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 5/' /etc/pacman.conf
 
@@ -46,12 +46,12 @@ sudo pacman -S --needed --noconfirm procps-ng wget curl file git zsh age openssh
 sudo sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 sudo locale-gen
 
-  {{- else if or (eq .chezmoi.osRelease.id "opensuse-leap") (eq .chezmoi.osRelease.id "opensuse-tumbleweed") -}}
+{{- else if or (eq .chezmoi.osRelease.id "opensuse-leap") (eq .chezmoi.osRelease.id "opensuse-tumbleweed") }}
 sudo zypper refresh
 sudo zypper install -y -t pattern devel_basis
 sudo zypper install -y procps wget curl file git zsh age openssh
 sudo localectl set-locale LANG=en_US.UTF-8
-  {{- else -}}
+{{- else }}
 echo "Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
-  {{- end -}}
+{{- end }}
 {{- end }}

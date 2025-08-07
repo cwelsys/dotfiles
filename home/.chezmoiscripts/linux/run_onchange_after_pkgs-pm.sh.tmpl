@@ -1,4 +1,4 @@
-{{ if or (eq .chezmoi.os "linux") -}}
+{{ if and (eq .chezmoi.os "linux") (not .isVM) -}}
 #!/bin/bash
 
 {{   if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") }}
@@ -7,17 +7,51 @@ sudo apt install {{ $pkgs | quoteList | join " " }} -y
 {{   else if eq .chezmoi.osRelease.id "fedora" }}
 {{     if hasKey .pkgs.fedora "repos" }}
 {{ range .pkgs.fedora.repos }}
-if ! dnf repolist --enabled | grep -q "{{ . }}"; then
-    echo "Enabling repository: {{ . }}"
 {{       if hasPrefix . "copr:" }}
 {{         $coprName := . | replace "copr:copr.fedorainfracloud.org:" "" }}
+if ! dnf repolist --enabled | grep -q "{{ $coprName | replace ":" "_" }}"; then
+    echo "Enabling COPR repository: {{ $coprName }}"
     sudo dnf copr enable {{ $coprName }} -y
-{{       else }}
-    echo "Repository '{{ . }}' needs to be enabled manually."
-    echo "This repository was detected by cmpack but requires manual setup."
-    echo "Please refer to the repository documentation for enabling '{{ . }}'"
-{{       end }}
 fi
+{{       else if eq . "rpmfusion-free-release" }}
+if ! dnf repolist --enabled | grep -q "rpmfusion-free"; then
+    echo "Enabling RPM Fusion Free repository"
+    sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+fi
+{{       else if eq . "rpmfusion-nonfree-release" }}
+if ! dnf repolist --enabled | grep -q "rpmfusion-nonfree"; then
+    echo "Enabling RPM Fusion Non-Free repository"
+    sudo dnf install -y https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+fi
+{{       else if eq . "docker-ce-stable" }}
+if ! dnf repolist --enabled | grep -q "docker-ce-stable"; then
+    echo "Enabling Docker CE repository"
+    sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+fi
+{{       else if eq . "tailscale-stable" }}
+if ! dnf repolist --enabled | grep -q "tailscale"; then
+    echo "Enabling Tailscale repository"
+    curl -fsSL https://pkgs.tailscale.com/stable/fedora/repo.gpg | sudo tee /etc/pki/rpm-gpg/RPM-GPG-KEY-tailscale >/dev/null
+    curl -fsSL https://pkgs.tailscale.com/stable/fedora/tailscale.repo | sudo tee /etc/yum.repos.d/tailscale.repo >/dev/null
+fi
+{{       else if eq . "mise-repo" }}
+if ! dnf repolist --enabled | grep -q "mise"; then
+    echo "Enabling Mise repository"
+    curl https://mise.jdx.dev/rpm-repo.pub | gpg --dearmor | sudo tee /etc/pki/rpm-gpg/RPM-GPG-KEY-mise >/dev/null
+    echo -e "[mise]\nname=mise\nbaseurl=https://mise.jdx.dev/rpm\nenabled=1\ngpgcheck=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mise" | sudo tee /etc/yum.repos.d/mise.repo >/dev/null
+fi
+{{       else if eq . "nvidia-container-toolkit" }}
+if ! dnf repolist --enabled | grep -q "nvidia-container-toolkit"; then
+    echo "Enabling NVIDIA Container Toolkit repository"
+    curl -s -L https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo | sudo tee /etc/yum.repos.d/nvidia-container-toolkit.repo >/dev/null
+fi
+{{       else }}
+if ! dnf repolist --enabled | grep -q "{{ . }}"; then
+    echo "Repository '{{ . }}' needs to be enabled manually."
+    echo "This repository was detected but requires manual setup."
+    echo "Please refer to the repository documentation for enabling '{{ . }}'"
+fi
+{{       end }}
 {{ end }}
 {{     end }}
 
