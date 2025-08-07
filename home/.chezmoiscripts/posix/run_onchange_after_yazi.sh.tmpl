@@ -21,22 +21,12 @@ install_plugin() {
             echo -e "${RED}  Failed to install plugin: $plugin${NC}"
         fi
     else
-        # Fallback for older versions - manual plugin installation
-        echo -e "${YELLOW}  Using manual installation for older yazi version${NC}"
-        PLUGIN_DIR="$HOME/.config/yazi/plugins"
-        mkdir -p "$PLUGIN_DIR"
-        
-        # Extract plugin name from URL if it's a GitHub URL
-        if [[ "$plugin" == *"github.com"* ]]; then
-            plugin_name=$(basename "$plugin" .git)
-            echo -e "${CYAN}  Cloning $plugin to $PLUGIN_DIR/$plugin_name${NC}"
-            if git clone "$plugin" "$PLUGIN_DIR/$plugin_name" 2>/dev/null || true; then
-                echo -e "${GREEN}  Success!${NC}"
-            else
-                echo -e "${YELLOW}  Plugin may already exist or failed to clone${NC}"
-            fi
+        # Use older pack syntax for older yazi versions
+        echo -e "${YELLOW}  Using older pack syntax for older yazi version${NC}"
+        if ya pack -a "$plugin" || true; then
+            echo -e "${GREEN}  Success!${NC}"
         else
-            echo -e "${YELLOW}  Manual installation not supported for: $plugin${NC}"
+            echo -e "${RED}  Failed to install plugin: $plugin${NC}"
         fi
     fi
 }
@@ -51,8 +41,7 @@ echo -e "${YELLOW}=== Listing installed plugins ===${NC}"
 if ya pkg --help &>/dev/null; then
     ya pkg list || true
 else
-    echo -e "${CYAN}Manually installed plugins in ~/.config/yazi/plugins:${NC}"
-    ls -la "$HOME/.config/yazi/plugins/" 2>/dev/null || echo "No plugins directory found"
+    ya pack -l || true
 fi
 
 echo -e "${GREEN}=== Done ===${NC}"
