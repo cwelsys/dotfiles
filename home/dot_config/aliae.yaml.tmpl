@@ -445,6 +445,7 @@ env:
   - name: YAZI_FILE_ONE
     value: 'C:/Program Files/Git/usr/bin/file.exe'
     if: match .OS "windows"
+    persist: true
   - name: KOMOREBI_CONFIG_HOME
     value: '{{ .chezmoi.homeDir }}/.config/komorebi'
     if: match .OS "windows"
