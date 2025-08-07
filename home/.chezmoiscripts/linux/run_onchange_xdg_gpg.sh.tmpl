@@ -1,3 +1,4 @@
+{{ if eq .chezmoi.osRelease.id "arch" }}
 #!/bin/bash
 
 set -euo pipefail
@@ -43,3 +44,4 @@ else
     warn "gpgconf not found - GPG not installed or not in PATH"
     info "Skipping GPG agent reconfiguration"
 fi
+{{ end }}
