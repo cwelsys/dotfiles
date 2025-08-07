@@ -20,13 +20,13 @@ EOF
 
 {{- if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") }}
 sudo apt update -y
-sudo apt-get install build-essential procps wget curl file git zsh age locales -y
+sudo apt-get install build-essential procps wget curl file git zsh age locales fzf ripgrep fd-find bat tree unzip tar gzip -y
 sudo locale-gen en_US.UTF-8
 sudo update-locale LANG=en_US.UTF-8
 {{- else if eq .chezmoi.osRelease.id "fedora" }}
 sudo dnf update -y
 sudo dnf group install development-tools -y
-sudo dnf install procps-ng wget curl file git age zsh glibc-locale-source -y
+sudo dnf install procps-ng wget curl file git age zsh glibc-locale-source fzf ripgrep fd-find bat tree unzip tar gzip -y
 sudo localedef -i en_US -f UTF-8 en_US.UTF-8
 {{- else if eq .chezmoi.osRelease.id "arch" }}
 sudo sed -i 's/#Color/Color/' /etc/pacman.conf
@@ -41,7 +41,7 @@ if ! command -v yay &> /dev/null; then
 sudo pacman -S --needed --noconfirm git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si && cd .. && rm -rf yay
 fi
 yay -Y --gendb
-sudo pacman -S --needed --noconfirm procps-ng wget curl file git zsh age openssh
+sudo pacman -S --needed --noconfirm procps-ng wget curl file git zsh age openssh fzf ripgrep fd bat tree unzip tar gzip
 
 sudo sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 sudo locale-gen
@@ -49,9 +49,28 @@ sudo locale-gen
 {{- else if or (eq .chezmoi.osRelease.id "opensuse-leap") (eq .chezmoi.osRelease.id "opensuse-tumbleweed") }}
 sudo zypper refresh
 sudo zypper install -y -t pattern devel_basis
-sudo zypper install -y procps wget curl file git zsh age openssh
+sudo zypper install -y procps wget curl file git zsh age openssh fzf ripgrep fd bat tree unzip tar gzip
 sudo localectl set-locale LANG=en_US.UTF-8
 {{- else }}
 echo "Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
 {{- end }}
+
+# Install FantasqueSansM Nerd Font
+FONT_DIR="$HOME/.local/share/fonts"
+FONT_NAME="FantasqueSansM"
+FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FantasqueSansMono.zip"
+
+if [ ! -f "$FONT_DIR/FantasqueSansMNerdFont-Regular.ttf" ]; then
+    echo "Installing FantasqueSansM Nerd Font..."
+    mkdir -p "$FONT_DIR"
+    cd /tmp
+    curl -fLo "${FONT_NAME}.zip" "$FONT_URL"
+    unzip -o "${FONT_NAME}.zip" -d "$FONT_DIR"
+    rm -f "${FONT_NAME}.zip"
+    fc-cache -fv
+    echo "FantasqueSansM Nerd Font installed successfully"
+else
+    echo "FantasqueSansM Nerd Font already installed"
+fi
+
 {{- end }}
