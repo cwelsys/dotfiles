@@ -12,22 +12,12 @@ install_plugin() {
     local plugin="$1"
     echo -e "${CYAN}Installing plugin: ${plugin}${NC}"
 
-    # Check if yazi supports pkg subcommand (newer versions)
-    if ya pkg --help &>/dev/null; then
-        # Use new pkg subcommand
-        if ya pkg add "$plugin" || true; then
-            echo -e "${GREEN}  Success!${NC}"
-        else
-            echo -e "${RED}  Failed to install plugin: $plugin${NC}"
-        fi
+    # Use || true to prevent script from exiting on plugin install failure
+    if ya pkg add "$plugin" || true; then
+        echo -e "${GREEN}  Success!${NC}"
     else
-        # Use older pack syntax for older yazi versions
-        echo -e "${YELLOW}  Using older pack syntax for older yazi version${NC}"
-        if ya pack -a "$plugin" || true; then
-            echo -e "${GREEN}  Success!${NC}"
-        else
-            echo -e "${RED}  Failed to install plugin: $plugin${NC}"
-        fi
+        echo -e "${RED}  Failed to install plugin: $plugin${NC}"
+        # Don't return error to allow other plugins to install
     fi
 }
 
@@ -38,10 +28,6 @@ install_plugin '{{ . }}'
 {{ end }}
 
 echo -e "${YELLOW}=== Listing installed plugins ===${NC}"
-if ya pkg --help &>/dev/null; then
-    ya pkg list || true
-else
-    ya pack -l || true
-fi
+ya pkg list || true
 
 echo -e "${GREEN}=== Done ===${NC}"

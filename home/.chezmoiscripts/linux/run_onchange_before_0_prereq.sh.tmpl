@@ -26,11 +26,10 @@ sudo update-locale LANG=en_US.UTF-8
 {{- else if eq .chezmoi.osRelease.id "fedora" }}
 sudo dnf update -y
 sudo dnf group install development-tools -y
-sudo dnf install procps-ng wget curl file git age zsh glibc-locale-source fzf ripgrep fd-find bat tree unzip tar gzip -y
-# Enable COPR for yazi
-sudo dnf copr enable lihaohong/yazi -y
-sudo dnf install yazi ffmpeg-free p7zip jq poppler-utils ImageMagick -y
+sudo dnf install procps-ng wget curl file git age zsh glibc-locale-source fzf ripgrep fd-find bat tree unzip tar gzip ffmpeg-free p7zip jq poppler-utils ImageMagick -y
 sudo localedef -i en_US -f UTF-8 en_US.UTF-8
+sudo dnf copr enable jdxcode/mise
+sudo dnf install mise
 {{- else if eq .chezmoi.osRelease.id "arch" }}
 sudo sed -i 's/#Color/Color/' /etc/pacman.conf
 sudo sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 5/' /etc/pacman.conf
@@ -44,7 +43,7 @@ if ! command -v yay &> /dev/null; then
 sudo pacman -S --needed --noconfirm git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si && cd .. && rm -rf yay
 fi
 yay -Y --gendb
-sudo pacman -S --needed --noconfirm procps-ng wget curl file git zsh age openssh fzf ripgrep fd bat tree unzip tar gzip yazi ffmpeg 7zip jq poppler resvg imagemagick
+sudo pacman -S --needed --noconfirm procps-ng wget mise curl file git zsh age openssh fzf ripgrep fd bat tree unzip tar gzip ffmpeg 7zip jq poppler resvg imagemagick
 
 sudo sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 sudo locale-gen
@@ -52,26 +51,22 @@ sudo locale-gen
 {{- else if or (eq .chezmoi.osRelease.id "opensuse-leap") (eq .chezmoi.osRelease.id "opensuse-tumbleweed") }}
 sudo zypper refresh
 sudo zypper install -y -t pattern devel_basis
-sudo zypper install -y procps wget curl file git zsh age openssh fzf ripgrep fd bat tree unzip tar gzip yazi ffmpeg p7zip jq poppler ImageMagick
+sudo zypper install -y procps wget curl file git zsh age openssh fzf ripgrep fd bat tree unzip tar gzip ffmpeg p7zip jq poppler ImageMagick
 sudo localectl set-locale LANG=en_US.UTF-8
 {{- else }}
 echo "Unsupported Linux distribution: {{ .chezmoi.osRelease.id }}"
 {{- end }}
 
-# Install yazi for Debian/Ubuntu (not in repos yet)
-{{- if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") }}
-if ! command -v yazi &> /dev/null; then
-    echo "Installing yazi from GitHub releases..."
-    YAZI_VERSION=$(curl -s https://api.github.com/repos/sxyazi/yazi/releases/latest | grep '"tag_name"' | cut -d '"' -f 4)
-    curl -fLo /tmp/yazi.zip "https://github.com/sxyazi/yazi/releases/latest/download/yazi-x86_64-unknown-linux-gnu.zip"
-    cd /tmp && unzip -o yazi.zip
-    sudo mv yazi-*/yazi yazi-*/ya /usr/local/bin/
-    rm -rf /tmp/yazi* 
-    echo "yazi installed successfully"
+# Install mise if not already installed
+if ! command -v mise &> /dev/null; then
+    echo "Installing mise..."
+    curl https://mise.jdx.dev/install.sh | sh
+    export PATH="$HOME/.local/bin:$PATH"
+    echo "mise installed successfully"
+else
+    echo "mise already installed"
 fi
-{{- end }}
 
-# Install FantasqueSansM Nerd Font
 FONT_DIR="$HOME/.local/share/fonts"
 FONT_NAME="FantasqueSansM"
 FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FantasqueSansMono.zip"
