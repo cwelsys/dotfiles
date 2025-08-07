@@ -71,10 +71,10 @@
 				"face": "FantasqueSansM Nerd Font",
 				"size": 14
 			},
-			// "opacity": 75,
+			"opacity": 75,
 			"padding": "10",
 			"scrollbarState": "hidden",
-			"useAcrylic": true
+			"useAcrylic": false
 		},
 		"list": [
 			{
