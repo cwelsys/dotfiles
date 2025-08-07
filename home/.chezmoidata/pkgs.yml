@@ -143,6 +143,7 @@ pkgs:
       - 1password-cli
       - accountsservice
       - age
+      - alacritty
       - alsa-firmware
       - alsa-plugins
       - alsa-utils
@@ -157,12 +158,13 @@ pkgs:
       - bat-extras
       - bind
       - bluebubbles-bin
-      - blueman
+      - blueman-git
       - bluez
       - bluez-utils
       - brightnessctl
       - btop
       - btrfs-progs
+      - caelestia-meta
       - cantarell-fonts
       - chaotic-keyring
       - chaotic-mirrorlist
@@ -182,10 +184,269 @@ pkgs:
       - cups-filters
       - cups-pdf
       - ddcui
-      - deluge-gtk
       - device-mapper
       - devify
       - dex
+      - diffutils
+      - dmidecode
+      - dmraid
+      - docker
+      - docker-buildx
+      - docker-compose
+      - dolphin-emu
+      - downgrade
+      - dracut
+      - ducker
+      - duf
+      - dunst
+      - dust
+      - easyeffects
+      - efitools
+      - eza
+      - f2fs-tools
+      - ffmpegthumbnailer
+      - ffmpegthumbs
+      - figlet
+      - file-roller
+      - flatpak
+      - foomatic-db
+      - foomatic-db-engine
+      - foomatic-db-gutenprint-ppds
+      - foomatic-db-nonfree
+      - foomatic-db-nonfree-ppds
+      - foomatic-db-ppds
+      - fuzzel
+      - gamemode
+      - getnf
+      - ghostscript
+      - git-cliff
+      - git-extras
+      - github-cli
+      - gnome-bluetooth-3.0
+      - gnome-session
+      - gnome-settings-daemon
+      - gnome-shell
+      - gnome-shell-extensions
+      - gnome-themes-extra
+      - gparted
+      - gpu-screen-recorder-git
+      - greetd
+      - greetd-gtkgreet
+      - grimblast-git
+      - gsfonts
+      - gst-libav
+      - gst-plugin-pipewire
+      - gst-plugins-bad
+      - gst-plugins-ugly
+      - gtk-engine-murrine
+      - gtk2
+      - gutenprint
+      - gvfs
+      - haruna
+      - haveged
+      - hplip
+      - htop
+      - hwdetect
+      - hwinfo
+      - hypridle
+      - hyprland-protocols
+      - hyprlock
+      - hyprpaper
+      - hyprpicker
+      - hyprpolkitagent
+      - hyprshade
+      - hyprsunset
+      - hyprswitch
+      - inetutils
+      - inxi
+      - isd
+      - iwd
+      - jfsutils
+      - kernel-install-for-dracut
+      - keyd
+      - kitty
+      - kvantum
+      - kvantum-qt5
+      - kwayland-integration
+      - lazydocker
+      - lazyjournal
+      - libappindicator-gtk3
+      - libdvdcss
+      - libgsf
+      - libopenraw
+      - libwnck3
+      - linux-firmware
+      - linux-headers
+      - linux-zen
+      - linux-zen-headers
+      - loupe
+      - lsb-release
+      - lsscsi
+      - luarocks
+      - lutris
+      - lvm2
+      - mako
+      - maliit-keyboard
+      - mangohud
+      - maplemono-nf-unhinted
+      - matugen-bin
+      - meld
+      - mesa-utils
+      - modemmanager
+      - mtools
+      - nano-syntax-highlighting
+      - nautilus
+      - navi
+      - nemo
+      - netctl
+      - network-manager-applet
+      - networkmanager-openconnect
+      - networkmanager-openvpn
+      - nilfs-utils
+      - nordic-theme
+      - noto-fonts
+      - noto-fonts-cjk
+      - noto-fonts-emoji
+      - noto-fonts-extra
+      - nss-mdns
+      - ntp
+      - nvidia-dkms
+      - nwg-displays
+      - nwg-dock-hyprland
+      - nwg-look
+      - obsidian
+      - openssh
+      - otf-font-awesome
+      - overskride
+      - pacman-contrib
+      - pacseek
+      - pamixer
+      - papirus-icon-theme
+      - perl
+      - perl-term-animation
+      - pipewire-alsa
+      - pipewire-jack
+      - pipewire-pulse
+      - pkgfile
+      - poppler-glib
+      - power-profiles-daemon
+      - pv
+      - pyprland
+      - python
+      - python-defusedxml
+      - python-jinja
+      - python-packaging
+      - python-pip
+      - python-pyqt5
+      - python-pyqt6
+      - python-pywalfox
+      - python-reportlab
+      - python-requests
+      - python-screeninfo
+      - qbittorrent
+      - qimgv-light
+      - qt5-imageformats
+      - qt6-multimedia
+      - qt6-positioning
+      - qt6-quicktimeline
+      - qt6-sensors
+      - qt6-virtualkeyboard
+      - qt6ct
+      - quickshell-git
+      - rebuild-detector
+      - reflector
+      - rofi-wayland
+      - rtkit
+      - ryujinx
+      - sane
+      - satty
+      - seahorse
+      - selectdefaultapplication-fork-git
+      - sg3_utils
+      - shellcheck
+      - slack-bin
+      - sm64pc-git
+      - sof-firmware
+      - speedtest-cli
+      - spicetify-cli
+      - splix
+      - spotify
+      - steam
+      - sudachi-bin
+      - sunshine-bin
+      - swaync
+      - swayosd-git
+      - syncthing-gtk
+      - syntax-highlighting
+      - sysfsutils
+      - system-config-printer
+      - systemctl-tui
+      - systemd-sysvcompat
+      - texinfo
+      - thefuck
+      - thunar
+      - thunar-archive-plugin
+      - ttf-bitstream-vera
+      - ttf-dejavu
+      - ttf-fira-code
+      - ttf-fira-sans
+      - ttf-firacode-nerd
+      - ttf-jetbrains-mono
+      - ttf-jetbrains-mono-nerd
+      - ttf-liberation
+      - ttf-meslo-nerd
+      - ttf-ms-win11-auto
+      - ttf-nerd-fonts-symbols-mono
+      - ttf-opensans
+      - ttf-roboto-mono-nerd
+      - ttf-ubuntu-mono-nerd
+      - tumbler
+      - udiskie
+      - unrar
+      - upscayl-bin
+      - uwsm
+      - vesktop-bin
+      - vi
+      - viewnior
+      - vim
+      - visual-studio-code-bin
+      - vivid
+      - waybar
+      - waybar-updates
+      - waypaper-git
+      - wezterm-nightly-bin
+      - wf-recorder
+      - wget
+      - wl-clip-persist
+      - wl-clipboard
+      - wlr-randr
+      - wmctrl
+      - woff2-font-awesome
+      - wttrbar
+      - wtype
+      - xcape
+      - xclip
+      - xdg-desktop-portal-gnome
+      - xdg-desktop-portal-hyprland
+      - xdg-ninja
+      - xdg-utils
+      - xf86-input-libinput
+      - xf86-video-amdgpu
+      - xf86-video-ati
+      - xfsprogs
+      - xl2tpd
+      - xorg-server
+      - xorg-xdpyinfo
+      - xorg-xinit
+      - xorg-xinput
+      - xorg-xkill
+      - xorg-xrandr
+      - xsettingsd
+      - yay
+      - zathura
+      - zathura-pdf-mupdf
+      - zen-browser-bin
+      - zoxide
   fedora:
     repos:
       - rpmfusion-nonfree-updates
