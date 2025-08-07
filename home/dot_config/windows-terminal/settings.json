@@ -85,6 +85,20 @@
 				"name": "pbox"
 			},
 			{
+				"commandline": "ssh mba",
+				"guid": "{2ca30442-0d70-50a4-8ae9-104aef3840fc}",
+				"hidden": false,
+				"icon": "C:\\Users\\cwel\\Pictures\\icons\\logo.png",
+				"name": "mba"
+			},
+			{
+				"commandline": "ssh main",
+				"guid": "{2ca37122-0d70-50a4-8ae9-104aef3840fc}",
+				"hidden": false,
+				"icon": "C:\\Users\\cwel\\Pictures\\icons\\logo.png",
+				"name": "main"
+			},
+			{
 				"guid": "{2ece5bfe-50ed-5f3a-ab87-5cd4baafed2b}",
 				"hidden": false,
 				"name": "Git Bash",
@@ -123,15 +137,6 @@
 				"source": "Microsoft.WSL"
 			},
 			{
-				"commandline": "C:\\WINDOWS\\system32\\wsl.exe --distribution-id {b96bef0c-281e-4884-8151-dc33baaa30b4} --cd ~",
-				"guid": "{9d843abf-de74-4d94-aca8-a07fc208cb24}",
-				"hidden": false,
-				"icon": "C:\\Users\\cwel\\AppData\\Local\\wsl\\{b96bef0c-281e-4884-8151-dc33baaa30b4}\\shortcut.ico",
-				"name": "Arch",
-				"pathTranslationStyle": "wsl",
-				"startingDirectory": "~"
-			},
-			{
 				"guid": "{5ba8ab45-149a-5780-b2b4-4b4ee596cddc}",
 				"hidden": true,
 				"name": "rancher-desktop-data",
@@ -142,20 +147,6 @@
 				"hidden": false,
 				"name": "rancher-desktop",
 				"source": "Microsoft.WSL"
-			},
-			{
-				"commandline": "ssh pstick",
-				"guid": "{2ae3b604-62be-446d-85ae-1edf201283bb}",
-				"hidden": false,
-				"icon": "C:\\Users\\cwel\\Pictures\\icons\\pihole.png",
-				"name": "pstick"
-			},
-			{
-				"commandline": "ssh nova",
-				"guid": "{2226497c-8934-4dc8-8c98-aa7c27ed7652}",
-				"hidden": false,
-				"icon": "C:\\Users\\cwel\\Pictures\\icons\\png\\aws-light.png",
-				"name": "nova"
 			},
 			{
 				"guid": "{569ceebf-d5f4-5d7f-875d-4043b4464b0e}",
@@ -173,12 +164,6 @@
 				"guid": "{b3ab4603-ab7d-5f10-9705-0b6d73bd427f}",
 				"hidden": false,
 				"name": "archlinux",
-				"source": "Microsoft.WSL"
-			},
-			{
-				"guid": "{da6e3626-fa45-576c-9a4a-d4c6d95340fc}",
-				"hidden": false,
-				"name": "FedoraLinux-42",
 				"source": "Microsoft.WSL"
 			},
 			{
