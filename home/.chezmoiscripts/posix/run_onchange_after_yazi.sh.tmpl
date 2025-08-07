@@ -12,12 +12,32 @@ install_plugin() {
     local plugin="$1"
     echo -e "${CYAN}Installing plugin: ${plugin}${NC}"
 
-    # Use || true to prevent script from exiting on plugin install failure
-    if ya pkg add "$plugin" || true; then
-        echo -e "${GREEN}  Success!${NC}"
+    # Check if yazi supports pkg subcommand (newer versions)
+    if ya pkg --help &>/dev/null; then
+        # Use new pkg subcommand
+        if ya pkg add "$plugin" || true; then
+            echo -e "${GREEN}  Success!${NC}"
+        else
+            echo -e "${RED}  Failed to install plugin: $plugin${NC}"
+        fi
     else
-        echo -e "${RED}  Failed to install plugin: $plugin${NC}"
-        # Don't return error to allow other plugins to install
+        # Fallback for older versions - manual plugin installation
+        echo -e "${YELLOW}  Using manual installation for older yazi version${NC}"
+        PLUGIN_DIR="$HOME/.config/yazi/plugins"
+        mkdir -p "$PLUGIN_DIR"
+        
+        # Extract plugin name from URL if it's a GitHub URL
+        if [[ "$plugin" == *"github.com"* ]]; then
+            plugin_name=$(basename "$plugin" .git)
+            echo -e "${CYAN}  Cloning $plugin to $PLUGIN_DIR/$plugin_name${NC}"
+            if git clone "$plugin" "$PLUGIN_DIR/$plugin_name" 2>/dev/null || true; then
+                echo -e "${GREEN}  Success!${NC}"
+            else
+                echo -e "${YELLOW}  Plugin may already exist or failed to clone${NC}"
+            fi
+        else
+            echo -e "${YELLOW}  Manual installation not supported for: $plugin${NC}"
+        fi
     fi
 }
 
@@ -28,6 +48,11 @@ install_plugin '{{ . }}'
 {{ end }}
 
 echo -e "${YELLOW}=== Listing installed plugins ===${NC}"
-ya pkg list || true
+if ya pkg --help &>/dev/null; then
+    ya pkg list || true
+else
+    echo -e "${CYAN}Manually installed plugins in ~/.config/yazi/plugins:${NC}"
+    ls -la "$HOME/.config/yazi/plugins/" 2>/dev/null || echo "No plugins directory found"
+fi
 
 echo -e "${GREEN}=== Done ===${NC}"

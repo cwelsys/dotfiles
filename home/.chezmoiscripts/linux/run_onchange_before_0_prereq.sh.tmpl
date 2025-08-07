@@ -29,7 +29,7 @@ sudo dnf group install development-tools -y
 sudo dnf install procps-ng wget curl file git age zsh glibc-locale-source fzf ripgrep fd-find bat tree unzip tar gzip -y
 # Enable COPR for yazi
 sudo dnf copr enable lihaohong/yazi -y
-sudo dnf install yazi ffmpeg 7zip jq poppler-utils ImageMagick -y
+sudo dnf install yazi ffmpeg-free p7zip jq poppler-utils ImageMagick -y
 sudo localedef -i en_US -f UTF-8 en_US.UTF-8
 {{- else if eq .chezmoi.osRelease.id "arch" }}
 sudo sed -i 's/#Color/Color/' /etc/pacman.conf
