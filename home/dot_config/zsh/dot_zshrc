@@ -58,7 +58,6 @@ omzPlugin rsync
 omzPlugin mise
 omzPlugin gpg-agent
 omzPlugin git
-omzPlugin git-flow wait"1"
 omzPlugin github wait"1"
 omzPlugin command-not-found wait"1"
 
