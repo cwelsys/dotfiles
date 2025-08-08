@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if command -v bat >/dev/null 2>&1; then
+    bat cache --clear
+    bat cache --build
+fi
+
 if [[ "$SHELL" =~ .*zsh$ ]]; then
     echo "Shell is already set to zsh: $SHELL"
     exit 0
