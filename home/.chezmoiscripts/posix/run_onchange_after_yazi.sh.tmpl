@@ -1,5 +1,5 @@
 #!/bin/bash
-
+{{ if lookPath "yazi" }}
 set -e
 
 GREEN='\033[0;32m'
@@ -31,3 +31,4 @@ echo -e "${YELLOW}=== Listing installed plugins ===${NC}"
 ya pkg list || true
 
 echo -e "${GREEN}=== Done ===${NC}"
+{{ end }}
