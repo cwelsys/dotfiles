@@ -6,6 +6,7 @@
 
 {{ if ne .chezmoi.os "linux" }}
 .chezmoiscripts/linux/**
+.config/gtk-*/
 {{ end }}
 
 {{ if or (ne .chezmoi.os "linux") (and .chezmoi.osRelease (ne .chezmoi.osRelease.id "arch")) }}
@@ -25,7 +26,6 @@
 .config/zathura/
 .config/nwg-look/
 .config/MangoHud/
-.config/gtk-*/
 .config/keyb/
 .config/hypr/
 .config/*.conf
