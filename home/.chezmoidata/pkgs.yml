@@ -623,6 +623,7 @@ pkgs:
       - kubernetes1.29-client
       - langpacks-en
       - langtable
+      - lazydocker
       - lazygit
       - leptonica
       - less
