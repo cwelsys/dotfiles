@@ -2,6 +2,7 @@ pkgs:
   darwin:
     brews:
       - age
+      - aliae
       - armadillo
       - bash-completion@2
       - bat
@@ -17,6 +18,7 @@ pkgs:
       - dockutil
       - dooit
       - dua-cli
+      - ducker
       - dust
       - eza
       - fastfetch
@@ -37,7 +39,6 @@ pkgs:
       - gum
       - ifstat
       - imagemagick
-      - jandedobbeleer/aliae/aliae
       - lazydocker
       - lazygit
       - lazyjournal
@@ -112,7 +113,6 @@ pkgs:
       - neat
       - obsidian
       - onyx
-      - pearcleaner
       - pictogram
       - pokemon-tcg-live
       - powershell
@@ -135,7 +135,6 @@ pkgs:
       - visual-studio-code
       - vlc
       - wezterm@nightly
-      - zed
       - zoom
   arch:
     pacman:
