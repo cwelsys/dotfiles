@@ -245,6 +245,9 @@ alias:
   - name: install
     value: brew install
     if: match .OS "darwin"
+  - name: list
+    value: brew list
+    if: match .OS "darwin"
   - name: clean
     value: brew cleanup
     if: match .OS "darwin"
