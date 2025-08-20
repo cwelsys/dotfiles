@@ -59,6 +59,48 @@ alias:
     value: open .
     type: function
     if: match .OS "darwin"
+  - name: aid
+    value: |
+      if [ $# -eq 0 ]; then
+        find /Applications \
+            /System/Applications \
+            /System/Applications/Utilities \
+            ~/Applications \
+            -maxdepth 2 -name "*.app" -prune -exec basename {} .app \; 2>/dev/null | sort -u
+      else
+        app_path=$(mdfind "kMDItemKind == 'Application'" | grep -i "/$*.app$" | head -n 1)
+        if [ -n "$app_path" ]; then
+          mdls -name kMDItemCFBundleIdentifier -r "$app_path"
+        else
+          echo "No application found for: $*"
+        fi
+      fi
+    type: function
+    if: match .OS "darwin"
+  - name: darkn
+    value: |
+      if [ $# -eq 0 ]; then
+        echo "Usage: darkn <app-name>"
+        return 1
+      fi
+      bundle_id=$(aid "$*")
+      if [ -z "$bundle_id" ]; then
+        echo "Could not resolve bundle id for: $*"
+        return 1
+      fi
+      current=$(defaults read "$bundle_id" NSRequiresAquaSystemAppearance 2>/dev/null)
+      if [ "$current" = "0" ] || [ "$current" = "" ]; then
+        echo "[$bundle_id] Unset → Light"
+        defaults write "$bundle_id" NSRequiresAquaSystemAppearance -bool true
+      else
+        echo "[$bundle_id] Light → Dark"
+        defaults write "$bundle_id" NSRequiresAquaSystemAppearance -bool false
+      fi
+      app_path=$(mdfind "kMDItemCFBundleIdentifier == '$bundle_id'" | head -n1)
+      app_name=$(basename "$app_path" .app)
+      killall "$app_name" >/dev/null 2>&1 || true
+    type: function
+    if: match .OS "darwin"
   - name: e
     value: xdg-open .
     type: function
