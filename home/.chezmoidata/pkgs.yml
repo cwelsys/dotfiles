@@ -54,6 +54,7 @@ pkgs:
       - nowplaying-cli
       - nushell
       - oh-my-posh
+      - openjdk
       - openjdk@11
       - php
       - pinentry-mac
@@ -71,7 +72,6 @@ pkgs:
       - spicetify-cli
       - starship
       - switchaudio-osx
-      - tailscale
       - tealdeer
       - thefuck
       - tmux
@@ -87,6 +87,7 @@ pkgs:
     casks:
       - 1password-cli
       - alt-tab
+      - android-platform-tools
       - atv-remote
       - background-music
       - betterdisplay
@@ -104,7 +105,7 @@ pkgs:
       - hammerspoon
       - iina
       - jellyfin-media-player
-      - jordanbaird-ice
+      - jordanbaird-ice@beta
       - karabiner-elements
       - knockknock
       - lulu
@@ -114,20 +115,21 @@ pkgs:
       - obsidian
       - onyx
       - pictogram
+      - playcover-community
       - pokemon-tcg-live
-      - powershell
       - processmonitor
       - proton-mail-bridge
       - protonvpn
       - qbittorrent
       - runelite
       - rustdesk
+      - scroll-reverser
       - sf-symbols
       - slack
       - spotify
+      - stats
       - steam
       - syncthing-app
-      - tailscale
       - tailscale-app
       - taskexplorer
       - vagrant
@@ -855,7 +857,6 @@ pkgs:
       - systemd-resolved
       - systemd-udev
       - systemtap
-      - tailscale
       - tar
       - tcpdump
       - telnet
