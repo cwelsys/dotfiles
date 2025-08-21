@@ -1,6 +1,6 @@
 prompt: 🦆
 default_exec: /bin/bash
-{{ if .chezmoi.os eq "windows" }}
+{{ if eq .chezmoi.os "windows" }}
 docker_path: npipe:////./pipe/docker_engine
 {{ else }}
 docker_path: unix:///var/run/docker.sock
