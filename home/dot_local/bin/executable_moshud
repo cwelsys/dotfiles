@@ -1,5 +1,0 @@
-#!/bin/bash
-
-launchctl unload -F /System/Library/LaunchAgents/com.apple.OSDUIHelper.plist
-(crontab -l ;
-echo "@reboot launchctl unload -F /System/Library/LaunchAgents/com.apple.OSDUIHelper.plist") | crontab -echo "Volume and Brightness HUD disabled."
