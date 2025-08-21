@@ -6,6 +6,12 @@ url = "https://github.com/catppuccin/btop/archive/refs/heads/main.zip"
 stripComponents = 2
 include = ["btop-main/themes/catppuccin_*.theme"]
 
+[".config/ghostty/shaders"]
+type = "git-repo"
+url = "https://github.com/hackr-sh/ghostty-shaders.git"
+clone.args = ['--depth', '1']
+pull.args = ['--depth', '1']
+
 [".config/atuin/themes/catppuccin-mocha-sky.toml"]
 type = "file"
 url = "https://raw.githubusercontent.com/catppuccin/atuin/refs/heads/main/themes/mocha/catppuccin-mocha-sky.toml"

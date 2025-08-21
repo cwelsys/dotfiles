@@ -71,6 +71,15 @@ bindkey '^H' .zle_smart-ctrl-backspace
   zle -N fzf-atuin-history-widget
   bindkey '^R' fzf-atuin-history-widget
 
+function omzPlugin() {
+  zinit ice atpull"%atclone" atclone"_fix-omz-plugin" lucid $2
+  zinit snippet OMZP::$1
+}
+
+function omzLib() {
+  zinit wait'!' lucid for OMZL::$1
+}
+
 _fix-omz-plugin() {
   if [[ ! -f ._zinit/teleid ]] then return 0; fi
   if [[ ! $(cat ._zinit/teleid) =~ "^OMZP::.*" ]] then return 0; fi
@@ -88,15 +97,6 @@ _fix-omz-plugin() {
     cp -r $file $filename
   done
   rm -rf ohmyzsh
-}
-
-function omzPlugin() {
-  zinit ice atpull"%atclone" atclone"_fix-omz-plugin" lucid $2
-  zinit snippet OMZP::$1
-}
-
-function omzLib() {
-  zinit wait'!' lucid for OMZL::$1
 }
 
 function y() {
