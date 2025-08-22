@@ -396,6 +396,10 @@ env:
     value: '{{ .chezmoi.sourceDir }}'
   - name: DOTFILES
     value: '{{ .chezmoi.sourceDir }}'
+  - name: EDITOR
+    value: nvim
+  - name: VISUAL
+    value: code --wait
   - name: TZ
     value: America/New_York
   - name: DOMAIN
@@ -548,6 +552,21 @@ env:
   - name: HOMEBREW_NO_ENV_HINTS
     value: 'true'
     if: hasCommand "brew"
+  - name: HOMEBREW_BAT
+    value: 1
+    if: hasCommand "brew"
+  - name: HOMEBREW_COLOR
+    value: 1
+    if: hasCommand "brew"
+  - name: HOMEBREW_CLEANUP_MAX_AGE_DAYS
+    value: 7
+    if: hasCommand "brew"
+  - name: HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS
+    value: 3
+    if: hasCommand "brew"
+  - name: HOMEBREW_DOWNLOAD_CONCURRENCY
+    value: auto
+    if: hasCommand "brew"
   - name: YAZI_CONFIG_HOME
     value: '{{ .chezmoi.homeDir }}/.config/yazi'
     if: match .OS "windows"
@@ -578,7 +597,8 @@ env:
     persist: true
   - name: BAT_CONFIG_DIR
     value: '{{ .chezmoi.homeDir }}/.config/bat'
-    if: match .OS "windows"
+  - name: BAT_CONFIG_PATH
+    value: '{{ .chezmoi.homeDir }}/.config/bat/config'
   - name: CLINK_PROFILE
     value: '{{ .chezmoi.homeDir }}/.config/clink'
     if: match .OS "windows"
