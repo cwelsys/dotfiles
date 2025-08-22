@@ -56,7 +56,7 @@ fi
 {{     end }}
 
 {{ $pkgs := .pkgs.fedora.dnf }}
-sudo dnf install {{ $pkgs | quoteList | join " " }} -y
+sudo dnf install {{ $pkgs | quoteList | join " " }} --skip-unavailable -y
 {{   else if eq .chezmoi.osRelease.id "arch" }}
 {{ $pkgs := .pkgs.arch.pacman }}
 yay -S {{ $pkgs | quoteList | join " " }} --needed --noconfirm
