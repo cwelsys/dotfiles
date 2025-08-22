@@ -17,45 +17,16 @@ fi
 
 eval "$(aliae init bash --config "$HOME/.config/aliae.yaml")"
 
-mkdir -p "$XDG_STATE_HOME/bash"
-
-if [ -f "$HOME/.bash_history" ] && [ ! -f "$XDG_STATE_HOME/bash/history" ]; then
-	mv "$HOME/.bash_history" "$XDG_STATE_HOME/bash/history"
+mkdir -p "$HOME/.local/state/bash"
+if [ -f "$HOME/.bash_history" ] && [ ! -f "$HOME/.local/state/bash/history" ]; then
+	mv "$HOME/.bash_history" "$HOME/.local/state/bash/history"
 fi
-[ -z "$HISTFILE" ] && export HISTFILE="$XDG_STATE_HOME/bash/history"
 
+HISTFILE="$HOME/.local/state/bash/history"
 HISTCONTROL=ignoreboth:erasedups
 HISTIGNORE="&:[bf]g:c:clear:history:exit:q:pwd:* --help"
 HISTFILESIZE=10000
 HISTSIZE=$HISTFILESIZE
-
-# if [ ! -f ~/.local/share/blesh/ble.sh ]; then
-# 	git clone https://github.com/akinomyoga/ble.sh && make -C ble.sh install
-# 	rm -rf ble.sh
-# fi
-
-# if [ -f ~/.local/share/blesh/ble.sh ]; then
-# 	if [[ "$TERM_PROGRAM" == "vscode" ]] || [[ "$TERM" == "dumb" ]] || [[ -n "$INSIDE_EMACS" ]] || [[ -n "$MINGW_PREFIX" ]] || [[ "$MSYSTEM" == "MINGW"* ]] || [[ "$TERM_PROGRAM" == "mintty" ]]; then
-# 		:
-# 	else
-# 		if [[ -f "/proc/version" ]] && grep -qEi "linux" /proc/version &>/dev/null; then
-# 			source ~/.local/share/blesh/ble.sh --noattach 2>/dev/null || {
-# 				return 0
-# 			}
-# 			if [[ -n "${BLE_VERSION-}" ]]; then
-# 				ble-color-setface auto_complete fg='#6c7086' 2>/dev/null || true
-# 				ble-face -s syntax_error fg='#f38ba8' 2>/dev/null || true
-# 				bleopt complete_ambiguous= 2>/dev/null || true
-# 				ble-import -d integration/fzf-key-bindings 2>/dev/null || true
-# 				ble-import -d integration/fzf-completion 2>/dev/null || true
-# 			fi
-# 		fi
-# 	fi
-# fi
-
-# if [[ -n "${BLE_VERSION-}" ]]; then
-# 	bleopt prompt_ps1_final='$(starship module character)' 2>/dev/null || true
-# fi
 
 if [ -f "$HOME/.config/bash" ]; then
 	for file in ~/.config/bash/*.bash; do
@@ -104,15 +75,6 @@ if command -v fzf >/dev/null 2>&1; then
 	eval "$(fzf --bash)"
 fi
 
-if command -v navi >/dev/null 2>&1; then
-	eval "$(navi widget bash)"
-fi
-
 if command -v zoxide >/dev/null 2>&1; then
 	eval "$(zoxide init bash --cmd cd)"
 fi
-
-# Only attach ble.sh if it's loaded and we're in an interactive shell
-# if [[ -n "${BLE_VERSION-}" ]] && [[ $- == *i* ]]; then
-# 	ble-attach 2>/dev/null || true
-# fi

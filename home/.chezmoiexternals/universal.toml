@@ -8,10 +8,6 @@ include = ["bat-main/themes/Catppuccin *.tmTheme"]
 type = "file"
 url = "https://raw.githubusercontent.com/catppuccin/delta/refs/heads/main/catppuccin.gitconfig"
 
-[".config/nushell/themes/catppuccin_mocha.nu"]
-type = "file"
-url = "https://raw.githubusercontent.com/catppuccin/nushell/refs/heads/main/themes/catppuccin_mocha.nu"
-
 [".config/glow/catppuccin-mocha.json"]
 type = "file"
 url = "https://raw.githubusercontent.com/catppuccin/glamour/refs/heads/main/themes/catppuccin-mocha.json"
