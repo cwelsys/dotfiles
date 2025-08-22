@@ -1,60 +1,16 @@
-function cdl() {
-	cd "$@" && ls -la
-}
-
 fdz-widget() {
-	BUFFER="fdz"
-	zle accept-line
+	fdz
+	zle reset-prompt
 }
 zle -N fdz-widget
 bindkey '^F' fdz-widget
 
 rgz-widget() {
-	BUFFER="rgz"
-	zle accept-line
+	rgz
+	zle reset-prompt
 }
 zle -N rgz-widget
 bindkey '^G' rgz-widget
-
-function fancy-ctrl-z () {
-  if [[ $#BUFFER -eq 0 ]]; then
-    BUFFER=" fg-fzf"
-    zle accept-line -w
-  else
-    zle push-input -w
-    zle clear-screen -w
-  fi
-}
-zle -N fancy-ctrl-z
-bindkey '^Z' fancy-ctrl-z
-
-.zle_select-all () {
-  (( CURSOR=0 ))
-  (( MARK=$#BUFFER ))
-  (( REGION_ACTIVE=1 ))
-}
-zle -N       .zle_select-all
-bindkey '^A' .zle_select-all
-
-.zle_smart-backspace () {
-  if (( REGION_ACTIVE )); then
-    zle kill-region
-  else
-    zle backward-delete-char
-  fi
-}
-zle -N       .zle_smart-backspace
-bindkey '^?' .zle_smart-backspace
-
-.zle_smart-ctrl-backspace () {
-  if (( REGION_ACTIVE )); then
-    zle kill-region
-  else
-    zle backward-kill-word
-  fi
-}
-zle -N       .zle_smart-ctrl-backspace
-bindkey '^H' .zle_smart-ctrl-backspace
 
   fzf-atuin-history-widget() {
     local selected num
@@ -156,4 +112,113 @@ _fzf_open_path() {
   rm) rm -rf "$file" ;;
   echo) echo "$file" ;;
   esac
+}
+
+clone() {
+  if [[ -z "$1" ]]; then
+    echo "What git repo do you want?" >&2
+    return 1
+  fi
+  local user repo
+  if [[ "$1" = */* ]]; then
+    user=${1%/*}
+    repo=${1##*/}
+  else
+    user=$GITHUB_USERNAME
+    repo=$1
+  fi
+
+  local giturl="github.com"
+  local dest=${XDG_PROJECTS_HOME:-~/Projects}/$user/$repo
+
+  if [[ ! -d $dest ]]; then
+    git clone --recurse-submodules "git@${giturl}:${user}/${repo}.git" "$dest"
+  else
+    echo "No need to clone, that directory already exists."
+    echo "Taking you there."
+  fi
+  cd $dest
+}
+
+extract() {
+  setopt localoptions noautopushd
+
+  if (( $# == 0 )); then
+    cat >&2 <<'EOF'
+Usage: extract [-option] [file ...]
+Options:
+  -r, --remove    Remove archive after unpacking.
+EOF
+  fi
+
+  local remove_archive=1
+  if [[ "$1" == "-r" ]] || [[ "$1" == "--remove" ]]; then
+    remove_archive=0
+    shift
+  fi
+
+  local pwd="$PWD"
+  while (( $# > 0 )); do
+    if [[ ! -f "$1" ]]; then
+      echo "extract: '$1' is not a valid file" >&2
+      shift
+      continue
+    fi
+
+    local success=0
+    local extract_dir="${1:t:r}"
+    local file="$1" full_path="${1:A}"
+    case "${file:l}" in
+      (*.tar.gz|*.tgz) (( $+commands[pigz] )) && { pigz -dc "$file" | tar xv } || tar zxvf "$file" ;;
+      (*.tar.bz2|*.tbz|*.tbz2) tar xvjf "$file" ;;
+      (*.tar.xz|*.txz)
+        tar --xz --help &> /dev/null \
+        && tar --xz -xvf "$file" \
+        || xzcat "$file" | tar xvf - ;;
+      (*.tar.zma|*.tlz)
+        tar --lzma --help &> /dev/null \
+        && tar --lzma -xvf "$file" \
+        || lzcat "$file" | tar xvf - ;;
+      (*.tar.zst|*.tzst)
+        tar --zstd --help &> /dev/null \
+        && tar --zstd -xvf "$file" \
+        || zstdcat "$file" | tar xvf - ;;
+      (*.tar) tar xvf "$file" ;;
+      (*.tar.lz) (( $+commands[lzip] )) && tar xvf "$file" ;;
+      (*.tar.lz4) lz4 -c -d "$file" | tar xvf - ;;
+      (*.tar.lrz) (( $+commands[lrzuntar] )) && lrzuntar "$file" ;;
+      (*.gz) (( $+commands[pigz] )) && pigz -dk "$file" || gunzip -k "$file" ;;
+      (*.bz2) bunzip2 "$file" ;;
+      (*.xz) unxz "$file" ;;
+      (*.lrz) (( $+commands[lrunzip] )) && lrunzip "$file" ;;
+      (*.lz4) lz4 -d "$file" ;;
+      (*.lzma) unlzma "$file" ;;
+      (*.z) uncompress "$file" ;;
+      (*.zip|*.war|*.jar|*.ear|*.sublime-package|*.ipa|*.ipsw|*.xpi|*.apk|*.aar|*.whl) unzip "$file" -d "$extract_dir" ;;
+      (*.rar) unrar x -ad "$file" ;;
+      (*.rpm)
+        command mkdir -p "$extract_dir" && builtin cd -q "$extract_dir" \
+        && rpm2cpio "$full_path" | cpio --quiet -id ;;
+      (*.7z) 7za x "$file" ;;
+      (*.deb)
+        command mkdir -p "$extract_dir/control" "$extract_dir/data"
+        builtin cd -q "$extract_dir"; ar vx "$full_path" > /dev/null
+        builtin cd -q control; extract ../control.tar.*
+        builtin cd -q ../data; extract ../data.tar.*
+        builtin cd -q ..; command rm *.tar.* debian-binary ;;
+      (*.zst) unzstd "$file" ;;
+      (*.cab) cabextract -d "$extract_dir" "$file" ;;
+      (*.cpio) cpio -idmvF "$file" ;;
+      (*)
+        echo "extract: '$file' cannot be extracted" >&2
+        success=1 ;;
+    esac
+
+    (( success = success > 0 ? success : $? ))
+    (( success == 0 && remove_archive == 0 )) && rm "$full_path"
+    shift
+
+    # Go back to original working directory in case we ran cd previously
+    builtin cd -q "$pwd"
+  done
 }

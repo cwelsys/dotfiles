@@ -1,0 +1,22 @@
+{
+  zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
+  if [[ -s "$zcompdump" && (! -s "${zcompdump}.zwc" || "$zcompdump" -nt "${zcompdump}.zwc") ]]; then
+    zcompile "$zcompdump"
+  fi
+} &!
+
+[[ ${XDG_SESSION_TYPE} == "tty" ]] && return
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  export MTL_HUD_ENABLED=1
+  export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+  return
+fi
+
+if [[ ${XDG_SESSION_TYPE} == "x11" ]]; then
+	export MOZ_ENABLE_WAYLAND=0
+	export QT_QPA_PLATFORM="xcb"
+elif [[ ${XDG_SESSION_TYPE} == "wayland" ]]; then
+	export MOZ_ENABLE_WAYLAND=1
+	export QT_QPA_PLATFORM="wayland;xcb"
+fi

@@ -1,136 +1,171 @@
-if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
-  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-fi
-
 if [[ -f "/opt/homebrew/bin/brew" ]]; then
-  export PATH="/opt/homebrew/opt/ncurses/bin:$PATH"
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
+if ! command -v aliae >/dev/null 2>&1; then
+  curl -s https://aliae.dev/install.sh | bash -s
+fi
+eval "$(aliae init zsh --config "$HOME/.config/aliae.yaml")"
+
+if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]] && command -v fastfetch >/dev/null 2>&1; then
   fastfetch
 fi
+
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh 2> /dev/null)"
+
+[[ ! -d "$XDG_STATE_HOME/zsh" ]] && mkdir -p "$XDG_STATE_HOME/zsh"
+[[ -f "$HOME/.zsh_history" && ! -f "$XDG_STATE_HOME/zsh/history" ]] && mv "$HOME/.zsh_history" "$XDG_STATE_HOME/zsh/history"
+[[ -z "$HISTFILE" ]] && export HISTFILE="$XDG_STATE_HOME/zsh/history"
+
+HISTSIZE=290000
+SAVEHIST=$HISTSIZE
+HISTDUP=erase
+
+setopt extended_history
+setopt hist_expire_dups_first
+setopt hist_ignore_all_dups
+setopt hist_reduce_blanks
+setopt hist_ignore_space
+setopt inc_append_history
+setopt share_history
+setopt autocd
+setopt multios
+setopt globdots
+setopt extended_glob
+setopt nobgnice
+setopt bang_hist
+setopt nobeep
 
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-eval "$(aliae init zsh --config "$HOME/.config/aliae.yaml")"
-
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
-
 if [[ ! -d "${ZINIT_HOME}" ]]; then
   mkdir -p "$(dirname "$ZINIT_HOME")"
   git clone https://github.com/zdharma-continuum/zinit.git "${ZINIT_HOME}"
 fi
 
 source "${ZINIT_HOME}/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
 
-if [ -d "$ZDOTDIR/lib" ]; then
-  for file in "$ZDOTDIR/lib/"*.zsh; do
-    source "$file"
-  done
-  unset file
+if [[ -r "$ZDOTDIR/utils.zsh" ]]; then
+  source "$ZDOTDIR/utils.zsh"
 fi
 
-if [ ! -d "$XDG_STATE_HOME/zsh" ]; then
-  mkdir -p "$XDG_STATE_HOME/zsh"
-fi
-
-if [ -f "$HOME/.zsh_history" ] && [ ! -f "$XDG_STATE_HOME/zsh/history" ]; then
-  mv "$HOME/.zsh_history" "$XDG_STATE_HOME/zsh/history"
-fi
-
-[ -z "$HISTFILE" ] && export HISTFILE="$XDG_STATE_HOME/zsh/history"
+zinit light-mode for \
+  zdharma-continuum/zinit-annex-as-monitor \
+  zdharma-continuum/zinit-annex-bin-gem-node \
+  zdharma-continuum/zinit-annex-patch-dl \
+  zdharma-continuum/zinit-annex-rust
 
 zinit ice depth=1; zinit light romkatv/powerlevel10k
-zinit light ryanccn/vivid-zsh
-
-if [ "$(uname)" = "Darwin" ]; then
-zinit light cwelsys/zsh-darwin
-omzPlugin brew
-else
-omzPlugin systemd
-fi
 
 omzLib git.zsh
+omzLib clipboard.zsh
+omzLib functions.zsh
+omzLib termsupport.zsh
+
+if [[ "$(uname)" = "Darwin" ]]; then
+  zinit light cwelsys/zsh-darwin
+  omzPlugin brew
+else
+  omzPlugin systemd
+fi
+
+omzPlugin git
+omzPlugin command-not-found
+omzPlugin docker-compose
 omzPlugin sudo
+omzPlugin fancy-ctrl-z
 omzPlugin colored-man-pages
-omzPlugin tmux
 omzPlugin chezmoi
-omzPlugin rsync
 omzPlugin mise
 omzPlugin gpg-agent
-omzPlugin git
-omzPlugin github wait"1"
-omzPlugin command-not-found wait"1"
+omzPlugin github
 
+zinit wait lucid light-mode for \
+  atclone"dircolors -b LS_COLORS > clrs.zsh" \
+  atpull'%atclone' pick"clrs.zsh" nocompile'!' \
+  atload'zstyle ":completion:*" list-colors "${(s.:.)LS_COLORS}"' \
+    trapd00r/LS_COLORS \
+  atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
+  atload"bindkey '^@' fzf-tab-complete" \
+    Aloxaf/fzf-tab \
+    zdharma-continuum/fast-syntax-highlighting \
+  atload"!_zsh_autosuggest_start; bindkey '^I' forward-char" \
+    zsh-users/zsh-autosuggestions \
+  blockf atpull"zinit creinstall -q ." \
+    zsh-users/zsh-completions
 
 zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
-    atclone"./atuin init zsh > init.zsh; ./atuin gen-completions --shell zsh > _atuin" \
-    atpull"%atclone" src"init.zsh" \
-    atload'
+  atclone"./atuin init zsh > init.zsh; ./atuin gen-completions --shell zsh > _atuin" \
+  atpull"%atclone" src"init.zsh" \
+  atload'
     bindkey "^E" _atuin_search_widget
     export ATUIN_NOBIND="true"
-    '
+  '
 zinit light atuinsh/atuin
 
-zinit ice wait"1" lucid
-zinit light denisidoro/navi
-# zinit light cwelsys/zsh-tab-title
-zinit light reegnz/jq-zsh-plugin
-zinit ice wait"1" lucid
-zinit light laggardkernel/zsh-thefuck
-zinit ice wait"1" lucid
-zinit light paulirish/git-open
+zinit ice as"program" mv"httpstat.sh -> httpstat" \
+  pick"httpstat" atpull'!git reset --hard'
+zinit light b4b4r07/httpstat
 
-zinit wait lucid as"completion" for \
-    OMZP::docker/completions/_docker \
-    OMZP::docker-compose/_docker-compose
-
-zinit light Aloxaf/fzf-tab
-zinit light tj/git-extras
-zinit light zdharma-continuum/fast-syntax-highlighting
-zinit light zsh-users/zsh-autosuggestions
-zinit light zsh-users/zsh-syntax-highlighting
-zinit light zsh-users/zsh-completions
-
-autoload -Uz compinit && compinit
-zinit cdreplay -q
-
-[ -x "$(command -v zoxide)" ] && eval "$(zoxide init --cmd cd zsh)"
-
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=247
-ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-ZSH_AUTOSUGGEST_USE_ASYNC=true
-MATCH_PREV_CM=true
+zinit wait"1" lucid for \
+  z-shell/zsh-zoxide \
+  hlissner/zsh-autopair \
+  djui/alias-tips \
+  cwelsys/zsh-tab-title \
+  reegnz/jq-zsh-plugin \
+  denisidoro/navi \
+  laggardkernel/zsh-thefuck \
+  paulirish/git-open
 
 zstyle ":completion:*" matcher-list "" "m:{a-z}={A-Z}" "m:{a-zA-Z}={A-Za-z}" "r:|[._-]=* r:|=* l:|=*"
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "${XDG_CACHE_HOME}/zsh/zcompcache"
+zstyle ':fzf-tab:*' switch-group '[' ']'
+zstyle ':fzf-tab:*' use-fzf-default-opts yes
 zstyle ':completion:*:git-checkout:*' sort false
 zstyle ':completion:*:descriptions' format '[%d]'
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*' menu no
-zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=shift-tab:accept
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza --icons --group-directories-first --color=always --git --oneline --all $realpath'
-zstyle ':fzf-tab:*' use-fzf-default-opts yes
-zstyle ':fzf-tab:*' switch-group ',' '.'
+zstyle ':fzf-tab:complete:*:*' fzf-preview 'less ${(Q)realpath}'
+zstyle ':fzf-tab:complete:*:*' fzf-flags --preview-window 'right,60%,wrap,<36(down,wrap,70%)'
+zstyle ':fzf-tab:complete:*:options' fzf-preview
+zstyle ':fzf-tab:complete:*:argument-1' fzf-preview
+zstyle ':fzf-tab:complete:yay:*' fzf-preview 'yay -Si $word'
+zstyle ':fzf-tab:complete:-command-:*' fzf-preview \
+    '(out=$(tldr --color "$word") 2>/dev/null && echo $out) || (out=$(MANWIDTH=$FZF_PREVIEW_COLUMNS man "$word") 2>/dev/null && echo $out) || (out=$(which "$word") && echo $out) || echo "${(P)word}"'
+zstyle ':fzf-tab:complete:tldr:argument-1' fzf-preview 'tldr --color $word'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'lsd -LAl --color=always --blocks=permission,user,size,date,name -1 $realpath'
+zstyle ':fzf-tab:*' fzf-bindings 'ctrl-a:toggle-all'
+zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm -w -w"
+zstyle ':fzf-tab:complete:(kill|ps):argument-rest' fzf-preview \
+  '[[ $group == "[process ID]" ]] && ps --pid=$word -o cmd --no-headers -w -w'
+zstyle ':fzf-tab:complete:(kill|ps):argument-rest' fzf-flags --preview-window=down:3:wrap
+zstyle ':fzf-tab:complete:systemctl-*:*' fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word'
+zstyle ':fzf-tab:complete:systemctl:--user:*' fzf-preview 'SYSTEMD_COLORS=1 systemctl --user status $word'
+zstyle ':fzf-tab:complete:(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' \
+	fzf-preview 'echo ${(P)word}'
+zstyle ':fzf-tab:complete:git-(add|diff|restore):*' fzf-preview \
+	'git diff $word | delta'
+zstyle ':fzf-tab:complete:git-log:*' fzf-preview \
+	'git log --color=always $word'
+zstyle ':fzf-tab:complete:git-show:*' fzf-preview \
+	'case "$group" in
+	"commit tag") git show --color=always $word ;;
+	*) git show --color=always $word | delta ;;
+	esac'
+zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
+	'case "$group" in
+	"modified file") git diff $word | d ;;
+	"recent commit object name") git show --color=always $word | delta ;;
+	*) git log --color=always $word ;;
+	esac'
 
-setopt hist_ignore_all_dups # remove older duplicate entries from history
-setopt hist_reduce_blanks # remove superfluous blanks from history items
-setopt inc_append_history # save history entries as soon as they are entered
-setopt share_history # share history between different instances of the shell
-setopt auto_list # automatically list choices on ambiguous completion
-setopt auto_menu # automatically use menu completion
-setopt hist_verify # verify history expansion before executing
-setopt auto_cd
-setopt multios
-setopt menu_complete
-setopt completealiases
-setopt no_nomatch
-setopt prompt_subst
-setopt interactive_comments # allow comments in interactive shells
-unsetopt beep
+[[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
 
+bindkey '^@' fzf-tab-complete
 bindkey ' ' magic-space
 bindkey '^[[3~' delete-char
 bindkey '^[[1;5D' beginning-of-line
@@ -138,25 +173,5 @@ bindkey '^[[1;5C' end-of-line
 bindkey "^N" insert-last-word
 bindkey '^[w' kill-region
 bindkey '^Y' redo
-bindkey '^I' autosuggest-accept
-bindkey '^[[Z' fzf-tab-complete
 
-HISTSIZE=290000
-SAVEHIST=$HISTSIZE
-HISTDUP=erase
 
-if [[ -f ~/.config/zsh/.p10k.zsh ]]; then
-  source ~/.config/zsh/.p10k.zsh
-elif [[ -v commands[starship] ]]; then
-	function set_win_title() {
-		local cwd="$PWD"
-		if [[ "$cwd" == "$HOME"* ]]; then
-			cwd="~${cwd#$HOME}"
-		fi
-		echo -ne "\033]0;$(basename "$cwd")\007"
-	}
-	starship_precmd_user_func="set_win_title"
-  eval "$(starship init zsh)"
-elif [[ -v commands['oh-my-posh'] ]]; then
-  eval "$(oh-my-posh init zsh --config "$HOME"/.config/posh.toml)"
-fi

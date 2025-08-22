@@ -101,4 +101,4 @@ keymap_mode = "vim-insert"
 records = true
 
 [theme]
-name = "catppuccin-mocha-sky"
+name = "catppuccin-mocha-teal"

@@ -1,4 +1,5 @@
 # general
+title = " "
 shell-integration-features = true
 confirm-close-surface = false
 quick-terminal-autohide = true

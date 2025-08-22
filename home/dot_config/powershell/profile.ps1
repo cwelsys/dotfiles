@@ -102,6 +102,5 @@ if (Get-Command scoop -ErrorAction SilentlyContinue) {
 }
 
 if (Get-Command zoxide -ErrorAction SilentlyContinue) {
-	$Env:_ZO_DATA_DIR = "$Env:PWSH"
 	Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
 }

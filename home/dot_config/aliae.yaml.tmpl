@@ -1,19 +1,29 @@
 # yaml-language-server: $schema=https://aliae.dev/schema.json
 alias:
+  - name: ".."
+    value: cd ..
+  - name: "…"
+    value: cd ../..
+  - name: "…."
+    value: cd ../../..
+  - name: "….."
+    value: cd ../../../..
   - name: c
     value: clear
   - name: ld
     value: lazydocker
   - name: lg
     value: lazygit
+  - name: dog
+    value: doggo
   - name: lj
     value: lazyjournal
-  - name: ff
-    value: fastfetch
   - name: mg
     value: magick
   - name: tg
     value: topgrade
+  - name: fet
+    value: fastfetch
   - name: vi
     value: nvim
   - name: vim
@@ -266,6 +276,12 @@ alias:
   - name: cask-rm
     value: brew uninstall --cask
     if: match .OS "darwin"
+  - name: tap
+    value: brew tap
+    if: match .OS "darwin"
+  - name: untap
+    value: brew untap
+    if: match .OS "darwin"
 
   - name: clean
     value: sudo dnf autoremove -y
@@ -346,6 +362,12 @@ alias:
   - name: list
     value: yay -Qq $1
     if: hasCommand "yay"
+  - name: in
+    value: yay -Slq | fzf -q "$1" -m --preview 'yay -Si {1}' --preview-window 'right,75%,wrap,cycle,<65(down,80%,wrap,cycle)' | xargs -ro yay -S
+    if: hasCommand "yay"
+  - name: re
+    value: yay -Qq | fzf -q "$1" -m --preview 'yay -Qi {1}' --preview-window bottom | xargs -ro yay -Rns
+    if: hasCommand "yay"
   - name: delOrphan
     value: sudo pacman -Qtdq | sudo pacman -Rns -
     if: hasCommand "pacman"
@@ -382,11 +404,24 @@ env:
     value: cwel.casa
   - name: MANPAGER
     value: nvim +Man!
+  - name: _ZO_DATA_DIR
+    value: '{{ .chezmoi.homeDir }}/.local/share/zoxide'
+  - name: _ZO_CMD_PREFIX
+    value: cd
+    if: hasCommand "zoxide"
+  - name: _ZO_FZF_OPTS
+    value: "$FZF_DEFAULT_OPTS --preview 'lsd -LAl --color=always --blocks=permission,user,size,date,name -1 {2..}' --preview-window=down:wrap"
+    if: hasCommand "zoxide"
+  - name: _ZO_ECHO
+    value: 0
+    if: hasCommand "zoxide"
   - name: WORDCHARS
     value: '~!#$%^&*(){}[]<>?.+;'
     if: ne .Shell "fish"
   - name: PROMPT_EOL_MARK
     value: ''
+  - name: GITHUB_USERNAME
+    value: cwelsys
   - name: GPG_TTY
     value: '$(tty)'
     if: ne .OS "windows"
@@ -449,6 +484,10 @@ env:
     value: '{{ .chezmoi.homeDir }}/.config/ripgrep/config'
   - name: LESSHISTFILE
     value: '{{ .chezmoi.homeDir }}/.cache/.lesshsts'
+  - name: LESSOPEN
+    value: '| ${HOME}/.config/lessfilter %s'
+  - name: LESS
+    value: '-cgiRF'
   - name: WGETRC
     value: '{{ .chezmoi.homeDir }}/.config/wget/wgetrc'
   - name: PAGER
@@ -461,9 +500,34 @@ env:
   - name: BATDIFF_USE_DELTA
     value: 'true'
     if: hasCommand "bat"
-  - name: FZF_DEFAULT_OPTS
-    value: '--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc --color=hl:#f38ba8,fg:#cdd6f4,header:#f38ba8 --color=info:#94e2d5,pointer:#f5e0dc,marker:#f5e0dc --color=fg+:#cdd6f4,prompt:#94e2d5,hl+:#f38ba8 --color=border:#585b70 --layout=reverse --cycle --height=~80% --border=rounded --info=right --bind=alt-w:toggle-preview-wrap --bind=ctrl-e:toggle-preview'
+  - name: FZF_COMPLETION_TRIGGER
+    value: ''
+  - name: FZF_COLORS
+    value: '--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc --color=hl:#f38ba8,fg:#cdd6f4,header:#f38ba8 --color=info:#94e2d5,pointer:#f5e0dc,marker:#f5e0dc --color=fg+:#cdd6f4,prompt:#94e2d5,hl+:#f38ba8 --color=border:#585b70'
     if: hasCommand "fzf"
+  - name: FZF_DEFAULT_OPTS
+    value: '$FZF_COLORS --layout=reverse --cycle --height=70% --min-height=20 --border=rounded --info=right --bind=alt-w:toggle-preview-wrap --bind=ctrl-a:toggle-all --bind=?:toggle-preview'
+    if: hasCommand "fzf"
+  - name: FZF_DEFAULT_COMMAND
+    value: "fd --one-file-system --strip-cwd-prefix --follow --hidden --exclude '.git' --exclude 'node_modules' --exclude '.var'"
+    if: hasCommand "fzf"
+  - name: FZF_CTRL_T_COMMAND
+    value: "$FZF_DEFAULT_COMMAND --type f --type d"
+    if: hasCommand "fzf"
+  - name: FZF_ALT_C_COMMAND
+    value: "$FZF_DEFAULT_COMMAND --type d"
+    if: hasCommand "fzf"
+  - name: FZF_CTRL_R_OPTS
+    value: "$FZF_DEFAULT_OPTS --preview 'echo {}' --preview-window 'down:3:hidden:wrap'"
+    if: hasCommand "fzf"
+  - name: FZF_ALT_C_OPTS
+    value: "$FZF_DEFAULT_OPTS --preview 'lsd -LAl --color=always --blocks=permission,user,size,date,name -1 {}'"
+    if: hasCommand "fzf"
+  - name: FZF_CTRL_T_OPTS
+    value: "$FZF_DEFAULT_OPTS --preview 'less {}' --preview-window 'right:wrap'"
+    if: hasCommand "fzf"
+  - name: FZF_HISTDIR
+    value: '{{ .chezmoi.homeDir }}/.local/share/fzf/history'
   - name: VAGRANT_HOME
     value: '{{ .chezmoi.homeDir }}/.local/share/vagrant'
   - name: WIN_HOME
