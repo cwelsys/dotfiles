@@ -107,37 +107,35 @@ return {
   },
   {
     "akinsho/bufferline.nvim",
-    opts = {
-      highlights = require("catppuccin.groups.integrations.bufferline").get({
-        styles = { "italic", "bold" },
-        custom = {
-          all = {
-            fill = {
-              bg = palette.mantle,
-            },
-            separator_selected = {
-              bg = palette.base,
-              fg = palette.mantle,
-            },
-            separator = {
-              bg = palette.mantle,
-              fg = palette.mantle,
-            },
-            tab_separator = {
-              bg = palette.mantle,
-              fg = palette.mantle,
-            },
-            tab_selected = {
-              bg = palette.base,
-            },
-            tab_separator_selected = {
-              bg = palette.base,
-              fg = palette.mantle,
-            },
+    opts = function()
+      local colors = require("catppuccin.palettes").get_palette("macchiato")
+      return {
+        highlights = {
+          fill = {
+            bg = colors.mantle,
+          },
+          separator_selected = {
+            bg = colors.base,
+            fg = colors.mantle,
+          },
+          separator = {
+            bg = colors.mantle,
+            fg = colors.mantle,
+          },
+          tab_separator = {
+            bg = colors.mantle,
+            fg = colors.mantle,
+          },
+          tab_selected = {
+            bg = colors.base,
+          },
+          tab_separator_selected = {
+            bg = colors.base,
+            fg = colors.mantle,
           },
         },
-      }),
-    },
+      }
+    end,
   },
   {
     "rasulomaroff/reactive.nvim",
@@ -149,13 +147,16 @@ return {
   {
     "rachartier/tiny-devicons-auto-colors.nvim",
     optional = true,
-    opts = {
-      colors = palette,
-      factors = {
-        lightness = 0.9,
-        chroma = 1,
-        hue = 0.7,
-      },
-    },
+    opts = function()
+      local colors = require("catppuccin.palettes").get_palette("macchiato")
+      return {
+        colors = colors,
+        factors = {
+          lightness = 0.9,
+          chroma = 1,
+          hue = 0.7,
+        },
+      }
+    end,
   },
 }
