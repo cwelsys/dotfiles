@@ -1,5 +1,4 @@
 # general
-title = " "
 shell-integration-features = true
 confirm-close-surface = false
 quick-terminal-autohide = true
@@ -39,10 +38,13 @@ adjust-cursor-height = -2
 cursor-style = block
 cursor-style-blink = true
 adjust-underline-position = 3
+cursor-invert-fg-bg = true
 # darwin
 macos-titlebar-style = tabs
 macos-auto-secure-input = true
 macos-option-as-alt = left
+macos-non-native-fullscreen = visible-menu
 # binds
 keybind = f5=reload_config
+keybind = super+d=unbind
 keybind = global:cmd+grave_accent=toggle_quick_terminal

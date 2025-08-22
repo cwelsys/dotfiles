@@ -16,10 +16,12 @@ pkgs:
       - coreutils
       - docker
       - dockutil
+      - doggo
       - dooit
       - dua-cli
       - ducker
       - dust
+      - duti
       - eza
       - fastfetch
       - fd
@@ -37,8 +39,11 @@ pkgs:
       - gromgit/fuse/sshfs-mac
       - gsl
       - gum
+      - hub
+      - hyperfine
       - ifstat
       - imagemagick
+      - knqyf263/pet/pet
       - lazydocker
       - lazygit
       - lazyjournal
@@ -52,7 +57,6 @@ pkgs:
       - neovim
       - nmap
       - nowplaying-cli
-      - nushell
       - oh-my-posh
       - openjdk
       - openjdk@11
@@ -66,16 +70,20 @@ pkgs:
       - rich-cli
       - ripgrep
       - rsync
+      - sd
       - sf
       - shellcheck
       - sniffnet
       - spicetify-cli
       - starship
+      - subversion
       - switchaudio-osx
       - tealdeer
       - thefuck
       - tmux
       - topgrade
+      - up
+      - vivid
       - wakeonlan
       - wget
       - wrk
@@ -92,6 +100,7 @@ pkgs:
       - background-music
       - betterdisplay
       - blockblock
+      - catlight
       - claude
       - claude-code
       - devtoys
@@ -102,6 +111,7 @@ pkgs:
       - font-sf-mono
       - font-sf-pro
       - ghostty
+      - github
       - hammerspoon
       - iina
       - jellyfin-media-player
@@ -109,11 +119,9 @@ pkgs:
       - karabiner-elements
       - knockknock
       - lulu
-      - macfuse
       - moonlight
       - neat
       - obsidian
-      - onyx
       - pictogram
       - playcover-community
       - pokemon-tcg-live

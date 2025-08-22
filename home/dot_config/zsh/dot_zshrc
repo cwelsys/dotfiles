@@ -116,7 +116,6 @@ zinit wait"1" lucid for \
   z-shell/zsh-zoxide \
   hlissner/zsh-autopair \
   djui/alias-tips \
-  cwelsys/zsh-tab-title \
   reegnz/jq-zsh-plugin \
   denisidoro/navi \
   laggardkernel/zsh-thefuck \
