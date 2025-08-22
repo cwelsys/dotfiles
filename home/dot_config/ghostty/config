@@ -1,4 +1,5 @@
 # general
+title = " "
 shell-integration-features = true
 confirm-close-surface = false
 quick-terminal-autohide = true
@@ -8,7 +9,8 @@ clipboard-trim-trailing-spaces = true
 clipboard-read = allow
 clipboard-paste-protection = false
 mouse-hide-while-typing = true
-mouse-scroll-multiplier = 1
+mouse-scroll-multiplier = 1.2
+resize-overlay = never
 # font
 font-family = "FantasqueSansM Nerd Font"
 font-size = 16
@@ -28,11 +30,11 @@ custom-shader = shaders/bloom_custom.glsl
 window-theme = ghostty
 window-subtitle = false
 window-padding-color = extend
-window-padding-x = 6
-window-padding-y = 2,4
+window-padding-x = 12,7
+window-padding-y = 5,10
 window-vsync = true
-adjust-cell-width = -0
-adjust-cell-height =
+adjust-cell-width = -1
+adjust-cell-height = 16%
 # cursor
 adjust-cursor-height = -2
 cursor-style = block
