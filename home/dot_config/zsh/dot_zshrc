@@ -2,21 +2,14 @@ if [ -n "${GHOSTTY_RESOURCES_DIR}" ]; then
     builtin source "${GHOSTTY_RESOURCES_DIR}/shell-integration/zsh/ghostty-integration"
 fi
 
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh 2> /dev/null)"
+
 if [[ -f "/opt/homebrew/bin/brew" ]]; then
   export PATH="/opt/homebrew/opt/ncurses/bin:$PATH"
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-if ! command -v aliae >/dev/null 2>&1; then
-  curl -s https://aliae.dev/install.sh | bash -s
-fi
 eval "$(aliae init zsh --config "$HOME/.config/aliae.yaml")"
-
-if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]] && command -v fastfetch >/dev/null 2>&1; then
-  fastfetch
-fi
-
-[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh 2> /dev/null)"
 
 HISTFILE="${XDG_STATE_HOME}/zsh/history"
 HISTSIZE=290000

@@ -128,6 +128,10 @@ alias:
   - name: wget
     value: wget --hsts-file="$XDG_DATA_HOME/wget-hsts"
     if: hasCommand "wget"
+  - name: pip
+    value: pip3
+    if: and (not (hasCommand "pip")) (hasCommand "pip3")
+
 
   # Windows
   - name: zsh
@@ -449,7 +453,7 @@ env:
   - name: RIPGREP_CONFIG_PATH
     value: '{{ .chezmoi.homeDir }}/.config/ripgrep/config'
   - name: LESSHISTFILE
-    value: '{{ .chezmoi.homeDir }}/.cache/.lesshsts'
+    value: '{{ .chezmoi.homeDir }}/.cache/lesshsts'
   - name: LESS
     value: '-cgiRF'
   - name: WGETRC
