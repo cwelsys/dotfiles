@@ -1,5 +1,6 @@
 {
-  zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
+  [[ ! -d "${XDG_CACHE_HOME:-$HOME/.cache}/zsh" ]] && mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+  zcompdump="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zcompdump"
   if [[ -s "$zcompdump" && (! -s "${zcompdump}.zwc" || "$zcompdump" -nt "${zcompdump}.zwc") ]]; then
     zcompile "$zcompdump"
   fi
@@ -14,9 +15,9 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 if [[ ${XDG_SESSION_TYPE} == "x11" ]]; then
-	export MOZ_ENABLE_WAYLAND=0
-	export QT_QPA_PLATFORM="xcb"
+    export MOZ_ENABLE_WAYLAND=0
+    export QT_QPA_PLATFORM="xcb"
 elif [[ ${XDG_SESSION_TYPE} == "wayland" ]]; then
-	export MOZ_ENABLE_WAYLAND=1
-	export QT_QPA_PLATFORM="wayland;xcb"
+    export MOZ_ENABLE_WAYLAND=1
+    export QT_QPA_PLATFORM="wayland;xcb"
 fi

@@ -1,4 +1,9 @@
+if [ -n "${GHOSTTY_RESOURCES_DIR}" ]; then
+    builtin source "${GHOSTTY_RESOURCES_DIR}/shell-integration/zsh/ghostty-integration"
+fi
+
 if [[ -f "/opt/homebrew/bin/brew" ]]; then
+  export PATH="/opt/homebrew/opt/ncurses/bin:$PATH"
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
@@ -13,14 +18,19 @@ fi
 
 [[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh 2> /dev/null)"
 
-[[ ! -d "$XDG_STATE_HOME/zsh" ]] && mkdir -p "$XDG_STATE_HOME/zsh"
-[[ -f "$HOME/.zsh_history" && ! -f "$XDG_STATE_HOME/zsh/history" ]] && mv "$HOME/.zsh_history" "$XDG_STATE_HOME/zsh/history"
-[[ -z "$HISTFILE" ]] && export HISTFILE="$XDG_STATE_HOME/zsh/history"
-
+HISTFILE="${XDG_STATE_HOME}/zsh/history"
 HISTSIZE=290000
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
 
+[[ ! -d "${XDG_STATE_HOME}/zsh" ]] && mkdir -p "${XDG_STATE_HOME}/zsh"
+if [[ -f "${ZDOTDIR:-$HOME}/.zsh_history" ]]; then
+    mv "${ZDOTDIR:-$HOME}/.zsh_history" "${XDG_STATE_HOME}/zsh/history"
+fi
+
+zstyle ':completion:*' dump-file "${XDG_CACHE_HOME}/zsh/.zcompdump"
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "${XDG_CACHE_HOME}/zsh/zcompcache"
 setopt extended_history
 setopt hist_expire_dups_first
 setopt hist_ignore_all_dups
@@ -90,7 +100,7 @@ zinit wait lucid light-mode for \
   atpull'%atclone' pick"clrs.zsh" nocompile'!' \
   atload'zstyle ":completion:*" list-colors "${(s.:.)LS_COLORS}"' \
     trapd00r/LS_COLORS \
-  atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
+  atinit"ZINIT[COMPINIT_OPTS]='-C -d ${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zcompdump'; zicompinit; zicdreplay" \
   atload"bindkey '^@' fzf-tab-complete" \
     Aloxaf/fzf-tab \
     zdharma-continuum/fast-syntax-highlighting \
@@ -122,8 +132,7 @@ zinit wait"1" lucid for \
   paulirish/git-open
 
 zstyle ":completion:*" matcher-list "" "m:{a-z}={A-Z}" "m:{a-zA-Z}={A-Za-z}" "r:|[._-]=* r:|=* l:|=*"
-zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path "${XDG_CACHE_HOME}/zsh/zcompcache"
+zstyle ':completion:*' completealiases false
 zstyle ':fzf-tab:*' switch-group '[' ']'
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
 zstyle ':completion:*:git-checkout:*' sort false

@@ -49,12 +49,16 @@
 .config/skhd/
 .config/karabiner/
 .config/hammerspoon/
+.local/bin/aid
+.local/bin/darkn
 Library/**
 {{ end }}
 
 {{ if eq .chezmoi.os "windows" }}
 .chezmoiscripts/posix/**
 .local/bin/*.sh
+.local/bin/*
+!.local/bin/*.*
 .config/btop/
 .config/gdu/
 .config/fish/

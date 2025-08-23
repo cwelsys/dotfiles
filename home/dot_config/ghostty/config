@@ -1,6 +1,5 @@
 # general
-title = " "
-shell-integration-features = true
+# title = " "
 confirm-close-surface = false
 quick-terminal-autohide = true
 scrollback-limit = 10_000
@@ -14,8 +13,6 @@ resize-overlay = never
 # font
 font-family = "FantasqueSansM Nerd Font"
 font-size = 16
-font-thicken = true
-font-thicken-strength = 0
 font-feature = -calt
 font-feature = ss01
 alpha-blending = linear-corrected
@@ -23,8 +20,8 @@ alpha-blending = linear-corrected
 theme = catppuccin-mocha
 background-opacity = .8969
 background-blur = true
-background-blur-radius = 24
-bold-is-bright = false
+background-blur-radius = 22
+bold-is-bright = true
 custom-shader = shaders/bloom_custom.glsl
 # window
 window-theme = ghostty
@@ -36,11 +33,11 @@ window-vsync = true
 adjust-cell-width = -1
 adjust-cell-height =
 # cursor
-adjust-cursor-height = -2
+adjust-cursor-height = -1
 cursor-style = block
 cursor-style-blink = true
 adjust-underline-position = 3
-cursor-invert-fg-bg = true
+cursor-invert-fg-bg = false
 # darwin
 macos-titlebar-style = tabs
 macos-auto-secure-input = true
