@@ -1,73 +1,40 @@
+{{ $gpgId := "061DF935B288405FF6B906169496153E284399EF" }}
+{{ $agePubKey := "age1wezwdvug6rdnwedvw8tk7npjm2rlmmewukxdat8v5y5garwvgdeq3ww5m9" }}
+{{ $sshId := "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXPGUiiFFBzqutbhNqi5RjykdlwvdFveB/XkSdg0BAM" }}
+{{- $email := "cwel@cwel.sh" -}}
+{{- $shell := (eq .chezmoi.os "windows") | ternary "pwsh" "zsh" -}}
+{{- $isVM := promptBoolOnce . "isVM" "VM" false }}
+{{- $isWSL := and (eq .chezmoi.os "linux") ( .chezmoi.kernel.osrelease | lower | contains "microsoft" ) -}}
+{{- $obsiPath := (eq .chezmoi.os "darwin") | ternary "~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Notes" "~/Documents/Notes" -}}
+
+{{- $osID := .chezmoi.os -}}
+{{- if (and (eq .chezmoi.os "linux") (hasKey .chezmoi.osRelease "id")) -}}
+{{-   $osID = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
+{{- end -}}
+
+{{- $hostname := .chezmoi.hostname -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   $hostname := output "scutil" "--get" "LocalHostName" | trim -}}
+{{- end -}}
+
+{{- $isLaptop := eq $hostname "mba" -}}
+
 encryption = "age"
 mode = "file"
 progress = true
 
-{{ $gpgId := "061DF935B288405FF6B906169496153E284399EF" }}
-{{ $agePubKey := "age1wezwdvug6rdnwedvw8tk7npjm2rlmmewukxdat8v5y5garwvgdeq3ww5m9" }}
-{{ $sshId := "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXPGUiiFFBzqutbhNqi5RjykdlwvdFveB/XkSdg0BAM" }}
-
-{{- $shell := "" }}
-{{- if eq .chezmoi.os "windows" }}
-  {{- $shell = "pwsh" }}
-{{- else }}
-  {{- $shell = "zsh" }}
-{{- end }}
-
-{{- $editor := "nvim" }}
-{{ if lookPath "code" -}}
-{{- $editor = "code --wait" }}
-[edit]
-    args    = ["-r", "--wait"]
-    command = "code"
-    watch = true
-[merge]
-    command = "bash"
-    args = [
-        "-c",
-        "cp '{{ "{{" }} .Target {{ "}}" }}' '{{ "{{" }} .Target {{ "}}" }}.base' && code --new-window --wait --merge '{{ "{{" }} .Destination {{ "}}" }}' '{{ "{{" }} .Target {{ "}}" }}' '{{ "{{" }} .Target {{ "}}" }}.base' '{{ "{{" }} .Source {{ "}}" }}'",
-    ]
-{{ else -}}
-[edit]
-    command = "nvim"
-    watch = true
-[merge]
-  command = "nvim"
-  args = [
-    "-d",
-    "{{ "{{" }} .Destination {{ "}}" }}",
-    "{{ "{{" }} .Source {{ "}}" }}",
-    "{{ "{{" }} .Target {{ "}}" }}",
-  ]
-{{ end -}}
-
 [data]
-{{- $isLaptop := false }}
-{{- if lookPath "hostnamectl" }}
-  {{- if eq (output "hostnamectl" "chassis") "laptop" }}
-    {{- $isLaptop = true }}
-  {{- end }}
-{{- else if lookPath "wmic" }}
-  {{- if eq (output "wmic" "computersystem" "get" "PCSystemType" "/VALUE" | trim) "PCSystemType=2" }}
-    {{- $isLaptop = true }}
-  {{- end }}
-{{- end }}
-editor = {{ $editor | quote }}
-isLaptop = {{ $isLaptop }}
 gpgId = {{ $gpgId | quote }}
 agePubKey = {{ $agePubKey | quote }}
 sshId = {{ $sshId | quote }}
-{{- $isWSL := false }}
-{{- if eq .chezmoi.os "linux" }}
-  {{- if hasKey .chezmoi "kernel" }}
-    {{- if hasKey .chezmoi.kernel "osrelease" }}
-      {{- $isWSL = (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
-    {{- end }}
-  {{- end }}
-{{- end }}
+osid = {{ $osID | quote }}
+email = {{ $email | quote }}
+hostname = {{ $hostname | quote }}
+isLaptop = {{ $isLaptop }}
 isWSL = {{ $isWSL }}
-{{- $isVM := false }}
-{{- $isVM = promptBoolOnce . "isVM" "VM" }}
 isVM = {{ $isVM }}
+shell = {{ $shell | quote }}
+obsiPath = {{ $obsiPath | quote }}
 
 [age]
   identity = "~/.config/.key"
@@ -82,19 +49,41 @@ isVM = {{ $isVM }}
   autoCommit = false
   autoPush = false
 
+[update]
+  recurseSubmodules = true
+
+[edit]
+  command = "nvim"
+
+[merge]
+  command = "nvim"
+  args = [
+    "-d",
+    "{{ "{{" }} .Destination {{ "}}" }}",
+    "{{ "{{" }} .Source {{ "}}" }}",
+    "{{ "{{" }} .Target {{ "}}" }}",
+  ]
+
 [diff]
   format = "git"
   pager = "delta"
 
+[cd]
+  command = {{ $shell | quote }}
+
 [onepassword]
   mode = "connect"
+  cache = true
+
+[github]
+  refreshPeriod = "6h"
 
 [interpreters.ps1]
   command = "pwsh"
   args = ["-NoLogo"]
 
-[cd]
-  command = {{ $shell | quote }}
+
+
 
 
 

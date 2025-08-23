@@ -1,15 +1,15 @@
 {
-  "Transparent": true,
-  "Accent": "b7bdf8",
-  "Title": "b7bdf8",
-  "SearchBar": "24273a",
-  "PackagelistSourceRepository": "a6da95",
-  "PackagelistSourceAUR": "8aadf4",
-  "PackagelistHeader": "eed49f",
-  "SettingsFieldBackground": "24273a",
-  "SettingsFieldText": "cad3f5",
-  "SettingsFieldLabel": "cad3f5",
-  "SettingsDropdownNotSelected": "8bd5ca",
-  "StylePKGBUILD": "catppuccin-macchiato",
-  "Comments": "Examples for StylePKGBUILD can be found here: https://xyproto.github.io/splash/docs/all.html"
+	"Transparent": true,
+	"Accent": "b4befe",
+	"Title": "b4befe",
+	"SearchBar": "1e1e2e",
+	"PackagelistSourceRepository": "a6e3a1",
+	"PackagelistSourceAUR": "89b4fa",
+	"PackagelistHeader": "f9e2af",
+	"SettingsFieldBackground": "1e1e2e",
+	"SettingsFieldText": "cdd6f4",
+	"SettingsFieldLabel": "cdd6f4",
+	"SettingsDropdownNotSelected": "94e2d5",
+	"StylePKGBUILD": "catppuccin-mocha",
+	"Comments": "Examples for StylePKGBUILD can be found here: https://xyproto.github.io/splash/docs/all.html"
 }

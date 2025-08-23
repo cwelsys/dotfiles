@@ -1,4 +1,4 @@
-local palette = require("catppuccin.palettes").get_palette("macchiato") -- Import your favorite catppuccin colors
+local palette = require("catppuccin.palettes").get_palette("mocha") -- Import your favorite catppuccin colors
 
 return {
   {
@@ -11,7 +11,7 @@ return {
       },
       background = {
         light = "latte",
-        dark = "macchiato",
+        dark = "mocha",
       },
       term_colors = true,
       custom_highlights = function()
@@ -108,7 +108,7 @@ return {
   {
     "akinsho/bufferline.nvim",
     opts = function()
-      local colors = require("catppuccin.palettes").get_palette("macchiato")
+      local colors = require("catppuccin.palettes").get_palette("mocha")
       return {
         highlights = {
           fill = {
@@ -141,14 +141,14 @@ return {
     "rasulomaroff/reactive.nvim",
     optional = true,
     opts = {
-      load = { "catppuccin-macchiato-cursor", "catppuccin-macchiato-cursorline" },
+      load = { "catppuccin-mocha-cursor", "catppuccin-mocha-cursorline" },
     },
   },
   {
     "rachartier/tiny-devicons-auto-colors.nvim",
     optional = true,
     opts = function()
-      local colors = require("catppuccin.palettes").get_palette("macchiato")
+      local colors = require("catppuccin.palettes").get_palette("mocha")
       return {
         colors = colors,
         factors = {

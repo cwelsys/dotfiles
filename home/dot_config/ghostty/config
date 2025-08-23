@@ -24,17 +24,17 @@ theme = catppuccin-mocha
 background-opacity = .8969
 background-blur = true
 background-blur-radius = 24
-bold-is-bright = true
+bold-is-bright = false
 custom-shader = shaders/bloom_custom.glsl
 # window
 window-theme = ghostty
 window-subtitle = false
 window-padding-color = extend
-window-padding-x = 12,7
-window-padding-y = 5,10
+window-padding-x = 6
+window-padding-y = 2,4
 window-vsync = true
 adjust-cell-width = -1
-adjust-cell-height = 16%
+adjust-cell-height =
 # cursor
 adjust-cursor-height = -2
 cursor-style = block

@@ -474,10 +474,12 @@ env:
     value: '{{ .chezmoi.homeDir }}/.config/glow/catppuccin-mocha.json'
   - name: GRADLE_USER_HOME
     value: '{{ .chezmoi.homeDir }}/.local/share/gradle'
-  - name: NPM_CONFIG_INIT_MODULE
-    value: '{{ .chezmoi.homeDir }}/.config/npm/config/npm-init.js'
+  - name: NPM_CONFIG_PREFIX
+    value: '{{ env "XDG_DATA_HOME" }}/npm'
   - name: NPM_CONFIG_CACHE
-    value: '{{ .chezmoi.homeDir }}/.cache/npm'
+    value: '{{ env "XDG_CACHE_HOME" }}/npm'
+  - name: NPM_CONFIG_INIT_MODULE
+    value: '{{ env "XDG_CONFIG_HOME" }}/npm/config/npm-init.js'
   - name: NODE_REPL_HISTORY
     value: '{{ .chezmoi.homeDir }}/.local/state/node_repl_history'
   - name: GOPATH
@@ -665,3 +667,4 @@ path:
   - value: '{{ .chezmoi.homeDir }}/.local/bin'
   - value: '{{ env "CARGO_HOME" }}/bin'
   - value: '{{ env "GOBIN" }}'
+  - value: '{{ env "XDG_DATA_HOME" }}/npm/bin'

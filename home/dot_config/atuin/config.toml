@@ -19,7 +19,7 @@ inline_height = 40
 ## enable or disable showing a preview of selected command useful when the command is cut off
 # show_preview = false
 
-## what to do when the escape key is pressed when searching. return-original, return-query
+## what to do when the escape key is pressed when searching | return-original, return-query
 # exit_mode = "return-original"
 
 ## emacs, subl
@@ -29,8 +29,6 @@ inline_height = 40
 
 # scroll_context_lines = 1
 
-## use ctrl instead of alt as the shortcut modifier key for numerical UI shortcuts
-## alt-0 .. alt-9
 # ctrl_n_shortcuts = false
 
 ## prevent commands matching any of these regexes from being written to history.
@@ -57,7 +55,6 @@ enter_accept = true
 ## vim-mode
 keymap_mode = "vim-insert"
 
-## faster sync
 [sync]
 records = true
 

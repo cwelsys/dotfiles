@@ -1,8 +1,6 @@
-[".config/bat/themes"]
-type = "archive"
-url = "https://github.com/catppuccin/bat/archive/refs/heads/main.zip"
-stripComponents = 2
-include = ["bat-main/themes/Catppuccin *.tmTheme"]
+[".config/bat/themes/Catppuccin *.tmTheme"]
+type = "file"
+url = "https://raw.githubusercontent.com/catppuccin/bat/refs/heads/main/themes/Catppuccin%20Mocha.tmTheme"
 
 [".config/delta/catppuccin.gitconfig"]
 type = "file"

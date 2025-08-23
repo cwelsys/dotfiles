@@ -133,7 +133,7 @@ return {
   {
     "folke/flash.nvim",
     init = function()
-      local palette = require("catppuccin.palettes").get_palette("macchiato")
+      local palette = require("catppuccin.palettes").get_palette("mocha")
       local bg = palette.none
       vim.api.nvim_set_hl(0, "FlashBackdrop", { fg = bg })
       vim.api.nvim_set_hl(0, "FlashLabel", { fg = palette.green, bg = bg, bold = true })
