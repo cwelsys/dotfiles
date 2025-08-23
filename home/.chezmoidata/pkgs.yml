@@ -10,10 +10,10 @@ pkgs:
       - bear
       - boost
       - btop
-      - carapace
       - chezmoi
       - colima
       - coreutils
+      - cowsay
       - docker
       - dockutil
       - doggo
@@ -125,13 +125,13 @@ pkgs:
       - pictogram
       - playcover-community
       - pokemon-tcg-live
+      - powershell
       - processmonitor
       - proton-mail-bridge
       - protonvpn
       - qbittorrent
       - runelite
       - rustdesk
-      - scroll-reverser
       - sf-symbols
       - slack
       - spotify
