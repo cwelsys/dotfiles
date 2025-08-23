@@ -11,6 +11,10 @@ fi
 
 eval "$(aliae init zsh --config "$HOME/.config/aliae.yaml")"
 
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 HISTFILE="${XDG_STATE_HOME}/zsh/history"
 HISTSIZE=290000
 SAVEHIST=$HISTSIZE
@@ -38,10 +42,6 @@ setopt extended_glob
 setopt nobgnice
 setopt bang_hist
 setopt nobeep
-
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
 
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [[ ! -d "${ZINIT_HOME}" ]]; then
