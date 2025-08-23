@@ -22,6 +22,10 @@ Remove-Item Alias:rm -Force -ErrorAction SilentlyContinue
 Remove-Item Alias:ls -Force -ErrorAction SilentlyContinue
 Remove-Item Alias:cat -Force -ErrorAction SilentlyContinue
 
+if (Get-Command aliae -ErrorAction SilentlyContinue) {
+	aliae init pwsh --config "$HOME/.config/aliae.yaml" | Invoke-Expression
+}
+
 $timer = New-TimeSpan -Minutes 10
 $stamp = "$Env:PWSH/timer.txt"
 $send = {
@@ -79,26 +83,20 @@ if ($PSVersionTable.PSVersion.Major -ge 7) {
 
 
 if (($IsWindows) -and ( $env:TERM_PROGRAM -ne 'vscode')) {
-	Set-ShellIntegration
-	PSDynTitle
-}
-
-if (Get-Command aliae -ErrorAction SilentlyContinue) {
-	aliae init pwsh --config "$HOME/.config/aliae.yaml" | Invoke-Expression
+    Set-ShellIntegration
+    if (Get-Command carapace -ErrorAction SilentlyContinue) {
+        $env:CARAPACE_BRIDGES = 'zsh,fish,bash,inshellisense'
+        $Env:CARAPACE_NOSPACE = '*'
+        Invoke-Expression (& { (carapace _carapace powershell | Out-String) })
+    }
+		if (Get-Command scoop -ErrorAction SilentlyContinue) {
+				Invoke-Expression (&scoop-search --hook)
+		}
+    PSDynTitle
 }
 
 if (Get-Command chezmoi -ErrorAction 'SilentlyContinue') {
 	chezmoi completion powershell | Out-String | Invoke-Expression
-}
-
-if (Get-Command carapace -ErrorAction SilentlyContinue) {
-	$env:CARAPACE_BRIDGES = 'zsh,fish,bash,inshellisense'
-	$Env:CARAPACE_NOSPACE = '*'
-	Invoke-Expression (& { (carapace _carapace powershell | Out-String) })
-}
-
-if (Get-Command scoop -ErrorAction SilentlyContinue) {
-	Invoke-Expression (&scoop-search --hook)
 }
 
 if (Get-Command zoxide -ErrorAction SilentlyContinue) {
