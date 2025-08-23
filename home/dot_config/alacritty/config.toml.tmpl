@@ -22,26 +22,26 @@ shell = {
 }
 
 [window]
-padding = { x = 0, y = 0 }
+padding = { x = 2, y = 4 }
 dynamic_padding = true
-decorations = "Full" # Full or None
+decorations = "Full"
 opacity = .8969
 blur = true
-startup_mode = "Maximized"
+# startup_mode = "Maximized"
 
 [scrolling]
-multiplier = 1
+multiplier = 1.2
 
 [font]
-normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
-bold = { family = "JetBrainsMono Nerd Font", style = "Bold" }
-italic = { family = "JetBrainsMono Nerd Font", style = "Italic" }
-bold_italic = { family = "JetBrainsMono Nerd Font", style = "Bold Italic" }
-size = 14
+normal = { family = "FantasqueSansM Nerd Font", style = "Regular" }
+bold = { family = "FantasqueSansM Nerd Font", style = "Bold" }
+italic = { family = "FantasqueSansM Nerd Font", style = "Italic" }
+bold_italic = { family = "FantasqueSansM Nerd Font", style = "Bold Italic" }
+size = 16
 
 [colors]
 transparent_background_colors = false
-draw_bold_text_with_bright_colors = false
+draw_bold_text_with_bright_colors = true
 
 [cursor]
 style = { shape = "Beam", blinking = "Off" }
@@ -53,7 +53,6 @@ hide_when_typing = true
 
 [keyboard]
 bindings = [
-  { key = "N", mods = "Control|Shift", action = "CreateNewWindow" },
-  # { key = "Back", mods = "Control", chars = "\u001b[127;5u" },
+  { key = "N", mods = "Control|Shift", action = "CreateNewWindow" }
 ]
 
