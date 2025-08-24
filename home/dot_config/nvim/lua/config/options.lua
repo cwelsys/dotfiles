@@ -62,8 +62,12 @@ local function is_wsl()
   return wsl_check
 end
 
+-- disable native right click menu
+o.mouse = "a"
+o.mousemodel = "extend"
+
 -- Install win32yank with cargo and then run:
--- sudo ln -s /mnt/c/Users/jared/.cargo/bin/win32yank.exe /usr/local/bin/win32yank
+-- sudo ln -s /mnt/c/Users/cwel/.cargo/bin/win32yank.exe /usr/local/bin/win32yank
 if is_wsl() then
   go.clipboard = {
 

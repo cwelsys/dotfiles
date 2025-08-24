@@ -9,6 +9,7 @@ clipboard-paste-protection = false
 mouse-hide-while-typing = true
 mouse-scroll-multiplier = 1.2
 resize-overlay = never
+copy-on-select = clipboard
 # font
 font-family = "FantasqueSansM Nerd Font"
 font-thicken = true
@@ -22,6 +23,10 @@ background-blur = true
 background-blur-radius = 25
 bold-is-bright = true
 # window
+window-height = 40
+window-width = 120
+window-position-x = 620
+window-position-y = 69
 window-theme = ghostty
 window-subtitle = false
 window-padding-color = extend
