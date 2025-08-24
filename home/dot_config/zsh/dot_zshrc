@@ -85,14 +85,12 @@ omzPlugin mise
 omzPlugin gpg-agent
 omzPlugin github
 
-zinit ice pick"themes/catppuccin_mocha-zsh-syntax-highlighting.zsh"; zinit light catppuccin/zsh-syntax-highlighting
-
 zinit wait lucid light-mode for \
   ryanccn/vivid-zsh \
   atinit"ZINIT[COMPINIT_OPTS]='-C -d ${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zcompdump'; zicompinit; zicdreplay" \
   atload"bindkey '^@' fzf-tab-complete" \
-    zsh-users/zsh-syntax-highlighting \
     Aloxaf/fzf-tab \
+    zdharma-continuum/fast-syntax-highlighting \
   atload"!_zsh_autosuggest_start; bindkey '^I' forward-char" \
     zsh-users/zsh-autosuggestions \
   blockf atpull"zinit creinstall -q ." \
