@@ -25,8 +25,6 @@ if [[ -f "${ZDOTDIR:-$HOME}/.zsh_history" ]]; then
 fi
 
 zstyle ':completion:*' dump-file "${XDG_CACHE_HOME}/zsh/.zcompdump"
-zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path "${XDG_CACHE_HOME}/zsh/zcompcache"
 setopt extended_history
 setopt hist_expire_dups_first
 setopt hist_ignore_all_dups
@@ -88,10 +86,7 @@ omzPlugin gpg-agent
 omzPlugin github
 
 zinit wait lucid light-mode for \
-  atclone"dircolors -b LS_COLORS > clrs.zsh" \
-  atpull'%atclone' pick"clrs.zsh" nocompile'!' \
-  atload'zstyle ":completion:*" list-colors "${(s.:.)LS_COLORS}"' \
-    trapd00r/LS_COLORS \
+  ryanccn/vivid-zsh \
   atinit"ZINIT[COMPINIT_OPTS]='-C -d ${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zcompdump'; zicompinit; zicdreplay" \
   atload"bindkey '^@' fzf-tab-complete" \
     Aloxaf/fzf-tab \
