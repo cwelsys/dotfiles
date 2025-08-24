@@ -57,6 +57,9 @@ alias:
   - name: qq
     value: exit
     if: ne .Shell "pwsh"
+  - name: pwsh
+    value: pwsh -NoLogo
+    if: and (ne .OS "windows") (hasCommand "pwsh")
   - name: rcp
     value: rsync --recursive --times --progress --stats --human-readable
     if: hasCommand "rsync"
@@ -377,6 +380,9 @@ env:
   - name: _ZO_CMD_PREFIX
     value: cd
     if: hasCommand "zoxide"
+  - name: ATUIN_NOBIND
+    value: "true"
+    if: hasCommand "atuin"
   - name: _ZO_FZF_OPTS
     value: "$FZF_DEFAULT_OPTS --preview 'lsd -LAl --color=always --blocks=permission,user,size,date,name -1 {2..}' --preview-window=down:wrap"
     if: hasCommand "zoxide"
@@ -612,6 +618,9 @@ env:
     if: ne .OS "windows"
   - name: WAKATIME_HOME
     value: '{{ env "XDG_CONFIG_HOME" }}/wakatime'
+  - name: CPPFLAGS
+    value: "-I/opt/homebrew/opt/openjdk/include"
+    if: eq .OS "darwin"
 
 path:
   - value: |
@@ -622,6 +631,8 @@ path:
 
   - value: |
       /opt/vagrant/bin
+      /opt/homebrew/opt/ncurses/bin
+      /opt/homebrew/opt/openjdk/bin
     if: eq .OS "darwin"
 
   - value: '{{ .chezmoi.homeDir }}/bin'

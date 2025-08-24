@@ -1,11 +1,15 @@
 set fish_greeting
 
-if test -f /home/linuxbrew/.linuxbrew/bin/brew
-    eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+if test -n "$GHOSTTY_RESOURCES_DIR"
+    builtin source "$GHOSTTY_RESOURCES_DIR"/shell-integration/fish/vendor_conf.d/ghostty-shell-integration.fish
 end
 
-if test -f /opt/homebrew/bin
-    eval (/opt/homebrew/bin/brew shellenv)
+if test -f "$HOMEBREW_PREFIX/bin/brew"
+    eval ($HOMEBREW_PREFIX/bin/brew shellenv)
+end
+
+if type -q aliae
+    aliae init fish --config "$HOME/.config/aliae.yaml" | source
 end
 
 if type -q brew
@@ -26,8 +30,8 @@ if type -q starship
     enable_transience
 end
 
-if type -q aliae
-    aliae init fish --config "$HOME/.config/aliae.yaml" | source
+if type -q atuin
+    atuin init fish | source
 end
 
 if type -q mise
