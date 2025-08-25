@@ -101,6 +101,7 @@ pkgs:
       - background-music
       - betterdisplay
       - blockblock
+      - boring-notch
       - catlight
       - claude
       - claude-code
