@@ -399,6 +399,9 @@ env:
     if: ne .Shell "fish"
   - name: PROMPT_EOL_MARK
     value: ''
+  - name: _JAVA_OPTIONS
+    value: -Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java
+    if hasCommand "java"
   - name: GITHUB_USERNAME
     value: cwelsys
   - name: GPG_TTY
