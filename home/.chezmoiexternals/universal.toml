@@ -1,4 +1,4 @@
-[".config/bat/themes/Catppuccin *.tmTheme"]
+[".config/bat/themes/Catppuccin Mocha.tmTheme"]
 type = "file"
 url = "https://raw.githubusercontent.com/catppuccin/bat/refs/heads/main/themes/Catppuccin%20Mocha.tmTheme"
 
