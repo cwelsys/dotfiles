@@ -134,7 +134,9 @@ alias:
   - name: pip
     value: pip3
     if: and (not (hasCommand "pip")) (hasCommand "pip3")
-
+  - name: svn
+    value: svn --config-dir $XDG_CONFIG_HOME/subversion
+    if: hasCommand "svn"
 
   # Windows
   - name: zsh
