@@ -270,6 +270,9 @@ alias:
   - name: info
     value: dnf info
     if: hasCommand "dnf"
+  - name: dnf
+    value: sudo dnf
+    if: hasCommand "dnf"
 
   - name: clean
     value: sudo apt autoremove -y && sudo apt autoclean
