@@ -40,6 +40,8 @@ setopt nobgnice
 setopt bang_hist
 setopt nobeep
 
+zle_highlight=('paste:none')
+
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [[ ! -d "${ZINIT_HOME}" ]]; then
   mkdir -p "$(dirname "$ZINIT_HOME")"

@@ -4,6 +4,7 @@ pkgs:
       - age
       - aliae
       - armadillo
+      - atuin
       - bash-completion@2
       - bat
       - bat-extras
