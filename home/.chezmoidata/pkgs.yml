@@ -160,6 +160,7 @@ pkgs:
       - ark
       - aspell
       - b43-fwcutter
+      - baobab
       - base
       - base-devel
       - bash-completion
@@ -173,7 +174,6 @@ pkgs:
       - brightnessctl
       - btop
       - btrfs-progs
-      - caelestia-meta
       - cantarell-fonts
       - chaotic-keyring
       - chaotic-mirrorlist
@@ -193,6 +193,7 @@ pkgs:
       - cups-filters
       - cups-pdf
       - ddcui
+      - decibels
       - device-mapper
       - devify
       - dex
@@ -211,6 +212,9 @@ pkgs:
       - dust
       - easyeffects
       - efitools
+      - epiphany
+      - evince
+      - extension-manager
       - eza
       - f2fs-tools
       - ffmpegthumbnailer
@@ -226,21 +230,49 @@ pkgs:
       - foomatic-db-ppds
       - fuzzel
       - gamemode
+      - gamescope
       - getnf
       - ghostscript
       - git-cliff
       - git-extras
       - github-cli
+      - gnome-backgrounds
       - gnome-bluetooth-3.0
+      - gnome-calculator
+      - gnome-calendar
+      - gnome-characters
+      - gnome-clocks
+      - gnome-color-manager
+      - gnome-connections
+      - gnome-console
+      - gnome-contacts
+      - gnome-control-center
+      - gnome-disk-utility
+      - gnome-font-viewer
+      - gnome-logs
+      - gnome-maps
+      - gnome-menus
+      - gnome-music
+      - gnome-remote-desktop
       - gnome-session
       - gnome-settings-daemon
       - gnome-shell
       - gnome-shell-extensions
+      - gnome-software
+      - gnome-system-monitor
+      - gnome-text-editor
       - gnome-themes-extra
+      - gnome-tour
+      - gnome-tweaks
+      - gnome-user-docs
+      - gnome-user-share
+      - gnome-weather
       - gparted
       - gpu-screen-recorder-git
       - greetd
       - greetd-gtkgreet
+      - greetd-tuigreet
+      - grilo-plugins
       - grimblast-git
       - gsfonts
       - gst-libav
@@ -251,6 +283,16 @@ pkgs:
       - gtk2
       - gutenprint
       - gvfs
+      - gvfs-afc
+      - gvfs-dnssd
+      - gvfs-goa
+      - gvfs-google
+      - gvfs-gphoto2
+      - gvfs-mtp
+      - gvfs-nfs
+      - gvfs-onedrive
+      - gvfs-smb
+      - gvfs-wsdd
       - haruna
       - haveged
       - hplip
@@ -271,6 +313,7 @@ pkgs:
       - isd
       - iwd
       - jfsutils
+      - jre-openjdk
       - kernel-install-for-dracut
       - keyd
       - kitty
@@ -295,6 +338,7 @@ pkgs:
       - lutris
       - lvm2
       - mako
+      - malcontent
       - maliit-keyboard
       - mangohud
       - maplemono-nf-unhinted
@@ -325,6 +369,7 @@ pkgs:
       - nwg-look
       - obsidian
       - openssh
+      - orca
       - otf-font-awesome
       - overskride
       - pacman-contrib
@@ -360,12 +405,12 @@ pkgs:
       - qt6-quicktimeline
       - qt6-sensors
       - qt6-virtualkeyboard
-      - qt6ct
       - quickshell-git
       - rebuild-detector
       - reflector
       - rofi-wayland
       - rtkit
+      - rygel
       - ryujinx
       - sane
       - satty
@@ -373,8 +418,10 @@ pkgs:
       - selectdefaultapplication-fork-git
       - sg3_utils
       - shellcheck
+      - simple-scan
       - slack-bin
       - sm64pc-git
+      - snapshot
       - sof-firmware
       - speedtest-cli
       - spicetify-cli
@@ -383,6 +430,7 @@ pkgs:
       - steam
       - sudachi-bin
       - sunshine-bin
+      - sushi
       - swaync
       - swayosd-git
       - syncthing-gtk
@@ -391,10 +439,13 @@ pkgs:
       - system-config-printer
       - systemctl-tui
       - systemd-sysvcompat
+      - tailscale
+      - tecla
       - texinfo
       - thefuck
       - thunar
       - thunar-archive-plugin
+      - totem
       - ttf-bitstream-vera
       - ttf-dejavu
       - ttf-fira-code
@@ -446,12 +497,14 @@ pkgs:
       - xl2tpd
       - xorg-server
       - xorg-xdpyinfo
+      - xorg-xhost
       - xorg-xinit
       - xorg-xinput
       - xorg-xkill
       - xorg-xrandr
       - xsettingsd
       - yay
+      - yelp
       - zathura
       - zathura-pdf-mupdf
       - zen-browser-bin

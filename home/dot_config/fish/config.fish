@@ -12,6 +12,10 @@ if type -q aliae
     aliae init fish --config "$HOME/.config/aliae.yaml" | source
 end
 
+function mark_prompt_start --on-event fish_prompt
+    echo -en "\e]133;A\e\\"
+end
+
 if type -q brew
     if test -d (brew --prefix)"/share/fish/completions"
         set -p fish_complete_path (brew --prefix)/share/fish/completions
