@@ -29,6 +29,8 @@ alias:
     value: topgrade
   - name: fet
     value: fastfetch
+  - name: adb
+    vaue: 'HOME="$XDG_DATA_HOME"/android adb'
   - name: vi
     value: nvim
   - name: vim
@@ -621,7 +623,7 @@ env:
     value: '{{ env "XDG_CACHE_HOME" }}/nv'
     if: match .OS "linux"
   - name: GTK2_RC_FILES
-    value: '{{ env "XDG_CONFIG_HOME" }}/gtk-2.0/gtkrc'
+    value: /gtk-2.0/gtkrc'
     if: match .OS "linux"
   - name: PARALLEL_HOME
     value: '{{ env "XDG_CONFIG_HOME" }}/parallel'
@@ -631,6 +633,8 @@ env:
   - name: CPPFLAGS
     value: "-I/opt/homebrew/opt/openjdk/include"
     if: eq .OS "darwin"
+  - name: ANDROID_USER_HOME
+    value: '{{ env "XDG_DATA_HOME" }}/android'
 
 path:
   - value: |
