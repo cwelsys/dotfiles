@@ -41,6 +41,7 @@ setopt bang_hist
 setopt nobeep
 
 zle_highlight=('paste:none')
+bindkey -e
 
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [[ ! -d "${ZINIT_HOME}" ]]; then
