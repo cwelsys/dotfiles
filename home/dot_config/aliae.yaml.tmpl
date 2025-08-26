@@ -16,6 +16,9 @@ alias:
     value: lazygit
   - name: dog
     value: doggo $1
+  - name: dig
+    value: doggo $1
+    if hasCommand: "doggo"
   - name: top
     value: btop
   - name: lj
@@ -614,7 +617,6 @@ env:
     if: ne .OS "windows"
   - name: CLAUDE_CONFIG_DIR
     value: '{{ .chezmoi.homeDir }}/.config/claude'
-    if: hasCommand "claude"
   - name: CUDA_CACHE_PATH
     value: '{{ env "XDG_CACHE_HOME" }}/nv'
     if: match .OS "linux"

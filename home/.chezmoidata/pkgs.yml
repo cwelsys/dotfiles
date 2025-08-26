@@ -105,7 +105,6 @@ pkgs:
       - catlight
       - claude
       - claude-code
-      - devtoys
       - dolphin
       - font-fira-code
       - font-jetbrains-mono
@@ -124,9 +123,9 @@ pkgs:
       - moonlight
       - neat
       - obsidian
+      - pearcleaner
       - pictogram
       - playcover-community
-      - pokemon-tcg-live
       - powershell
       - processmonitor
       - proton-mail-bridge
