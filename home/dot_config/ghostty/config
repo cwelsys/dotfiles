@@ -22,10 +22,6 @@ background-blur = true
 background-blur-radius = 25
 bold-is-bright = true
 # window
-window-height = 40
-window-width = 120
-window-position-x = 858
-window-position-y = 43
 window-theme = ghostty
 window-subtitle = false
 window-padding-color = extend

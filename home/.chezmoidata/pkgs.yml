@@ -111,7 +111,7 @@ pkgs:
       - font-monaspace
       - font-sf-mono
       - font-sf-pro
-      - ghostty
+      - ghostty@tip
       - github
       - hammerspoon
       - iina
@@ -638,7 +638,6 @@ pkgs:
       - gdm
       - gettext
       - gh
-      - ghostty
       - git
       - git-delta
       - git-lfs
