@@ -1,11 +1,24 @@
 Host *
-		AddKeysToAgent yes
-		HashKnownHosts no
-		ServerAliveInterval 60
-{{ if eq .chezmoi.os "darwin" }}
-IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-{{ else }}
-IdentityFile ~/.ssh/cwel
-{{ end }}
+	AddKeysToAgent yes
+	StrictHostKeyChecking=no
+  ServerAliveInterval 60
+  ServerAliveCountMax 10
+{{- if eq .chezmoi.os "darwin" }}
+	UseKeychain yes
+	IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+{{- else }}
+	IdentityFile ~/.ssh/cwel
+{{- end }}
+Host main
+	HostName main
+	User cwel
+
+Host mba
+	HostName mba
+	User cwel
+
+Host pbox
+	HostName pbox
+	User cwel
 
 
