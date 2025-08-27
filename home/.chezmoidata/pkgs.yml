@@ -609,6 +609,7 @@ pkgs:
       - e2fsprogs
       - ed
       - edk2-ovmf
+      - edk2-shell-x64
       - efibootmgr
       - espeak-ng
       - ethtool
@@ -680,7 +681,7 @@ pkgs:
       - kernel-modules
       - kernel-modules-core
       - kf5-filesystem
-      - kmod-nvidia-6.15.6-200.fc42.x86_64
+      - kmod-nvidia-6.15.10-200.fc42.x86_64
       - kmod-nvidia-6.15.9-201.fc42.x86_64
       - kubernetes1.29-client
       - langpacks-en
@@ -810,6 +811,7 @@ pkgs:
       - pcsc-lite
       - pcsc-lite-ccid
       - perl-Image-ExifTool
+      - perl-Term-Animation
       - pinfo
       - plocate
       - plymouth
@@ -918,10 +920,12 @@ pkgs:
       - systemd-resolved
       - systemd-udev
       - systemtap
+      - tailscale
       - tar
       - tcpdump
       - telnet
       - tesseract-libs
+      - thefuck
       - time
       - tiwilink-firmware
       - tldr
@@ -951,6 +955,7 @@ pkgs:
       - words
       - wpa_supplicant
       - xclock
+      - xdg-ninja
       - xen-libs
       - xen-licenses
       - xorg-x11-drv-nvidia-cuda
