@@ -9,7 +9,6 @@
 [[ ${XDG_SESSION_TYPE} == "tty" ]] && return
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  export MTL_HUD_ENABLED=1
   export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
   return
 fi
