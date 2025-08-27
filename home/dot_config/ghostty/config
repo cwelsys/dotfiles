@@ -1,4 +1,5 @@
 # general
+shell-integration-features = no-cursor
 confirm-close-surface = false
 quick-terminal-autohide = true
 scrollback-limit = 10_000
@@ -25,15 +26,16 @@ bold-is-bright = true
 window-theme = ghostty
 window-subtitle = false
 window-padding-color = extend
-window-padding-x = 4
-window-padding-y = 2,4
+# window-padding-x = 4
+# window-padding-y = 2,4
 window-padding-balance = true
 adjust-cell-width = -1
+adjust-cell-height = 10%
 # cursor
-adjust-cursor-height = -1
-cursor-style = bar
+adjust-cursor-height = -5
+cursor-style = block
 cursor-style-blink = true
-cursor-invert-fg-bg = true
+# cursor-invert-fg-bg = true
 # darwin
 macos-titlebar-style = tabs
 macos-auto-secure-input = true
