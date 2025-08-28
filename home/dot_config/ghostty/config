@@ -1,4 +1,5 @@
-# general
+## https://ghostty.org/docs/config/reference
+## general
 shell-integration-features = no-cursor
 confirm-close-surface = false
 quick-terminal-autohide = true
@@ -11,37 +12,37 @@ mouse-hide-while-typing = true
 mouse-scroll-multiplier = 1.2
 resize-overlay = never
 copy-on-select = clipboard
-# font
+## font
 font-family = "FantasqueSansM Nerd Font"
 font-size = 17
 font-feature = -calt
 font-feature = ss01
-# theme
+## theme
 theme = catppuccin-mocha
 background-opacity = .8969
 background-blur = true
 background-blur-radius = 25
 bold-is-bright = true
-# window
+## window
 window-theme = ghostty
 window-subtitle = false
 window-padding-color = extend
-# window-padding-x = 4
-# window-padding-y = 2,4
+## window-padding-x = 4
+## window-padding-y = 2,4
 window-padding-balance = true
 adjust-cell-width = -1
 adjust-cell-height = 10%
-# cursor
+## cursor
 adjust-cursor-height = -5
 cursor-style = block
 cursor-style-blink = true
-# cursor-invert-fg-bg = true
-# darwin
-macos-titlebar-style = tabs
+## cursor-invert-fg-bg = true
+## darwin
+macos-titlebar-style = transparent # tabs, native, hidden
 macos-auto-secure-input = true
 macos-option-as-alt = left
 macos-non-native-fullscreen = visible-menu
-# binds
+## binds
 keybind = f5=reload_config
 keybind = super+d=unbind
 keybind = global:cmd+grave_accent=toggle_quick_terminal

@@ -51,6 +51,7 @@ pkgs:
       - lesspipe
       - llvm
       - luarocks
+      - m-cli
       - mas
       - mgba
       - mise
@@ -66,6 +67,7 @@ pkgs:
       - pipx
       - pkgconf
       - pngpaste
+      - pv
       - rclone
       - restic
       - rich-cli
