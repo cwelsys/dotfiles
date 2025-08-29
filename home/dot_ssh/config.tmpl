@@ -1,5 +1,6 @@
 Host *
 	AddKeysToAgent yes
+	ForwardAgent yes
 	StrictHostKeyChecking=no
   ServerAliveInterval 60
   ServerAliveCountMax 10
@@ -20,6 +21,5 @@ Host mba
 Host pbox
 	HostName pbox
 	User cwel
-	ForwardAgent yes
 
 
