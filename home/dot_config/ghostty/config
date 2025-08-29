@@ -38,7 +38,8 @@ cursor-style = block
 cursor-style-blink = true
 ## cursor-invert-fg-bg = true
 ## darwin
-macos-titlebar-style = transparent # tabs, native, hidden
+# tabs, native, hidden
+macos-titlebar-style = transparent
 macos-auto-secure-input = true
 macos-option-as-alt = left
 macos-non-native-fullscreen = visible-menu

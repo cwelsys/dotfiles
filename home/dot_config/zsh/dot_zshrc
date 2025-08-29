@@ -68,7 +68,7 @@ zinit ice depth=1; zinit light romkatv/powerlevel10k
 omzLib git.zsh
 omzLib clipboard.zsh
 omzLib functions.zsh
-omzLib termsupport.zsh
+zinit wait'!' lucid for cwelsys/zsh-tab-title
 
 if [[ "$(uname)" = "Darwin" ]]; then
   zinit light cwelsys/zsh-darwin
