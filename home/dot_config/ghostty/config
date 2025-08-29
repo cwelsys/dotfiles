@@ -47,3 +47,4 @@ macos-non-native-fullscreen = visible-menu
 keybind = f5=reload_config
 keybind = super+d=unbind
 keybind = global:cmd+grave_accent=toggle_quick_terminal
+keybind = shift+enter=text:\x1b\r
