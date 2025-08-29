@@ -1,9 +1,10 @@
 Host *
+	AddKeysToAgent yes
+	ForwardAgent yes
 	StrictHostKeyChecking=no
   ServerAliveInterval 60
   ServerAliveCountMax 10
 {{- if eq .chezmoi.os "darwin" }}
-	UseKeychain yes
 	IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 {{- else }}
 	IdentityFile ~/.ssh/cwel
