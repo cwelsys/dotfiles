@@ -388,13 +388,6 @@ env:
     value: cwel.casa
   - name: MANPAGER
     value: nvim +Man!
-  - name: _ZO_DATA_DIR
-    value: '{{ .chezmoi.homeDir }}/.local/share/zoxide'
-  - name: _ZO_CMD_PREFIX
-    value: cd
-    if: hasCommand "zoxide"
-  - name: ATUIN_NOBIND
-    value: 'true'
   - name: _ZO_FZF_OPTS
     value: "$FZF_DEFAULT_OPTS --preview 'lsd -LAl --color=always --blocks=permission,user,size,date,name -1 {2..}' --preview-window=down:wrap"
     if: hasCommand "zoxide"
