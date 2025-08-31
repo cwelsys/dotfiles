@@ -394,7 +394,7 @@ env:
     value: cd
     if: hasCommand "zoxide"
   - name: ATUIN_NOBIND
-    value: "true"
+    value: 1
   - name: _ZO_FZF_OPTS
     value: "$FZF_DEFAULT_OPTS --preview 'lsd -LAl --color=always --blocks=permission,user,size,date,name -1 {2..}' --preview-window=down:wrap"
     if: hasCommand "zoxide"
