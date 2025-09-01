@@ -115,7 +115,6 @@ zinit ice as"program" mv"httpstat.sh -> httpstat" \
 zinit light b4b4r07/httpstat
 
 zinit wait"1" lucid for \
-  z-shell/zsh-zoxide \
   hlissner/zsh-autopair \
   djui/alias-tips \
   reegnz/jq-zsh-plugin \
@@ -166,6 +165,8 @@ zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
 	"recent commit object name") git show --color=always $word | delta ;;
 	*) git log --color=always $word ;;
 	esac'
+
+[ -x "$(command -v zoxide)" ] && eval "$(zoxide init --cmd cd zsh)"
 
 [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
 
