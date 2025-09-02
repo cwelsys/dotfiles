@@ -390,10 +390,6 @@ env:
     value: nvim +Man!
   - name: _ZO_FZF_OPTS
     value: "$FZF_DEFAULT_OPTS --preview 'lsd -LAl --color=always --blocks=permission,user,size,date,name -1 {2..}' --preview-window=down:wrap"
-    if: hasCommand "zoxide"
-  - name: _ZO_ECHO
-    value: 0
-    if: hasCommand "zoxide"
   - name: WORDCHARS
     value: '~!#$%^&*(){}[]<>?.+;'
     if: ne .Shell "fish"
@@ -482,8 +478,6 @@ env:
   - name: BATDIFF_USE_DELTA
     value: 'true'
     if: hasCommand "bat"
-  - name: FZF_COMPLETION_TRIGGER
-    value: ''
   - name: FZF_COLORS
     value: '--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc --color=hl:#f38ba8,fg:#cdd6f4,header:#f38ba8 --color=info:#94e2d5,pointer:#f5e0dc,marker:#f5e0dc --color=fg+:#cdd6f4,prompt:#94e2d5,hl+:#f38ba8 --color=border:#585b70'
     if: hasCommand "fzf"
