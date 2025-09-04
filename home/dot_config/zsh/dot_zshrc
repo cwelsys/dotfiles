@@ -19,6 +19,9 @@ HISTSIZE=290000
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
 
+bindkey -e
+zle_highlight=('paste:none')
+
 [[ ! -d "${XDG_STATE_HOME}/zsh" ]] && mkdir -p "${XDG_STATE_HOME}/zsh"
 if [[ -f "${ZDOTDIR:-$HOME}/.zsh_history" ]]; then
     mv "${ZDOTDIR:-$HOME}/.zsh_history" "${XDG_STATE_HOME}/zsh/history"
@@ -125,7 +128,6 @@ setopt nobgnice
 setopt bang_hist
 setopt nobeep
 
-bindkey -e
 bindkey ' ' magic-space
 bindkey '^[[3~' delete-char
 bindkey '^[[1;5D' beginning-of-line
@@ -133,8 +135,6 @@ bindkey '^[[1;5C' end-of-line
 bindkey "^N" insert-last-word
 bindkey '^[w' kill-region
 bindkey '^Y' redo
-
-zle_highlight=('paste:none')
 
 zstyle ":completion:*" matcher-list "" "m:{a-z}={A-Z}" "m:{a-zA-Z}={A-Za-z}" "r:|[._-]=* r:|=* l:|=*"
 zstyle ':fzf-tab:*' prefix ''
@@ -180,13 +180,6 @@ zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
 	*) git log --color=always $word ;;
 	esac'
 
-# autoload -Uz compinit
-# compinit
-
-# zinit cdreplay -q
-
 [ -x "$(command -v zoxide)" ] && eval "$(zoxide init --cmd cd zsh)"
 
 [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
-
-
