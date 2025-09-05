@@ -82,6 +82,7 @@ pkgs:
       - subversion
       - switchaudio-osx
       - tealdeer
+      - telnet
       - thefuck
       - tmux
       - topgrade
@@ -108,8 +109,12 @@ pkgs:
       - claude
       - claude-code
       - dolphin
+      - font-commit-mono-nerd-font
       - font-fira-code
+      - font-geist-mono-nerd-font
+      - font-hack-nerd-font
       - font-jetbrains-mono
+      - font-maple-mono
       - font-monaspace
       - font-sf-mono
       - font-sf-pro
@@ -145,8 +150,8 @@ pkgs:
       - taskexplorer
       - vagrant
       - vesktop
-      - visual-studio-code
       - vlc
+      - zed
       - zoom
   arch:
     pacman:
