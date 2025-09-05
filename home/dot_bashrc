@@ -1,4 +1,4 @@
-case $- in
+Kase $- in
 *i*) ;;
 *) return ;;
 esac
@@ -119,5 +119,3 @@ fi
 # fi
 
 [[ ! ${BLE_VERSION-} ]] || ble-attach
-
-

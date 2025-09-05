@@ -1,0 +1,240 @@
+{
+	"base_keymap": "VSCode",
+	"theme": "Catppuccin Mocha",
+	"cursor_shape": "bar",
+	"hide_mouse": "on_typing",
+	"remove_trailing_whitespace_on_save": true,
+	"ensure_final_newline_on_save": true,
+	"unnecessary_code_fade": 0.3,
+	"confirm_quit": true,
+	"experimental.theme_overrides": {
+		"syntax": {
+			"comment": {
+				"font_style": "italic"
+			},
+			"keyword": {
+				"font_style": "italic"
+			}
+		}
+	},
+	"icon_theme": "Catppuccin Mocha",
+	"edit_predictions": {
+		"mode": "eager",
+		"copilot": {
+			"proxy": null,
+			"proxy_no_verify": null
+		},
+		"enabled_in_text_threads": false
+	},
+	"tabs": {
+		"file_icons": true,
+		"git_status": true,
+		"show_diagnostics": "off",
+		"close_position": "left"
+	},
+	"ssh_connections": [
+		{
+			"host": "pbox",
+			"projects": [
+				{
+					"paths": ["/home/cwel/stacks"]
+				}
+			],
+			"nickname": "pbox"
+		}
+	],
+	"git_panel": {
+		"dock": "right",
+		"button": true,
+		"default_width": 400,
+		"sort_by_path": true,
+		"status_style": "label_color"
+	},
+	"features": {
+		"edit_prediction_provider": "zed"
+	},
+	"title_bar": {
+		"show_branch_icon": true,
+		"show_branch_name": true,
+		"show_project_items": true,
+		"show_onboarding_banner": true,
+		"show_user_picture": false,
+		"show_sign_in": false,
+		"show_menus": false
+	},
+	"autosave": "on_focus_change",
+	"format_on_save": "on",
+	"ui_font_size": 16,
+	"buffer_font_size": 16,
+	"buffer_font_weight": 400,
+	"soft_wrap": "editor_width",
+	"use_autoclose": false,
+	"preferred_line_length": 80,
+	"hard_tabs": true,
+	"tab_size": 2,
+	"file_finder": {},
+	"buffer_font_family": "FantasqueSansM Nerd Font",
+	"buffer_font_features": {
+		"ss02": true,
+		"liga": true,
+		"zero": true
+	},
+	"relative_line_numbers": true,
+	"vertical_scroll_margin": 0,
+	"cursor_blink": false,
+	"toolbar": {
+		"breadcrumbs": true,
+		"quick_actions": false,
+		"agent_review": true
+	},
+	"scrollbar": {
+		"show": "auto",
+		"git_diff": true,
+		"cursors": true,
+		"search_results": true,
+		"selected_text": true,
+		"selected_symbol": true,
+		"diagnostics": "all",
+		"axes": {
+			"horizontal": true,
+			"vertical": true
+		}
+	},
+	"diagnostics": {
+		"inline": {
+			"enabled": true
+		}
+	},
+	"indent_guides": {
+		"enabled": true,
+		"coloring": "indent_aware",
+		"active_line_width": 2
+	},
+	"centered_layout": {
+		"left_padding": 0.15,
+		"right_padding": 0.15
+	},
+	"agent": {
+		"dock": "left",
+		"button": true
+	},
+	"inlay_hints": {
+		"enabled": true,
+		"show_background": false
+	},
+	"lsp": {
+		"tailwindcss-language-server": {
+			"settings": {
+				"classAttributes": ["class", "className", "ngClass", "styles"]
+			}
+		},
+		"eslint": {
+			"settings": {
+				"codeActionOnSave": {
+					"rules": ["import/order"]
+				}
+			}
+		}
+	},
+	"git": {
+		"inline_blame": {
+			"enabled": true
+		}
+	},
+	"languages": {
+		"TypeScript": {
+			"inlay_hints": {
+				"enabled": true,
+				"show_parameter_hints": false,
+				"show_other_hints": true,
+				"show_type_hints": true
+			},
+			"code_actions_on_format": {
+				"source.fixAll.eslint": true
+			}
+		},
+		"JavaScript": {
+			"inlay_hints": {
+				"enabled": true,
+				"show_parameter_hints": false,
+				"show_other_hints": true,
+				"show_type_hints": true
+			},
+			"code_actions_on_format": {
+				"source.fixAll.eslint": true
+			}
+		}
+	},
+	"terminal": {
+		"alternate_scroll": "off",
+		"shell": "system",
+		"working_directory": "current_project_directory",
+		"blinking": "terminal_controlled",
+		"copy_on_select": true,
+		"dock": "bottom",
+		"font_family": "FantasqueSansM Nerd Font",
+		"font_size": 14,
+		"font_weight": 400,
+		"line_height": "standard",
+		"env": {
+			"EDITOR": "zed --wait"
+		},
+		"button": true
+	},
+	"file_types": {
+		"Dockerfile": ["Dockerfile", "Dockerfile.*"],
+		"JSON": ["json", "jsonc", "*.code-snippets"]
+	},
+	"file_scan_exclusions": [
+		"**/.git",
+		"**/.svn",
+		"**/.hg",
+		"**/CVS",
+		"**/.DS_Store",
+		"**/Thumbs.db",
+		"**/.classpath",
+		"**/.settings",
+		".env*",
+		"**/out",
+		"**/dist",
+		"**/.husky",
+		"**/.turbo",
+		"**/.vscode-test",
+		"**/.vscode",
+		"**/.next",
+		"**/.storybook",
+		"**/.tap",
+		"**/.nyc_output",
+		"**/report",
+		"**/node_modules"
+	],
+	"telemetry": {
+		"diagnostics": false,
+		"metrics": false
+	},
+	"project_panel": {
+		"button": false,
+		"dock": "right",
+		"git_status": true
+	},
+	"outline_panel": {
+		"dock": "right",
+		"button": false
+	},
+	"collaboration_panel": {
+		"dock": "left",
+		"button": false
+	},
+	"notification_panel": {
+		"dock": "left",
+		"button": false
+	},
+	"chat_panel": {
+		"dock": "left",
+		"button": "never"
+	},
+	"formatter": "auto",
+	"jsx_tag_auto_close": {
+		"enabled": true
+	}
+}
