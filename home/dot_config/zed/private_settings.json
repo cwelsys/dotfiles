@@ -1,6 +1,6 @@
 {
 	"base_keymap": "VSCode",
-	"theme": "Catppuccin Mocha",
+	"theme": "Catppuccin Mocha (teal)",
 	"cursor_shape": "bar",
 	"hide_mouse": "on_typing",
 	"remove_trailing_whitespace_on_save": true,
