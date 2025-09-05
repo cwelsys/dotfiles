@@ -106,7 +106,11 @@
 		"right_padding": 0.15
 	},
 	"agent": {
-		"dock": "left",
+		"default_model": {
+   "provider": "copilot_chat",
+   "model": "gpt-4.1"
+  },
+  "dock": "left",
 		"button": true
 	},
 	"inlay_hints": {

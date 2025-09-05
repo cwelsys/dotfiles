@@ -113,6 +113,7 @@ pkgs:
       - font-fira-code
       - font-geist-mono-nerd-font
       - font-hack-nerd-font
+      - font-iosevka-nerd-font
       - font-jetbrains-mono
       - font-maple-mono
       - font-monaspace

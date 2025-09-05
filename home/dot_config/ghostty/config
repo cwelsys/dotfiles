@@ -2,43 +2,49 @@
 ## general
 shell-integration-features = no-cursor
 confirm-close-surface = false
+quit-after-last-window-closed = false
 quick-terminal-autohide = true
-scrollback-limit = 10_000
 link-url = true
 clipboard-trim-trailing-spaces = true
 clipboard-read = allow
+clipboard-write = allow
 clipboard-paste-protection = false
 mouse-hide-while-typing = true
-mouse-scroll-multiplier = 1.2
+mouse-scroll-multiplier = 1.3
 resize-overlay = never
 copy-on-select = clipboard
 ## font
 font-family = "FantasqueSansM Nerd Font"
 font-size = 17
-font-feature = -calt
-font-feature = ss01
+font-feature = ss02, zero, liga
+font-thicken = true
+adjust-underline-position = 0
+adjust-underline-thickness = -50%
 ## theme
 theme = catppuccin-mocha
 background-opacity = .8969
 background-blur = true
-background-blur-radius = 25
-bold-is-bright = true
+background-blur-radius = 20
 ## window
+window-width = 213
+window-height = 65
+window-position-x = 0
+window-position-y = 0
 window-theme = ghostty
+window-decoration = true
 window-subtitle = false
 window-padding-color = extend
-## window-padding-x = 4
-## window-padding-y = 2,4
 window-padding-balance = true
 adjust-cell-width = -1
 adjust-cell-height = 10%
+selection-background = #F5E0DC
+selection-foreground = #1E1E2E
 ## cursor
 adjust-cursor-height = -5
 cursor-style = block
 cursor-style-blink = true
-## cursor-invert-fg-bg = true
 ## darwin
-# tabs, native, hidden
+desktop-notifications = true
 macos-titlebar-style = tabs
 macos-auto-secure-input = true
 macos-option-as-alt = left
