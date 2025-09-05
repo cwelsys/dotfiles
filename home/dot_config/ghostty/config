@@ -1,5 +1,7 @@
 ## https://ghostty.org/docs/config/reference
 ## general
+auto-update = off
+auto-update-channel = tip
 shell-integration-features = no-cursor
 confirm-close-surface = false
 quit-after-last-window-closed = false
@@ -10,9 +12,10 @@ clipboard-read = allow
 clipboard-write = allow
 clipboard-paste-protection = false
 mouse-hide-while-typing = true
-mouse-scroll-multiplier = 1.3
+mouse-scroll-multiplier = 2
 resize-overlay = never
 copy-on-select = clipboard
+quick-terminal-animation-duration = 0.08
 ## font
 font-family = "FantasqueSansM Nerd Font"
 font-size = 17
@@ -28,18 +31,21 @@ background-blur-radius = 20
 ## window
 window-width = 213
 window-height = 65
-window-position-x = 0
 window-position-y = 0
+window-position-x = 0
 window-theme = ghostty
+window-colorspace = "display-p3"
 window-decoration = true
 window-subtitle = false
 window-padding-color = extend
 window-padding-balance = true
 adjust-cell-width = -1
 adjust-cell-height = 10%
-selection-background = #F5E0DC
-selection-foreground = #1E1E2E
+selection-foreground = CBE0F0
+selection-background = 033259
+custom-shader = ~/.config/ghostty/shaders/cursor_smear.glsl
 ## cursor
+adjust-cursor-thickness = -5
 adjust-cursor-height = -5
 cursor-style = block
 cursor-style-blink = true
@@ -50,7 +56,9 @@ macos-auto-secure-input = true
 macos-option-as-alt = left
 macos-non-native-fullscreen = visible-menu
 ## binds
-keybind = f5=reload_config
+keybind = global:shift+escape=toggle_visibility
+keybind = super+shift+i=inspector:toggle
+keybind = super+r=reload_config
 keybind = super+d=unbind
 keybind = global:cmd+grave_accent=toggle_quick_terminal
 keybind = shift+enter=text:\x1b\r
