@@ -240,6 +240,7 @@ pkgs:
       - gamescope
       - getnf
       - ghostscript
+      - ghostty
       - git-cliff
       - git-extras
       - github-cli
@@ -274,6 +275,7 @@ pkgs:
       - gnome-user-docs
       - gnome-user-share
       - gnome-weather
+      - gnu-netcat
       - gparted
       - gpu-screen-recorder-git
       - greetd
@@ -476,7 +478,6 @@ pkgs:
       - vi
       - viewnior
       - vim
-      - visual-studio-code-bin
       - vivid
       - waybar
       - waybar-updates
@@ -514,6 +515,7 @@ pkgs:
       - yelp
       - zathura
       - zathura-pdf-mupdf
+      - zed
       - zen-browser-bin
       - zoxide
   fedora:
