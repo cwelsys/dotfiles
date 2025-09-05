@@ -1,12 +1,8 @@
 {
 	"base_keymap": "VSCode",
 	"theme": "Catppuccin Mocha (teal)",
-	"cursor_shape": "bar",
-	"hide_mouse": "on_typing",
-	"remove_trailing_whitespace_on_save": true,
-	"ensure_final_newline_on_save": true,
-	"unnecessary_code_fade": 0.3,
-	"confirm_quit": true,
+	"icon_theme": "Catppuccin Mocha",
+	"confirm_quit": false,
 	"experimental.theme_overrides": {
 		"syntax": {
 			"comment": {
@@ -17,7 +13,6 @@
 			}
 		}
 	},
-	"icon_theme": "Catppuccin Mocha",
 	"edit_predictions": {
 		"mode": "eager",
 		"copilot": {
@@ -29,7 +24,6 @@
 	"tabs": {
 		"file_icons": true,
 		"git_status": true,
-		"show_diagnostics": "off",
 		"close_position": "left"
 	},
 	"ssh_connections": [
@@ -46,7 +40,6 @@
 	"git_panel": {
 		"dock": "right",
 		"button": true,
-		"default_width": 400,
 		"sort_by_path": true,
 		"status_style": "label_color"
 	},
@@ -186,7 +179,8 @@
 	},
 	"project_panel": {
 		"dock": "right",
-		"git_status": true
+		"git_status": true,
+		"starts_open": true
 	},
 	"outline_panel": {
 		"dock": "right",
