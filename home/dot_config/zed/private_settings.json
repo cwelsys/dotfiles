@@ -58,9 +58,7 @@
 		"show_branch_name": true,
 		"show_project_items": true,
 		"show_onboarding_banner": true,
-		"show_user_picture": false,
-		"show_sign_in": false,
-		"show_menus": false
+		"show_menus": true
 	},
 	"autosave": "on_focus_change",
 	"format_on_save": "on",
@@ -213,7 +211,6 @@
 		"metrics": false
 	},
 	"project_panel": {
-		"button": false,
 		"dock": "right",
 		"git_status": true
 	},
