@@ -164,48 +164,22 @@
 		}
 	},
 	"terminal": {
-		"alternate_scroll": "off",
-		"shell": "system",
-		"working_directory": "current_project_directory",
-		"blinking": "terminal_controlled",
 		"copy_on_select": true,
-		"dock": "bottom",
+		"toolbar": {
+			"breadcrumbs": false
+		},
 		"font_family": "FantasqueSansM Nerd Font",
 		"font_size": 14,
 		"font_weight": 400,
 		"line_height": "standard",
 		"env": {
 			"EDITOR": "zed --wait"
-		},
-		"button": true
+		}
 	},
 	"file_types": {
 		"Dockerfile": ["Dockerfile", "Dockerfile.*"],
 		"JSON": ["json", "jsonc", "*.code-snippets"]
 	},
-	"file_scan_exclusions": [
-		"**/.git",
-		"**/.svn",
-		"**/.hg",
-		"**/CVS",
-		"**/.DS_Store",
-		"**/Thumbs.db",
-		"**/.classpath",
-		"**/.settings",
-		".env*",
-		"**/out",
-		"**/dist",
-		"**/.husky",
-		"**/.turbo",
-		"**/.vscode-test",
-		"**/.vscode",
-		"**/.next",
-		"**/.storybook",
-		"**/.tap",
-		"**/.nyc_output",
-		"**/report",
-		"**/node_modules"
-	],
 	"telemetry": {
 		"diagnostics": false,
 		"metrics": false
@@ -230,8 +204,5 @@
 		"dock": "left",
 		"button": "never"
 	},
-	"formatter": "auto",
-	"jsx_tag_auto_close": {
-		"enabled": true
-	}
+	"formatter": "auto"
 }
