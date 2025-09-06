@@ -99,8 +99,7 @@ zinit wait lucid light-mode for \
   cwelsys/zsh-tab-title \
   Aloxaf/fzf-tab \
   MichaelAquilina/zsh-you-should-use \
-  atload'_zsh_autosuggest_start;
-  bindkey -v "^ " autosuggest-accept' \
+  atload'_zsh_autosuggest_start' \
     zsh-users/zsh-autosuggestions \
   blockf atpull'zinit creinstall -q .' \
     zsh-users/zsh-completions \

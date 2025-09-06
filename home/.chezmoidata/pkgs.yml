@@ -131,6 +131,7 @@ pkgs:
       - moonlight
       - neat
       - obsidian
+      - openmtp
       - pearcleaner
       - pictogram
       - playcover-community

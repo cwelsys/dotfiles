@@ -43,7 +43,7 @@ adjust-cell-width = -1
 adjust-cell-height = 10%
 selection-foreground = CBE0F0
 selection-background = 033259
-custom-shader = ~/.config/ghostty/shaders/cursor_smear.glsl
+#custom-shader = ~/.config/ghostty/shaders/cursor_smear.glsl
 ## cursor
 adjust-cursor-thickness = -5
 adjust-cursor-height = -5
