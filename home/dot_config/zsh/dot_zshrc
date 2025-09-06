@@ -19,9 +19,6 @@ HISTSIZE=290000
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
 
-bindkey -e
-zle_highlight=('paste:none')
-
 [[ ! -d "${XDG_STATE_HOME}/zsh" ]] && mkdir -p "${XDG_STATE_HOME}/zsh"
 if [[ -f "${ZDOTDIR:-$HOME}/.zsh_history" ]]; then
     mv "${ZDOTDIR:-$HOME}/.zsh_history" "${XDG_STATE_HOME}/zsh/history"
@@ -127,14 +124,6 @@ setopt nobgnice
 setopt bang_hist
 setopt nobeep
 
-bindkey ' ' magic-space
-bindkey '^[[3~' delete-char
-bindkey '^[[1;5D' beginning-of-line
-bindkey '^[[1;5C' end-of-line
-bindkey "^N" insert-last-word
-bindkey '^[w' kill-region
-bindkey '^Y' redo
-
 zstyle ":completion:*" matcher-list "" "m:{a-z}={A-Z}" "m:{a-zA-Z}={A-Za-z}" "r:|[._-]=* r:|=* l:|=*"
 zstyle ':fzf-tab:*' prefix ''
 zstyle ':fzf-tab:*' switch-group ',' '.'
@@ -178,6 +167,14 @@ zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
 	"recent commit object name") git show --color=always $word | delta ;;
 	*) git log --color=always $word ;;
 	esac'
+
+bindkey ' ' magic-space
+bindkey '^[[3~' delete-char
+bindkey '^[[1;5D' beginning-of-line
+bindkey '^[[1;5C' end-of-line
+bindkey "^N" insert-last-word
+bindkey '^[w' kill-region
+bindkey '^Y' redo
 
 [ -x "$(command -v zoxide)" ] && eval "$(zoxide init --cmd cd zsh)"
 

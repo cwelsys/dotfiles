@@ -152,6 +152,7 @@ pkgs:
       - taskexplorer
       - vagrant
       - vesktop
+      - visual-studio-code
       - vlc
       - zed
       - zoom
