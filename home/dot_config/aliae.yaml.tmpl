@@ -152,6 +152,12 @@ alias:
   - name: fonts
     value: ghostty +list-fonts
     if: hasCommand "ghostty"
+  - name: cargols
+    value: cargo install --list
+    if: hasCommand "cargo"
+  - name: cargob
+    value: cargo-binstall
+    if: hasCommand "cargo-binstall"
 
   # Windows
   - name: zsh
@@ -595,18 +601,6 @@ env:
     value: '{{ .chezmoi.homeDir }}/.config/rclone'
     if: match .OS "windows"
     persist: true
-  - name: MISE_NODE_DEFAULT_PACKAGES_FILE
-    value: '{{ .chezmoi.homeDir }}/.config/mise/default-npm-packages'
-    if: match .OS "windows"
-  - name: MISE_GO_DEFAULT_PACKAGES_FILE
-    value: '{{ .chezmoi.homeDir }}/.config/mise/default-npm-packages'
-    if: match .OS "windows"
-  - name: MISE_PYTHON_DEFAULT_PACKAGES_FILE
-    value: '{{ .chezmoi.homeDir }}/.config/mise/default-python-packages'
-    if: match .OS "windows"
-  - name: MISE_RUBY_DEFAULT_PACKAGES_FILE
-    value: '{{ .chezmoi.homeDir }}/.config/mise/default-gems'
-    if: match .OS "windows"
   - name: TERMINFO
     value: '{{ .chezmoi.homeDir }}/.local/share/terminfo'
     if: ne .OS "windows"

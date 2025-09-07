@@ -38,10 +38,6 @@ if type -q atuin
     atuin init fish | source
 end
 
-if type -q mise
-    mise activate fish | source
-end
-
 if type -q navi
     navi widget fish | source
 end

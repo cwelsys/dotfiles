@@ -95,10 +95,6 @@ if command -v atuin >/dev/null 2>&1; then
 	eval "$(atuin init bash)"
 fi
 
-if command -v mise >/dev/null 2>&1; then
-	eval "$(mise activate bash)"
-fi
-
 if command -v navi >/dev/null 2>&1; then
 	eval "$(navi widget bash)"
 fi

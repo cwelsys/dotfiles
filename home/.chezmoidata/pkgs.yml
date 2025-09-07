@@ -54,7 +54,6 @@ pkgs:
       - m-cli
       - mas
       - mgba
-      - mise
       - navi
       - neovim
       - nmap
@@ -108,6 +107,7 @@ pkgs:
       - catlight
       - claude
       - claude-code
+      - discord
       - dolphin
       - font-commit-mono-nerd-font
       - font-fira-code
@@ -152,7 +152,6 @@ pkgs:
       - taskexplorer
       - trackweight
       - vagrant
-      - vesktop
       - visual-studio-code
       - vlc
       - zed
@@ -528,7 +527,6 @@ pkgs:
       - docker-ce-stable
       - copr:copr.fedorainfracloud.org:scottames:ghostty
       - copr:copr.fedorainfracloud.org:atim:lazygit
-      - mise-repo
       - nvidia-container-toolkit
       - copr:copr.fedorainfracloud.org:atim:starship
       - tailscale-stable
@@ -779,7 +777,6 @@ pkgs:
       - mesa-libGLU
       - mesa-vulkan-drivers
       - microcode_ctl
-      - mise
       - mozilla-filesystem
       - mozilla-openh264
       - mt7xxx-firmware
@@ -1015,7 +1012,6 @@ pkgs:
         - 'main/git-lfs'
         - 'main/git-sizer'
         - 'main/gitleaks'
-        - 'main/mise'
         - 'main/msys2'
         - 'main/7zip'
         - 'main/topgrade'

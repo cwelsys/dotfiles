@@ -50,14 +50,7 @@ sudo locale-gen
 
 {{ end }}
 
-if ! command -v mise &> /dev/null; then
-    echo "Installing mise..."
-    curl https://mise.jdx.dev/install.sh | sh
-    export PATH="$HOME/.local/bin:$PATH"
-    echo "mise installed successfully"
-else
-    echo "mise already installed"
-fi
+export PATH="$HOME/.local/bin:$PATH"
 
 FONT_DIR="$HOME/.local/share/fonts"
 FONT_NAME="FantasqueSansM"

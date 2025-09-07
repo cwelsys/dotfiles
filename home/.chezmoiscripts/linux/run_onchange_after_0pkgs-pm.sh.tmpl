@@ -34,12 +34,6 @@ if ! dnf repolist --enabled | grep -q "tailscale"; then
     curl -fsSL https://pkgs.tailscale.com/stable/fedora/repo.gpg | sudo tee /etc/pki/rpm-gpg/RPM-GPG-KEY-tailscale >/dev/null
     curl -fsSL https://pkgs.tailscale.com/stable/fedora/tailscale.repo | sudo tee /etc/yum.repos.d/tailscale.repo >/dev/null
 fi
-{{       else if eq . "mise-repo" }}
-if ! dnf repolist --enabled | grep -q "mise"; then
-    echo "Enabling Mise repository"
-    curl https://mise.jdx.dev/rpm-repo.pub | gpg --dearmor | sudo tee /etc/pki/rpm-gpg/RPM-GPG-KEY-mise >/dev/null
-    echo -e "[mise]\nname=mise\nbaseurl=https://mise.jdx.dev/rpm\nenabled=1\ngpgcheck=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mise" | sudo tee /etc/yum.repos.d/mise.repo >/dev/null
-fi
 {{       else if eq . "nvidia-container-toolkit" }}
 if ! dnf repolist --enabled | grep -q "nvidia-container-toolkit"; then
     echo "Enabling NVIDIA Container Toolkit repository"

@@ -6,5 +6,4 @@ windows:
   - window_name: service
     panes:
       - shell_command:
-          - mise run serve
-          # - pnpm run serve
+          - pnpm run serve

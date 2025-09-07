@@ -87,7 +87,6 @@ omzPlugin dirhistory
 omzPlugin colored-man-pages
 omzPlugin jsontools
 omzPlugin chezmoi
-omzPlugin mise
 omzPlugin gpg-agent
 omzPlugin github
 
