@@ -1,4 +1,5 @@
 # yaml-language-server: $schema=https://aliae.dev/schema.json
+# docs: https://aliae.dev/docs
 alias:
   - name: ".."
     value: cd ..
@@ -145,6 +146,12 @@ alias:
   - name: svn
     value: svn --config-dir $XDG_CONFIG_HOME/subversion
     if: hasCommand "svn"
+  - name: boo
+    value: ghostty +boo
+    if: hasCommand "ghostty"
+  - name: fonts
+    value: ghostty +list-fonts
+    if: hasCommand "ghostty"
 
   # Windows
   - name: zsh
