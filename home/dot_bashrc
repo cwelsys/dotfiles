@@ -1,4 +1,4 @@
-Kase $- in
+case $- in
 *i*) ;;
 *) return ;;
 esac
