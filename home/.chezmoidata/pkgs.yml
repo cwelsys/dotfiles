@@ -82,7 +82,6 @@ pkgs:
       - starship
       - subversion
       - switchaudio-osx
-      - tealdeer
       - telnet
       - thefuck
       - tmux
@@ -1077,7 +1076,6 @@ pkgs:
         - 'main/sd'
         - 'main/starship'
         - 'main/sudo'
-        - 'main/tealdeer'
         - 'main/unar'
         - 'main/win32yank'
         - 'main/xh'
