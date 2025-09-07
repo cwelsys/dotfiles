@@ -11,10 +11,12 @@ pkgs:
       - bear
       - boost
       - btop
+      - cargo-binstall
       - chezmoi
       - colima
       - coreutils
       - cowsay
+      - deno
       - docker
       - dockutil
       - doggo
@@ -37,6 +39,7 @@ pkgs:
       - git-flow
       - git-lfs
       - gnupg
+      - go
       - gromgit/fuse/sshfs-mac
       - gsl
       - gum
@@ -48,6 +51,7 @@ pkgs:
       - lazydocker
       - lazygit
       - lazyjournal
+      - lazysql
       - lesspipe
       - llvm
       - luarocks
@@ -86,6 +90,7 @@ pkgs:
       - tmux
       - topgrade
       - up
+      - uv
       - vivid
       - wakeonlan
       - wget
@@ -121,6 +126,7 @@ pkgs:
       - font-sf-pro
       - ghostty@tip
       - github
+      - goreleaser
       - hammerspoon
       - iina
       - jellyfin-media-player
