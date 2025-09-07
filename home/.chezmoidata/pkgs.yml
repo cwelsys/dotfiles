@@ -420,7 +420,7 @@ pkgs:
       - quickshell-git
       - rebuild-detector
       - reflector
-      - rofi-wayland
+      - rofi
       - rtkit
       - rygel
       - ryujinx
