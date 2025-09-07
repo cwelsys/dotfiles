@@ -1,4 +1,4 @@
-auto_sync = true
+auto_sync    = true
 update_check = true
 # sync_address = "https://api.atuin.sh"
 sync_frequency = "10m"
@@ -53,10 +53,10 @@ inline_height = 40
 enter_accept = true
 
 ## vim-mode
-keymap_mode = "vim-insert"
+#keymap_mode = "vim-insert"
 
 [sync]
-records = true
+    records = true
 
 [theme]
-name = "catppuccin-mocha-teal"
+    name = "catppuccin-mocha-teal"
