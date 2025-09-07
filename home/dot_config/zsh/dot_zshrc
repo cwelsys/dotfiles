@@ -95,7 +95,7 @@ zinit wait lucid light-mode for \
   ryanccn/vivid-zsh \
   cwelsys/zsh-tab-title \
   Aloxaf/fzf-tab \
-  MichaelAquilina/zsh-you-should-use \
+  djui/alias-tips \
   atload'_zsh_autosuggest_start' \
     zsh-users/zsh-autosuggestions \
   blockf atpull'zinit creinstall -q .' \
