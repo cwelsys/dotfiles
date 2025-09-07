@@ -178,7 +178,7 @@ bindkey '^Y' redo
 [ -x "$(command -v zoxide)" ] && eval "$(zoxide init --cmd cd zsh)"
 
 if [[ -n "$SSH_CONNECTION" ]]; then
-  export BROWSER='printf "\033]8;;%s\033\\%s\033]8;;\033\\\n" "$1" "$1"'
+  export BROWSER="local-open"
 fi
 
 [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
