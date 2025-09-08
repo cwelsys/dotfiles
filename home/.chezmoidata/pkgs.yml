@@ -93,6 +93,7 @@ pkgs:
       - uv
       - vivid
       - wakeonlan
+      - watchexec
       - wget
       - wrk
       - xdg-ninja
