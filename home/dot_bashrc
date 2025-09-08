@@ -110,8 +110,4 @@ elif command -v oh-my-posh >/dev/null 2>&1; then
 	eval "$(oh-my-posh init bash --config "$HOME/.config/posh.toml")"
 fi
 
-# if [ -n "${GHOSTTY_RESOURCES_DIR}" ]; then
-#     builtin source "${GHOSTTY_RESOURCES_DIR}/shell-integration/bash/ghostty.bash"
-# fi
-
 [[ ! ${BLE_VERSION-} ]] || ble-attach

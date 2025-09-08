@@ -1,9 +1,5 @@
 set fish_greeting
 
-# if test -n "$GHOSTTY_RESOURCES_DIR"
-#     builtin source "$GHOSTTY_RESOURCES_DIR"/shell-integration/fish/vendor_conf.d/ghostty-shell-integration.fish
-# end
-
 if test -f "$HOMEBREW_PREFIX/bin/brew"
     eval ($HOMEBREW_PREFIX/bin/brew shellenv)
 end
