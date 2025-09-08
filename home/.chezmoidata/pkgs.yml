@@ -190,7 +190,9 @@ pkgs:
       - brightnessctl
       - btop
       - btrfs-progs
+      - bun-bin
       - cantarell-fonts
+      - cargo-binstall
       - chaotic-keyring
       - chaotic-mirrorlist
       - checkupdates-with-aur
@@ -210,6 +212,7 @@ pkgs:
       - cups-pdf
       - ddcui
       - decibels
+      - deno
       - device-mapper
       - devify
       - dex
@@ -285,6 +288,8 @@ pkgs:
       - gnome-user-share
       - gnome-weather
       - gnu-netcat
+      - go
+      - goreleaser
       - gparted
       - gpu-screen-recorder-git
       - greetd
@@ -340,6 +345,7 @@ pkgs:
       - kwayland-integration
       - lazydocker
       - lazyjournal
+      - lazysql-bin
       - libappindicator-gtk3
       - libdvdcss
       - libgsf
@@ -363,6 +369,8 @@ pkgs:
       - matugen-bin
       - meld
       - mesa-utils
+      - meteor
+      - mise
       - modemmanager
       - mtools
       - nano-syntax-highlighting
@@ -482,12 +490,14 @@ pkgs:
       - udiskie
       - unrar
       - upscayl-bin
+      - uv
       - uwsm
       - vesktop-bin
       - vi
       - viewnior
       - vim
       - vivid
+      - watchexec
       - waybar
       - waybar-updates
       - waypaper-git
