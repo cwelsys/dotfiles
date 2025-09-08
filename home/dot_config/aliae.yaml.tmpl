@@ -442,6 +442,10 @@ env:
     value: '{{ .chezmoi.homeDir }}/.local/share/dotnet'
   - name: DOTNET_CLI_TELEMETRY_OPTOUT
     value: '1'
+  - name: DOTNET_ROOT
+    value: '{{ .chezmoi.homeDir }}/.local/share/dotnet'
+  - name: DOTNET_INSTALL_DIR
+    value: '{{ .chezmoi.homeDir }}/.local/share/dotnet'
   - name: XAUTHORITY
     value: '{{ .chezmoi.homeDir }}/.local/state/.Xauthority'
     persist: true
