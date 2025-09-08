@@ -4,7 +4,9 @@ pkgs:
       - age
       - aliae
       - armadillo
+      - asciiquarium
       - atuin
+      - aview
       - bash-completion@2
       - bat
       - bat-extras
@@ -12,7 +14,9 @@ pkgs:
       - boost
       - btop
       - cargo-binstall
+      - cbonsai
       - chezmoi
+      - cmatrix
       - colima
       - coreutils
       - cowsay
@@ -25,11 +29,15 @@ pkgs:
       - ducker
       - dust
       - duti
+      - espeak
       - eza
       - fastfetch
       - fd
+      - figlet
       - fisher
+      - fortune
       - gawk
+      - genact
       - gh
       - ghostscript
       - git
@@ -42,6 +50,7 @@ pkgs:
       - go
       - gromgit/fuse/sshfs-mac
       - gsl
+      - gti
       - gum
       - hub
       - hyperfine
@@ -54,12 +63,15 @@ pkgs:
       - lazysql
       - lesspipe
       - llvm
+      - lolcat
       - luarocks
       - m-cli
       - mas
       - mgba
+      - moon-buggy
       - navi
       - neovim
+      - ninvaders
       - nmap
       - nowplaying-cli
       - oh-my-posh
@@ -67,6 +79,7 @@ pkgs:
       - openjdk@11
       - php
       - pinentry-mac
+      - pipes-sh
       - pipx
       - pkgconf
       - pngpaste
@@ -74,6 +87,7 @@ pkgs:
       - rclone
       - restic
       - rich-cli
+      - rig
       - ripgrep
       - rsync
       - sd
@@ -88,7 +102,9 @@ pkgs:
       - telnet
       - thefuck
       - tmux
+      - toilet
       - topgrade
+      - tty-clock
       - up
       - uv
       - vivid
