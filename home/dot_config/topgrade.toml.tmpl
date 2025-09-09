@@ -21,8 +21,9 @@ disable = [
 	"shell",
 	"pip3",
 	"pnpm",
-	"node",
 	"yarn",
+	"bun",
+	"uv",
 	{{ if ne .chezmoi.os "windows" }}
 	"powershell",
 	{{ end }}
