@@ -191,6 +191,7 @@ pkgs:
       - alsa-utils
       - amd-ucode
       - ark
+      - asciiquarium-transparent-git
       - aspell
       - b43-fwcutter
       - baobab
@@ -223,6 +224,7 @@ pkgs:
       - cockpit-machines
       - cockpit-packagekit
       - cockpit-storaged
+      - cowsay
       - cryptsetup
       - cups
       - cups-browsed
@@ -250,6 +252,7 @@ pkgs:
       - easyeffects
       - efitools
       - epiphany
+      - espeak
       - evince
       - extension-manager
       - eza
@@ -265,6 +268,7 @@ pkgs:
       - foomatic-db-nonfree
       - foomatic-db-nonfree-ppds
       - foomatic-db-ppds
+      - fortune-mod
       - fuzzel
       - gamemode
       - gamescope
@@ -321,6 +325,7 @@ pkgs:
       - gst-plugin-pipewire
       - gst-plugins-bad
       - gst-plugins-ugly
+      - gti
       - gtk-engine-murrine
       - gtk2
       - gutenprint
@@ -374,6 +379,7 @@ pkgs:
       - linux-headers
       - linux-zen
       - linux-zen-headers
+      - lolcat
       - loupe
       - lsb-release
       - lsscsi
@@ -395,6 +401,7 @@ pkgs:
       - nautilus
       - navi
       - nemo
+      - neo-matrix-git
       - netctl
       - network-manager-applet
       - networkmanager-openconnect
@@ -422,6 +429,7 @@ pkgs:
       - papirus-icon-theme
       - perl
       - perl-term-animation
+      - pipes-rs-bin
       - pipewire-alsa
       - pipewire-jack
       - pipewire-pulse
@@ -463,6 +471,7 @@ pkgs:
       - sg3_utils
       - shellcheck
       - simple-scan
+      - sl
       - slack-bin
       - sm64pc-git
       - snapshot
@@ -504,6 +513,7 @@ pkgs:
       - ttf-opensans
       - ttf-roboto-mono-nerd
       - ttf-ubuntu-mono-nerd
+      - tty-clock
       - tumbler
       - udiskie
       - unrar
