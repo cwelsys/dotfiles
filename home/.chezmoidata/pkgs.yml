@@ -595,7 +595,6 @@ pkgs:
       - amd-gpu-firmware
       - amd-ucode-firmware
       - anaconda-core
-      - anaconda-tui
       - at
       - atheros-firmware
       - attr
@@ -619,13 +618,13 @@ pkgs:
       - bubblewrap
       - bzip2
       - capstone
+      - cbonsai
       - certmonger
       - chafa
       - chrony
       - cifs-utils
       - cirrus-audio-firmware
       - cockpit
-      - cockpit-docker
       - cockpit-files
       - cockpit-machines
       - cockpit-networkmanager
@@ -634,6 +633,7 @@ pkgs:
       - cockpit-storaged
       - cockpit-ws-selinux
       - compsize
+      - containerd.io
       - coreutils
       - cpio
       - crontabs
@@ -654,6 +654,9 @@ pkgs:
       - dnf5-plugin-automatic
       - dnf5-plugins
       - dnsmasq
+      - docker-buildx-plugin
+      - docker-ce
+      - docker-ce-cli
       - docker-compose-plugin
       - dos2unix
       - dosfstools
@@ -737,9 +740,9 @@ pkgs:
       - kernel-modules
       - kernel-modules-core
       - kf5-filesystem
-      - kmod-nvidia-6.15.10-200.fc42.x86_64
       - kmod-nvidia-6.16.3-200.fc42.x86_64
       - kmod-nvidia-6.16.4-200.fc42.x86_64
+      - kmod-nvidia-6.16.5-200.fc42.x86_64
       - kubernetes1.29-client
       - langpacks-en
       - langtable
@@ -869,6 +872,7 @@ pkgs:
       - perl-Image-ExifTool
       - perl-Term-Animation
       - pinfo
+      - pipx
       - plocate
       - plymouth
       - podman
@@ -881,14 +885,13 @@ pkgs:
       - protonmail-bridge
       - psacct
       - pulseaudio-utils
-      - python3-blivet
+      - python3
       - python3-blockdev
       - python3-bytesize
       - python3-crypt-r
       - python3-iso639
       - python3-jinja2-cli
       - python3-kickstart
-      - python3-langtable
       - python3-libmount
       - python3-libvirt
       - python3-markdown
@@ -920,7 +923,6 @@ pkgs:
       - qemu-kvm-core
       - qemu-system-x86-core
       - qemu-ui-opengl
-      - qemu-ui-spice-core
       - qrencode-libs
       - quota
       - realmd
@@ -955,7 +957,6 @@ pkgs:
       - speech-dispatcher-espeak-ng
       - speech-dispatcher-libs
       - speech-dispatcher-utils
-      - spice-server
       - sqlite-devel
       - sratom
       - sssd-common
@@ -999,6 +1000,7 @@ pkgs:
       - usbredir
       - usbutils
       - util-linux
+      - uv
       - vid.stab
       - vim-minimal
       - virt-install
