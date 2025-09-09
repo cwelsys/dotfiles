@@ -16,23 +16,20 @@ pre_sudo = true
 # Disable specific steps - same options as the command line flag
 disable = [
 	"containers",
-	"poetry",
 	"wsl",
-	"uv",
-	"vim",
-	"spicetify",
 	"microsoft_store",
-	"winget",
-	"pipx",
-	"vim",
 	"shell",
+	"pip3",
+	"pnpm",
+	"node",
 	"yarn",
-	"bun",
-	"helm",
+	{{ if ne .chezmoi.os "windows" }}
+	"powershell",
+	{{ end }}
 ]
 
 # Ignore failures for these steps
-ignore_failures = ["powershell"]
+ignore_failures = ["powershell", "spicetify"]
 
 # List of remote machines with Topgrade installed on them
 # remote_topgrades = ["toothless", "pi", "parnas"]
