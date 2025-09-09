@@ -210,6 +210,7 @@ pkgs:
       - bun-bin
       - cantarell-fonts
       - cargo-binstall
+      - cbonsai
       - chaotic-keyring
       - chaotic-mirrorlist
       - checkupdates-with-aur
@@ -267,6 +268,7 @@ pkgs:
       - fuzzel
       - gamemode
       - gamescope
+      - genact
       - getnf
       - ghostscript
       - ghostty
@@ -387,7 +389,6 @@ pkgs:
       - meld
       - mesa-utils
       - meteor
-      - mise
       - modemmanager
       - mtools
       - nano-syntax-highlighting
@@ -513,6 +514,7 @@ pkgs:
       - vi
       - viewnior
       - vim
+      - visual-studio-code-bin
       - vivid
       - watchexec
       - waybar
