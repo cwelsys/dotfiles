@@ -17,6 +17,7 @@ pre_sudo = true
 disable = [
 	"containers",
 	"wsl",
+	"windows_update",
 	"microsoft_store",
 	"shell",
 	"pip3",
@@ -24,9 +25,7 @@ disable = [
 	"yarn",
 	"bun",
 	"uv",
-	{{ if ne .chezmoi.os "windows" }}
 	"powershell",
-	{{ end }}
 ]
 
 # Ignore failures for these steps
