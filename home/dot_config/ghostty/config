@@ -29,13 +29,7 @@ background-opacity = .8969
 background-blur = true
 background-blur-radius = 20
 ## window
-window-width = 213
-window-height = 65
-window-position-y = 0
-window-position-x = 0
 window-theme = ghostty
-window-colorspace = "display-p3"
-window-decoration = true
 window-subtitle = false
 window-padding-color = extend
 window-padding-balance = true
