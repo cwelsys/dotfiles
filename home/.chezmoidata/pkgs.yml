@@ -464,6 +464,7 @@ pkgs:
       - reflector
       - rofi
       - rtkit
+      - rustdesk-bin
       - rygel
       - ryujinx
       - sane
