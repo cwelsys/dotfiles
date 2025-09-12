@@ -160,6 +160,8 @@ alias:
     if: hasCommand "cargo-binstall"
   - name: cscli
     value: docker exec crowdsec cscli
+  - name: occ
+    value: docker exec --user www-data nextcloud-aio-nextcloud php occ
 
   # Windows
   - name: zsh
