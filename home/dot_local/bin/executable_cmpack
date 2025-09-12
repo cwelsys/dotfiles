@@ -303,6 +303,23 @@ REMOVED_BREWS=()
 REMOVED_CASKS=()
 REMOVED_NATIVE=()
 
+# Packages to exclude from tracking (regex patterns)
+EXCLUDED_PATTERNS=(
+    "^kmod-.*"          # Kernel modules (kmod-nvidia, etc.)
+    "^kernel-.*"        # Kernel packages
+)
+
+# Function to check if package should be excluded
+should_exclude_package() {
+    local pkg="$1"
+    for pattern in "${EXCLUDED_PATTERNS[@]}"; do
+        if [[ "$pkg" =~ $pattern ]]; then
+            return 0  # true - should exclude
+        fi
+    done
+    return 1  # false - should not exclude
+}
+
 # Find new packages (deduplicate as we go)
 if [[ "$OS" == "darwin" ]]; then
     for pkg in "${INSTALLED_BREWS[@]}"; do
@@ -320,7 +337,7 @@ fi
 
 if [[ "$OS" == "linux" ]]; then
     for pkg in "${INSTALLED_NATIVE[@]}"; do
-        if [[ ! " ${CURRENT_NATIVE[*]:-} " =~ " ${pkg} " ]]; then
+        if [[ ! " ${CURRENT_NATIVE[*]:-} " =~ " ${pkg} " ]] && ! should_exclude_package "$pkg"; then
             NEW_NATIVE+=("$pkg")
         fi
     done
@@ -343,7 +360,7 @@ fi
 
 if [[ "$OS" == "linux" ]]; then
     for pkg in "${CURRENT_NATIVE[@]}"; do
-        if [[ ! " ${INSTALLED_NATIVE[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${REMOVED_NATIVE[*]:-} " =~ " ${pkg} " ]]; then
+        if [[ ! " ${INSTALLED_NATIVE[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${REMOVED_NATIVE[*]:-} " =~ " ${pkg} " ]] && ! should_exclude_package "$pkg"; then
             REMOVED_NATIVE+=("$pkg")
         fi
     done
