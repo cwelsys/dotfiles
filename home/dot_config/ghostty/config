@@ -1,7 +1,5 @@
 ## https://ghostty.org/docs/config/reference
 ## general
-auto-update = off
-auto-update-channel = tip
 shell-integration-features = no-cursor
 confirm-close-surface = false
 quit-after-last-window-closed = false
