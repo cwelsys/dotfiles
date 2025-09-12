@@ -742,9 +742,6 @@ pkgs:
       - kernel-modules
       - kernel-modules-core
       - kf5-filesystem
-      - kmod-nvidia-6.16.3-200.fc42.x86_64
-      - kmod-nvidia-6.16.4-200.fc42.x86_64
-      - kmod-nvidia-6.16.5-200.fc42.x86_64
       - kubernetes1.29-client
       - langpacks-en
       - langtable
