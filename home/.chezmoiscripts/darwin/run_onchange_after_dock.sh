@@ -6,7 +6,6 @@ trap 'killall Dock' EXIT
 
 declare -a remove_labels=(
 	Launchpad
-	Safari
 	Maps
 	Photos
 	FaceTime

@@ -1,7 +1,9 @@
 {{ if eq .chezmoi.os "darwin" }}
+{{ if lookPath "pwsh" }}
 [".local/share/powershell/Modules/Catppuccin"]
 type = "git-repo"
 url = "https://github.com/catppuccin/powershell.git"
 clone.args = ['--depth', '1']
 pull.args = ['--depth', '1']
+{{ end }}
 {{ end }}
