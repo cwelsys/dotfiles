@@ -11,6 +11,9 @@ alias:
     value: cd ../../../..
   - name: c
     value: clear
+  - name: cl
+    value: c && fet
+    if: hasCommand "fastfetch"
   - name: ld
     value: lazydocker
   - name: lg
