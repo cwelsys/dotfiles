@@ -34,6 +34,11 @@ alias:
     if: hasCommand "thefuck"
   - name: tg
     value: topgrade
+  - name: tga
+    type: function
+    value: |
+      grep '^Host ' ~/.ssh/config | grep -v '\*' | awk '{print $2}' | parallel 'echo -e "\033[1;36m{}\033[0m:"; ssh {} "topgrade"'
+    if: hasCommand "parallel"
   - name: fet
     value: fastfetch
   - name: adb
