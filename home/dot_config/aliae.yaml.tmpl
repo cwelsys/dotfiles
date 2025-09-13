@@ -439,22 +439,22 @@ alias:
 
   - name: clean
     value: sudo apt autoremove -y && sudo apt autoclean
-    if: hasCommand "apt"
+    if: and (hasCommand "apt") (ne .OS "darwin")
   - name: update
     value: sudo apt update && sudo apt upgrade -y
-    if: hasCommand "apt"
+    if: and (hasCommand "apt") (ne .OS "darwin")
   - name: install
     value: sudo apt install -y
-    if: hasCommand "apt"
+    if: and (hasCommand "apt") (ne .OS "darwin")
   - name: remove
     value: sudo apt remove -y
-    if: hasCommand "apt"
+    if: and (hasCommand "apt") (ne .OS "darwin")
   - name: search
     value: apt search
-    if: hasCommand "apt"
+    if: and (hasCommand "apt") (ne .OS "darwin")
   - name: info
     value: apt show
-    if: hasCommand "apt"
+    if: and (hasCommand "apt") (ne .OS "darwin")
 
   - name: clean
     value: sudo zypper clean -a
