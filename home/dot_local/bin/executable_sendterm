@@ -8,13 +8,10 @@ fi
 
 host="$1"
 
-# Export current terminal info
 infocmp -x "$TERM" > "$TERM.terminfo"
 
-# Copy to remote host home directory
 scp "$TERM.terminfo" "$host":~/
 
-# Install terminfo on remote host and clean up
 ssh "$host" "
     if [[ -n \"\$TERMINFO\" ]]; then
         mv ~/$TERM.terminfo \"\$TERMINFO/$TERM.terminfo\"
@@ -26,5 +23,4 @@ ssh "$host" "
     fi
 "
 
-# Clean up locally
 rm -f "$TERM.terminfo"
