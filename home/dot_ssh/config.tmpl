@@ -9,16 +9,28 @@ Host *
 {{- else }}
 	IdentityFile ~/.ssh/cwel
 {{- end }}
+{{- if ne .hostname "main" }}
 Host main
 	HostName main
 	User cwel
 
+{{- end }}
+{{- if ne .hostname "mba" }}
 Host mba
 	HostName mba
 	User cwel
 
+{{- end }}
+{{- if ne .hostname "pbox" }}
 Host pbox
 	HostName pbox
 	User cwel
+
+{{- end }}
+{{- if ne .hostname "bmac" }}
+Host bmac
+	HostName bmac
+	User cwel
+{{- end }}
 
 
