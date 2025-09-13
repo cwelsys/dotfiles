@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: sendterm <hostname>"
+    echo "Sends current TERM terminfo to the specified remote host"
+    exit 1
+fi
+
+host="$1"
+
+infocmp -x "$TERM" > "$TERM.terminfo"
+
+remote_dest="\${TERMINFO:-~}/$TERM.terminfo"
+
+scp "$TERM.terminfo" "$host":"$remote_dest"
+
+ssh "$host" "tic -x \"$remote_dest\" && rm -f \"$remote_dest\""
+
+rm -f "$TERM.terminfo"
