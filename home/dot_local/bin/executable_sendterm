@@ -13,12 +13,13 @@ infocmp -x "$TERM" > "$TERM.terminfo"
 scp "$TERM.terminfo" "$host":~/
 
 ssh "$host" "
+    mkdir -p ~/.local/share/terminfo
     if [[ -n \"\$TERMINFO\" ]]; then
         mv ~/$TERM.terminfo \"\$TERMINFO/$TERM.terminfo\"
         tic -x \"\$TERMINFO/$TERM.terminfo\"
         rm -f \"\$TERMINFO/$TERM.terminfo\"
     else
-        tic -x ~/$TERM.terminfo
+        tic -x -o ~/.local/share/terminfo ~/$TERM.terminfo
         rm -f ~/$TERM.terminfo
     fi
 "
