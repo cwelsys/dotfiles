@@ -27,6 +27,9 @@ disable = [
 	"bun",
 	"uv",
 	"powershell",
+{{ if .isVM }}
+	"system",
+{{ end }}
 ]
 
 # Ignore failures for these steps
