@@ -35,10 +35,15 @@ alias:
     value: fastfetch
   - name: adb
     value: 'HOME="$XDG_DATA_HOME"/android adb'
+  - name: v
+    value: nvim
+    if: hasCommand "nvim"
   - name: vi
     value: nvim
+    if: hasCommand "nvim"
   - name: vim
     value: nvim
+    if: hasCommand "nvim"
   - name: rl
     type: function
     value: |
@@ -69,12 +74,30 @@ alias:
   - name: pwsh
     value: pwsh -NoLogo
     if: and (ne .OS "windows") (hasCommand "pwsh")
+  - name: cp
+    value: 'cp -i'
+    if: hasCommand "cp"
+  - name: mv
+    value: 'mv -i'
+    if: hasCommand "mv"
   - name: rcp
     value: rsync --recursive --times --progress --stats --human-readable
     if: hasCommand "rsync"
   - name: rmv
     value: rsync --recursive --times --progress --stats --human-readable --remove-source-files
     if: hasCommand "rsync"
+  - name: s
+    value: sudo
+    if: hasCommand "sudo"
+  - name: se
+    value: 'sudo -e'
+    if: hasCommand "sudo"
+  - name: sudo
+    value: 'sudo '
+    if: hasCommand "sudo"
+  - name: su
+    value: sudo su
+    if: ne .OS "windows"
   - name: e
     value: Invoke-Item .
     type: function
@@ -229,14 +252,75 @@ alias:
     if: and (eq .OS "windows") (eq .Shell "pwsh")
 
   # Linux
-  - name: scl
+  - name: sy
     value: systemctl
     if: match .OS "linux"
-
-  # Posix
-  - name: su
-    value: sudo su
-    if: ne .OS "windows"
+  - name: syu
+    value: systemctl --user
+    if: match .OS "linux"
+  - name: sydr
+    value: systemctl daemon-reload
+    if: match .OS "linux"
+  - name: sydru
+    value: systemctl daemon-reload --user
+    if: match .OS "linux"
+  - name: syd
+    value: systemctl disable
+    if: match .OS "linux"
+  - name: sydu
+    value: systemctl disable --user
+    if: match .OS "linux"
+  - name: sye
+    value: systemctl enable
+    if: match .OS "linux"
+  - name: syeu
+    value: systemctl enable --user
+    if: match .OS "linux"
+  - name: syr
+    value: systemctl restart
+    if: match .OS "linux"
+  - name: syru
+    value: systemctl restart --user
+    if: match .OS "linux"
+  - name: syst
+    value: systemctl start
+    if: match .OS "linux"
+  - name: systu
+    value: systemctl start --user
+    if: match .OS "linux"
+  - name: sys
+    value: systemctl status
+    if: match .OS "linux"
+  - name: sysu
+    value: systemctl status --user
+    if: match .OS "linux"
+  - name: syz
+    value: systemctl stop
+    if: match .OS "linux"
+  - name: syzu
+    value: systemctl stop --user
+    if: match .OS "linux"
+  - name: syudr
+    value: systemctl --user daemon-reload
+    if: match .OS "linux"
+  - name: syud
+    value: systemctl --user disable
+    if: match .OS "linux"
+  - name: syue
+    value: systemctl --user enable
+    if: match .OS "linux"
+  - name: syur
+    value: systemctl --user restart
+    if: match .OS "linux"
+  - name: syust
+    value: systemctl --user start
+    if: match .OS "linux"
+  - name: syus
+    value: systemctl --user status
+    if: match .OS "linux"
+  - name: syuz
+    value: systemctl --user stop
+    if: match .OS "linux"
 
   # Package Managers
   - name: update
