@@ -2,6 +2,11 @@
 
 set -eufo pipefail
 
+if ! command -v dockutil &> /dev/null; then
+    echo "dockutil not found, skipping dock configuration"
+    exit 0
+fi
+
 trap 'killall Dock' EXIT
 
 declare -a remove_labels=(
