@@ -117,8 +117,14 @@ alias:
     type: function
     if: hasCommand "xdg-open"
   - name: xo
-    value 'xdg-open'
+    value: 'xdg-open'
     if: hasCommand "xdg-open"
+  - name: xo
+    value: open
+    if: match .OS "darwin"
+  - name: xo
+    value: Invoke-Item
+    if: match .Shell "pwsh"
   - name: npm-ls
     value: npm list -g
   - name: pnpm-ls
