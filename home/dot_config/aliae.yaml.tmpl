@@ -98,6 +98,12 @@ alias:
   - name: su
     value: sudo su
     if: ne .OS "windows"
+  - name: x
+    value: 'chmod +x'
+    if: hasCommand "chmod"
+  - name: yt
+    value: 'yt-dlp'
+    if: hasCommand "yt-dlp"
   - name: e
     value: Invoke-Item .
     type: function
@@ -110,6 +116,15 @@ alias:
     value: xdg-open .
     type: function
     if: hasCommand "xdg-open"
+  - name: xo
+    value 'xdg-open'
+    if: hasCommand "xdg-open"
+  - name: xo
+    value: 'open'
+    if: match .OS "darwin"
+  - name: xo
+    value: Invoke-Item
+    if: match .Shell "pwsh"
   - name: npm-ls
     value: npm list -g
   - name: pnpm-ls
@@ -166,6 +181,12 @@ alias:
   - name: pip
     value: pip3
     if: and (not (hasCommand "pip")) (hasCommand "pip3")
+  - name: py
+    value: python3
+    if: hasCommand "python3"
+  - name: venv
+    value: 'python3 -m venv '
+    if: hasCommand "python3"
   - name: svn
     value: svn --config-dir $XDG_CONFIG_HOME/subversion
     if: hasCommand "svn"
@@ -321,6 +342,36 @@ alias:
   - name: syuz
     value: systemctl --user stop
     if: match .OS "linux"
+  - name: failed
+    value: sudo systemctl list-units --failed
+    if: match .OS "linux"
+  - name: jc
+    value: journalctl -r
+    if: match .OS "linux"
+  - name: jcu
+    value: journalctl -r --user
+    if: match .OS "linux"
+  - name: psg
+    value: 'ps aux | egrep -i'
+    if: hasCommand "ps"
+  - name: iotop
+    value: 'sudo iotop --delay 2'
+    if: match .OS "linux"
+  - name: jq
+    value: 'jq -C'
+    if: hasCommand "jq"
+  - name: jl
+    value: 'jq -C | less'
+    if: hasCommand "jq"
+  - name: fgrep
+    value: 'fgrep --color=auto'
+    if: hasCommand "fgrep"
+  - name: egrep
+    value: 'egrep --color=auto'
+    if: hasCommand "egrep"
+  - name: fp
+    value: flatpak
+    if: hasCommand "flatpak"
 
   # Package Managers
   - name: update
