@@ -151,7 +151,7 @@ alias:
   - name: cmua
     type: function
     value: |
-      grep '^Host ' ~/.ssh/config | grep -v '\*' | awk '{print $2}' | parallel ssh {} 'chezmoi update'
+      grep '^Host ' ~/.ssh/config | grep -v '\*' | awk '{print $2}' | parallel 'echo -e "\033[1;36m{}\033[0m:"; ssh {} "chezmoi update"'
     if: hasCommand "parallel"
   - name: cat
     value: bat --paging=never --style=plain
