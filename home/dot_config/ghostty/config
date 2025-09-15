@@ -2,7 +2,7 @@
 ## general
 shell-integration-features = no-cursor
 confirm-close-surface = false
-quit-after-last-window-closed = true
+quit-after-last-window-closed = false
 quick-terminal-autohide = true
 link-url = true
 clipboard-trim-trailing-spaces = true
