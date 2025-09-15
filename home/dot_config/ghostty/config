@@ -22,7 +22,7 @@ font-thicken = true
 adjust-underline-position = 0
 adjust-underline-thickness = -50%
 ## theme
-theme = catppuccin-mocha
+theme = Catppuccin Mocha
 background-opacity = .8969
 background-blur = true
 background-blur-radius = 20
