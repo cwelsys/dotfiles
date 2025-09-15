@@ -12,7 +12,7 @@ clipboard-paste-protection = false
 mouse-hide-while-typing = true
 mouse-scroll-multiplier = 2
 resize-overlay = never
-copy-on-select = clipboard
+copy-on-select = true
 quick-terminal-animation-duration = 0.08
 ## font
 font-family = "FantasqueSansM Nerd Font"
