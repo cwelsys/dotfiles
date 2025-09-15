@@ -34,11 +34,6 @@ alias:
     if: hasCommand "thefuck"
   - name: tg
     value: topgrade
-  - name: tga
-    type: function
-    value: |
-      grep '^Host ' ~/.ssh/config | grep -v '\*' | awk '{print $2}' | parallel 'echo -e "\033[1;36m{}\033[0m:"; ssh {} "topgrade"'
-    if: hasCommand "parallel"
   - name: fet
     value: fastfetch
   - name: adb
@@ -153,11 +148,6 @@ alias:
     value: chezmoi apply
   - name: cmra
     value: chezmoi re-add
-  - name: cmua
-    type: function
-    value: |
-      grep '^Host ' ~/.ssh/config | grep -v '\*' | awk '{print $2}' | parallel 'echo -e "\033[1;36m{}\033[0m:"; ssh {} "chezmoi update"'
-    if: hasCommand "parallel"
   - name: cat
     value: bat --paging=never --style=plain
   - name: cpu
