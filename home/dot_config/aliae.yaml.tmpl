@@ -376,6 +376,11 @@ alias:
     value: flatpak
     if: hasCommand "flatpak"
 
+  # Darwin
+  - name: trash-empty
+    value: m trash --clean
+    if: match .OS "darwin" && hasCommand "m"
+
   # Package Managers
   - name: update
     value: brew update && brew upgrade
