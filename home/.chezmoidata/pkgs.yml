@@ -77,6 +77,7 @@ pkgs:
       - oh-my-posh
       - openjdk
       - openjdk@11
+      - parallel
       - php
       - pinentry-mac
       - pipes-sh
@@ -123,7 +124,6 @@ pkgs:
       - alt-tab
       - android-platform-tools
       - atv-remote
-      - background-music
       - betterdisplay
       - blockblock
       - boring-notch
