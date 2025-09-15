@@ -379,7 +379,7 @@ alias:
   # Darwin
   - name: trash-empty
     value: m trash --clean
-    if: match .OS "darwin" && hasCommand "m"
+    if: and (match .OS "darwin") (hasCommand "m")
 
   # Package Managers
   - name: update
