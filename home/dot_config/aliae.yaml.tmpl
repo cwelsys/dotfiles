@@ -249,7 +249,7 @@ alias:
     if: hasCommand "docker"
   - name: dip
     type: function
-    value: 'docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" $1'
+    value: 'docker inspect -f "{{ "{{" }}range .NetworkSettings.Networks{{ "}}" }}{{ "{{" }}.IPAddress{{ "}}" }}{{ "{{" }}end{{ "}}" }}" $1'
     if: hasCommand "docker"
 
     # Windows
