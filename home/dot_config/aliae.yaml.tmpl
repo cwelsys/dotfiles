@@ -210,7 +210,49 @@ alias:
   - name: occ
     value: docker exec --user www-data nextcloud-aio-nextcloud php occ
 
-  # Windows
+  # Docker
+  - name: d
+    value: docker
+    if: hasCommand "docker"
+  - name: n
+    value: nerdctl
+    if: hasCommand "nerdctl"
+  - name: docker
+    value: nerdctl
+    if: hasCommand "nerdctl"
+  - name: dc
+    value: docker compose
+    if: hasCommand "docker"
+  - name: dcu
+    value: docker compose up -d --remove-orphans
+    if: hasCommand "docker"
+  - name: dcd
+    value: docker compose down
+    if: hasCommand "docker"
+  - name: dcs
+    value: docker compose stop
+    if: hasCommand "docker"
+  - name: dcr
+    value: docker compose restart
+    if: hasCommand "docker"
+  - name: dcl
+    value: 'docker compose logs --tail=${DOCKER_COMPOSE_TAIL:-50} -f'
+    if: hasCommand "docker"
+  - name: dcb
+    value: docker compose build --pull
+    if: hasCommand "docker"
+  - name: dcp
+    value: docker compose pull
+    if: hasCommand "docker"
+  - name: dcre
+    value: dcd && dcu
+    if: hasCommand "docker"
+  - name: dip
+    type: function
+    value: 'docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" $1'
+    if: hasCommand "docker"
+
+    # Windows
   - name: zsh
     value: wsl.exe -e zsh
     if: match .OS "windows"
