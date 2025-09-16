@@ -214,6 +214,9 @@ alias:
   - name: d
     value: docker
     if: hasCommand "docker"
+  - name: n
+    value: nerdctl
+    if: hasCommand "nerdctl"
   - name: dc
     value: docker compose
     if: hasCommand "docker"
