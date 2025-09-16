@@ -91,6 +91,7 @@ pkgs:
       - rig
       - ripgrep
       - rsync
+      - ruff
       - sd
       - sf
       - shellcheck
@@ -129,7 +130,6 @@ pkgs:
       - boring-notch
       - catlight
       - claude
-      - claude-code
       - discord
       - dolphin
       - font-commit-mono-nerd-font
@@ -142,7 +142,7 @@ pkgs:
       - font-monaspace
       - font-sf-mono
       - font-sf-pro
-      - ghostty
+      - ghostty@tip
       - github
       - google-chrome
       - goreleaser
@@ -155,6 +155,7 @@ pkgs:
       - lulu
       - moonlight
       - neat
+      - nextcloud-vfs
       - obsidian
       - openmtp
       - pearcleaner
@@ -219,7 +220,6 @@ pkgs:
       - chaotic-mirrorlist
       - checkupdates-with-aur
       - chezmoi
-      - claude-code
       - cliphist
       - cockpit
       - cockpit-docker
@@ -278,7 +278,6 @@ pkgs:
       - genact
       - getnf
       - ghostscript
-      - ghostty
       - git-cliff
       - git-extras
       - github-cli
@@ -701,7 +700,6 @@ pkgs:
       - gdm
       - gettext
       - gh
-      - ghostty
       - git
       - git-delta
       - git-lfs
