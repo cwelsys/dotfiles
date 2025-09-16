@@ -572,6 +572,10 @@ env:
     value: '/run/user/{{ .chezmoi.uid }}'
     if: match .OS "linux"
     persist: true
+  - name: XDG_RUNTIME_DIR
+    value: '{{ env "TMPDIR" }}/runtime-{{ .chezmoi.uid }}'
+    if: match .OS "darwin"
+    persist: true
   - name: XDG_PROJECTS_DIR
     value: '{{ .chezmoi.homeDir }}/Projects'
     persist: true
@@ -659,6 +663,10 @@ env:
     value: '{{ env "XDG_CACHE_HOME" }}/npm'
   - name: NPM_CONFIG_INIT_MODULE
     value: '{{ env "XDG_CONFIG_HOME" }}/npm/config/npm-init.js'
+  - name: NPM_CONFIG_TMP
+    value: '{{ env "XDG_RUNTIME_DIR" }}/npm'
+  - name: NPM_CONFIG_USERCONFIG
+    value: '{{ env "XDG_CONFIG_HOME" }}/npm/config'
   - name: NODE_REPL_HISTORY
     value: '{{ .chezmoi.homeDir }}/.local/state/node_repl_history'
   - name: GOPATH
