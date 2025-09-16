@@ -568,6 +568,10 @@ env:
   - name: XDG_BIN_HOME
     value: '{{ .chezmoi.homeDir }}/.local/bin'
     persist: true
+  - name: XDG_RUNTIME_DIR
+    value: '/run/user/{{ .chezmoi.uid }}'
+    if: match .OS "linux"
+    persist: true
   - name: XDG_PROJECTS_DIR
     value: '{{ .chezmoi.homeDir }}/Projects'
     persist: true
