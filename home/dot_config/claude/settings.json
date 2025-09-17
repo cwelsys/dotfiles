@@ -1,0 +1,55 @@
+{
+	"theme": "dark",
+	"preferredNotifChannel": "terminal_bell",
+	"includeCoAuthoredBy": false,
+
+	"env": {
+		"DISABLE_TELEMETRY": "1",
+		"DISABLE_BUG_COMMAND": "1",
+		"DISABLE_ERROR_REPORTING": "1"
+	},
+
+	"permissions": {
+		"allow": [
+			"Bash(cd:*)",
+			"Bash(ls:*)",
+			"Bash(mkdir:*)",
+			"Bash(mv:*)",
+			"Bash(cp:*)",
+			"Bash(rg:*)",
+			"Bash(fd:*)",
+			"Bash(sed:*)",
+			"Bash(awk:*)",
+			"Bash(bat:*)",
+			"Bash(tre:*)",
+			"Bash(wget:*)",
+			"Bash(curl:*)",
+			"Bash(delta:*)",
+			"Bash(git add:*)",
+			"Bash(git reset:*)",
+			"Bash(find:*)",
+			"Bash(echo:*)",
+			"Bash(grep:*)",
+			"Bash(source:*)",
+			"Bash(gh pr list:*)",
+			"Bash(gh pr view:*)",
+			"Bash(gh pr diff:*)",
+			"Bash(git commit:*)",
+			"Bash(git checkout:*)",
+			"Bash(git stash:*)",
+			"Bash(git fetch:*)",
+			"Bash(git diff:*)",
+			"Bash(gh issue list:*)",
+			"Bash(gh issue view:*)",
+			"Bash(gh pr checks:*)",
+			"Bash(gh run view:*)",
+			"Bash(gh run list:*)",
+			"Bash(jq:*)",
+			"Glob(*)",
+			"Grep(*)",
+			"LS(*)",
+			"WebFetch(domain:github.com)"
+		],
+		"deny": []
+	}
+}
