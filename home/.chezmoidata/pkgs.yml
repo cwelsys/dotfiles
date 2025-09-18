@@ -122,7 +122,6 @@ pkgs:
       - zoxide
     casks:
       - 1password-cli
-      - alt-tab
       - android-platform-tools
       - atv-remote
       - betterdisplay
