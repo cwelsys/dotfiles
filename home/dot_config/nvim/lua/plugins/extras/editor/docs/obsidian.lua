@@ -79,7 +79,8 @@ return {
       end,
 
       follow_url_func = function(url)
-        vim.fn.jobstart({ "xdg-open", url })
+        local open_cmd = vim.fn.has("mac") == 1 and "open" or "xdg-open"
+        vim.fn.jobstart({ open_cmd, url })
       end,
 
       image = {

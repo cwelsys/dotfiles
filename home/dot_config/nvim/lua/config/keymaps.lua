@@ -3,12 +3,15 @@ local o = vim.opt
 
 local lazy = require("lazy")
 
+-- Cross-platform open command
+local open_cmd = vim.fn.has("mac") == 1 and "open" or "xdg-open"
+
 -- Lazy options
 map("n", "<leader>l", "<Nop>")
 map("n", "<leader>ll", "<cmd>Lazy<cr>", { desc = "Lazy" })
 -- stylua: ignore start
-map("n", "<leader>ld", function() vim.fn.system({ "xdg-open", "https://lazyvim.org" }) end, { desc = "LazyVim Docs" })
-map("n", "<leader>lr", function() vim.fn.system({ "xdg-open", "https://github.com/LazyVim/LazyVim" }) end,
+map("n", "<leader>ld", function() vim.fn.system({ open_cmd, "https://lazyvim.org" }) end, { desc = "LazyVim Docs" })
+map("n", "<leader>lr", function() vim.fn.system({ open_cmd, "https://github.com/LazyVim/LazyVim" }) end,
   { desc = "LazyVim Repo" })
 map("n", "<leader>lx", "<cmd>LazyExtras<cr>", { desc = "Extras" })
 map("n", "<leader>lc", function() LazyVim.news.changelog() end, { desc = "LazyVim Changelog" })
