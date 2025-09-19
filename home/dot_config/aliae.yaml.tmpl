@@ -594,7 +594,13 @@ alias:
     if: hasCommand "yay"
   - name: orphans
     type: function
-    value: 'sudo pacman -Rns $(pacman -Qtdq)'
+    value: |
+      orphaned=$(pacman -Qtdq)
+      if [ -n "$orphaned" ]; then
+        sudo pacman -Rns $orphaned
+      else
+        echo "No orphaned packages found."
+      fi
     if: hasCommand "pacman"
 
 env:
