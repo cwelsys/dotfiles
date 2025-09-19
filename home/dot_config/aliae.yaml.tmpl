@@ -617,11 +617,6 @@ env:
   - name: XDG_RUNTIME_DIR
     value: '/run/user/{{ .chezmoi.uid }}'
     if: match .OS "linux"
-    persist: true
-  - name: XDG_RUNTIME_DIR
-    value: '{{ env "TMPDIR" }}/runtime-{{ .chezmoi.uid }}'
-    if: match .OS "darwin"
-    persist: true
   - name: XDG_PROJECTS_DIR
     value: '{{ .chezmoi.homeDir }}/Projects'
     persist: true
