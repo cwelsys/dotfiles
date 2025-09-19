@@ -131,6 +131,7 @@ pkgs:
       - alt-tab
       - android-platform-tools
       - atv-remote
+      - background-music
       - betterdisplay
       - blockblock
       - boring-notch
@@ -166,7 +167,6 @@ pkgs:
       - openmtp
       - pearcleaner
       - pictogram
-      - playcover-community
       - powershell
       - processmonitor
       - proton-mail-bridge
