@@ -570,9 +570,8 @@ alias:
     value: sudo pacman
     if: hasCommand "pacman"
   - name: clean
-    value: yay -Qtdq | yay -Rnsu - --noconfirm 1> /dev/null; yay -Sc --noconfirm
-    if: hasCommand "yay"
-  - name: pupdate
+    value: yay -Scc
+  - name: update
     value: yay -Syyu --noconfirm
     if: hasCommand "yay"
   - name: install
@@ -593,6 +592,9 @@ alias:
   - name: re
     value: 'yay -Qq | fzf -q "$1" -m --preview "yay -Qi {1}" --preview-window bottom | xargs -ro yay -Rns'
     if: hasCommand "yay"
+  - name: orphans
+    value: pacman -Rns $(pacman -Qtdq)
+    if: hasCommand "pacman"
 
 env:
   - !include priv.yaml
