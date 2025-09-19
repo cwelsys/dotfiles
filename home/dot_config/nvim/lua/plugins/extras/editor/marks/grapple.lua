@@ -29,6 +29,7 @@ return {
     keys = keys,
     config = function()
       require("grapple").setup({
+        scope = "git_branch",
         win_opts = {
           footer = "",
         },
@@ -63,13 +64,6 @@ return {
       grapple.key_format = "  %s"
 
       table.insert(opts.config.center, 5, grapple)
-    end,
-  },
-  {
-    "nvim-lualine/lualine.nvim",
-    optional = true,
-    opts = function(_, opts)
-      table.insert(opts.sections.lualine_c, { require("grapple").statusline, cond = require("grapple").exists })
     end,
   },
   {

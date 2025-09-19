@@ -10,7 +10,7 @@ return {
     "2kabhishek/utils.nvim", -- required, for utility functions
   },
   opts = {
-    exercism_workspace = "~/dev/study/exercism",
+    exercism_workspace = "~/Projects/study/exercism",
     add_default_keybindings = false,
   },
 }

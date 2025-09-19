@@ -1,7 +1,7 @@
 return {
   { import = "lazyvim.plugins.extras.lang.go" },
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = {
       ensure_installed = {
         "golangci-lint",

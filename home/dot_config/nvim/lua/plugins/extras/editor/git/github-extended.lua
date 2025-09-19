@@ -4,7 +4,7 @@ return {
   { import = "lazyvim.plugins.extras.util.octo" },
   { import = "plugins.extras.lang.git-extended" },
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
       vim.list_extend(opts.ensure_installed, { "gh" })
@@ -14,8 +14,8 @@ return {
     "almo7aya/openingh.nvim",
     cmd = { "OpenInGHRepo", "OpenInGHFile", "OpenInGHFileLines" },
     keys = {
-      { prefix .. "ro", "<cmd>OpenInGHRepo<CR>", desc = "Open git repo in web", mode = { "n" } },
-      { prefix .. "rf", "<cmd>OpenInGHFile<CR>", desc = "Open git file in web", mode = { "n" } },
+      { prefix .. "ro", "<cmd>OpenInGHRepo<CR>",      desc = "Open git repo in web",     mode = { "n" } },
+      { prefix .. "rf", "<cmd>OpenInGHFile<CR>",      desc = "Open git file in web",     mode = { "n" } },
       { prefix .. "rc", "<cmd>OpenInGHFileLines<CR>", desc = "Open current line in web", mode = { "n", "x", "v" } },
     },
   },
@@ -51,9 +51,9 @@ return {
     },
     opts = {},
     keys = {
-      { prefix .. "gc", "<cmd>GistCreate<CR>", desc = "Create a Gist" },
+      { prefix .. "gc", "<cmd>GistCreate<CR>",         desc = "Create a Gist" },
       { prefix .. "gf", "<cmd>GistCreateFromFile<CR>", desc = "Create a Gist from File" },
-      { prefix .. "gl", "<cmd>GistsList<CR>", desc = "List Gists" },
+      { prefix .. "gl", "<cmd>GistsList<CR>",          desc = "List Gists" },
     },
   },
   {
@@ -148,22 +148,22 @@ return {
     },
     opts = {
       add_default_keybindings = false,
-      projects_dir = "~/dev/",
+      projects_dir = "~/Projects/",
     },
     keys = {
-      { prefix .. "rl", "<cmd>OctoRepos<CR>", desc = "List Repos" },
-      { prefix .. "rS", "<cmd>OctoRepos sort:stars<CR>", desc = "Top Starred Repos" },
-      { prefix .. "rI", "<cmd>OctoRepos sort:issues<CR>", desc = "Top Repos With Issues" },
+      { prefix .. "rl", "<cmd>OctoRepos<CR>",              desc = "List Repos" },
+      { prefix .. "rS", "<cmd>OctoRepos sort:stars<CR>",   desc = "Top Starred Repos" },
+      { prefix .. "rI", "<cmd>OctoRepos sort:issues<CR>",  desc = "Top Repos With Issues" },
       { prefix .. "rU", "<cmd>OctoRepos sort:updated<CR>", desc = "Recently Updated Repos" },
       { prefix .. "rP", "<cmd>OctoRepos type:private<CR>", desc = "Private Repos" },
-      { prefix .. "rF", "<cmd>OctoRepos type:fork<CR>", desc = "Forked Repos" },
-      { prefix .. "rc", "<cmd>OctoRepo<CR>", desc = "Clone/Open Repo" },
-      { prefix .. "rs", "<cmd>OctoRepoStats<CR>", desc = "Repo Stats" },
+      { prefix .. "rF", "<cmd>OctoRepos type:fork<CR>",    desc = "Forked Repos" },
+      { prefix .. "rc", "<cmd>OctoRepo<CR>",               desc = "Clone/Open Repo" },
+      { prefix .. "rs", "<cmd>OctoRepoStats<CR>",          desc = "Repo Stats" },
 
-      { prefix .. "Ps", "<cmd>OctoStats<CR>", desc = "All Stats" },
-      { prefix .. "Pa", "<cmd>OctoActivityStats<CR>", desc = "Activity Stats" },
-      { prefix .. "Pc", "<cmd>OctoContributionStats<CR>", desc = "Contribution Stats" },
-      { prefix .. "Po", "<cmd>OctoProfile<CR>", desc = "Open Profile" },
+      { prefix .. "Ps", "<cmd>OctoStats<CR>",              desc = "All Stats" },
+      { prefix .. "Pa", "<cmd>OctoActivityStats<CR>",      desc = "Activity Stats" },
+      { prefix .. "Pc", "<cmd>OctoContributionStats<CR>",  desc = "Contribution Stats" },
+      { prefix .. "Po", "<cmd>OctoProfile<CR>",            desc = "Open Profile" },
     },
   },
 }

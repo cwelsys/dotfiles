@@ -6,10 +6,12 @@ vim.loader.enable()
 
 -- Personal Config and LazyVim global options
 go.lualine_info_extras = false
+go.snacks_animate = true
 go.codeium_cmp_hide = false
 go.lazygit_config = false
 go.lazyvim_cmp = "blink"
 go.lazyvim_picker = "snacks"
+go.trouble_lualine = false
 
 -- Define leader key
 go.mapleader = " "
@@ -21,7 +23,7 @@ go.autoformat = true
 -- Font
 go.gui_font_default_size = 10
 go.gui_font_size = go.gui_font_default_size
-go.gui_font_face = "Maple Mono NF"
+go.gui_font_face = "FantasqueSansM Nerd Font"
 
 -- Enable EditorConfig integration
 go.editorconfig = true
@@ -37,6 +39,9 @@ go.root_spec = {
 o.showcmd = false
 o.laststatus = 3
 o.cmdheight = 0
+
+-- Disable mouse
+o.mouse = ""
 
 -- Disable native bufferline
 o.showtabline = 0
@@ -56,31 +61,7 @@ end
 
 o.conceallevel = 2
 
--- Use the right clipboard when on WSL
-local function is_wsl()
-  local wsl_check = os.getenv("WSL_DISTRO_NAME") ~= nil
-  return wsl_check
-end
-
--- disable native right click menu
-o.mouse = "a"
-o.mousemodel = "extend"
-
--- Install win32yank with cargo and then run:
--- sudo ln -s /mnt/c/Users/cwel/.cargo/bin/win32yank.exe /usr/local/bin/win32yank
-if is_wsl() then
-  go.clipboard = {
-
-    name = "win32yank-wsl",
-    copy = {
-      ["+"] = "win32yank.exe -i --crlf",
-      ["*"] = "win32yank.exe -i --crlf",
-    },
-
-    paste = {
-      ["+"] = "win32yank.exe -o --lf",
-      ["*"] = "win32yank.exe -o --lf",
-    },
-    cache_enabled = 1,
-  }
+-- Fix the clipboard when using WSL. Install https://github.com/equalsraf/win32yank (https://github.com/microsoft/WSL/issues/4440#issuecomment-1212350183)
+if os.getenv("WSL_DISTRO_NAME") ~= nil then
+  o.clipboard = "unnamedplus"
 end

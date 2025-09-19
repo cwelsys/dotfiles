@@ -24,7 +24,7 @@ return {
                   "--no-ignore-vcs",
                 },
                 search_dirs = {
-                  "~/dev/",
+                  "~/Projects/",
                 },
               },
             },
@@ -35,7 +35,7 @@ return {
     end,
     -- stylua: ignore
     keys = {
-      { "<leader>fp", "<cmd>Telescope repo list<cr>", desc = "Projects (~/dev)" },
+      { "<leader>fp", "<cmd>Telescope repo list<cr>",                                                 desc = "Projects (~/Projects)" },
       { "<leader>fP", "<cmd>lua require'telescope'.extensions.repo.list{search_dirs = { '~/' }}<cr>", desc = "Projects (System)" },
     },
   },

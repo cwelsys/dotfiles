@@ -1,16 +1,16 @@
 return {
   "folke/noice.nvim",
-  opts = function(_, opts)
-    table.insert(opts.routes, {
-      filter = {
-        event = "notify",
-        find = "No information available",
+  opts = {
+    cmdline = {
+      view = "cmdline",
+    },
+    lsp = {
+      progress = {
+        enabled = false,
       },
-      opts = {
-        skip = true,
-      },
-    })
-    opts.presets.lsp_doc_border = true
-    opts.presets.bottom_search = false
-  end,
+    },
+    presets = {
+      lsp_doc_border = true,
+    },
+  },
 }
