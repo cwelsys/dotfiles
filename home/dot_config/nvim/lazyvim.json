@@ -18,7 +18,6 @@
 		"plugins.extras.editor.treesitter-extended",
 		"plugins.extras.editor.trouble-extended",
 		"plugins.extras.lang.docker-extended",
-		"plugins.extras.lang.fish",
 		"plugins.extras.lang.markdown-extended",
 		"plugins.extras.lang.python-extended",
 		"plugins.extras.lang.web.html-css",
