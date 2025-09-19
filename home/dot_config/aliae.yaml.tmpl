@@ -853,7 +853,7 @@ env:
     value: '{{ env "XDG_CACHE_HOME" }}/nv'
     if: match .OS "linux"
   - name: GTK2_RC_FILES
-    value: /gtk-2.0/gtkrc'
+    value: '/gtk-2.0/gtkrc'
     if: match .OS "linux"
   - name: PARALLEL_HOME
     value: '{{ env "XDG_CONFIG_HOME" }}/parallel'
