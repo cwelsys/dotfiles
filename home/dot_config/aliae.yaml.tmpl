@@ -594,7 +594,7 @@ alias:
     value: yay -Qq | fzf -q "$1" -m --preview 'yay -Qi {1}' --preview-window bottom | xargs -ro yay -Rns
     if: hasCommand "yay"
   - name: delOrphan
-    value: 'sudo pacman -Qtdq | sudo pacman -Rns -'
+    value: 'sudo pacman -Qtdq | xargs -r sudo pacman -Rns'
     if: hasCommand "pacman"
 
 env:
