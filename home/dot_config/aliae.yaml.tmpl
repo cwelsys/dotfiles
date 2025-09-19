@@ -162,22 +162,29 @@ alias:
     value: fastfetch -c all
   - name: mobo
     value: fastfetch --logo none --structure board
-  - name: ls
-    value: eza --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
   - name: l
-    value: eza --git-ignore --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
-  - name: ll
-    value: eza --all --header --long --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
+    value: ls
+  - name: ls
+    value: eza $eza_params
+    if: hasCommand "eza"
   - name: la
-    value: eza -lbhHigUmuSa
+    value: eza -a $eza_params
+    if: hasCommand "eza"
+  - name: ll
+    value: eza -l $eza_params
+    if: hasCommand "eza"
+  - name: lla
+    value: eza -al --header $eza_params
+    if: hasCommand "eza"
   - name: lo
-    value: eza --oneline --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
-  - name: lx
-    value: eza -lbhHigUmuSa@
-  - name: tree
-    value: eza --tree --git --group --hyperlink --group-directories-first --time-style=long-iso --color-scale=all --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
+    value: eza --oneline $eza_params
+    if: hasCommand "eza"
+  - name: l.
+    value: eza -a $eza_params | grep -e "^\."
+    if: hasCommand "eza"
   - name: lt
-    value: tree
+    value: eza -aT $eza_params
+    if: hasCommand "eza"
   - name: wget
     value: wget --hsts-file="$XDG_DATA_HOME/wget-hsts"
     if: hasCommand "wget"
@@ -588,6 +595,9 @@ env:
     value: '{{ .chezmoi.sourceDir }}'
   - name: DOTFILES
     value: '{{ .chezmoi.sourceDir }}'
+  - name: eza_params
+    value: --git --hyperlink --color=always --group-directories-first --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
+    if: hasCommand "eza"
   - name: EDITOR
     value: nvim
   - name: VISUAL
