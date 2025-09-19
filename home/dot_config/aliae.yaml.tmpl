@@ -219,7 +219,7 @@ alias:
     value: docker exec --user www-data nextcloud-aio-nextcloud php occ
     if: hasCommand "docker"
   - name: nc-clear
-    value: docker exec -it nextcloud-aio-database psql -U oc_nextcloud -d nextcloud_database -c "TRUNCATE oc_activity;"
+    value: 'docker exec -it nextcloud-aio-database psql -U oc_nextcloud -d nextcloud_database -c "TRUNCATE oc_activity;"'
     if: hasCommand "docker"
 
   # Docker
