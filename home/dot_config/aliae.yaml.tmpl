@@ -37,7 +37,8 @@ alias:
   - name: fet
     value: fastfetch
   - name: adb
-    value: 'HOME="$XDG_DATA_HOME"/android adb'
+    value: |
+      HOME="$XDG_DATA_HOME"/android adb
   - name: v
     value: nvim
     if: hasCommand "nvim"
@@ -219,7 +220,8 @@ alias:
     value: docker exec --user www-data nextcloud-aio-nextcloud php occ
     if: hasCommand "docker"
   - name: nc-clear
-    value: 'docker exec -it nextcloud-aio-database psql -U oc_nextcloud -d nextcloud_database -c "TRUNCATE oc_activity;"'
+    value: |
+      docker exec -it nextcloud-aio-database psql -U oc_nextcloud -d nextcloud_database -c "TRUNCATE oc_activity;"
     if: hasCommand "docker"
 
   # Docker
@@ -268,7 +270,8 @@ alias:
     if: hasCommand "docker"
   - name: dip
     type: function
-    value: 'docker inspect -f "{{ "{{" }}range .NetworkSettings.Networks{{ "}}" }}{{ "{{" }}.IPAddress{{ "}}" }}{{ "{{" }}end{{ "}}" }}" $1'
+    value: |
+      docker inspect -f "{{ "{{" }}range .NetworkSettings.Networks{{ "}}" }}{{ "{{" }}.IPAddress{{ "}}" }}{{ "{{" }}end{{ "}}" }}" $1
     if: hasCommand "docker"
 
     # Windows
