@@ -183,8 +183,8 @@ alias:
     value: eza -a $eza_params | grep -e "^\."
     if: hasCommand "eza"
   - name: lt
-    value: eza -aT $eza_params
-    if: hasCommand "eza"
+    value: tree
+    if: hasCommand "tree"
   - name: wget
     value: wget --hsts-file="$XDG_DATA_HOME/wget-hsts"
     if: hasCommand "wget"
