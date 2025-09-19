@@ -245,7 +245,17 @@ alias:
     value: docker compose restart
     if: hasCommand "docker"
   - name: dcl
-    value: 'docker compose logs --tail=${DOCKER_COMPOSE_TAIL:-50} -f'
+    type: function
+    value: |
+      {{ "{{" }} if match .Shell "pwsh" {{ "}}" }}
+        $tail = if ($env:DOCKER_COMPOSE_TAIL) { $env:DOCKER_COMPOSE_TAIL } else { "50" }
+        docker compose logs --tail $tail -f @args
+      {{ "{{" }} else if match .Shell "fish" {{ "}}" }}
+        set -l tail_count (if set -q DOCKER_COMPOSE_TAIL; echo $DOCKER_COMPOSE_TAIL; else; echo 50; end)
+        docker compose logs --tail $tail_count -f $argv
+      {{ "{{" }} else {{ "}}" }}
+        docker compose logs --tail ${DOCKER_COMPOSE_TAIL:-50} -f "$@"
+      {{ "{{" }} end {{ "}}" }}
     if: hasCommand "docker"
   - name: dcb
     value: docker compose build --pull
@@ -325,6 +335,30 @@ alias:
     value: irm https://get.activated.win | iex
     type: function
     if: and (eq .OS "windows") (eq .Shell "pwsh")
+  - name: ls
+    type: function
+    value: '& eza ($env:eza_params -split " ") @args'
+    if: match .Shell "pwsh"
+  - name: la
+    type: function
+    value: '& eza -a ($env:eza_params -split " ") @args'
+    if: match .Shell "pwsh"
+  - name: ll
+    type: function
+    value: '& eza -l ($env:eza_params -split " ") @args'
+    if: match .Shell "pwsh"
+  - name: lla
+    type: function
+    value: '& eza -al --header ($env:eza_params -split " ") @args'
+    if: match .Shell "pwsh"
+  - name: lo
+    type: function
+    value: '& eza --oneline ($env:eza_params -split " ") @args'
+    if: match .Shell "pwsh"
+  - name: l.
+    type: function
+    value: '& eza -a ($env:eza_params -split " ") @args | Select-String "^\."'
+    if: match .Shell "pwsh"
 
   # Linux
   - name: sy
@@ -597,7 +631,6 @@ env:
     value: '{{ .chezmoi.sourceDir }}'
   - name: eza_params
     value: --git --hyperlink --color=always --group-directories-first --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
-    if: hasCommand "eza"
   - name: EDITOR
     value: nvim
   - name: VISUAL
