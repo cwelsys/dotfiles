@@ -645,7 +645,7 @@ env:
   - name: MANPAGER
     value: nvim +Man!
   - name: _ZO_FZF_OPTS
-    value: "$FZF_DEFAULT_OPTS --preview 'lsd -LAl --color=always --blocks=permission,user,size,date,name -1 {2..}' --preview-window=down:wrap"
+    value: "$FZF_DEFAULT_OPTS --preview 'eza -al --color=always --group-directories-first --icons -I=\"*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\" {2..}' --preview-window=down:wrap"
   - name: WORDCHARS
     value: '~!#$%^&*(){}[]<>?.+;'
     if: ne .Shell "fish"
@@ -759,7 +759,7 @@ env:
     value: "$FZF_DEFAULT_OPTS --preview 'echo {}' --preview-window 'down:3:hidden:wrap'"
     if: hasCommand "fzf"
   - name: FZF_ALT_C_OPTS
-    value: "$FZF_DEFAULT_OPTS --preview 'lsd -LAl --color=always --blocks=permission,user,size,date,name -1 {}'"
+    value: "$FZF_DEFAULT_OPTS --preview 'eza -al --color=always --group-directories-first --icons -I=\"*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\" {}'"
     if: hasCommand "fzf"
   - name: FZF_CTRL_T_OPTS
     value: "$FZF_DEFAULT_OPTS --preview 'less {}' --preview-window 'right:wrap'"
