@@ -630,6 +630,7 @@ pkgs:
       - cbonsai
       - certmonger
       - chafa
+      - chezmoi
       - chrony
       - cifs-utils
       - cirrus-audio-firmware
@@ -706,6 +707,7 @@ pkgs:
       - gdm
       - gettext
       - gh
+      - ghostty
       - git
       - git-delta
       - git-lfs
@@ -866,6 +868,7 @@ pkgs:
       - openssh-clients
       - openssh-server
       - ostree-libs
+      - parallel
       - parted
       - pass
       - passwdqc
@@ -977,6 +980,7 @@ pkgs:
       - swtpm-selinux
       - swtpm-tools
       - symlinks
+      - sysstat
       - systemd
       - systemd-container
       - systemd-oomd-defaults
@@ -1028,6 +1032,7 @@ pkgs:
       - xterm
       - yazi
       - yq
+      - yt-dlp
       - zfs-fuse
       - zimg
       - zip
