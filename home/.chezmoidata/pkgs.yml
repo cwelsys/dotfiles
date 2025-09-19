@@ -226,6 +226,7 @@ pkgs:
       - chaotic-mirrorlist
       - checkupdates-with-aur
       - chezmoi
+      - claude-code
       - cliphist
       - cockpit
       - cockpit-docker
