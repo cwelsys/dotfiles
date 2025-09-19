@@ -594,7 +594,7 @@ alias:
     if: hasCommand "yay"
   - name: orphans
     type: function
-    value: 'pacman -Rns $(pacman -Qtdq)'
+    value: 'sudo pacman -Rns $(pacman -Qtdq)'
     if: hasCommand "pacman"
 
 env:
