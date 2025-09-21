@@ -1,5 +1,0 @@
-windows:
-  - window_name: editor
-    panes:
-      - shell_command:
-          - nvim
