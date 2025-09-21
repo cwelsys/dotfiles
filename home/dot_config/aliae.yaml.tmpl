@@ -270,6 +270,8 @@ alias:
     type: function
     value: 'docker inspect -f "{{ "{{" }}range .NetworkSettings.Networks{{ "}}" }}{{ "{{" }}.IPAddress{{ "}}" }}{{ "{{" }}end{{ "}}" }}" $1'
     if: hasCommand "docker"
+  - name: ssh
+    value: 'TERM=xterm-256color ssh'
 
     # Windows
   - name: zsh
