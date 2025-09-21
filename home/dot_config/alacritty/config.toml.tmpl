@@ -1,0 +1,62 @@
+# https://alacritty.org/config-alacritty.html
+
+[general]
+{{ if eq .chezmoi.osRelease.id "arch" }}
+general.import = [ "~/.config/omarchy/current/theme/alacritty.toml" ]
+{{ else }}
+import = [
+"themes/catppuccin-mocha.toml"
+]
+{{ end }}
+live_config_reload = true
+
+[env]
+TERM = "xterm-256color"
+TERMINAL = "alacritty"
+
+[terminal]
+osc52 = "CopyPaste"
+shell = {
+  {{- if eq .chezmoi.os "windows" -}}
+  program = "pwsh",
+  args = ["-noLogo"]
+  {{- else -}}
+  program = "zsh"
+  {{- end -}}
+}
+
+[window]
+padding = { x = 2, y = 4 }
+dynamic_padding = true
+decorations = "Full"
+opacity = .8969
+blur = true
+# startup_mode = "Maximized"
+
+[scrolling]
+multiplier = 1.2
+
+[font]
+normal = { family = "FantasqueSansM Nerd Font", style = "Regular" }
+bold = { family = "FantasqueSansM Nerd Font", style = "Bold" }
+italic = { family = "FantasqueSansM Nerd Font", style = "Italic" }
+bold_italic = { family = "FantasqueSansM Nerd Font", style = "Bold Italic" }
+size = 16
+
+[colors]
+transparent_background_colors = false
+draw_bold_text_with_bright_colors = false
+
+[cursor]
+style = { shape = "Beam", blinking = "Off" }
+vi_mode_style = { shape = "Block", blinking = "Off" }
+
+[mouse]
+bindings = [{ mouse = "Right", mods = "Control", action = "Paste" }]
+hide_when_typing = true
+
+[keyboard]
+bindings = [
+  { key = "N", mods = "Control|Shift", action = "CreateNewWindow" }
+]
+
