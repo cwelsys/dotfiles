@@ -195,17 +195,25 @@ pkgs:
       - 1password-beta
       - alacritty
       - amd-ucode
+      - asciiquarium-transparent-git
       - asdcontrol-git
       - base
       - base-devel
+      - bat-extras
       - blueberry
+      - bluebubbles-bin
       - brightnessctl
+      - bun-bin
       - clang
+      - claude-code
       - cmake
+      - cockpit-docker
+      - cowsay
       - cups
       - cups-browsed
       - cups-filters
       - cups-pdf
+      - deno
       - docker
       - docker-buildx
       - docker-compose
@@ -218,14 +226,19 @@ pkgs:
       - fcitx5-qt
       - fd
       - ffmpegthumbnailer
+      - figlet
       - fontconfig
+      - fortune-mod
       - fzf
+      - genact
       - github-cli
       - gnome-calculator
       - gnome-keyring
       - gnome-themes-extra
       - go
+      - goreleaser
       - gst-plugin-pipewire
+      - gti
       - gvfs-mtp
       - gvfs-smb
       - hypridle
@@ -243,6 +256,8 @@ pkgs:
       - jq
       - kdenlive
       - kvantum-qt5
+      - lazyjournal
+      - lazysql-bin
       - lib32-nvidia-utils
       - libpulse
       - libqalculate
@@ -257,6 +272,7 @@ pkgs:
       - linux-headers
       - llvm
       - localsend-bin
+      - lolcat
       - luarocks
       - mako
       - mariadb-libs
@@ -264,6 +280,7 @@ pkgs:
       - mise
       - mpv
       - nautilus
+      - navi
       - noto-fonts
       - noto-fonts-cjk
       - noto-fonts-emoji
@@ -291,6 +308,7 @@ pkgs:
       - qt5-wayland
       - ripgrep
       - rust
+      - rustdesk-bin
       - satty
       - signal-desktop
       - slurp
@@ -299,6 +317,8 @@ pkgs:
       - sushi
       - swaybg
       - swayosd
+      - syncthing
+      - syncthingtray
       - system-config-printer
       - tree-sitter-cli
       - ttf-cascadia-mono-nerd
@@ -327,6 +347,7 @@ pkgs:
       - xournalpp
       - yaru-icon-theme
       - yay
+      - zen-browser-bin
       - zoxide
       - zram-generator
   fedora:
