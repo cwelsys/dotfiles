@@ -1,7 +1,7 @@
 # https://alacritty.org/config-alacritty.html
 
 [general]
-{{ if eq .chezmoi.osRelease.id "arch" }}
+{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.osRelease.id "arch") }}
 general.import = [ "~/.config/omarchy/current/theme/alacritty.toml" ]
 {{ else }}
 import = [
