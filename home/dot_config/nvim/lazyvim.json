@@ -37,7 +37,7 @@
 		"plugins.extras.util.wakatime",
 		"plugins.extras.util.yazi"
 	],
-	"install_version": 7,
+	"install_version": 8,
 	"news": {
 		"NEWS.md": "11866"
 	},
