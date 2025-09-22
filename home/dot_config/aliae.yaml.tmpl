@@ -280,6 +280,7 @@ alias:
     if: hasCommand "docker"
   - name: ssh
     value: 'TERM=xterm-256color ssh'
+    if: ne .OS "windows"
 
     # Windows
   - name: zsh
