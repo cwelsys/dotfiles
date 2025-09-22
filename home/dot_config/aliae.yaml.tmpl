@@ -184,27 +184,27 @@ alias:
     if: and (hasCommand "eza") (ne .Shell "pwsh")
   - name: ls
     type: function
-    value: 'eza --git --hyperlink --color=always --group-directories-first --icons --ignore-glob="NTUSER.DAT*" --ignore-glob="ntuser.dat*" --ignore-glob=".DS_Store" --ignore-glob=".idea" --ignore-glob=".venv" --ignore-glob=".vs" --ignore-glob="__pycache__" --ignore-glob="cache" --ignore-glob="debug" --ignore-glob=".git" --ignore-glob="node_modules" --ignore-glob="venv" @args'
+    value: 'eza --git --hyperlink --color=always --group-directories-first --icons -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" @args'
     if: and (hasCommand "eza") (match .Shell "pwsh")
   - name: la
     type: function
-    value: 'eza -a --git --hyperlink --color=always --group-directories-first --icons --ignore-glob="NTUSER.DAT*" --ignore-glob="ntuser.dat*" --ignore-glob=".DS_Store" --ignore-glob=".idea" --ignore-glob=".venv" --ignore-glob=".vs" --ignore-glob="__pycache__" --ignore-glob="cache" --ignore-glob="debug" --ignore-glob=".git" --ignore-glob="node_modules" --ignore-glob="venv" @args'
+    value: 'eza -a --git --hyperlink --color=always --group-directories-first --icons -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" @args'
     if: and (hasCommand "eza") (match .Shell "pwsh")
   - name: ll
     type: function
-    value: 'eza -l --git --hyperlink --color=always --group-directories-first --icons --ignore-glob="NTUSER.DAT*" --ignore-glob="ntuser.dat*" --ignore-glob=".DS_Store" --ignore-glob=".idea" --ignore-glob=".venv" --ignore-glob=".vs" --ignore-glob="__pycache__" --ignore-glob="cache" --ignore-glob="debug" --ignore-glob=".git" --ignore-glob="node_modules" --ignore-glob="venv" @args'
+    value: 'eza -l --git --hyperlink --color=always --group-directories-first --icons -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" @args'
     if: and (hasCommand "eza") (match .Shell "pwsh")
   - name: lla
     type: function
-    value: 'eza -al --header --git --hyperlink --color=always --group-directories-first --icons --ignore-glob="NTUSER.DAT*" --ignore-glob="ntuser.dat*" --ignore-glob=".DS_Store" --ignore-glob=".idea" --ignore-glob=".venv" --ignore-glob=".vs" --ignore-glob="__pycache__" --ignore-glob="cache" --ignore-glob="debug" --ignore-glob=".git" --ignore-glob="node_modules" --ignore-glob="venv" @args'
+    value: 'eza -al --header --git --hyperlink --color=always --group-directories-first --icons -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" @args'
     if: and (hasCommand "eza") (match .Shell "pwsh")
   - name: lo
     type: function
-    value: 'eza --oneline --git --hyperlink --color=always --group-directories-first --icons --ignore-glob="NTUSER.DAT*" --ignore-glob="ntuser.dat*" --ignore-glob=".DS_Store" --ignore-glob=".idea" --ignore-glob=".venv" --ignore-glob=".vs" --ignore-glob="__pycache__" --ignore-glob="cache" --ignore-glob="debug" --ignore-glob=".git" --ignore-glob="node_modules" --ignore-glob="venv" @args'
+    value: 'eza --oneline --git --hyperlink --color=always --group-directories-first --icons -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" @args'
     if: and (hasCommand "eza") (match .Shell "pwsh")
   - name: l.
     type: function
-    value: 'eza -a --git --hyperlink --color=always --group-directories-first --icons --ignore-glob="NTUSER.DAT*" --ignore-glob="ntuser.dat*" --ignore-glob=".DS_Store" --ignore-glob=".idea" --ignore-glob=".venv" --ignore-glob=".vs" --ignore-glob="__pycache__" --ignore-glob="cache" --ignore-glob="debug" --ignore-glob=".git" --ignore-glob="node_modules" --ignore-glob="venv" @args | Select-String "^\."'
+    value: 'eza -a --git --hyperlink --color=always --group-directories-first --icons -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" @args | Select-String "^\."'
     if: and (hasCommand "eza") (match .Shell "pwsh")
   - name: lt
     value: tree
@@ -616,7 +616,7 @@ env:
   - name: DOTFILES
     value: '{{ .chezmoi.sourceDir }}'
   - name: eza_params
-    value: --git --hyperlink --color=always --group-directories-first --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
+    value: --git --hyperlink --color=always --group-directories-first --icons -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
     if: ne .Shell "pwsh"
   - name: EDITOR
     value: nvim
