@@ -13,6 +13,9 @@ if ! dnf repolist --enabled | grep -q "{{ $coprName | replace ":" "_" }}"; then
     echo "Enabling COPR repository: {{ $coprName }}"
     sudo dnf copr enable {{ $coprName }} -y
 fi
+{{       end }}
+{{ end }}
+{{     end }}
 
 {{ $pkgs := .pkgs.fedora.dnf }}
 sudo dnf install {{ $pkgs | quoteList | join " " }} --skip-unavailable -y
