@@ -249,7 +249,7 @@ alias:
     value: |
       {{ "{{" }} if match .Shell "pwsh" {{ "}}" }}
         $tail = if ($env:DOCKER_COMPOSE_TAIL) { $env:DOCKER_COMPOSE_TAIL } else { "50" }
-        docker compose logs --tail $tail -f @args
+        docker compose logs --tail $tail -f $args
       {{ "{{" }} else if match .Shell "fish" {{ "}}" }}
         set -l tail_count (if set -q DOCKER_COMPOSE_TAIL; echo $DOCKER_COMPOSE_TAIL; else; echo 50; end)
         docker compose logs --tail $tail_count -f $argv
