@@ -23,11 +23,11 @@ fi
 if [ ! -f "$XDG_DATA_HOME"/blesh/ble.sh ]; then
     git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git
     make -C ble.sh install PREFIX=~/.local
-		rm -rf ble.sh
+    rm -rf ble.sh
 fi
 
 [[ -f "$XDG_DATA_HOME"/blesh/ble.sh ]] \
-	&& . "$XDG_DATA_HOME"/blesh/ble.sh --noattach
+    && source "$XDG_DATA_HOME"/blesh/ble.sh --noattach
 
 shopt -s histappend
 shopt -s cdspell
@@ -61,8 +61,6 @@ bleopt prompt_eol_mark=''
 bleopt exec_errexit_mark=
 bleopt exec_elapsed_mark=
 bleopt exec_exit_mark=
-bleopt term_update_tput_cache=auto
-bleopt term_cache_dir="$XDG_CACHE_HOME/blesh"
 
 if [ "$(uname -o)" = 'Msys' ]; then
 	bleopt complete_auto_complete=
@@ -112,4 +110,6 @@ elif command -v oh-my-posh >/dev/null 2>&1; then
 	eval "$(oh-my-posh init bash --config "$HOME/.config/posh.toml")"
 fi
 
-[[ ! ${BLE_VERSION-} ]] || ble-attach
+if [[ ${BLE_VERSION-} ]] && ! [[ ${BLE_ATTACHED-} ]]; then
+    ble-attach
+fi
