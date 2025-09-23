@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+if command -v bat >/dev/null 2>&1; then
+    bat cache --clear
+    bat cache --build
+fi
+
+{{ if lookPath "spicetify" }}
+curl -fsSL https://raw.githubusercontent.com/spicetify/spicetify-marketplace/main/resources/install.sh | sh
+{{ end }}
+
+git -C "${CHEZMOI_WORKING_TREE}" remote set-url origin git@github.com:cwelsys/dotfiles.git
+

@@ -1,0 +1,110 @@
+if (-not (Get-Module -ListAvailable -Name PSWriteColor)) {
+  try {
+    Install-Module -Name PSWriteColor -Force -Scope CurrentUser -ErrorAction Stop
+    Write-Host 'PSWriteColor module installed successfully.' -ForegroundColor Green
+  }
+  catch {
+    Write-Host "Failed to install PSWriteColor module: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host 'Script will continue with basic Write-Host commands.' -ForegroundColor Yellow
+  }
+}
+
+if (Get-Module -ListAvailable -Name PSWriteColor) {
+  Import-Module PSWriteColor -ErrorAction SilentlyContinue
+}
+
+$envUpdateOccurred = $false
+
+# --- PATH Environment Variable ---
+Write-Color -Text "Processing PATH environment variable..." -Color DarkMagenta
+{{- if .config.windows.envs.path }}
+try {
+    $currentUserPath = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
+    $existingUserPathArray = $currentUserPath -split ';' | Where-Object { -not [String]::IsNullOrWhiteSpace($_) } | ForEach-Object { $_.TrimEnd('\') } | Get-Unique
+
+    # Desired paths from chezmoi config, ensuring they are clean and unique
+    $desiredPathsArray = @(
+        {{- range $i, $p := .config.windows.envs.path -}}
+        '{{ $p | replace "\\\\" "\\" | trim }}'{{ if not (eq (add $i 1) (len $.config.windows.envs.path)) }},{{ end }}
+        {{- end -}}
+    ) | Where-Object { -not [String]::IsNullOrWhiteSpace($_) } | ForEach-Object { $_.TrimEnd('\') } | Get-Unique
+
+    # Identify paths to add (those in desired but not in existing user path)
+    # Normalize by trimming and removing trailing slashes for comparison
+    $pathsToAdd = $desiredPathsArray | Where-Object {
+        $currentDesiredPath = $_
+        $found = $false
+        foreach ($existingPath in $existingUserPathArray) {
+            if ($currentDesiredPath -eq $existingPath) {
+                $found = $true
+                break
+            }
+        }
+        -not $found
+    }
+
+    if ($pathsToAdd.Count -gt 0) {
+        Write-Color -Text "[path] ", "PATH: ", "Adding the following paths:" -Color Blue, White, White
+        $pathsToAdd | ForEach-Object { Write-Color -Text "        ", "- ", $_ -Color White, Green, Gray }
+
+        # Prepend new paths to the existing unique paths
+        $updatedPathArray = @($pathsToAdd) + $existingUserPathArray | Get-Unique
+        $updatedPathString = $updatedPathArray -join ';'
+
+        [System.Environment]::SetEnvironmentVariable("Path", $updatedPathString, [System.EnvironmentVariableTarget]::User)
+        Write-Color -Text "[path] ", "PATH: ", "(success) ", "Updated." -Color Blue, White, Green, Gray
+        $envUpdateOccurred = $true
+    } else {
+        Write-Color -Text "[path] ", "PATH: ", "(already up to date)" -Color Blue, White, Yellow, Gray
+    }
+} catch {
+    Write-Color -Text "[path] ", "PATH: ", "(failed) ", "Error processing: $($_.Exception.Message)" -Color Blue, White, Red, Gray
+}
+{{- else }}
+Write-Color -Text "[path] ", "PATH: ", "(skipped) ", "No path configuration found" -Color Blue, White, Yellow, Gray
+{{- end }}
+Write-Host ""
+
+# --- Other Environment Variables ---
+Write-Color -Text "Processing other environment variables..." -Color DarkMagenta
+{{- if .config.windows.envs.others }}
+{{- range .config.windows.envs.others }}
+{{- range $name, $value := . }}
+try {
+    $varName = "{{ $name }}"
+    # Ensure desiredValue from template is treated as a literal string, handling special characters
+    $varDesiredValue = '{{ $value | replace "'" "''" }}' # Escape single quotes for PowerShell string literal
+
+    $currentValue = [System.Environment]::GetEnvironmentVariable($varName, [System.EnvironmentVariableTarget]::User)
+
+    if ($currentValue -eq $varDesiredValue) {
+        Write-Color -Text "[env] ", $varName, ": ", "(already set) ", "'$varDesiredValue'" -Color Blue, White, White, Yellow, Gray
+    } else {
+        if ($null -ne $currentValue) { # It exists but is different
+            Write-Color -Text "[env] ", $varName, ": ", "Updating from '$currentValue' to '$varDesiredValue'" -Color Blue, White, White, White, Gray
+        } else { # It's a new variable
+            Write-Color -Text "[env] ", $varName, ": ", "Setting to '$varDesiredValue'" -Color Blue, White, White, White, Gray
+        }
+        [System.Environment]::SetEnvironmentVariable($varName, $varDesiredValue, [System.EnvironmentVariableTarget]::User)
+        Write-Color -Text "[env] ", $varName, ": ", "(success) ", "Set to '$varDesiredValue'" -Color Blue, White, White, Green, Gray
+        $envUpdateOccurred = $true
+    }
+} catch {
+    Write-Color -Text "[env] ", "{{ $name }}", ": ", "(failed) ", "Error: $($_.Exception.Message)" -Color Blue, White, White, Red, Gray
+}
+{{- end }}
+{{- end }}
+{{- else }}
+Write-Color -Text "[env] ", "Other env vars: ", "(skipped) ", "No other environment variables configuration found" -Color Blue, White, Yellow, Gray
+{{- end }}
+Write-Host ""
+
+if ($envUpdateOccurred) {
+    Write-Color -Text "✅ ", "Environment variables configured. " -NoNewLine -Color Green, White
+    Write-Color -Text "Note: ", "A new shell session, logout/login, or system reboot may be required for changes to take full effect in all applications." -Color Yellow, Gray
+    Write-Host ""
+} else {
+    Write-Color -Text "✅ ", "All specified environment variables are already correctly configured." -Color Green, White
+}
+
+Write-Color -Text "`n👍 ", "Environment variable setup process completed.", "`n" -Color White, DarkMagenta, White

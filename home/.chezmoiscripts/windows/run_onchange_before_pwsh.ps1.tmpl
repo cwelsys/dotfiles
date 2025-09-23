@@ -1,0 +1,54 @@
+{{ if .pkgs.windows.psGallery }}
+
+# Ensure NuGet provider is available
+if (-not (Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue)) {
+    Write-Color -Text "Installing NuGet provider..." -Color Yellow
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope CurrentUser
+}
+
+# Set PSGallery as trusted
+$psGallery = Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue
+if ($psGallery -and $psGallery.InstallationPolicy -ne 'Trusted') {
+    Write-Color -Text "Setting PSGallery repository as trusted..." -Color Yellow
+    Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+} elseif (-not $psGallery) {
+    Write-Color -Text "Registering default PSGallery repository..." -Color Yellow
+    Register-PSRepository -Default -InstallationPolicy Trusted
+}
+
+$allDesiredModules = @(
+    {{- range $i, $module := .pkgs.windows.psGallery -}}
+    "{{ $module }}"{{ if not (eq (add $i 1) (len $.pkgs.windows.psGallery)) }},{{ end }}
+    {{- end -}}
+)
+$allDesiredModules = $allDesiredModules | Where-Object { $_ -ne "" }
+
+if ($allDesiredModules.Count -eq 0) {
+    Write-Color -Text "`nℹ️ ", "No PowerShell modules specified for installation.", "`n" -Color White, Magenta, White
+    exit 0
+}
+
+Write-Color -Text "Fetching list of installed PowerShell modules..." -Color Magenta
+$installedModules = Get-Module -ListAvailable | Select-Object -ExpandProperty Name
+$installedModuleNames = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+foreach ($modName in $installedModules) {
+    $null = $installedModuleNames.Add($modName)
+}
+
+foreach ($moduleName in $allDesiredModules) {
+    if ($installedModuleNames.Contains($moduleName)) {
+        Write-Color -Text "[module] ", "psgallery: ", "(exists) ", $moduleName -Color Blue, DarkMagenta, Yellow, Gray
+    } else {
+        Write-Color -Text "[module] ", "psgallery: ", "Installing ", $moduleName -Color Blue, DarkMagenta, White, Gray
+        try {
+            Install-Module -Name $moduleName -Repository PSGallery -Force -AcceptLicense -SkipPublisherCheck -Scope CurrentUser -AllowClobber -ErrorAction Stop
+            Write-Color -Text "[module] ", "psgallery: ", "(success) ", $moduleName -Color Blue, DarkMagenta, Green, Gray
+        } catch {
+            Write-Color -Text "[module] ", "psgallery: ", "(failed) ", $moduleName, ": $($_.Exception.Message)" -Color Blue, DarkMagenta, Red, Gray, Red
+        }
+    }
+}
+
+Write-Color -Text "`n✅ ", "PowerShell module installation completed", "`n" -Color White, Magenta, White
+
+{{ end }}

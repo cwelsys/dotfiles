@@ -1,0 +1,86 @@
+
+#!/usr/bin/env bash
+{{- if eq .chezmoi.osRelease.id "arch" }}
+sudo tee /etc/zsh/zshenv > /dev/null <<'EOF'
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+EOF
+
+# Set up bash to source ~/.bashrc from /etc/bash.bashrc
+if [ -f /etc/bash.bashrc ]; then
+    if ! grep -q "source.*\.bashrc" /etc/bash.bashrc; then
+        sudo tee -a /etc/bash.bashrc > /dev/null <<'EOF'
+
+# Source user's .bashrc if it exists
+if [ -f "$HOME/.bashrc" ]; then
+    source "$HOME/.bashrc"
+fi
+EOF
+    fi
+fi
+
+{{- else if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") }}
+sudo tee /etc/zsh/zshenv > /dev/null <<'EOF'
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+EOF
+
+# Set up bash to source ~/.bashrc from /etc/bash.bashrc
+if [ -f /etc/bash.bashrc ]; then
+    if ! grep -q "source.*\.bashrc" /etc/bash.bashrc; then
+        sudo tee -a /etc/bash.bashrc > /dev/null <<'EOF'
+
+# Source user's .bashrc if it exists
+if [ -f "$HOME/.bashrc" ]; then
+    source "$HOME/.bashrc"
+fi
+EOF
+    fi
+fi
+
+{{- else if eq .chezmoi.osRelease.id "fedora" }}
+sudo tee /etc/zshenv > /dev/null <<'EOF'
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+EOF
+
+# Set up bash to source ~/.bashrc from /etc/bashrc
+if [ -f /etc/bashrc ]; then
+    if ! grep -q "source.*\.bashrc" /etc/bashrc; then
+        sudo tee -a /etc/bashrc > /dev/null <<'EOF'
+
+# Source user's .bashrc if it exists
+if [ -f "$HOME/.bashrc" ]; then
+    source "$HOME/.bashrc"
+fi
+EOF
+    fi
+fi
+
+{{- else if or (eq .chezmoi.osRelease.id "opensuse-leap") (eq .chezmoi.osRelease.id "opensuse-tumbleweed") }}
+sudo tee /etc/zshenv > /dev/null <<'EOF'
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+EOF
+
+# Set up bash to source ~/.bashrc from /etc/bash.bashrc.local
+if [ -f /etc/bash.bashrc.local ]; then
+    if ! grep -q "source.*\.bashrc" /etc/bash.bashrc.local; then
+        sudo tee -a /etc/bash.bashrc.local > /dev/null <<'EOF'
+
+# Source user's .bashrc if it exists
+if [ -f "$HOME/.bashrc" ]; then
+    source "$HOME/.bashrc"
+fi
+EOF
+    fi
+else
+    sudo tee /etc/bash.bashrc.local > /dev/null <<'EOF'
+# Source user's .bashrc if it exists
+if [ -f "$HOME/.bashrc" ]; then
+    source "$HOME/.bashrc"
+fi
+EOF
+fi
+
+{{- end }}

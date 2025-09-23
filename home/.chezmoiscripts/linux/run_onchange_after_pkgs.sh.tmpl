@@ -1,0 +1,26 @@
+{{ if and (eq .chezmoi.os "linux") (not .isVM) -}}
+#!/bin/bash
+
+{{   if or (eq .chezmoi.osRelease.id "debian") (eq .chezmoi.osRelease.id "ubuntu") }}
+{{ $pkgs := .pkgs.debian.apt }}
+sudo apt install {{ $pkgs | quoteList | join " " }} -y
+{{   else if eq .chezmoi.osRelease.id "fedora" }}
+{{     if hasKey .pkgs.fedora "repos" }}
+{{ range .pkgs.fedora.repos }}
+{{       if hasPrefix . "copr:" }}
+{{         $coprName := . | replace "copr:copr.fedorainfracloud.org:" "" }}
+if ! dnf repolist --enabled | grep -q "{{ $coprName | replace ":" "_" }}"; then
+    echo "Enabling COPR repository: {{ $coprName }}"
+    sudo dnf copr enable {{ $coprName }} -y
+fi
+
+{{ $pkgs := .pkgs.fedora.dnf }}
+sudo dnf install {{ $pkgs | quoteList | join " " }} --skip-unavailable -y
+{{   else if eq .chezmoi.osRelease.id "arch" }}
+{{ $pkgs := .pkgs.arch.pacman }}
+yay -S {{ $pkgs | quoteList | join " " }} --needed --noconfirm
+{{   else if or (eq .chezmoi.osRelease.id "opensuse-leap") (eq .chezmoi.osRelease.id "opensuse-tumbleweed") }}
+{{ $pkgs := .pkgs.opensuse.zypper }}
+sudo zypper install -y {{ $pkgs | quoteList | join " " }}
+{{   end }}
+{{ end }}

@@ -1,0 +1,287 @@
+﻿{{- if not .isVM -}}
+# Self-elevate
+if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator'))
+{
+  if ([int](Get-CimInstance -Class Win32_OperatingSystem | Select-Object -ExpandProperty BuildNumber) -ge 6000)
+  {
+    $CommandLine = "-File `"" + $MyInvocation.MyCommand.Path + "`" " + $MyInvocation.UnboundArguments
+    Start-Process -Wait -FilePath PowerShell.exe -Verb Runas -ArgumentList $CommandLine
+    Exit
+  }
+}
+
+Import-Module Microsoft.PowerShell.Security
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
+Set-ExecutionPolicy Bypass -Scope Process -Force
+
+# ===============================
+# WINGET CONFIGURATION
+# ===============================
+Write-Host "`nConfiguring WinGet..." -ForegroundColor Cyan
+
+# --- WinGet Installation Check ---
+if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+  Write-Host 'WinGet not found. Attempting installation...' -ForegroundColor Yellow
+  try {
+    # Use external script to install WinGet and all of its requirements
+    # Source: - https://github.com/asheroto/winget-install
+    Write-Host 'Running installer script from asheroto.com/winget...' -ForegroundColor Gray
+    & ([ScriptBlock]::Create((Invoke-RestMethod asheroto.com/winget))) -Force -ErrorAction Stop
+
+    if (Get-Command winget -ErrorAction SilentlyContinue) {
+      Write-Host 'WinGet installation successful.' -ForegroundColor Green
+    }
+    else {
+      Write-Host 'WinGet installation script ran, but winget command still not found.' -ForegroundColor Red
+    }
+  }
+  catch {
+    Write-Host "WinGet installation failed. Error: $($_.Exception.Message)" -ForegroundColor Red
+  }
+}
+else {
+  Write-Host 'WinGet already installed.' -ForegroundColor Green
+}
+
+# Configure WinGet settings
+if (Get-Command winget -ErrorAction SilentlyContinue) {
+  Write-Host 'Configuring WinGet settings...' -ForegroundColor Gray
+  $settingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\settings.json"
+  $settingsJson = @'
+{
+    "$schema": "https://aka.ms/winget-settings.schema.json",
+
+    // For documentation on these settings, see: https://aka.ms/winget-settings
+    // "source": {
+    //    "autoUpdateIntervalInMinutes": 5
+    // },
+    "visual": {
+        "enableSixels": true,
+        "progressBar": "rainbow"
+    },
+    "telemetry": {
+        "disable": true
+    },
+    "experimentalFeatures": {
+        "configuration03": true,
+        "configureExport": true,
+        "configureSelfElevate": true,
+        "experimentalCMD": true
+    },
+    "network": {
+        "downloader": "wininet"
+    }
+}
+'@
+  try {
+    $settingsDir = Split-Path $settingsPath -Parent
+    if (-not (Test-Path $settingsDir)) {
+      Write-Host "Creating settings directory: $settingsDir" -ForegroundColor Gray
+      New-Item -Path $settingsDir -ItemType Directory -Force -ErrorAction Stop | Out-Null
+    }
+
+    Write-Host "Writing settings to $settingsPath" -ForegroundColor Gray
+    $settingsJson | Out-File $settingsPath -Encoding utf8 -ErrorAction Stop
+    Write-Host 'WinGet settings file written successfully.' -ForegroundColor Green
+  }
+  catch {
+    Write-Host "Failed to write WinGet settings file. Error: $($_.Exception.Message)" -ForegroundColor Red
+  }
+}
+else {
+  Write-Host 'WinGet command not found. Skipping settings configuration.' -ForegroundColor Yellow
+}
+
+# ===============================
+# REGISTRY TWEAKS
+# ===============================
+Write-Host "`nApplying registry tweaks..." -ForegroundColor Cyan
+
+# Long path support
+Write-Host "Enabling long path support..." -ForegroundColor Gray
+Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1
+
+# Explorer configuration
+Write-Host "Configuring File Explorer settings..." -ForegroundColor Gray
+Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name Hidden -Value 1
+Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name HideFileExt -Value 0
+Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name ShowSuperHidden -Value 0
+Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name HideDrivesWithNoMedia -Value 1
+Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name LaunchTo -Value 1
+
+# Disable Windows Search dynamic content
+New-Item "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Force
+New-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "EnableDynamicContentInWSB" -PropertyType DWORD -Value 0
+
+# Remove Gallery from File Explorer
+Write-Host "Removing Gallery from File Explorer..." -ForegroundColor Gray
+reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace_41040327\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" /f
+
+# Hide Home folder in Explorer
+Write-Host "Hiding Home folder in Explorer..." -ForegroundColor Gray
+$homePath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}"
+if (-not (Test-Path $homePath)) {
+    New-Item -Path $homePath -Force | Out-Null
+}
+Set-ItemProperty -Path $homePath -Name "(Default)" -Value "CLSID_MSGraphHomeFolder" -Type String
+Set-ItemProperty -Path $homePath -Name "HiddenByDefault" -Value 1 -Type DWord
+
+# Configure WinRAR
+Write-Host "Setting WinRAR extract behavior..." -ForegroundColor Gray
+if (-not (Get-PSDrive -Name HKCR -ErrorAction SilentlyContinue)) {
+    New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
+}
+$winrarPath1 = "HKCR:\WinRAR\shell\open\command"
+$winrarPath2 = "HKCR:\WinRAR.ZIP\shell\open\command"
+$winrarValue = "`"C:\Program Files\WinRAR\WinRAR.exe`" x `"%1`""
+
+if (-not (Test-Path $winrarPath1)) { New-Item -Path $winrarPath1 -Force | Out-Null }
+if (-not (Test-Path $winrarPath2)) { New-Item -Path $winrarPath2 -Force | Out-Null }
+
+Set-ItemProperty -Path $winrarPath1 -Name "(Default)" -Value $winrarValue
+Set-ItemProperty -Path $winrarPath2 -Name "(Default)" -Value $winrarValue
+
+# Configure ShareX path
+Write-Host "Setting ShareX configuration path..." -ForegroundColor Gray
+$sharexPath = "HKLM:\SOFTWARE\ShareX"
+if (-not (Test-Path $sharexPath)) {
+    New-Item -Path $sharexPath -Force | Out-Null
+}
+Set-ItemProperty -Path $sharexPath -Name "PersonalPath" -Value "%UserProfile%\.config\sharex"
+
+# Remove shortcut text
+Write-Host "Getting rid of '- Shortcut' text" -ForegroundColor Gray
+$linkPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer"
+Set-ItemProperty -Path $linkPath -Name "link" -Value ([byte[]](0x00)) -Type Binary
+
+# Hide F drive
+Write-Host "Hiding F drive..." -ForegroundColor Gray
+$policiesPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+if (-not (Test-Path $policiesPath)) {
+    New-Item -Path $policiesPath -Force | Out-Null
+}
+Set-ItemProperty -Path $policiesPath -Name "NoDrives" -Value 32 -Type DWord
+
+# Set dark theme
+Write-Host "Setting dark theme..." -ForegroundColor Gray
+Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'AppsUseLightTheme' -Value 0
+Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'SystemUsesLightTheme' -Value 0
+
+# Configure dark title bars
+Write-Host "Configuring dark title bars..." -ForegroundColor Gray
+$dwmPath = 'HKCU:\Software\Microsoft\Windows\DWM'
+if (-not (Test-Path $dwmPath)) {
+    New-Item -Path $dwmPath -Force | Out-Null
+}
+Set-ItemProperty -Path $dwmPath -Name 'ColorPrevalence' -Value 1 -Type DWord
+Set-ItemProperty -Path $dwmPath -Name 'AccentColor' -Value 0xff262626 -Type DWord
+Set-ItemProperty -Path $dwmPath -Name 'AccentColorInactive' -Value 0xff262626 -Type DWord
+
+Write-Host "Registry tweaks applied successfully!" -ForegroundColor Green
+
+# ===============================
+# SYSTEM CONFIGURATION
+# ===============================
+
+Write-Host "Disabling UAC..." -ForegroundColor Cyan
+Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableLUA' -Value 0
+
+Write-Host "Enabling Dev mode..." -ForegroundColor Cyan
+Add-WindowsCapability -Online -Name DeveloperMode
+
+# ===============================
+# OPENSSH SERVER SETUP
+# ===============================
+
+Write-Host "Enabling OpenSSH Server..." -ForegroundColor Cyan
+Add-WindowsCapability -Online -Name OpenSSH.Server*
+
+Write-Host "Configuring OpenSSH services..." -ForegroundColor Gray
+Set-Service -Name sshd -StartupType 'Automatic'
+Start-Service sshd
+
+if (!(Get-NetFirewallRule -Name "OpenSSH-Server-In-TCP" -ErrorAction SilentlyContinue | Select-Object Name, Enabled)) {
+    Write-Host "Creating OpenSSH firewall rule..." -ForegroundColor Gray
+    New-NetFirewallRule -Name 'OpenSSH-Server-In-TCP' -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
+} else {
+    Write-Host "OpenSSH firewall rule already exists." -ForegroundColor Gray
+}
+
+Write-Host "Setting up administrators_authorized_keys..." -ForegroundColor Gray
+$adminKeyPath = "C:\ProgramData\ssh\administrators_authorized_keys"
+$userKeyPath = "$env:USERPROFILE\.ssh\authorized_keys"
+
+if (Test-Path $userKeyPath) {
+    Copy-Item -Path $userKeyPath -Destination $adminKeyPath -Force
+    icacls $adminKeyPath /inheritance:r
+    icacls $adminKeyPath /grant SYSTEM:"(F)"
+    icacls $adminKeyPath /grant Administrators:"(F)"
+    Write-Host "Administrators authorized_keys file created and permissions set" -ForegroundColor Gray
+} else {
+    Write-Host "Warning: User's authorized_keys file not found at $userKeyPath" -ForegroundColor Yellow
+}
+
+Write-Host "Setting PowerShell 7 as default SSH shell..." -ForegroundColor Gray
+New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Program Files\PowerShell\7\pwsh.exe" -PropertyType String -Force
+
+Get-Service sshd | Restart-Service -Force
+
+# ===============================
+# WINDOWS FEATURES
+# ===============================
+
+{{ range $feature := .config.windows.features.enable }}
+Write-Host 'Enabling {{ $feature }}...' -ForegroundColor Cyan
+Enable-WindowsOptionalFeature -Online -FeatureName '{{ $feature }}'
+{{ end }}
+
+{{ range $feature := .config.windows.features.disable }}
+Write-Host 'Disabling {{ $feature }}...' -ForegroundColor Cyan
+Disable-WindowsOptionalFeature -Online -FeatureName '{{ $feature }}'
+{{ end }}
+
+# ===============================
+# APPLICATION CONFIGURATION
+# ===============================
+Write-Host "`nConfiguring applications..." -ForegroundColor Cyan
+
+# Configure Clink
+if (Get-Command clink -ErrorAction SilentlyContinue) {
+    Write-Host "Configuring Clink scripts..." -ForegroundColor Gray
+    clink installscripts "$HOME\.config\clink\scripts"
+}
+
+# Configure Komorebi window manager
+if (!(Get-Process -Name komorebi -ErrorAction SilentlyContinue) -and (Get-Command komorebic -ErrorAction SilentlyContinue)) {
+    Write-Host "Enabling Komorebi autostart..." -ForegroundColor Gray
+    komorebic enable-autostart --whkd
+}
+
+# Configure YASB status bar
+if (!(Get-Process -Name yasb -ErrorAction SilentlyContinue) -and (Get-Command yasbc.exe -ErrorAction SilentlyContinue)) {
+    Write-Host "Enabling YASB autostart..." -ForegroundColor Gray
+    yasbc.exe enable-autostart --task
+}
+
+# Configure Rust cargo tools
+if (Get-Command cargo -ErrorAction SilentlyContinue) {
+    Write-Host "Installing additional Cargo tools..." -ForegroundColor Gray
+    cargo install cargo-update
+    cargo install cargo-cache
+}
+
+# Configure Spicetify
+if (Get-Command spicetify -ErrorAction SilentlyContinue) {
+    Write-Host "Installing Spicetify marketplace..." -ForegroundColor Gray
+    Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/spicetify/spicetify-marketplace/main/resources/install.ps1" | Invoke-Expression
+}
+
+# Configure bat syntax highlighting
+if (Get-Command bat -ErrorAction SilentlyContinue) {
+    Write-Host "Building bat theme cache..." -ForegroundColor Gray
+    bat cache --clear
+    bat cache --build
+}
+
+Write-Host "`nWindows setup completed successfully!" -ForegroundColor Green
+{{ end }}
