@@ -1,5 +1,4 @@
-
-#!/usr/bin/env bash
+#!/bin/bash
 {{- if eq .chezmoi.osRelease.id "arch" }}
 sudo tee /etc/zsh/zshenv > /dev/null <<'EOF'
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
