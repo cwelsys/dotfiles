@@ -65,7 +65,7 @@ else {
 	Set-PSReadlineKeyHandler -Chord Ctrl+c -Function CopyOrCancelLine
 	Set-PSReadlineKeyHandler -Chord Ctrl+x -Function Cut
 	Set-PSReadlineKeyHandler -Chord Ctrl+v -Function Paste
-	Set-PSReadlineKeyHandler -Chord Ctrl+@ -Function MenuComplete  # Unix shells always intercept Ctrl-space - Fedora seems to map it to Ctrl-@
+	Set-PSReadlineKeyHandler -Chord Ctrl+@ -Function MenuComplete
 }
 
 function _fzf_open_path {

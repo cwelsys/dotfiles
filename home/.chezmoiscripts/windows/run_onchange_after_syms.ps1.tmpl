@@ -1,23 +1,23 @@
-﻿Write-Host ""
-Write-Color -Text "******************************************" -Color DarkMagenta
-Write-Color -Text "** CREATING SYMBOLIC LINKS **" -Color DarkMagenta
-Write-Color -Text "******************************************" -Color DarkMagenta
-Write-Host ""
-
+﻿{{- if not .isVM -}}
+$ErrorActionPreference = 'Stop'
 $chezmoidir = "$env:USERPROFILE\.local\share\chezmoi"
-$symlinkCount = 0
-$successCount = 0
 
-Write-Color -Text "Processing symbolic links..." -Color DarkMagenta
+# ====================
+# SYMBOLIC LINKS
+# ====================
+$symlinkCount = 0
+$symlinkSuccessCount = 0
 
 {{- if .config.windows.symlinks }}
+Write-Color -Text "Processing symbolic links..." -Color DarkMagenta
+
 {{- range $targetPath, $sourcePath := .config.windows.symlinks }}
 $symlinkCount++
 
 try {
     # Debug: Show what we're processing
     Write-Color -Text "[symlink] ", "Processing: ", '{{ $targetPath }}', " → ", '{{ $sourcePath }}' -Color Blue, Gray, White, Gray, White
-    
+
     # Expand environment variables in target path, handle %HOME% -> %USERPROFILE%
     $targetPathExpanded = '{{ $targetPath }}' -replace '%HOME%', '%USERPROFILE%'
     $targetPath = [Environment]::ExpandEnvironmentVariables($targetPathExpanded)
@@ -29,7 +29,7 @@ try {
     } else {
         "$chezmoidir\$sourcePathTemplate"
     }
-    
+
     # Debug: Show resolved paths
     Write-Color -Text "[symlink] ", "Target: ", $targetPath -Color Blue, Gray, White
     Write-Color -Text "[symlink] ", "Source: ", $sourcePath -Color Blue, Gray, White
@@ -56,7 +56,7 @@ try {
             $currentTarget = (Get-Item $targetPath).Target
             if ($currentTarget -eq $sourcePath) {
                 Write-Color -Text "[symlink] ", "(already exists) ", $targetPath, " → ", $sourcePath -Color Blue, Yellow, White, Gray, White
-                $successCount++
+                $symlinkSuccessCount++
                 continue
             }
         }
@@ -76,7 +76,7 @@ try {
         }
         New-Item -ItemType SymbolicLink -Path $targetPath -Target $sourcePath -Force -ErrorAction Stop | Out-Null
         Write-Color -Text "[symlink] ", "(success) ", $targetPath, " → ", $sourcePath -Color Blue, Green, White, Gray, White
-        $successCount++
+        $symlinkSuccessCount++
     } catch {
         Write-Color -Text "[symlink] ", "(creation failed) ", $targetPath, ": ", $_.Exception.Message -Color Blue, Red, White, Gray, White
         throw $_
@@ -90,7 +90,7 @@ try {
         cmd /c mklink "$targetPath" "$sourcePath" | Out-Null
         if ($LASTEXITCODE -eq 0) {
             Write-Color -Text "[symlink] ", "(success) ", $targetPath, " → ", $sourcePath -Color Blue, Green, White, Gray, White
-            $successCount++
+            $symlinkSuccessCount++
         } else {
             throw "Command failed with exit code $LASTEXITCODE"
         }
@@ -98,7 +98,7 @@ try {
         Write-Color -Text "[symlink] ", "(failed) ", "Copying file instead of linking..." -Color Blue, Yellow, Gray
         Copy-Item -Path $sourcePath -Destination $targetPath -Force
         Write-Color -Text "[symlink] ", "(fallback) ", "Copied file: ", $targetPath -Color Blue, Cyan, Gray, White
-        $successCount++
+        $symlinkSuccessCount++
     }
 }
 {{- end }}
@@ -106,6 +106,136 @@ try {
 Write-Color -Text "No symlinks defined in configuration." -Color Yellow
 {{- end }}
 
+# ====================
+# STARTUP SHORTCUTS
+# ====================
+{{- if .config.windows.startup.shortcuts }}
 Write-Host ""
-Write-Color -Text "Symlink creation summary: ", "$successCount of $symlinkCount successful" -Color White, $(if ($successCount -eq $symlinkCount) { "Green" } else { "Yellow" })
+Write-Color -Text "Processing startup shortcuts..." -Color DarkMagenta
+
+# Get startup folder path
+$startupFolder = [Environment]::GetFolderPath('Startup')
+Write-Color -Text "[shortcut] ", "Startup folder: ", $startupFolder -Color Blue, Gray, White
+
+# Function to create a shortcut
+function Create-Shortcut {
+    param (
+        [string]$Name,
+        [string]$Target,
+        [string]$Arguments = "",
+        [string]$WorkingDirectory = "",
+        [string]$Description = "",
+        [string]$IconLocation = "",
+        [int]$WindowStyle = 1  # 1=Normal, 3=Maximized, 7=Minimized
+    )
+
+    # Expand environment variables in paths
+    $Target = [Environment]::ExpandEnvironmentVariables($Target)
+    $Arguments = [Environment]::ExpandEnvironmentVariables($Arguments)
+    $WorkingDirectory = [Environment]::ExpandEnvironmentVariables($WorkingDirectory)
+    $IconLocation = [Environment]::ExpandEnvironmentVariables($IconLocation)
+
+    # Default working directory to target path if not specified
+    if (-not $WorkingDirectory -and $Target) {
+        $WorkingDirectory = Split-Path -Parent $Target
+    }
+
+    $shortcutPath = Join-Path $startupFolder "$Name.lnk"
+
+    try {
+        $WshShell = New-Object -ComObject WScript.Shell
+        $Shortcut = $WshShell.CreateShortcut($shortcutPath)
+        $Shortcut.TargetPath = $Target
+
+        if ($Arguments) { $Shortcut.Arguments = $Arguments }
+        if ($WorkingDirectory) { $Shortcut.WorkingDirectory = $WorkingDirectory }
+        if ($IconLocation) { $Shortcut.IconLocation = $IconLocation }
+        if ($Description) { $Shortcut.Description = $Description }
+        $Shortcut.WindowStyle = $WindowStyle
+
+        $Shortcut.Save()
+
+        Write-Color -Text "[shortcut] ", "(success) ", $Name, " → ", $Target -Color Blue, Green, White, Gray, White
+        return $true
+    }
+    catch {
+        Write-Color -Text "[shortcut] ", "(failed) ", $Name, ": ", $_.Exception.Message -Color Blue, Red, White, Gray, White
+        return $false
+    }
+}
+
+# Process shortcuts from config
+$shortcutCount = 0
+$shortcutSuccessCount = 0
+
+{{ range $shortcut := .config.windows.startup.shortcuts }}
+$shortcutCount++
+
+# Convert shortcut to JSON and parse in PowerShell to safely handle missing fields
+$shortcutJson = @"
+{{ $shortcut | toJson }}
+"@
+
+$shortcutObj = $shortcutJson | ConvertFrom-Json
+
+# Clean up shortcut name (remove .exe if present)
+$shortcutName = $shortcutObj.name -replace '\.exe$', ''
+
+Write-Color -Text "[shortcut] ", "Processing: ", $shortcutName -Color Blue, Gray, White
+
+# Create parameter hashtable with required values
+$params = @{
+    Name = $shortcutName
+    Target = $shortcutObj.target
+}
+
+# Handle both 'args' and 'arguments' for flexibility
+if ($shortcutObj.PSObject.Properties.Name -contains 'arguments') {
+    $params.Arguments = $shortcutObj.arguments
+} elseif ($shortcutObj.PSObject.Properties.Name -contains 'args') {
+    $params.Arguments = $shortcutObj.args
+}
+
+# Add other optional parameters only if they exist
+if ($shortcutObj.PSObject.Properties.Name -contains 'workingdir') {
+    $params.WorkingDirectory = $shortcutObj.workingdir
+}
+if ($shortcutObj.PSObject.Properties.Name -contains 'description') {
+    $params.Description = $shortcutObj.description
+}
+if ($shortcutObj.PSObject.Properties.Name -contains 'icon') {
+    $params.IconLocation = $shortcutObj.icon
+}
+if ($shortcutObj.PSObject.Properties.Name -contains 'windowstyle') {
+    $params.WindowStyle = $shortcutObj.windowstyle
+}
+
+$result = Create-Shortcut @params
+if ($result) { $shortcutSuccessCount++ }
+{{ end }}
+{{- else }}
+Write-Color -Text "No startup shortcuts defined in configuration." -Color Yellow
+$shortcutCount = 0
+$shortcutSuccessCount = 0
+{{- end }}
+
+# ====================
+# SUMMARY
+# ====================
 Write-Host ""
+Write-Color -Text "Summary:" -Color DarkMagenta
+Write-Color -Text "  Symlinks: ", "$symlinkSuccessCount of $symlinkCount successful" -Color White, $(if ($symlinkSuccessCount -eq $symlinkCount) { "Green" } else { "Yellow" })
+Write-Color -Text "  Shortcuts: ", "$shortcutSuccessCount of $shortcutCount successful" -Color White, $(if ($shortcutSuccessCount -eq $shortcutCount) { "Green" } else { "Yellow" })
+
+$totalSuccess = $symlinkSuccessCount + $shortcutSuccessCount
+$totalCount = $symlinkCount + $shortcutCount
+
+if ($totalSuccess -eq $totalCount -and $totalCount -gt 0) {
+    Write-Color -Text "✅ All operations completed successfully!" -Color Green
+} elseif ($totalCount -eq 0) {
+    Write-Color -Text "No operations configured." -Color Yellow
+} else {
+    Write-Color -Text "⚠️ Some operations failed." -Color Yellow
+}
+Write-Host ""
+{{- end }}

@@ -14,46 +14,12 @@ if ($IsMacOS) {
 	& "$HOMEBREW_PREFIX/bin/brew" shellenv | Invoke-Expression
 }
 
-if ($IsWindows) {
-	$env:SSH_AUTH_SOCK = '\\.\pipe\openssh-ssh-agent'
-}
-
 Remove-Item Alias:rm -Force -ErrorAction SilentlyContinue
 Remove-Item Alias:ls -Force -ErrorAction SilentlyContinue
 Remove-Item Alias:cat -Force -ErrorAction SilentlyContinue
 
 if (Get-Command aliae -ErrorAction SilentlyContinue) {
 	aliae init pwsh --config "$HOME/.config/aliae.yaml" | Invoke-Expression
-}
-
-$timer = New-TimeSpan -Minutes 10
-$stamp = "$Env:PWSH/timer.txt"
-$send = {
-	if ((-not $env:TERM_PROGRAM -eq 'vscode') -and (Get-Command fastfetch -ErrorAction SilentlyContinue)) {
-		if ([Environment]::GetCommandLineArgs().Contains('-NonInteractive')) {
-			Return
-		}
-		fastfetch
-	}
-}
-
-if (Test-Path $stamp) {
-	$last = (Get-Item $stamp).LastWriteTime
-}
-else {
-	$last = [DateTime]::MinValue
-}
-
-$ct = Get-Date
-$been = $ct - $last
-if ($been -ge $timer) {
-	& $send
-	'' | Out-File $stamp
-}
-
-if (Get-Command code -ErrorAction SilentlyContinue) { $Env:EDITOR = 'code' }
-else {
-	if (Get-Command nvim -ErrorAction SilentlyContinue) { $Env:EDITOR = 'nvim' }
 }
 
 foreach ($file in $((Get-ChildItem -Path "$env:PWSH\lib\*" -Include *.ps1 -Exclude '7.ps1').FullName)) {
@@ -72,24 +38,11 @@ elseif (Get-Command starship -ErrorAction SilentlyContinue) {
 }
 
 if ($PSVersionTable.PSVersion.Major -ge 7) {
-	if ($IsWindows) {
-		Import-Module -Name Microsoft.WinGet.CommandNotFound
-	}
 	. "$env:PWSH\lib\7.ps1"
 }
 
-
-if (($IsWindows) -and ( $env:TERM_PROGRAM -ne 'vscode')) {
-    Set-ShellIntegration
-    if (Get-Command carapace -ErrorAction SilentlyContinue) {
-        $env:CARAPACE_BRIDGES = 'zsh,fish,bash,inshellisense'
-        $Env:CARAPACE_NOSPACE = '*'
-        Invoke-Expression (& { (carapace _carapace powershell | Out-String) })
-    }
-		if (Get-Command scoop -ErrorAction SilentlyContinue) {
-				Invoke-Expression (&scoop-search --hook)
-		}
-    PSDynTitle
+if (Get-Command scoop -ErrorAction SilentlyContinue) {
+	Invoke-Expression (&scoop-search --hook)
 }
 
 if (Get-Command chezmoi -ErrorAction 'SilentlyContinue') {
