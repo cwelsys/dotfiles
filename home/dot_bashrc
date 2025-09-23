@@ -61,6 +61,8 @@ bleopt prompt_eol_mark=''
 bleopt exec_errexit_mark=
 bleopt exec_elapsed_mark=
 bleopt exec_exit_mark=
+bleopt term_update_tput_cache=auto
+bleopt term_cache_dir="$XDG_CACHE_HOME/blesh"
 
 if [ "$(uname -o)" = 'Msys' ]; then
 	bleopt complete_auto_complete=
