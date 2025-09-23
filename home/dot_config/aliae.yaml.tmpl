@@ -1,13 +1,13 @@
 # yaml-language-server: $schema=https://aliae.dev/schema.json
 # docs: https://aliae.dev/docs
 alias:
-  - name: ".."
+  - name: '..'
     value: cd ..
-  - name: "…"
+  - name: '…'
     value: cd ../..
-  - name: "…."
+  - name: '….'
     value: cd ../../..
-  - name: "….."
+  - name: '…..'
     value: cd ../../../..
   - name: c
     value: clear
@@ -166,22 +166,46 @@ alias:
     value: ls
   - name: ls
     value: eza $eza_params
-    if: hasCommand "eza"
+    if: and (hasCommand "eza") (ne .Shell "pwsh")
   - name: la
     value: eza -a $eza_params
-    if: hasCommand "eza"
+    if: and (hasCommand "eza") (ne .Shell "pwsh")
   - name: ll
     value: eza -l $eza_params
-    if: hasCommand "eza"
+    if: and (hasCommand "eza") (ne .Shell "pwsh")
   - name: lla
     value: eza -al --header $eza_params
-    if: hasCommand "eza"
+    if: and (hasCommand "eza") (ne .Shell "pwsh")
   - name: lo
     value: eza --oneline $eza_params
-    if: hasCommand "eza"
+    if: and (hasCommand "eza") (ne .Shell "pwsh")
   - name: l.
     value: eza -a $eza_params | grep -e "^\."
-    if: hasCommand "eza"
+    if: and (hasCommand "eza") (ne .Shell "pwsh")
+  - name: ls
+    type: function
+    value: 'eza --git --hyperlink --color=always --group-directories-first --icons --ignore-glob="NTUSER.DAT*" --ignore-glob="ntuser.dat*" --ignore-glob=".DS_Store" --ignore-glob=".idea" --ignore-glob=".venv" --ignore-glob=".vs" --ignore-glob="__pycache__" --ignore-glob="cache" --ignore-glob="debug" --ignore-glob=".git" --ignore-glob="node_modules" --ignore-glob="venv" @args'
+    if: and (hasCommand "eza") (match .Shell "pwsh")
+  - name: la
+    type: function
+    value: 'eza -a --git --hyperlink --color=always --group-directories-first --icons --ignore-glob="NTUSER.DAT*" --ignore-glob="ntuser.dat*" --ignore-glob=".DS_Store" --ignore-glob=".idea" --ignore-glob=".venv" --ignore-glob=".vs" --ignore-glob="__pycache__" --ignore-glob="cache" --ignore-glob="debug" --ignore-glob=".git" --ignore-glob="node_modules" --ignore-glob="venv" @args'
+    if: and (hasCommand "eza") (match .Shell "pwsh")
+  - name: ll
+    type: function
+    value: 'eza -l --git --hyperlink --color=always --group-directories-first --icons --ignore-glob="NTUSER.DAT*" --ignore-glob="ntuser.dat*" --ignore-glob=".DS_Store" --ignore-glob=".idea" --ignore-glob=".venv" --ignore-glob=".vs" --ignore-glob="__pycache__" --ignore-glob="cache" --ignore-glob="debug" --ignore-glob=".git" --ignore-glob="node_modules" --ignore-glob="venv" @args'
+    if: and (hasCommand "eza") (match .Shell "pwsh")
+  - name: lla
+    type: function
+    value: 'eza -al --header --git --hyperlink --color=always --group-directories-first --icons --ignore-glob="NTUSER.DAT*" --ignore-glob="ntuser.dat*" --ignore-glob=".DS_Store" --ignore-glob=".idea" --ignore-glob=".venv" --ignore-glob=".vs" --ignore-glob="__pycache__" --ignore-glob="cache" --ignore-glob="debug" --ignore-glob=".git" --ignore-glob="node_modules" --ignore-glob="venv" @args'
+    if: and (hasCommand "eza") (match .Shell "pwsh")
+  - name: lo
+    type: function
+    value: 'eza --oneline --git --hyperlink --color=always --group-directories-first --icons --ignore-glob="NTUSER.DAT*" --ignore-glob="ntuser.dat*" --ignore-glob=".DS_Store" --ignore-glob=".idea" --ignore-glob=".venv" --ignore-glob=".vs" --ignore-glob="__pycache__" --ignore-glob="cache" --ignore-glob="debug" --ignore-glob=".git" --ignore-glob="node_modules" --ignore-glob="venv" @args'
+    if: and (hasCommand "eza") (match .Shell "pwsh")
+  - name: l.
+    type: function
+    value: 'eza -a --git --hyperlink --color=always --group-directories-first --icons --ignore-glob="NTUSER.DAT*" --ignore-glob="ntuser.dat*" --ignore-glob=".DS_Store" --ignore-glob=".idea" --ignore-glob=".venv" --ignore-glob=".vs" --ignore-glob="__pycache__" --ignore-glob="cache" --ignore-glob="debug" --ignore-glob=".git" --ignore-glob="node_modules" --ignore-glob="venv" @args | Select-String "^\."'
+    if: and (hasCommand "eza") (match .Shell "pwsh")
   - name: lt
     value: tree
     if: hasCommand "tree"
@@ -243,9 +267,6 @@ alias:
     if: hasCommand "docker"
   - name: dcr
     value: docker compose restart
-    if: hasCommand "docker"
-  - name: dcb
-    value: docker compose build --pull
     if: hasCommand "docker"
   - name: dcp
     value: docker compose pull
@@ -312,41 +333,18 @@ alias:
     value: Invoke-RestMethodOptions
     if: match .Shell "pwsh"
   - name: winutil
-    value: 'iwr -useb https://christitus.com/win | iex'
+    value: iwr -useb https://christitus.com/win | iex
     type: function
     if: and (eq .OS "windows") (eq .Shell "pwsh")
   - name: getnf
-    value: '& ([scriptblock]::Create((iwr "https://to.loredo.me/Install-NerdFont.ps1")))'
+    value: |
+      & ([scriptblock]::Create((iwr 'https://to.loredo.me/Install-NerdFont.ps1')))
     type: function
     if: and (eq .OS "windows") (eq .Shell "pwsh")
   - name: ms-activate
-    value: 'irm https://get.activated.win | iex'
+    value: irm https://get.activated.win | iex
     type: function
     if: and (eq .OS "windows") (eq .Shell "pwsh")
-  - name: ls
-    type: function
-    value: '& eza ($env:eza_params.Split(" ")) $args'
-    if: match .Shell "pwsh"
-  - name: la
-    type: function
-    value: '& eza -a ($env:eza_params.Split(" ")) $args'
-    if: match .Shell "pwsh"
-  - name: ll
-    type: function
-    value: '& eza -l ($env:eza_params.Split(" ")) $args'
-    if: match .Shell "pwsh"
-  - name: lla
-    type: function
-    value: '& eza -al --header ($env:eza_params.Split(" ")) $args'
-    if: match .Shell "pwsh"
-  - name: lo
-    type: function
-    value: '& eza --oneline ($env:eza_params.Split(" ")) $args'
-    if: match .Shell "pwsh"
-  - name: l.
-    type: function
-    value: '& eza -a ($env:eza_params.Split(" ")) $args | Select-String "^\."'
-    if: match .Shell "pwsh"
 
   # Linux
   - name: sy
@@ -553,7 +551,6 @@ alias:
     value: zypper info
     if: hasCommand "zypper"
 
-
   - name: pacman
     value: sudo pacman
     if: hasCommand "pacman"
@@ -620,6 +617,7 @@ env:
     value: '{{ .chezmoi.sourceDir }}'
   - name: eza_params
     value: --git --hyperlink --color=always --group-directories-first --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"
+    if: ne .Shell "pwsh"
   - name: EDITOR
     value: nvim
   - name: VISUAL
@@ -633,15 +631,16 @@ env:
   - name: MANPAGER
     value: nvim +Man!
   - name: _ZO_FZF_OPTS
-    value: "$FZF_DEFAULT_OPTS --preview 'eza -al --color=always --group-directories-first --icons -I=\"*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\" {2..}' --preview-window=down:wrap"
+    value: '$FZF_DEFAULT_OPTS --preview ''eza -al --color=always --group-directories-first --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" {2..}'' --preview-window=down:wrap'
+    if: ne .Shell "pwsh"
   - name: WORDCHARS
     value: '~!#$%^&*(){}[]<>?.+;'
-    if: ne .Shell "fish"
+    if: and (ne .Shell "fish") (ne .Shell "pwsh")
   - name: PROMPT_EOL_MARK
     value: ''
   - name: _JAVA_OPTIONS
-    value: "-Djava.util.prefs.userRoot=\"$XDG_CONFIG_HOME\"/java"
-    if: hasCommand "java"
+    value: '-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME"/java'
+    if: and (hasCommand "java") (ne .Shell "pwsh")
   - name: GITHUB_USERNAME
     value: cwelsys
   - name: GPG_TTY
@@ -733,22 +732,28 @@ env:
     if: hasCommand "fzf"
   - name: FZF_DEFAULT_OPTS
     value: '$FZF_COLORS --layout=reverse --cycle --height=70% --min-height=20 --border=rounded --info=right --bind=alt-w:toggle-preview-wrap --bind=ctrl-a:toggle-all --bind=?:toggle-preview'
-    if: hasCommand "fzf"
+    if: and (hasCommand "fzf") (ne .Shell "pwsh")
+  - name: FZF_COLORS
+    value: '--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc --color=hl:#f38ba8,fg:#cdd6f4,header:#f38ba8 --color=info:#94e2d5,pointer:#f5e0dc,marker:#f5e0dc --color=fg+:#cdd6f4,prompt:#94e2d5,hl+:#f38ba8 --color=border:#585b70'
+    if: and (hasCommand "fzf") (match .Shell "pwsh")
+  - name: FZF_DEFAULT_OPTS
+    value: '$env:FZF_COLORS --layout=reverse --cycle --height=70% --min-height=20 --border=rounded --info=right --bind=alt-w:toggle-preview-wrap --bind=ctrl-a:toggle-all --bind=?:toggle-preview'
+    if: and (hasCommand "fzf") (match .Shell "pwsh")
   - name: FZF_DEFAULT_COMMAND
     value: "fd --one-file-system --strip-cwd-prefix --follow --hidden --exclude '.git' --exclude 'node_modules' --exclude '.var'"
     if: hasCommand "fzf"
   - name: FZF_CTRL_T_COMMAND
-    value: "$FZF_DEFAULT_COMMAND --type f --type d"
+    value: '$FZF_DEFAULT_COMMAND --type f --type d'
     if: hasCommand "fzf"
   - name: FZF_ALT_C_COMMAND
-    value: "$FZF_DEFAULT_COMMAND --type d"
+    value: '$FZF_DEFAULT_COMMAND --type d'
     if: hasCommand "fzf"
   - name: FZF_CTRL_R_OPTS
     value: "$FZF_DEFAULT_OPTS --preview 'echo {}' --preview-window 'down:3:hidden:wrap'"
     if: hasCommand "fzf"
   - name: FZF_ALT_C_OPTS
-    value: "$FZF_DEFAULT_OPTS --preview 'eza -al --color=always --group-directories-first --icons -I=\"*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\" {}'"
-    if: hasCommand "fzf"
+    value: '$FZF_DEFAULT_OPTS --preview ''eza -al --color=always --group-directories-first --icons -I="*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" {}'''
+    if: and (hasCommand "fzf") (ne .Shell "pwsh")
   - name: FZF_CTRL_T_OPTS
     value: "$FZF_DEFAULT_OPTS --preview 'less {}' --preview-window 'right:wrap'"
     if: hasCommand "fzf"
@@ -861,7 +866,7 @@ env:
   - name: WAKATIME_HOME
     value: '{{ env "XDG_CONFIG_HOME" }}/wakatime'
   - name: CPPFLAGS
-    value: "-I/opt/homebrew/opt/openjdk/include"
+    value: '-I/opt/homebrew/opt/openjdk/include'
     if: eq .OS "darwin"
   - name: ANDROID_USER_HOME
     value: '{{ env "XDG_DATA_HOME" }}/android'
