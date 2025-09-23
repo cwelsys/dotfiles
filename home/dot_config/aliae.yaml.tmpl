@@ -339,27 +339,27 @@ alias:
     if: and (eq .OS "windows") (eq .Shell "pwsh")
   - name: ls
     type: function
-    value: '& eza ($env:eza_params -split " ") @args'
+    value: '& eza ($env:eza_params -split " ") $args'
     if: match .Shell "pwsh"
   - name: la
     type: function
-    value: '& eza -a ($env:eza_params -split " ") @args'
+    value: '& eza -a ($env:eza_params -split " ") $args'
     if: match .Shell "pwsh"
   - name: ll
     type: function
-    value: '& eza -l ($env:eza_params -split " ") @args'
+    value: '& eza -l ($env:eza_params -split " ") $args'
     if: match .Shell "pwsh"
   - name: lla
     type: function
-    value: '& eza -al --header ($env:eza_params -split " ") @args'
+    value: '& eza -al --header ($env:eza_params -split " ") $args'
     if: match .Shell "pwsh"
   - name: lo
     type: function
-    value: '& eza --oneline ($env:eza_params -split " ") @args'
+    value: '& eza --oneline ($env:eza_params -split " ") $args'
     if: match .Shell "pwsh"
   - name: l.
     type: function
-    value: '& eza -a ($env:eza_params -split " ") @args | Select-String "^\."'
+    value: '& eza -a ($env:eza_params -split " ") $args | Select-String "^\."'
     if: match .Shell "pwsh"
 
   # Linux
