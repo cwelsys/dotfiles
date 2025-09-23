@@ -144,8 +144,15 @@
 
 {{- $ghPath := lookPath "gh" }}
 {{- if $ghPath }}
+{{- if eq .chezmoi.os "windows" }}
 [credential "https://github.com"]
-	helper = !{{ $ghPath }} auth git-credential
+    helper = !"{{ $ghPath }}" auth git-credential
 [credential "https://gist.github.com"]
-	helper = !{{ $ghPath }} auth git-credential
+    helper = !"{{ $ghPath }}" auth git-credential
+{{- else }}
+[credential "https://github.com"]
+    helper = !{{ $ghPath }} auth git-credential
+[credential "https://gist.github.com"]
+    helper = !{{ $ghPath }} auth git-credential
+{{- end }}
 {{- end }}
