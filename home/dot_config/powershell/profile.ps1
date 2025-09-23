@@ -26,15 +26,16 @@ foreach ($file in $((Get-ChildItem -Path "$env:PWSH\lib\*" -Include *.ps1 -Exclu
 	. "$file"
 }
 
+# if (Get-Command starship -ErrorAction SilentlyContinue) {
+# 	function Invoke-Starship-TransientFunction {
+#   &starship module character
+# 	}
+# 	Invoke-Expression (&starship init powershell)
+# 	Enable-TransientPrompt
+# }
+
 if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 	oh-my-posh init pwsh --config "$HOME/.config/posh.toml" | Invoke-Expression
-}
-elseif (Get-Command starship -ErrorAction SilentlyContinue) {
-	function Invoke-Starship-TransientFunction {
-  &starship module character
-	}
-	Invoke-Expression (&starship init powershell)
-	Enable-TransientPrompt
 }
 
 if ($PSVersionTable.PSVersion.Major -ge 7) {
