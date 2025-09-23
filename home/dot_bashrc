@@ -111,5 +111,5 @@ elif command -v oh-my-posh >/dev/null 2>&1; then
 fi
 
 if [[ ${BLE_VERSION-} ]] && ! [[ ${BLE_ATTACHED-} ]]; then
-    ble-attach
+    ble-attach 2>/dev/null
 fi
