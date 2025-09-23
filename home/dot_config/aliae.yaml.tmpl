@@ -244,19 +244,6 @@ alias:
   - name: dcr
     value: docker compose restart
     if: hasCommand "docker"
-  - name: dcl
-    type: function
-    value: |
-      {{ "{{" }} if match .Shell "pwsh" {{ "}}" }}
-        $tail = if ($env:DOCKER_COMPOSE_TAIL) { $env:DOCKER_COMPOSE_TAIL } else { "50" }
-        docker compose logs --tail $tail -f $args
-      {{ "{{" }} else if match .Shell "fish" {{ "}}" }}
-        set -l tail_count (if set -q DOCKER_COMPOSE_TAIL; echo $DOCKER_COMPOSE_TAIL; else; echo 50; end)
-        docker compose logs --tail $tail_count -f $argv
-      {{ "{{" }} else {{ "}}" }}
-        docker compose logs --tail ${DOCKER_COMPOSE_TAIL:-50} -f "$@"
-      {{ "{{" }} end {{ "}}" }}
-    if: hasCommand "docker"
   - name: dcb
     value: docker compose build --pull
     if: hasCommand "docker"
@@ -325,41 +312,40 @@ alias:
     value: Invoke-RestMethodOptions
     if: match .Shell "pwsh"
   - name: winutil
-    value: iwr -useb https://christitus.com/win | iex
+    value: 'iwr -useb https://christitus.com/win | iex'
     type: function
     if: and (eq .OS "windows") (eq .Shell "pwsh")
   - name: getnf
-    value: |
-      & ([scriptblock]::Create((iwr 'https://to.loredo.me/Install-NerdFont.ps1')))
+    value: '& ([scriptblock]::Create((iwr "https://to.loredo.me/Install-NerdFont.ps1")))'
     type: function
     if: and (eq .OS "windows") (eq .Shell "pwsh")
   - name: ms-activate
-    value: irm https://get.activated.win | iex
+    value: 'irm https://get.activated.win | iex'
     type: function
     if: and (eq .OS "windows") (eq .Shell "pwsh")
   - name: ls
     type: function
-    value: '& eza ($env:eza_params -split " ") $args'
+    value: '& eza ($env:eza_params.Split(" ")) $args'
     if: match .Shell "pwsh"
   - name: la
     type: function
-    value: '& eza -a ($env:eza_params -split " ") $args'
+    value: '& eza -a ($env:eza_params.Split(" ")) $args'
     if: match .Shell "pwsh"
   - name: ll
     type: function
-    value: '& eza -l ($env:eza_params -split " ") $args'
+    value: '& eza -l ($env:eza_params.Split(" ")) $args'
     if: match .Shell "pwsh"
   - name: lla
     type: function
-    value: '& eza -al --header ($env:eza_params -split " ") $args'
+    value: '& eza -al --header ($env:eza_params.Split(" ")) $args'
     if: match .Shell "pwsh"
   - name: lo
     type: function
-    value: '& eza --oneline ($env:eza_params -split " ") $args'
+    value: '& eza --oneline ($env:eza_params.Split(" ")) $args'
     if: match .Shell "pwsh"
   - name: l.
     type: function
-    value: '& eza -a ($env:eza_params -split " ") $args | Select-String "^\."'
+    value: '& eza -a ($env:eza_params.Split(" ")) $args | Select-String "^\."'
     if: match .Shell "pwsh"
 
   # Linux
