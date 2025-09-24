@@ -101,13 +101,13 @@ pkgs:
       - sniffnet
       - spicetify-cli
       - starship
-      - subversion
       - switchaudio-osx
       - telnet
       - thefuck
       - tmux
       - toilet
       - topgrade
+      - tree
       - tree-sitter-cli
       - tty-clock
       - universal-ctags
@@ -144,8 +144,10 @@ pkgs:
       - font-hack-nerd-font
       - font-iosevka-nerd-font
       - font-jetbrains-mono
+      - font-lato
       - font-maple-mono
       - font-monaspace
+      - font-noto-sans-symbols
       - font-sf-mono
       - font-sf-pro
       - ghostty@tip
