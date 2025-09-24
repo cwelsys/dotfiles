@@ -581,12 +581,12 @@ alias:
   - name: orphans
     type: function
     value: |
-      orphaned=$(pacman -Qtdq)
-      if [ -n "$orphaned" ]; then
+      set orphaned (pacman -Qtdq)
+      if test -n "$orphaned"
         sudo pacman -Rns $orphaned
       else
         echo "No orphaned packages found."
-      fi
+      end
     if: hasCommand "pacman"
 
 env:
