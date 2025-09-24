@@ -51,6 +51,7 @@ if ! shopt -oq posix; then
 		. /etc/bash_completion
 	fi
 fi
+set +h
 
 bleopt input_encoding=UTF-8
 bleopt color_scheme=catppuccin_mocha
@@ -109,3 +110,5 @@ if command -v starship >/dev/null 2>&1; then
 elif command -v oh-my-posh >/dev/null 2>&1; then
 	eval "$(oh-my-posh init bash --config "$HOME/.config/posh.toml")"
 fi
+
+[[ $- == *i* ]] && bind -f ~/.config/bash/inputrc
