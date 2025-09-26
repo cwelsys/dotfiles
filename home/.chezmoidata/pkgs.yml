@@ -196,6 +196,7 @@ pkgs:
   arch:
     pacman:
       - 1password-beta
+      - 7zip
       - alacritty
       - amd-ucode
       - asciiquarium-transparent-git
@@ -309,6 +310,7 @@ pkgs:
       - python-poetry-core
       - python-terminaltexteffects
       - qt5-wayland
+      - resvg
       - ripgrep
       - rust
       - rustdesk-bin
@@ -317,8 +319,10 @@ pkgs:
       - slurp
       - spotify
       - steam
+      - steamcmd
       - sushi
       - swaybg
+      - swaylock
       - swayosd
       - syncthing
       - syncthingtray
@@ -337,6 +341,7 @@ pkgs:
       - walker-bin
       - waybar
       - wf-recorder
+      - wget
       - wireless-regdb
       - wiremix
       - wireplumber
@@ -344,6 +349,7 @@ pkgs:
       - wl-clipboard
       - wl-screenrec
       - woff2-font-awesome
+      - wtype
       - xdg-desktop-portal-gtk
       - xdg-desktop-portal-hyprland
       - xmlstarlet
