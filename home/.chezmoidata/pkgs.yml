@@ -47,7 +47,6 @@ pkgs:
       - git-extras
       - git-flow
       - git-lfs
-      - gnupg
       - go
       - gromgit/fuse/sshfs-mac
       - gsl
@@ -86,15 +85,18 @@ pkgs:
       - pipx
       - pkgconf
       - pngpaste
+      - poppler
       - pv
       - rclone
       - restic
+      - resvg
       - rich-cli
       - rig
       - ripgrep
       - rsync
       - ruff
       - sd
+      - sevenzip
       - sf
       - shellcheck
       - sl
@@ -150,6 +152,7 @@ pkgs:
       - font-noto-sans-symbols
       - font-sf-mono
       - font-sf-pro
+      - font-symbols-only-nerd-font
       - ghostty@tip
       - github
       - google-chrome
