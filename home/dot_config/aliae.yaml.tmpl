@@ -691,13 +691,13 @@ env:
   - name: GRADLE_USER_HOME
     value: '{{ .chezmoi.homeDir }}/.local/share/gradle'
   - name: NPM_CONFIG_PREFIX
-    value: '{{ env "XDG_DATA_HOME" }}/npm'
+    value: '{{ .chezmoi.homeDir }}/.local/share/npm'
   - name: NPM_CONFIG_CACHE
-    value: '{{ env "XDG_CACHE_HOME" }}/npm'
+    value: '{{ .chezmoi.homeDir }}/.cache/npm'
   - name: NPM_CONFIG_INIT_MODULE
-    value: '{{ env "XDG_CONFIG_HOME" }}/npm/config/npm-init.js'
+    value: '{{ .chezmoi.homeDir }}/.config/npm/config/npm-init.js'
   - name: NPM_CONFIG_USERCONFIG
-    value: '{{ env "XDG_CONFIG_HOME" }}/npm/config'
+    value: '{{ .chezmoi.homeDir }}/.config/npm/config'
   - name: NODE_REPL_HISTORY
     value: '{{ .chezmoi.homeDir }}/.local/state/node_repl_history'
   - name: GOPATH
@@ -847,24 +847,24 @@ env:
   - name: CLAUDE_CONFIG_DIR
     value: '{{ .chezmoi.homeDir }}/.config/claude'
   - name: CUDA_CACHE_PATH
-    value: '{{ env "XDG_CACHE_HOME" }}/nv'
+    value: '{{ .chezmoi.homeDir }}/.cache/nv'
     if: match .OS "linux"
   - name: GTK2_RC_FILES
     value: '/gtk-2.0/gtkrc'
     if: match .OS "linux"
   - name: XCOMPOSEFILE
-    value: '{{ env "XDG_CONFIG_HOME" }}/X11/xcompose'
+    value: '{{ .chezmoi.homeDir }}/.config/X11/xcompose'
     if: match .OS "linux"
   - name: PARALLEL_HOME
-    value: '{{ env "XDG_CONFIG_HOME" }}/parallel'
+    value: '{{ .chezmoi.homeDir }}/.config/parallel'
     if: ne .OS "windows"
   - name: WAKATIME_HOME
-    value: '{{ env "XDG_CONFIG_HOME" }}/wakatime'
+    value: '{{ .chezmoi.homeDir }}/.config/wakatime'
   - name: CPPFLAGS
     value: '-I/opt/homebrew/opt/openjdk/include'
     if: eq .OS "darwin"
   - name: ANDROID_USER_HOME
-    value: '{{ env "XDG_DATA_HOME" }}/android'
+    value: '{{ .chezmoi.homeDir }}/.local/share/android'
 
 path:
   - value: |

@@ -1,5 +1,3 @@
-[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh 2> /dev/null)"
-
 if [[ -f "$HOMEBREW_PREFIX/bin/brew" ]]; then
   eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
 fi
