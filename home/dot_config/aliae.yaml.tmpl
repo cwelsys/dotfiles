@@ -95,6 +95,9 @@ alias:
   - name: se
     value: 'sudo -e'
     if: hasCommand "sudo"
+  - name: svim
+    value: 'SUDO_EDITOR="nvim" sudo -e'
+    if: hasCommand "sudo"
   - name: sudo
     value: 'sudo '
     if: hasCommand "sudo"
@@ -116,7 +119,7 @@ alias:
     type: function
     if: match .OS "darwin"
   - name: e
-    value: xdg-open .
+    value: 'nohup xdg-open . >/dev/null 2>&1 &'
     type: function
     if: hasCommand "xdg-open"
   - name: xo
