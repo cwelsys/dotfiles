@@ -204,12 +204,13 @@ pkgs:
       - base
       - base-devel
       - bat-extras
+      - bibata-cursor-theme-bin
+      - binder_linux-dkms
       - blueberry
       - bluebubbles-bin
       - brightnessctl
       - bun-bin
       - clang
-      - claude-code
       - cmake
       - cockpit-docker
       - cowsay
@@ -316,6 +317,7 @@ pkgs:
       - rustdesk-bin
       - satty
       - signal-desktop
+      - slack-desktop-wayland
       - slurp
       - spotify
       - steam
@@ -329,6 +331,7 @@ pkgs:
       - system-config-printer
       - tree-sitter-cli
       - ttf-cascadia-mono-nerd
+      - ttf-fantasque-nerd
       - ttf-fantasque-sans-mono
       - ttf-ia-writer
       - ttf-jetbrains-mono-nerd
@@ -337,6 +340,7 @@ pkgs:
       - ufw
       - ufw-docker
       - uwsm
+      - vesktop
       - visual-studio-code-bin
       - walker-bin
       - waybar
