@@ -11,6 +11,7 @@
 
 {{ if or (ne .chezmoi.os "linux") (and .chezmoi.osRelease (ne .chezmoi.osRelease.id "arch")) }}
 .config/environment.d/
+.config/wireplumber/
 .config/yay/
 .config/pacman/
 .config/gammastep/
