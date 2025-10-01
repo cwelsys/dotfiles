@@ -43,9 +43,11 @@ source "${ZINIT_HOME}/zinit.zsh"
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
-if [[ -r "$ZDOTDIR/utils.zsh" ]]; then
-  source "$ZDOTDIR/utils.zsh"
-fi
+for file in utils.zsh local.zsh; do
+  if [[ -r "$ZDOTDIR/$file" ]]; then
+      source "$ZDOTDIR/$file"
+  fi
+done
 
 zinit light-mode for \
   zdharma-continuum/zinit-annex-as-monitor \
