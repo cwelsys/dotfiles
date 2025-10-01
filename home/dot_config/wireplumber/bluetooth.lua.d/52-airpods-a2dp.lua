@@ -1,4 +1,3 @@
--- Force AirPods Pro to use A2DP profile (headphones only, no mic)
 rule = {
   matches = {
     {
