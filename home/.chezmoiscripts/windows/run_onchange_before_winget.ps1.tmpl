@@ -1,12 +1,13 @@
-{{ if and .pkgs.windows.winget (not .isVM) }}
+{{- if and (hasKey .pkgs.hosts .hostname) (hasKey (index .pkgs.hosts .hostname) "winget") (not .isVM) -}}
+{{-   $hostPkgs := index .pkgs.hosts .hostname -}}
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
 $wingetPkgs = @(
-    {{- range $i, $package := .pkgs.windows.winget -}}
-    "{{ $package }}"{{ if not (eq (add $i 1) (len $.pkgs.windows.winget)) }},{{ end }}
+    {{- range $i, $package := $hostPkgs.winget -}}
+    "{{ $package }}"{{ if not (eq (add $i 1) (len $hostPkgs.winget)) }},{{ end }}
     {{- end -}}
 )
-# Filter out potential empty string if .pkgs.windows.winget is empty
+# Filter out potential empty string
 $wingetPkgs = $wingetPkgs | Where-Object { $_ -ne "" }
 
 if ($wingetPkgs.Count -eq 0) {
@@ -94,6 +95,9 @@ foreach ($packageIdToProcess in $wingetPkgs) {
 
 Write-Color -Text "`n✅ ", "WinGet package installation completed", "`n" -Color White, Green, White
 
-{{ else if .isVM }}
+{{- else if .isVM }}
 Write-Host "Skipping WinGet package installation - running in virtual machine" -ForegroundColor Yellow
-{{ end }}
+{{- else }}
+Write-Host "⚠️  No package configuration found for hostname: {{ .hostname }}" -ForegroundColor Yellow
+Write-Host "💡 Run 'cmpack --clone <template-host>' to bootstrap this machine" -ForegroundColor Blue
+{{- end }}

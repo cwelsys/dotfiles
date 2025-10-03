@@ -1,4 +1,5 @@
-{{ if .pkgs.windows.psGallery }}
+{{- if and (hasKey .pkgs.hosts .hostname) (hasKey (index .pkgs.hosts .hostname) "psGallery") -}}
+{{-   $hostPkgs := index .pkgs.hosts .hostname -}}
 
 # Ensure NuGet provider is available
 if (-not (Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue)) {
@@ -17,8 +18,8 @@ if ($psGallery -and $psGallery.InstallationPolicy -ne 'Trusted') {
 }
 
 $allDesiredModules = @(
-    {{- range $i, $module := .pkgs.windows.psGallery -}}
-    "{{ $module }}"{{ if not (eq (add $i 1) (len $.pkgs.windows.psGallery)) }},{{ end }}
+    {{- range $i, $module := $hostPkgs.psGallery -}}
+    "{{ $module }}"{{ if not (eq (add $i 1) (len $hostPkgs.psGallery)) }},{{ end }}
     {{- end -}}
 )
 $allDesiredModules = $allDesiredModules | Where-Object { $_ -ne "" }
@@ -51,4 +52,7 @@ foreach ($moduleName in $allDesiredModules) {
 
 Write-Color -Text "`n✅ ", "PowerShell module installation completed", "`n" -Color White, Magenta, White
 
-{{ end }}
+{{- else }}
+Write-Host "⚠️  No package configuration found for hostname: {{ .hostname }}" -ForegroundColor Yellow
+Write-Host "💡 Run 'cmpack --clone <template-host>' to bootstrap this machine" -ForegroundColor Blue
+{{- end }}

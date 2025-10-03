@@ -45,16 +45,17 @@ try {
 }
 
 
-{{ if or .pkgs.windows.scoop.buckets .pkgs.windows.scoop.apps .pkgs.windows.scoop.importRegistry }}
+{{- if and (hasKey .pkgs.hosts .hostname) (hasKey (index .pkgs.hosts .hostname) "scoop") -}}
+{{-   $hostPkgs := index .pkgs.hosts .hostname -}}
 
 {{ end }}
 
 
-{{ if .pkgs.windows.scoop.buckets }}
+{{ if hasKey $hostPkgs.scoop "buckets" }}
 Write-Color -Text "🔄 Adding Scoop buckets..." -Color Green
 $desiredBuckets = @(
-    {{- range $i, $bucket := .pkgs.windows.scoop.buckets -}}
-    "{{ $bucket }}"{{ if not (eq (add $i 1) (len $.pkgs.windows.scoop.buckets)) }},{{ end }}
+    {{- range $i, $bucket := $hostPkgs.scoop.buckets -}}
+    "{{ $bucket }}"{{ if not (eq (add $i 1) (len $hostPkgs.scoop.buckets)) }},{{ end }}
     {{- end -}}
 )
 $desiredBuckets = $desiredBuckets | Where-Object { $_ -ne "" }
@@ -115,11 +116,11 @@ Write-Host ""
 {{ end }}
 
 
-{{ if .pkgs.windows.scoop.apps }}
+{{ if hasKey $hostPkgs.scoop "apps" }}
 Write-Color -Text "📦 Installing Scoop packages..." -Color Green
 $allDesiredScoopPkgs = @(
-    {{- range $i, $pkg := .pkgs.windows.scoop.apps -}}
-    "{{ $pkg }}"{{ if not (eq (add $i 1) (len $.pkgs.windows.scoop.apps)) }},{{ end }}
+    {{- range $i, $pkg := $hostPkgs.scoop.apps -}}
+    "{{ $pkg }}"{{ if not (eq (add $i 1) (len $hostPkgs.scoop.apps)) }},{{ end }}
     {{- end -}}
 )
 $allDesiredScoopPkgs = $allDesiredScoopPkgs | Where-Object { $_ -ne "" }
@@ -258,11 +259,11 @@ if ($allDesiredScoopPkgs.Count -eq 0) {
 Write-Host ""
 {{ end }}
 
-{{ if .pkgs.windows.scoop.importRegistry }}
+{{ if hasKey $hostPkgs.scoop "importRegistry" }}
 Write-Color -Text "⚙️ Importing Scoop registry files..." -Color Green
 $registryFilesToImport = @(
-    {{- range $i, $reg := .pkgs.windows.scoop.importRegistry -}}
-    "{{ $reg }}"{{ if not (eq (add $i 1) (len $.pkgs.windows.scoop.importRegistry)) }},{{ end }}
+    {{- range $i, $reg := $hostPkgs.scoop.importRegistry -}}
+    "{{ $reg }}"{{ if not (eq (add $i 1) (len $hostPkgs.scoop.importRegistry)) }},{{ end }}
     {{- end -}}
 )
 $registryFilesToImport = $registryFilesToImport | Where-Object { $_ -ne "" }
@@ -292,9 +293,11 @@ if ($registryFilesToImport.Count -gt 0) {
 Write-Host ""
 {{ end }}
 
-{{ if or .pkgs.windows.scoop.buckets .pkgs.windows.scoop.apps .pkgs.windows.scoop.importRegistry }}
 Write-Color -Text "`n✅ ", "Scoop configuration completed", "`n" -Color White, Green, White
-{{ end }}
+{{- else }}
+Write-Host "⚠️  No package configuration found for hostname: {{ .hostname }}" -ForegroundColor Yellow
+Write-Host "💡 Run 'cmpack --clone <template-host>' to bootstrap this machine" -ForegroundColor Blue
+{{- end }}
 {{- else -}}
 Write-Host "Skipping Scoop package installation - running in virtual machine" -ForegroundColor Yellow
 {{- end -}}
