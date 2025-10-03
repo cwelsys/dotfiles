@@ -643,7 +643,15 @@ while IFS= read -r line; do
     # Detect end of current host section - WRITE PACKAGES BEFORE WRITING THIS LINE
     if [[ "$in_host" == true ]] && [[ "$line" =~ ^[[:space:]]{4}[a-zA-Z0-9_-]+:[[:space:]]*$ ]]; then
         # Before leaving host, add any remaining packages
+        if [[ "$HOSTNAME" == "main" ]]; then
+            echo "DEBUG WRITE: in_section='$in_section', last_was_package='$last_was_package'" >&2
+            echo "DEBUG WRITE: NEW_NATIVE has ${#NEW_NATIVE[@]} packages" >&2
+        fi
+
         if [[ "$in_section" != "" ]] && [[ "$last_was_package" == true ]]; then
+            if [[ "$HOSTNAME" == "main" ]]; then
+                echo "DEBUG WRITE: Writing ${#NEW_NATIVE[@]} packages to file" >&2
+            fi
             case "$in_section" in
                 brews)
                     for pkg in "${NEW_BREWS[@]}"; do
@@ -658,6 +666,9 @@ while IFS= read -r line; do
                 pacman)
                     for pkg in "${NEW_NATIVE[@]}"; do
                         echo "        - $pkg" >> "$temp_file"
+                        if [[ "$HOSTNAME" == "main" ]]; then
+                            echo "DEBUG WRITE: Wrote package: $pkg" >&2
+                        fi
                     done
                     ;;
             esac
