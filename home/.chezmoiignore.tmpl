@@ -9,7 +9,8 @@
 .config/gtk-*/
 {{ end }}
 
-{{ if or (ne .chezmoi.os "linux") (and .chezmoi.osRelease (ne .chezmoi.osRelease.id "arch")) }}
+{{/* Ignore GUI/desktop environment configs on headless Linux systems */}}
+{{ if and (eq .chezmoi.os "linux") .headless }}
 .config/environment.d/
 .config/wireplumber/
 .config/yay/

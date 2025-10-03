@@ -1,32 +1,41 @@
 {{ if and (lookPath "brew") (or (and (eq .chezmoi.os "darwin") (not .isVM)) (and (eq .chezmoi.os "linux") (ne .chezmoi.osRelease.id "arch"))) -}}
 #!/bin/bash
 
+{{- if hasKey .pkgs.hosts .hostname -}}
+{{-   $hostPkgs := index .pkgs.hosts .hostname -}}
+
 # Extract and add taps from formulae
-{{- $taps := list }}
-{{- if eq .chezmoi.os "darwin" }}
-{{- range .pkgs.darwin.brews }}
-  {{- if contains "/" . }}
-    {{- $parts := . | splitList "/" }}
-    {{- if eq (len $parts) 3 }}
-      {{- $tap := printf "%s/%s" (index $parts 0) (index $parts 1) }}
-      {{- $taps = append $taps $tap }}
-    {{- end }}
-  {{- end }}
-{{- end }}
-{{- end }}
+{{-   $taps := list }}
+{{-   if and (eq .chezmoi.os "darwin") (hasKey $hostPkgs "brews") }}
+{{-     range $hostPkgs.brews }}
+  {{-       if contains "/" . }}
+    {{-       $parts := . | splitList "/" }}
+    {{-       if eq (len $parts) 3 }}
+      {{-       $tap := printf "%s/%s" (index $parts 0) (index $parts 1) }}
+      {{-       $taps = append $taps $tap }}
+    {{-       end }}
+  {{-       end }}
+{{-     end }}
+{{-   end }}
 
 brew bundle --file=/dev/stdin <<EOF
-{{- range ($taps | uniq) }}
+{{-   range ($taps | uniq) }}
 tap {{ . | quote }}
-{{- end }}
+{{-   end }}
 
-{{- if eq .chezmoi.os "darwin" }}
-{{- range .pkgs.darwin.brews }}
+{{-   if and (eq .chezmoi.os "darwin") (hasKey $hostPkgs "brews") }}
+{{-     range $hostPkgs.brews }}
 brew {{ . | quote }}
-{{- end }}
-{{- range .pkgs.darwin.casks }}
+{{-     end }}
+{{-   end }}
+{{-   if and (eq .chezmoi.os "darwin") (hasKey $hostPkgs "casks") }}
+{{-     range $hostPkgs.casks }}
 cask {{ . | quote }}
-{{- end }}
-{{- end }}
+{{-     end }}
+{{-   end }}
 EOF
+{{- else }}
+echo "⚠️  No package configuration found for hostname: {{ .hostname }}"
+echo "💡 Run 'cmpack --clone <template-host>' to bootstrap this machine"
+{{- end }}
 {{- end }}

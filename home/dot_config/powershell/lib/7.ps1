@@ -21,7 +21,8 @@
 	$currentPackages = @()
 	$registryPaths = @()
 	$inPkgsSection = $false
-	$inWindowsSection = $false
+	$inHostsSection = $false
+	$inCurrentHostSection = $false
 	$inScoopSection = $false
 	$inBucketsSection = $false
 	$inAppsSection = $false
@@ -30,22 +31,28 @@
 	$scoopPkgsStartIndex = -1
 	$scoopPkgsEndIndex = -1
 	$packageIndentation = '        '
+	$hostname = $env:COMPUTERNAME
 
 	foreach ($i in 0..($manifestLines.Count - 1)) {
 		$line = $manifestLines[$i]
-		
-		# Navigate through the new pkgs.windows.scoop structure
+
+		# Navigate through the new pkgs.hosts.<hostname>.scoop structure
 		if ($line -match '^\s*pkgs:\s*$') {
 			$inPkgsSection = $true
 			continue
 		}
-		
-		if ($inPkgsSection -and $line -match '^\s*windows:\s*$') {
-			$inWindowsSection = $true
+
+		if ($inPkgsSection -and $line -match '^\s*hosts:\s*$') {
+			$inHostsSection = $true
 			continue
 		}
-		
-		if ($inWindowsSection -and $line -match '^\s*scoop:\s*$') {
+
+		if ($inHostsSection -and $line -match "^\s*${hostname}:\s*$") {
+			$inCurrentHostSection = $true
+			continue
+		}
+
+		if ($inCurrentHostSection -and $line -match '^\s*scoop:\s*$') {
 			$inScoopSection = $true
 			continue
 		}
@@ -87,9 +94,9 @@
 			$registryPaths += $regPath
 		}
 
-		# Handle section transitions - need to account for new nested structure
+		# Handle section transitions - account for hostname-based structure
 		if ($line -match '^\s*winget:\s*$') {
-			# Moving from scoop to winget within windows section
+			# Moving from scoop to winget within current host
 			$inScoopSection = $false
 			$inBucketsSection = $false
 			$inAppsSection = $false
@@ -98,16 +105,29 @@
 				$scoopPkgsEndIndex = $i - 1
 			}
 		}
-		elseif ($line -match '^\s*[a-zA-Z]+:\s*$' -and 
-			$line -notmatch '^\s*apps:\s*$' -and 
-			$line -notmatch '^\s*buckets:\s*$' -and 
+		elseif ($line -match '^\s{4}[a-zA-Z0-9_-]+:\s*$' -and $inCurrentHostSection) {
+			# We've hit a different host section
+			$inCurrentHostSection = $false
+			$inScoopSection = $false
+			$inBucketsSection = $false
+			$inAppsSection = $false
+			$inRegistrySection = $false
+			if ($scoopPkgsEndIndex -eq -1) {
+				$scoopPkgsEndIndex = $i - 1
+			}
+		}
+		elseif ($line -match '^\s*[a-zA-Z]+:\s*$' -and
+			$line -notmatch '^\s*apps:\s*$' -and
+			$line -notmatch '^\s*buckets:\s*$' -and
 			$line -notmatch '^\s*importRegistry:\s*$' -and
 			$line -notmatch '^\s*scoop:\s*$' -and
-			$line -notmatch '^\s*winget:\s*$') {
-			# We've hit a different top-level section
-			if ($inWindowsSection) {
+			$line -notmatch '^\s*winget:\s*$' -and
+			$line -notmatch '^\s*hosts:\s*$') {
+			# We've hit a different top-level section (like yazi)
+			if ($inCurrentHostSection) {
 				$inPkgsSection = $false
-				$inWindowsSection = $false
+				$inHostsSection = $false
+				$inCurrentHostSection = $false
 				$inScoopSection = $false
 				$inBucketsSection = $false
 				$inAppsSection = $false
@@ -121,7 +141,8 @@
 
 	$currentWingetPackages = @()
 	$inWingetPkgsSection = $false
-	$inWingetWindowsSection = $false
+	$inWingetHostsSection = $false
+	$inWingetCurrentHostSection = $false
 	$inWingetSection = $false
 	$wingetPkgsStartIndex = -1
 	$wingetPkgsEndIndex = -1
@@ -129,19 +150,24 @@
 
 	foreach ($i in 0..($manifestLines.Count - 1)) {
 		$line = $manifestLines[$i]
-		
-		# Navigate through the new pkgs.windows.winget structure  
+
+		# Navigate through the new pkgs.hosts.<hostname>.winget structure
 		if ($line -match '^\s*pkgs:\s*$') {
 			$inWingetPkgsSection = $true
 			continue
 		}
-		
-		if ($inWingetPkgsSection -and $line -match '^\s*windows:\s*$') {
-			$inWingetWindowsSection = $true
+
+		if ($inWingetPkgsSection -and $line -match '^\s*hosts:\s*$') {
+			$inWingetHostsSection = $true
 			continue
 		}
-		
-		if ($inWingetWindowsSection -and $line -match '^\s*winget:\s*$') {
+
+		if ($inWingetHostsSection -and $line -match "^\s*${hostname}:\s*$") {
+			$inWingetCurrentHostSection = $true
+			continue
+		}
+
+		if ($inWingetCurrentHostSection -and $line -match '^\s*winget:\s*$') {
 			$inWingetSection = $true
 			$wingetPkgsStartIndex = $i
 
@@ -161,14 +187,28 @@
 		}
 
 		# Handle section transitions for winget
-		if ($line -match '^\s*[a-zA-Z]+:\s*$' -and 
-			$line -notmatch '^\s*winget:\s*$' -and
-			$line -notmatch '^\s*pkgs:\s*$' -and  
-			$line -notmatch '^\s*windows:\s*$') {
-			# We've hit a different section
+		if ($line -match '^\s{4}[a-zA-Z0-9_-]+:\s*$' -and $inWingetCurrentHostSection) {
+			# We've hit a different host section
 			if ($inWingetSection -and $wingetPkgsStartIndex -ne -1) {
 				$inWingetSection = $false
-				$inWingetWindowsSection = $false
+				$inWingetCurrentHostSection = $false
+				$inWingetHostsSection = $false
+				$inWingetPkgsSection = $false
+				if ($wingetPkgsEndIndex -eq -1) {
+					$wingetPkgsEndIndex = $i - 1
+				}
+			}
+		}
+		elseif ($line -match '^\s*[a-zA-Z]+:\s*$' -and
+			$line -notmatch '^\s*winget:\s*$' -and
+			$line -notmatch '^\s*pkgs:\s*$' -and
+			$line -notmatch '^\s*hosts:\s*$' -and
+			$line -notmatch '^\s*scoop:\s*$') {
+			# We've hit a different top-level section (like yazi)
+			if ($inWingetSection -and $wingetPkgsStartIndex -ne -1) {
+				$inWingetSection = $false
+				$inWingetCurrentHostSection = $false
+				$inWingetHostsSection = $false
 				$inWingetPkgsSection = $false
 				if ($wingetPkgsEndIndex -eq -1) {
 					$wingetPkgsEndIndex = $i - 1
@@ -429,6 +469,7 @@
 
 		$currentSection = ''
 		$currentSubSection = ''
+		$inHostSection = $false
 
 		for ($i = 0; $i -lt $manifestLines.Count; $i++) {
 			$line = $manifestLines[$i]
@@ -437,11 +478,16 @@
 				$currentSection = 'pkgs'
 				$currentSubSection = ''
 			}
-			elseif ($currentSection -eq 'pkgs' && $line -match '^\s*windows:\s*$') {
-				$currentSection = 'windows'
+			elseif ($currentSection -eq 'pkgs' && $line -match '^\s*hosts:\s*$') {
+				$currentSection = 'hosts'
 				$currentSubSection = ''
 			}
-			elseif ($currentSection -eq 'windows' && $line -match '^\s*scoop:\s*$') {
+			elseif ($currentSection -eq 'hosts' && $line -match "^\s*${hostname}:\s*$") {
+				$currentSection = 'currenthost'
+				$currentSubSection = ''
+				$inHostSection = $true
+			}
+			elseif ($currentSection -eq 'currenthost' && $line -match '^\s*scoop:\s*$') {
 				$currentSection = 'scoop'
 				$currentSubSection = ''
 			}
@@ -454,16 +500,18 @@
 			elseif ($currentSection -eq 'scoop' && $line -match '^\s*importRegistry:\s*$') {
 				$currentSubSection = 'importRegistry'
 			}
-			elseif ($currentSection -eq 'windows' && $line -match '^\s*winget:\s*$') {
+			elseif ($currentSection -eq 'currenthost' && $line -match '^\s*winget:\s*$') {
 				$currentSection = 'winget'
 				$currentSubSection = ''
 			}
-			elseif ($line -match '^\s*psGallery:\s*$') {
+			elseif ($currentSection -eq 'currenthost' && $line -match '^\s*psGallery:\s*$') {
 				$currentSection = 'psGallery'
 				$currentSubSection = ''
 			}
-			elseif ($line -match '^\s*addons:\s*$') {
-				$currentSection = 'addons'
+			elseif ($line -match '^\s{4}[a-zA-Z0-9_-]+:\s*$' -and $inHostSection) {
+				# Different host, exit current host section
+				$inHostSection = $false
+				$currentSection = ''
 				$currentSubSection = ''
 			}
 

@@ -17,29 +17,104 @@ print_color() {
     echo -e "${color}${text}${NC}"
 }
 
+# Usage function
+usage() {
+    cat << EOF
+$(print_color "$CYAN" "cmpack - Chezmoi Package Manager")
+
+$(print_color "$GREEN" "USAGE:")
+    cmpack [OPTIONS]
+
+$(print_color "$GREEN" "OPTIONS:")
+    (no args)           Sync current host's packages with manifest
+    -l, --list          List all configured hosts in pkgs.yml
+    -s, --show HOST     Show packages configured for a specific host
+    -c, --clone HOST    Install packages from another host to current machine
+    -d, --diff HOST     Show package differences between current host and target
+    -i, --init HOST     Initialize current hostname in pkgs.yml using HOST as template
+    -h, --help          Show this help message
+
+$(print_color "$GREEN" "EXAMPLES:")
+    cmpack                              # Sync current host's packages
+    cmpack --list                       # List all configured hosts
+    cmpack --show <host>                # Show packages for a given host
+    cmpack --clone <host>               # Install all packages from template
+    cmpack --diff mba                   # Compare current host with mba
+
+$(print_color "$GREEN" "WORKFLOW:")
+    1. On a new machine: cmpack --clone <similar-host>
+    2. Install additional packages with your package manager
+    3. Run cmpack to add new packages to manifest under your hostname
+    4. Your hostname is now tracked in pkgs.yml
+
+EOF
+    exit 0
+}
+
+# Parse command line arguments
+MODE="sync"
+TARGET_HOST=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -l|--list)
+            MODE="list"
+            shift
+            ;;
+        -s|--show)
+            MODE="show"
+            TARGET_HOST="$2"
+            shift 2
+            ;;
+        -c|--clone)
+            MODE="clone"
+            TARGET_HOST="$2"
+            shift 2
+            ;;
+        -d|--diff)
+            MODE="diff"
+            TARGET_HOST="$2"
+            shift 2
+            ;;
+        -i|--init)
+            MODE="init"
+            TARGET_HOST="$2"
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            ;;
+        *)
+            print_color "$RED" "❌ Unknown option: $1"
+            usage
+            ;;
+    esac
+done
+
+# Validate required arguments for certain modes
+if [[ "$MODE" =~ ^(show|clone|diff|init)$ ]] && [[ -z "$TARGET_HOST" ]]; then
+    print_color "$RED" "❌ --${MODE} requires a hostname argument"
+    usage
+fi
+
 # Detect OS and distribution
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 PKG_MANAGER=""
-OS_SECTION=""
-YAML_FILE=""
+HOSTNAME=$(hostname)
 USE_BREW=false
 USE_NATIVE=false
 NATIVE_PKG_MANAGER=""
 
 if [[ "$OS" == "darwin" ]]; then
     PKG_MANAGER="brew"
-    OS_SECTION="darwin"
     USE_BREW=true
 elif [[ "$OS" == "linux" ]]; then
-    # Use native package managers only on Linux
     if [[ -f /etc/arch-release ]] || [[ -f /etc/os-release && $(grep -E '^ID=arch$' /etc/os-release) ]]; then
         NATIVE_PKG_MANAGER="pacman"
-        OS_SECTION="arch"
         USE_NATIVE=true
         PKG_MANAGER="$NATIVE_PKG_MANAGER"
     elif [[ -f /etc/fedora-release ]] || [[ -f /etc/os-release && $(grep -E '^ID=fedora$' /etc/os-release) ]]; then
         NATIVE_PKG_MANAGER="dnf"
-        OS_SECTION="fedora"
         USE_NATIVE=true
         PKG_MANAGER="$NATIVE_PKG_MANAGER"
     else
@@ -51,61 +126,7 @@ else
     exit 1
 fi
 
-# Check if package manager is installed
-if ! command -v "$PKG_MANAGER" &> /dev/null; then
-    if [[ "$PKG_MANAGER" == "brew" ]]; then
-        # Check if Homebrew is installed but not in PATH
-        if [[ -x "/opt/homebrew/bin/brew" ]] || [[ -x "/usr/local/bin/brew" ]]; then
-            # Determine which Homebrew installation exists
-            if [[ -x "/opt/homebrew/bin/brew" ]]; then
-                HOMEBREW_PREFIX="/opt/homebrew"
-            else
-                HOMEBREW_PREFIX="/usr/local"
-            fi
-
-            # Determine shell RC file
-            case "${SHELL}" in
-                */bash*)
-                    if [[ -r "${HOME}/.bash_profile" ]]; then
-                        shell_rcfile="${HOME}/.bash_profile"
-                    else
-                        shell_rcfile="${HOME}/.profile"
-                    fi
-                    ;;
-                */zsh*)
-                    shell_rcfile="${HOME}/.zprofile"
-                    ;;
-                */fish*)
-                    shell_rcfile="${HOME}/.config/fish/config.fish"
-                    ;;
-                *)
-                    shell_rcfile="${HOME}/.profile"
-                    ;;
-            esac
-
-            print_color "$YELLOW" "⚠️  Homebrew is installed but not in PATH."
-
-            # Check if shellenv is already in RC file
-            if grep -qs "eval \"\$(${HOMEBREW_PREFIX}/bin/brew shellenv)\"" "${shell_rcfile}" 2>/dev/null; then
-                print_color "$CYAN" "Run this command to add Homebrew to your PATH:"
-                print_color "$CYAN" "  eval \"\$(${HOMEBREW_PREFIX}/bin/brew shellenv)\""
-            else
-                print_color "$CYAN" "Run these commands to add Homebrew to your PATH:"
-                print_color "$CYAN" "  echo >> ${shell_rcfile}"
-                print_color "$CYAN" "  echo 'eval \"\$(${HOMEBREW_PREFIX}/bin/brew shellenv)\"' >> ${shell_rcfile}"
-                print_color "$CYAN" "  eval \"\$(${HOMEBREW_PREFIX}/bin/brew shellenv)\""
-            fi
-        else
-            print_color "$RED" "❌ Homebrew not found. Install it with:"
-            print_color "$CYAN" '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
-        fi
-    else
-        print_color "$RED" "❌ Package manager '$PKG_MANAGER' not found."
-    fi
-    exit 1
-fi
-
-# Determine the manifest file path - now everything uses pkgs.yml
+# Determine the manifest file path
 if [[ -n "${DOTS:-}" ]]; then
     YAML_FILE="$DOTS/.chezmoidata/pkgs.yml"
 else
@@ -117,6 +138,209 @@ if [[ ! -f "$YAML_FILE" ]]; then
     exit 1
 fi
 
+# Function to list all configured hosts
+list_hosts() {
+    print_color "$BLUE" "📋 Configured hosts in pkgs.yml:"
+    echo ""
+
+    local hosts=()
+    local in_hosts_section=false
+
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^[[:space:]]*hosts:[[:space:]]*$ ]]; then
+            in_hosts_section=true
+            continue
+        elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z0-9_-]+:[[:space:]]*$ ]] && [[ "$in_hosts_section" == false ]]; then
+            continue
+        elif [[ "$line" =~ ^[[:space:]]{4}([a-zA-Z0-9_-]+):[[:space:]]*$ ]] && [[ "$in_hosts_section" == true ]]; then
+            local hostname="${BASH_REMATCH[1]}"
+            hosts+=("$hostname")
+        elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]] && [[ "$in_hosts_section" == true ]]; then
+            # End of hosts section
+            break
+        fi
+    done < "$YAML_FILE"
+
+    if [[ ${#hosts[@]} -eq 0 ]]; then
+        print_color "$YELLOW" "No hosts configured yet"
+        return
+    fi
+
+    for host in "${hosts[@]}"; do
+        local pkg_count=0
+        local os_type=""
+
+        # Determine OS type and count packages
+        if grep -A 100 "^[[:space:]]*${host}:" "$YAML_FILE" | grep -q "brews:"; then
+            os_type="darwin"
+            local brew_count=$(grep -A 1000 "^[[:space:]]*${host}:" "$YAML_FILE" | sed -n '/brews:/,/^[[:space:]]*[a-z]/p' | grep -c "^[[:space:]]*-")
+            local cask_count=$(grep -A 1000 "^[[:space:]]*${host}:" "$YAML_FILE" | sed -n '/casks:/,/^[[:space:]]*[a-z]/p' | grep -c "^[[:space:]]*-")
+            pkg_count=$((brew_count + cask_count))
+        elif grep -A 100 "^[[:space:]]*${host}:" "$YAML_FILE" | grep -q "pacman:"; then
+            os_type="arch"
+            pkg_count=$(grep -A 1000 "^[[:space:]]*${host}:" "$YAML_FILE" | sed -n '/pacman:/,/^[[:space:]]*[a-z]/p' | grep -c "^[[:space:]]*-")
+        elif grep -A 100 "^[[:space:]]*${host}:" "$YAML_FILE" | grep -q "scoop:"; then
+            os_type="windows"
+            pkg_count=$(grep -A 1000 "^[[:space:]]*${host}:" "$YAML_FILE" | sed -n '/apps:/,/^[[:space:]]*[a-z]/p' | grep -c "^[[:space:]]*-")
+        fi
+
+        local marker=""
+        if [[ "$host" == "$HOSTNAME" ]]; then
+            marker=" $(print_color "$GREEN" "← current")"
+        fi
+
+        printf "  $(print_color "$CYAN" "%-30s") $(print_color "$GRAY" "%-10s") $(print_color "$YELLOW" "%d packages")%s\n" "$host" "($os_type)" "$pkg_count" "$marker"
+    done
+}
+
+# Function to show packages for a specific host
+show_host() {
+    local target="$1"
+    print_color "$BLUE" "📦 Packages configured for host: $target"
+    echo ""
+
+    local in_target=false
+    local in_section=false
+    local section_name=""
+
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^[[:space:]]{4}${target}:[[:space:]]*$ ]]; then
+            in_target=true
+            continue
+        elif [[ "$line" =~ ^[[:space:]]{4}[a-zA-Z0-9_-]+:[[:space:]]*$ ]] && [[ "$in_target" == true ]]; then
+            # Different host - stop
+            break
+        elif [[ "$in_target" == true ]] && [[ "$line" =~ ^[[:space:]]{6}([a-z]+):[[:space:]]*$ ]]; then
+            section_name="${BASH_REMATCH[1]}"
+            in_section=true
+            print_color "$GREEN" "\n${section_name}:"
+            continue
+        elif [[ "$in_section" == true ]] && [[ "$line" =~ ^[[:space:]]{8}-[[:space:]]+(.+)$ ]]; then
+            echo "  - ${BASH_REMATCH[1]}"
+        elif [[ "$in_target" == true ]] && [[ "$line" =~ ^[[:space:]]{6}[a-z]+:[[:space:]]*$ ]]; then
+            in_section=false
+        elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]] && [[ "$in_target" == true ]]; then
+            # End of target section
+            break
+        fi
+    done < "$YAML_FILE"
+}
+
+# Function to clone packages from another host
+clone_host() {
+    local target="$1"
+    print_color "$BLUE" "🔄 Cloning package configuration from: $target"
+
+    # Check if target exists
+    if ! grep -q "^[[:space:]]*${target}:" "$YAML_FILE"; then
+        print_color "$RED" "❌ Host '$target' not found in pkgs.yml"
+        return 1
+    fi
+
+    # Extract packages from target host
+    local packages=()
+    local in_target=false
+    local in_packages=false
+
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^[[:space:]]{4}${target}:[[:space:]]*$ ]]; then
+            in_target=true
+        elif [[ "$in_target" == true ]] && [[ "$line" =~ ^[[:space:]]{6}(brews|casks|pacman|apps):[[:space:]]*$ ]]; then
+            in_packages=true
+        elif [[ "$in_packages" == true ]] && [[ "$line" =~ ^[[:space:]]{8}-[[:space:]]+(.+)$ ]]; then
+            packages+=("${BASH_REMATCH[1]}")
+        elif [[ "$in_target" == true ]] && [[ "$line" =~ ^[[:space:]]{4}[a-zA-Z0-9_-]+:[[:space:]]*$ ]]; then
+            break
+        elif [[ "$in_packages" == true ]] && [[ "$line" =~ ^[[:space:]]{6}[a-z]+:[[:space:]]*$ ]]; then
+            in_packages=false
+        fi
+    done < "$YAML_FILE"
+
+    print_color "$CYAN" "📦 Found ${#packages[@]} packages from $target"
+
+    # Install packages based on OS
+    if [[ "$USE_BREW" == true ]]; then
+        print_color "$BLUE" "🍺 Installing via Homebrew..."
+        for pkg in "${packages[@]}"; do
+            if [[ "$pkg" == *"/"* ]] || [[ "$pkg" == *"-"*"font"* ]]; then
+                brew install --cask "$pkg" 2>/dev/null || brew install "$pkg"
+            else
+                brew install "$pkg"
+            fi
+        done
+    elif [[ "$NATIVE_PKG_MANAGER" == "pacman" ]]; then
+        print_color "$BLUE" "📦 Installing via pacman/yay..."
+        yay -S --needed --noconfirm "${packages[@]}"
+    fi
+
+    print_color "$GREEN" "✅ Clone complete! Run 'cmpack' to register this as a new host."
+}
+
+# MODE: list
+if [[ "$MODE" == "list" ]]; then
+    list_hosts
+    exit 0
+fi
+
+# MODE: show
+if [[ "$MODE" == "show" ]]; then
+    show_host "$TARGET_HOST"
+    exit 0
+fi
+
+# MODE: clone
+if [[ "$MODE" == "clone" ]]; then
+    clone_host "$TARGET_HOST"
+    exit 0
+fi
+
+# MODE: diff
+if [[ "$MODE" == "diff" ]]; then
+    print_color "$BLUE" "🔍 Comparing $HOSTNAME with $TARGET_HOST"
+    # TODO: Implement diff logic
+    print_color "$YELLOW" "⚠️  Diff functionality coming soon"
+    exit 0
+fi
+
+# MODE: init
+if [[ "$MODE" == "init" ]]; then
+    print_color "$BLUE" "🆕 Initializing $HOSTNAME using $TARGET_HOST as template"
+    # TODO: Implement init logic
+    print_color "$YELLOW" "⚠️  Init functionality coming soon"
+    exit 0
+fi
+
+# ========== MODE: sync (default) ==========
+
+# Check if package manager is installed
+if ! command -v "$PKG_MANAGER" &> /dev/null; then
+    if [[ "$PKG_MANAGER" == "brew" ]]; then
+        if [[ -x "/opt/homebrew/bin/brew" ]] || [[ -x "/usr/local/bin/brew" ]]; then
+            if [[ -x "/opt/homebrew/bin/brew" ]]; then
+                HOMEBREW_PREFIX="/opt/homebrew"
+            else
+                HOMEBREW_PREFIX="/usr/local"
+            fi
+
+            case "${SHELL}" in
+                */bash*) shell_rcfile="${HOME}/.bash_profile" ;;
+                */zsh*) shell_rcfile="${HOME}/.zprofile" ;;
+                */fish*) shell_rcfile="${HOME}/.config/fish/config.fish" ;;
+                *) shell_rcfile="${HOME}/.profile" ;;
+            esac
+
+            print_color "$YELLOW" "⚠️  Homebrew is installed but not in PATH."
+            print_color "$CYAN" "Run: eval \"\$(${HOMEBREW_PREFIX}/bin/brew shellenv)\""
+        else
+            print_color "$RED" "❌ Homebrew not found. Install it with:"
+            print_color "$CYAN" '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+        fi
+    else
+        print_color "$RED" "❌ Package manager '$PKG_MANAGER' not found."
+    fi
+    exit 1
+fi
+
 # Create backup
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 BACKUP_DIR="$HOME/.config/chezmoi/backups"
@@ -124,7 +348,6 @@ mkdir -p "$BACKUP_DIR"
 BACKUP_FILENAME=$(basename "$YAML_FILE")
 BACKUP_PATH="$BACKUP_DIR/${BACKUP_FILENAME}.bak.$TIMESTAMP"
 cp "$YAML_FILE" "$BACKUP_PATH"
-# print_color "$GRAY" "💾 Created backup at $BACKUP_PATH"
 
 # Clean up old backups (keep only the 10 most recent)
 MAX_BACKUPS=10
@@ -133,7 +356,6 @@ if ls "$BACKUP_DIR"/${BACKUP_FILENAME}.bak.* >/dev/null 2>&1; then
     if [[ $BACKUP_COUNT -gt $MAX_BACKUPS ]]; then
         EXCESS_COUNT=$((BACKUP_COUNT - MAX_BACKUPS))
         ls -1t "$BACKUP_DIR"/${BACKUP_FILENAME}.bak.* | tail -n $EXCESS_COUNT | xargs rm -f
-        # print_color "$GRAY" "🧹 Cleaned up $EXCESS_COUNT old backup(s), keeping $MAX_BACKUPS most recent"
     fi
 fi
 
@@ -142,155 +364,69 @@ INSTALLED_BREWS=()
 INSTALLED_CASKS=()
 INSTALLED_NATIVE=()
 
-# Get brew packages if on macOS
 if [[ "$OS" == "darwin" ]]; then
     print_color "$BLUE" "🔍 Getting installed brew packages..."
-    # Use 'brew leaves' to get only top-level formulas (not dependencies)
     INSTALLED_BREWS=($(brew leaves))
     INSTALLED_CASKS=($(brew list --cask))
-    print_color "$CYAN" "Found ${#INSTALLED_BREWS[@]} installed formulas and ${#INSTALLED_CASKS[@]} casks"
+    print_color "$CYAN" "Found ${#INSTALLED_BREWS[@]} formulas and ${#INSTALLED_CASKS[@]} casks"
 fi
 
-# Get native packages if on Linux
 if [[ "$OS" == "linux" ]]; then
     print_color "$BLUE" "🔍 Getting installed $NATIVE_PKG_MANAGER packages..."
 
     case "$NATIVE_PKG_MANAGER" in
         pacman)
-            # Get explicitly installed packages (not dependencies)
             INSTALLED_NATIVE=($(pacman -Qe | awk '{print $1}' | sort))
             ;;
         dnf)
-            # Get explicitly installed packages (not dependencies) with repo info
-            INSTALLED_NATIVE_WITH_REPOS=($(dnf repoquery --userinstalled --qf '%{name}|%{from_repo}\n' | sort | uniq))
-            INSTALLED_NATIVE=()
-            INSTALLED_NATIVE_REPOS=()
-
-            # Parse package names and repos
-            for pkg_repo in "${INSTALLED_NATIVE_WITH_REPOS[@]}"; do
-                pkg_name="${pkg_repo%|*}"
-                repo_name="${pkg_repo#*|}"
-                INSTALLED_NATIVE+=("$pkg_name")
-                INSTALLED_NATIVE_REPOS+=("$repo_name")
-            done
-
-            # Collect unique repositories (excluding default ones)
-            UNIQUE_REPOS=()
-            for repo in "${INSTALLED_NATIVE_REPOS[@]}"; do
-                # Skip default repos and unknown/commandline installs
-                if [[ "$repo" != "anaconda" && "$repo" != "fedora" && "$repo" != "updates" &&
-                      "$repo" != "<unknown>" && "$repo" != "@commandline" &&
-                      ! " ${UNIQUE_REPOS[*]:-} " =~ " ${repo} " ]]; then
-                    UNIQUE_REPOS+=("$repo")
-                fi
-            done
-            ;;
-        *)
-            print_color "$RED" "❌ Unsupported package manager: $NATIVE_PKG_MANAGER"
-            exit 1
+            INSTALLED_NATIVE=($(dnf repoquery --userinstalled --qf '%{name}' | sort | uniq))
             ;;
     esac
 
-    print_color "$CYAN" "Found ${#INSTALLED_NATIVE[@]} installed $NATIVE_PKG_MANAGER packages"
+    print_color "$CYAN" "Found ${#INSTALLED_NATIVE[@]} $NATIVE_PKG_MANAGER packages"
 fi
 
-# Parse current manifest to get existing packages
+# Parse current manifest to get existing packages for this host
 CURRENT_BREWS=()
 CURRENT_CASKS=()
 CURRENT_NATIVE=()
-IN_OS_BREWS=false
-IN_OS_CASKS=false
-IN_SHARED_BREWS=false
-IN_SHARED_CASKS=false
 
-# Parse brew packages if on macOS - using new pkgs.yml structure
-if [[ "$OS" == "darwin" ]]; then
-    # Parse pkgs.yml structure for darwin packages
-    IN_PKG_SECTION=false
-    IN_OS_SECTION=false
-    IN_BREWS_SECTION=false
-    IN_CASKS_SECTION=false
-
-    while IFS= read -r line; do
-        # Check for pkgs section first
-        if [[ "$line" =~ ^[[:space:]]*pkgs:[[:space:]]*$ ]]; then
-            IN_PKG_SECTION=true
-            IN_OS_SECTION=false
-        # Check section headers within pkgs
-        elif [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]] && [[ "$IN_PKG_SECTION" == true ]]; then
-            IN_OS_SECTION=true
-            IN_BREWS_SECTION=false
-            IN_CASKS_SECTION=false
-        elif [[ "$line" =~ ^[[:space:]]*brews:[[:space:]]*$ ]] && [[ "$IN_OS_SECTION" == true ]]; then
-            IN_BREWS_SECTION=true
-            IN_CASKS_SECTION=false
-        elif [[ "$line" =~ ^[[:space:]]*casks:[[:space:]]*$ ]] && [[ "$IN_OS_SECTION" == true ]]; then
-            IN_BREWS_SECTION=false
-            IN_CASKS_SECTION=true
-        elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]]; then
-            # Different section - reset flags appropriately
-            if [[ "$IN_PKG_SECTION" == true && "$IN_OS_SECTION" == true ]]; then
-                # Different package type within same OS
-                IN_BREWS_SECTION=false
-                IN_CASKS_SECTION=false
-            elif [[ "$IN_PKG_SECTION" == true ]]; then
-                # Different OS section
-                IN_OS_SECTION=false
-                IN_BREWS_SECTION=false
-                IN_CASKS_SECTION=false
-            else
-                # Different top-level section
-                IN_PKG_SECTION=false
-                IN_OS_SECTION=false
-                IN_BREWS_SECTION=false
-                IN_CASKS_SECTION=false
-            fi
-        # Parse package entries
-        elif [[ "$line" =~ ^[[:space:]]*-[[:space:]]+([^[:space:]]+) ]]; then
-            PKG="${BASH_REMATCH[1]}"
-            if [[ "$IN_BREWS_SECTION" == true ]]; then
-                CURRENT_BREWS+=("$PKG")
-            elif [[ "$IN_CASKS_SECTION" == true ]]; then
-                CURRENT_CASKS+=("$PKG")
-            fi
-        fi
-    done < "$YAML_FILE"
+# Check if current hostname exists in manifest
+HOST_EXISTS=false
+if grep -q "^[[:space:]]*${HOSTNAME}:" "$YAML_FILE"; then
+    HOST_EXISTS=true
 fi
 
-# Parse native packages if on Linux - using same pkgs.yml file
-if [[ "$OS" == "linux" ]]; then
-    # Parse pkgs.yml structure for native packages
-    IN_PKG_SECTION=false
-    IN_OS_SECTION=false
+if [[ "$HOST_EXISTS" == false ]]; then
+    print_color "$YELLOW" "⚠️  Host '$HOSTNAME' not found in pkgs.yml"
+    print_color "$BLUE" "💡 Tip: Use 'cmpack --clone <hostname>' to bootstrap from an existing host"
+    print_color "$BLUE" "    Or continue to create a new host entry with your current packages"
+    echo ""
+fi
+
+# Parse packages for current hostname if it exists
+if [[ "$HOST_EXISTS" == true ]]; then
+    local in_host=false
+    local in_section=false
+    local section_type=""
 
     while IFS= read -r line; do
-        # Check for pkgs section first
-        if [[ "$line" =~ ^[[:space:]]*pkgs:[[:space:]]*$ ]]; then
-            IN_PKG_SECTION=true
-            IN_OS_SECTION=false
-        # Check section headers within pkgs
-        elif [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]] && [[ "$IN_PKG_SECTION" == true ]]; then
-            IN_OS_SECTION=true
-        elif [[ "$line" =~ ^[[:space:]]*${NATIVE_PKG_MANAGER}:[[:space:]]*$ ]] && [[ "$IN_OS_SECTION" == true ]]; then
-            # We're now in the right package manager section
-            continue
-        elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]]; then
-            # Different section - reset flags appropriately
-            if [[ "$IN_PKG_SECTION" == true && "$IN_OS_SECTION" == true ]]; then
-                # Different package manager within same OS
-                continue
-            elif [[ "$IN_PKG_SECTION" == true ]]; then
-                # Different OS section
-                IN_OS_SECTION=false
-            else
-                # Different top-level section
-                IN_PKG_SECTION=false
-                IN_OS_SECTION=false
-            fi
-        # Parse package entries
-        elif [[ "$line" =~ ^[[:space:]]*-[[:space:]]+([^[:space:]]+) ]] && [[ "$IN_OS_SECTION" == true ]]; then
-            PKG="${BASH_REMATCH[1]}"
-            CURRENT_NATIVE+=("$PKG")
+        if [[ "$line" =~ ^[[:space:]]{4}${HOSTNAME}:[[:space:]]*$ ]]; then
+            in_host=true
+        elif [[ "$in_host" == true ]] && [[ "$line" =~ ^[[:space:]]{6}(brews|casks|pacman):[[:space:]]*$ ]]; then
+            section_type="${BASH_REMATCH[1]}"
+            in_section=true
+        elif [[ "$in_section" == true ]] && [[ "$line" =~ ^[[:space:]]{8}-[[:space:]]+(.+)$ ]]; then
+            local pkg="${BASH_REMATCH[1]}"
+            case "$section_type" in
+                brews) CURRENT_BREWS+=("$pkg") ;;
+                casks) CURRENT_CASKS+=("$pkg") ;;
+                pacman) CURRENT_NATIVE+=("$pkg") ;;
+            esac
+        elif [[ "$in_host" == true ]] && [[ "$line" =~ ^[[:space:]]{4}[a-zA-Z0-9_-]+:[[:space:]]*$ ]]; then
+            break
+        elif [[ "$in_section" == true ]] && [[ "$line" =~ ^[[:space:]]{6}[a-z]+:[[:space:]]*$ ]]; then
+            in_section=false
         fi
     done < "$YAML_FILE"
 fi
@@ -305,22 +441,21 @@ REMOVED_NATIVE=()
 
 # Packages to exclude from tracking (regex patterns)
 EXCLUDED_PATTERNS=(
-    "^kmod-.*"          # Kernel modules (kmod-nvidia, etc.)
-    "^kernel-.*"        # Kernel packages
+    "^kmod-.*"
+    "^kernel-.*"
 )
 
-# Function to check if package should be excluded
 should_exclude_package() {
     local pkg="$1"
     for pattern in "${EXCLUDED_PATTERNS[@]}"; do
         if [[ "$pkg" =~ $pattern ]]; then
-            return 0  # true - should exclude
+            return 0
         fi
     done
-    return 1  # false - should not exclude
+    return 1
 }
 
-# Find new packages (deduplicate as we go)
+# Find new packages
 if [[ "$OS" == "darwin" ]]; then
     for pkg in "${INSTALLED_BREWS[@]}"; do
         if [[ ! " ${CURRENT_BREWS[*]:-} " =~ " ${pkg} " ]]; then
@@ -343,16 +478,16 @@ if [[ "$OS" == "linux" ]]; then
     done
 fi
 
-# Find removed packages - use the already parsed CURRENT arrays
+# Find removed packages
 if [[ "$OS" == "darwin" ]]; then
     for pkg in "${CURRENT_BREWS[@]}"; do
-        if [[ ! " ${INSTALLED_BREWS[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${REMOVED_BREWS[*]:-} " =~ " ${pkg} " ]]; then
+        if [[ ! " ${INSTALLED_BREWS[*]:-} " =~ " ${pkg} " ]]; then
             REMOVED_BREWS+=("$pkg")
         fi
     done
 
     for pkg in "${CURRENT_CASKS[@]}"; do
-        if [[ ! " ${INSTALLED_CASKS[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${REMOVED_CASKS[*]:-} " =~ " ${pkg} " ]]; then
+        if [[ ! " ${INSTALLED_CASKS[*]:-} " =~ " ${pkg} " ]]; then
             REMOVED_CASKS+=("$pkg")
         fi
     done
@@ -360,7 +495,7 @@ fi
 
 if [[ "$OS" == "linux" ]]; then
     for pkg in "${CURRENT_NATIVE[@]}"; do
-        if [[ ! " ${INSTALLED_NATIVE[*]:-} " =~ " ${pkg} " ]] && [[ ! " ${REMOVED_NATIVE[*]:-} " =~ " ${pkg} " ]] && ! should_exclude_package "$pkg"; then
+        if [[ ! " ${INSTALLED_NATIVE[*]:-} " =~ " ${pkg} " ]] && ! should_exclude_package "$pkg"; then
             REMOVED_NATIVE+=("$pkg")
         fi
     done
@@ -372,360 +507,59 @@ if [[ ${#NEW_BREWS[@]} -eq 0 && ${#NEW_CASKS[@]} -eq 0 && ${#NEW_NATIVE[@]} -eq 
     exit 0
 fi
 
-# Store pre-deduplication counts for comparison
-PRE_DEDUP_NEW_BREWS=${#NEW_BREWS[@]}
-PRE_DEDUP_NEW_CASKS=${#NEW_CASKS[@]}
-PRE_DEDUP_NEW_NATIVE=${#NEW_NATIVE[@]}
-PRE_DEDUP_REMOVED_BREWS=${#REMOVED_BREWS[@]}
-PRE_DEDUP_REMOVED_CASKS=${#REMOVED_CASKS[@]}
-PRE_DEDUP_REMOVED_NATIVE=${#REMOVED_NATIVE[@]}
+# If host doesn't exist, create entry
+if [[ "$HOST_EXISTS" == false ]]; then
+    print_color "$BLUE" "🆕 Creating new host entry for: $HOSTNAME"
 
-# Function to update brew manifest file
-update_brew_manifest() {
-    local file="$1"
+    # Find the hosts section and add new host
     local temp_file="$(mktemp)"
-    local in_os_section=false
-    local in_os_brews=false
-    local in_os_casks=false
-    local in_shared_brews=false
-    local in_shared_casks=false
+    local in_hosts=false
+    local added=false
 
     while IFS= read -r line; do
-        # Track sections
-        if [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]]; then
-            in_os_section=true
-            in_os_brews=false
-            in_os_casks=false
-            in_shared_brews=false
-            in_shared_casks=false
-        elif [[ "$line" =~ ^[[:space:]]*shared:[[:space:]]*$ ]]; then
-            in_os_section=false
-            in_os_brews=false
-            in_os_casks=false
-            in_shared_brews=false
-            in_shared_casks=false
-        elif [[ "$line" =~ ^[[:space:]]*brews:[[:space:]]*$ ]]; then
-            if [[ "$in_os_section" == true ]]; then
-                in_os_brews=true
-                in_os_casks=false
-            else
-                in_shared_brews=true
-                in_shared_casks=false
-            fi
-        elif [[ "$line" =~ ^[[:space:]]*casks:[[:space:]]*$ ]]; then
-            if [[ "$in_os_section" == true ]]; then
-                in_os_brews=false
-                in_os_casks=true
-            else
-                in_shared_brews=false
-                in_shared_casks=true
-            fi
-        fi
+        echo "$line" >> "$temp_file"
 
-        # Skip removed packages
-        local skip_line=false
-        if [[ "$line" =~ ^[[:space:]]*-[[:space:]]+([^[:space:]]+) ]]; then
-            local pkg="${BASH_REMATCH[1]}"
-            if [[ ("$in_os_brews" == true || "$in_shared_brews" == true) && " ${REMOVED_BREWS[*]:-} " =~ " ${pkg} " ]]; then
-                skip_line=true
-            elif [[ ("$in_os_casks" == true || "$in_shared_casks" == true) && " ${REMOVED_CASKS[*]:-} " =~ " ${pkg} " ]]; then
-                skip_line=true
-            fi
-        fi
+        if [[ "$line" =~ ^[[:space:]]*hosts:[[:space:]]*$ ]]; then
+            in_hosts=true
+        elif [[ "$in_hosts" == true ]] && [[ ! "$added" == true ]] && [[ "$line" =~ ^[[:space:]]{4}[a-zA-Z0-9_-]+:[[:space:]]*$ ]]; then
+            # Add new host before first existing host
+            echo "    # $(date +%Y-%m-%d) - Auto-created for $HOSTNAME" >> "$temp_file"
+            echo "    $HOSTNAME:" >> "$temp_file"
 
-        if [[ "$skip_line" == false ]]; then
-            echo "$line" >> "$temp_file"
-        fi
-
-        # Add new packages at the end of each section
-        if [[ ("$in_os_brews" == true || "$in_shared_brews" == true) && "$line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
-            local next_line=$(sed -n "$((NR+1))p" "$file" 2>/dev/null || echo "")
-            if [[ ! "$next_line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
+            if [[ "$OS" == "darwin" ]]; then
+                echo "      brews:" >> "$temp_file"
                 for pkg in "${NEW_BREWS[@]}"; do
-                    echo "      - $pkg" >> "$temp_file"
+                    echo "        - $pkg" >> "$temp_file"
                 done
-                NEW_BREWS=()
-            fi
-        elif [[ ("$in_os_casks" == true || "$in_shared_casks" == true) && "$line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
-            local next_line=$(sed -n "$((NR+1))p" "$file" 2>/dev/null || echo "")
-            if [[ ! "$next_line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
+                echo "      casks:" >> "$temp_file"
                 for pkg in "${NEW_CASKS[@]}"; do
-                    echo "      - $pkg" >> "$temp_file"
+                    echo "        - $pkg" >> "$temp_file"
                 done
-                NEW_CASKS=()
-            fi
-        fi
-    done < "$file"
-
-    # Handle empty sections
-    if [[ ${#NEW_BREWS[@]} -gt 0 ]]; then
-        local new_packages_file=$(mktemp)
-        printf '      - %s\n' "${NEW_BREWS[@]}" > "$new_packages_file"
-        awk -v newfile="$new_packages_file" '
-            /^[[:space:]]*brews:[[:space:]]*$/ {
-                print $0
-                while ((getline line < newfile) > 0) {
-                    print line
-                }
-                close(newfile)
-                next
-            }
-            {print}
-        ' "$temp_file" > "$temp_file.new"
-        mv "$temp_file.new" "$temp_file"
-        rm -f "$new_packages_file"
-    fi
-
-    if [[ ${#NEW_CASKS[@]} -gt 0 ]]; then
-        local new_casks_file=$(mktemp)
-        printf '      - %s\n' "${NEW_CASKS[@]}" > "$new_casks_file"
-        awk -v newfile="$new_casks_file" '
-            /^[[:space:]]*casks:[[:space:]]*$/ {
-                print $0
-                while ((getline line < newfile) > 0) {
-                    print line
-                }
-                close(newfile)
-                next
-            }
-            {print}
-        ' "$temp_file" > "$temp_file.new"
-        mv "$temp_file.new" "$temp_file"
-        rm -f "$new_casks_file"
-    fi
-
-    mv "$temp_file" "$file"
-}
-
-# Function to update native package manifest file
-update_native_manifest() {
-    local file="$1"
-    local temp_file="$(mktemp)"
-    local in_os_section=false
-    local in_pkg_section=false
-
-    while IFS= read -r line; do
-        # Track sections
-        if [[ "$line" =~ ^[[:space:]]*${OS_SECTION}:[[:space:]]*$ ]]; then
-            in_os_section=true
-            in_pkg_section=false
-        elif [[ "$line" =~ ^[[:space:]]*${NATIVE_PKG_MANAGER}:[[:space:]]*$ ]] && [[ "$in_os_section" == true ]]; then
-            in_pkg_section=true
-        elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]] && [[ "$in_os_section" == true ]]; then
-            in_pkg_section=false
-        elif [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]] && [[ "$in_os_section" == false ]]; then
-            in_os_section=false
-            in_pkg_section=false
-        fi
-
-        # Skip removed packages
-        local skip_line=false
-        if [[ "$line" =~ ^[[:space:]]*-[[:space:]]+([^[:space:]]+) ]] && [[ "$in_pkg_section" == true ]]; then
-            local pkg="${BASH_REMATCH[1]}"
-            if [[ " ${REMOVED_NATIVE[*]:-} " =~ " ${pkg} " ]]; then
-                skip_line=true
-            fi
-        fi
-
-        if [[ "$skip_line" == false ]]; then
-            echo "$line" >> "$temp_file"
-        fi
-
-        # Add new packages at the end of the section
-        if [[ "$in_pkg_section" == true && "$line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
-            local next_line=$(sed -n "$((NR+1))p" "$file" 2>/dev/null || echo "")
-            if [[ ! "$next_line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
+            elif [[ "$OS" == "linux" ]]; then
+                echo "      pacman:" >> "$temp_file"
                 for pkg in "${NEW_NATIVE[@]}"; do
-                    echo "      - $pkg" >> "$temp_file"
+                    echo "        - $pkg" >> "$temp_file"
                 done
-                NEW_NATIVE=()
             fi
+            echo "" >> "$temp_file"
+            added=true
         fi
-    done < "$file"
+    done < "$YAML_FILE"
 
-    # Handle empty sections
-    if [[ ${#NEW_NATIVE[@]} -gt 0 ]]; then
-        local new_packages_file=$(mktemp)
-        printf '      - %s\n' "${NEW_NATIVE[@]}" > "$new_packages_file"
-        awk -v section="$NATIVE_PKG_MANAGER" -v newfile="$new_packages_file" '
-            /^[[:space:]]*'"$NATIVE_PKG_MANAGER"':[[:space:]]*$/ {
-                print $0
-                while ((getline line < newfile) > 0) {
-                    print line
-                }
-                close(newfile)
-                next
-            }
-            {print}
-        ' "$temp_file" > "$temp_file.new"
-        mv "$temp_file.new" "$temp_file"
-        rm -f "$new_packages_file"
-    fi
+    mv "$temp_file" "$YAML_FILE"
 
-    mv "$temp_file" "$file"
-}
-
-# Function to add repos section to native manifest
-add_repos_section() {
-    local file="$1"
-
-    if [[ ${#UNIQUE_REPOS[@]} -eq 0 ]]; then
-        return
-    fi
-
-    # Check if repos section already exists
-    if grep -q "^[[:space:]]*repos:[[:space:]]*$" "$file"; then
-        print_color "$BLUE" "📦 Repos section already exists, skipping..."
-        return
-    fi
-
-    print_color "$BLUE" "📦 Adding repos section with ${#UNIQUE_REPOS[@]} repositories..."
-
-    # Find the fedora section and add repos before dnf
-    local temp_file="$(mktemp)"
-    local in_fedora_section=false
-    local added_repos=false
-
-    while IFS= read -r line; do
-        if [[ "$line" =~ ^[[:space:]]*fedora:[[:space:]]*$ ]]; then
-            in_fedora_section=true
-            echo "$line" >> "$temp_file"
-        elif [[ "$in_fedora_section" == true && "$line" =~ ^[[:space:]]*dnf:[[:space:]]*$ ]]; then
-            # Add repos section before dnf
-            echo "    repos:" >> "$temp_file"
-            for repo in "${UNIQUE_REPOS[@]}"; do
-                echo "      - $repo" >> "$temp_file"
-            done
-            echo "$line" >> "$temp_file"
-            added_repos=true
-            in_fedora_section=false
-        else
-            echo "$line" >> "$temp_file"
-            if [[ "$line" =~ ^[[:space:]]*[a-zA-Z]+:[[:space:]]*$ ]] && [[ "$in_fedora_section" == true ]]; then
-                in_fedora_section=false
-            fi
-        fi
-    done < "$file"
-
-    mv "$temp_file" "$file"
-}
-
-# Update manifest files
-if [[ "$OS" == "darwin" ]]; then
-    print_color "$BLUE" "🔄 Updating brew manifest..."
-    update_brew_manifest "$YAML_FILE"
-elif [[ "$OS" == "linux" ]]; then
-    print_color "$BLUE" "🔄 Updating native package manifest..."
-    update_native_manifest "$YAML_FILE"
-
-    # Add repos section if we have unique repos  
-    if [[ "$NATIVE_PKG_MANAGER" == "dnf" && ${#UNIQUE_REPOS[@]} -gt 0 ]]; then
-        add_repos_section "$YAML_FILE"
-    fi
+    print_color "$GREEN" "✅ Added ${#NEW_BREWS[@]}${#NEW_CASKS[@]}${#NEW_NATIVE[@]} packages under host '$HOSTNAME'"
+    print_color "$CYAN" "Run 'chezmoi apply' to sync your changes"
+    exit 0
 fi
 
-# Store original file for comparison
-ORIGINAL_PACKAGES=$(mktemp)
-# Extract current packages from original file
-grep -E "^[[:space:]]*-[[:space:]]+" "$BACKUP_PATH" | sed 's/^[[:space:]]*-[[:space:]]*//' | sort > "$ORIGINAL_PACKAGES"
+# Update existing host entry
+print_color "$BLUE" "🔄 Updating manifest for host: $HOSTNAME"
 
-# Deduplication using gawk
-gawk '
-BEGIN {
-    in_list = 0
-    current_section = ""
-}
-/^[[:space:]]*-[[:space:]]+/ {
-    if (in_list) {
-        # Extract package name
-        gsub(/^[[:space:]]*-[[:space:]]+/, "")
-        pkg = $0
-        if (!(current_section SUBSEP pkg in seen)) {
-            packages[current_section][++count[current_section]] = pkg
-            seen[current_section SUBSEP pkg] = 1
-        }
-        next
-    }
-}
-/^[[:space:]]*[a-zA-Z][a-zA-Z0-9_-]*:[[:space:]]*$/ {
-    # Print any accumulated packages from previous section
-    if (in_list && current_section != "") {
-        # Sort and print packages for the previous section
-        n = asort(packages[current_section], sorted_pkgs)
-        for (i = 1; i <= n; i++) {
-            print "      - " sorted_pkgs[i]
-        }
-        delete packages[current_section]
-        count[current_section] = 0
-    }
-
-    # Check if this line indicates start of a package list section
-    if (/^[[:space:]]*(brews|casks|pacman|dnf):[[:space:]]*$/) {
-        in_list = 1
-        current_section = $0
-        print $0
-        next
-    } else {
-        in_list = 0
-        current_section = ""
-    }
-}
-{
-    # For non-package lines, just print them
-    if (!in_list || !/^[[:space:]]*-[[:space:]]+/) {
-        print $0
-    }
-}
-END {
-    # Print any remaining packages from the last section
-    if (in_list && current_section != "") {
-        n = asort(packages[current_section], sorted_pkgs)
-        for (i = 1; i <= n; i++) {
-            print "      - " sorted_pkgs[i]
-        }
-    }
-}
-' "$YAML_FILE" > "$YAML_FILE.tmp" && mv "$YAML_FILE.tmp" "$YAML_FILE"
-
-# Compare before and after to show actual changes
-NEW_PACKAGES=$(mktemp)
-grep -E "^[[:space:]]*-[[:space:]]+" "$YAML_FILE" | sed 's/^[[:space:]]*-[[:space:]]*//' | sort > "$NEW_PACKAGES"
-
-# Find actual additions and removals
-ACTUAL_ADDED=$(mktemp)
-ACTUAL_REMOVED=$(mktemp)
-comm -13 "$ORIGINAL_PACKAGES" "$NEW_PACKAGES" > "$ACTUAL_ADDED"
-comm -23 "$ORIGINAL_PACKAGES" "$NEW_PACKAGES" > "$ACTUAL_REMOVED"
-
-# Report actual changes
-ADDED_COUNT=$(wc -l < "$ACTUAL_ADDED" | tr -d ' ')
-REMOVED_COUNT=$(wc -l < "$ACTUAL_REMOVED" | tr -d ' ')
-
-if [[ "$ADDED_COUNT" -gt 0 ]]; then
-    if [[ "$OS" == "darwin" ]]; then
-        print_color "$GREEN" "✅ Added $ADDED_COUNT new packages:"
-    else
-        print_color "$GREEN" "✅ Added $ADDED_COUNT new $PKG_MANAGER packages:"
-    fi
-    while IFS= read -r pkg; do
-        print_color "$CYAN" "  + $pkg"
-    done < "$ACTUAL_ADDED"
-fi
-
-if [[ "$REMOVED_COUNT" -gt 0 ]]; then
-    print_color "$GREEN" "✅ Removed $REMOVED_COUNT uninstalled packages:"
-    while IFS= read -r pkg; do
-        print_color "$RED" "  - $pkg"
-    done < "$ACTUAL_REMOVED"
-fi
-
-if [[ "$ADDED_COUNT" -eq 0 && "$REMOVED_COUNT" -eq 0 ]]; then
-    print_color "$GREEN" "✅ No changes needed - manifest is up to date"
-fi
-
-# Cleanup temp files
-rm -f "$ORIGINAL_PACKAGES" "$NEW_PACKAGES" "$ACTUAL_ADDED" "$ACTUAL_REMOVED"
-
+# TODO: Implement update logic for existing hosts
+print_color "$YELLOW" "⚠️  Update logic for existing hosts coming soon"
+print_color "$CYAN" "New packages found: ${#NEW_BREWS[@]} brews, ${#NEW_CASKS[@]} casks, ${#NEW_NATIVE[@]} native"
+print_color "$CYAN" "Removed packages: ${#REMOVED_BREWS[@]} brews, ${#REMOVED_CASKS[@]} casks, ${#REMOVED_NATIVE[@]} native"
 
 echo ""
 print_color "$GREEN" "✨ DONE! Run 'chezmoi apply' to apply your changes."

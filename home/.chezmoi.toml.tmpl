@@ -2,19 +2,29 @@
 {{ $agePubKey := "age1wezwdvug6rdnwedvw8tk7npjm2rlmmewukxdat8v5y5garwvgdeq3ww5m9" }}
 {{ $sshId := "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXPGUiiFFBzqutbhNqi5RjykdlwvdFveB/XkSdg0BAM" }}
 {{- $email := "cwel@cwel.sh" -}}
-{{- $shell := (eq .chezmoi.os "windows") | ternary "pwsh" "zsh" -}}
-{{- $isVM := promptBoolOnce . "isVM" "VM" false }}
-{{- $isWSL := and (eq .chezmoi.os "linux") ( .chezmoi.kernel.osrelease | lower | contains "microsoft" ) -}}
-{{- $obsiPath := (eq .chezmoi.os "darwin") | ternary "~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Notes" "~/Documents/Notes" -}}
+{{- /* ===== SYSTEM DETECTION ===== */ -}}
+{{- $hostname := .chezmoi.hostname -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   $hostname = output "scutil" "--get" "LocalHostName" | trim -}}
+{{- end -}}
 
 {{- $osID := .chezmoi.os -}}
-{{- if (and (eq .chezmoi.os "linux") (hasKey .chezmoi.osRelease "id")) -}}
+{{- if and (eq .chezmoi.os "linux") (hasKey .chezmoi.osRelease "id") -}}
 {{-   $osID = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
 {{- end -}}
 
-{{- $hostname := .chezmoi.hostname -}}
-{{- if eq .chezmoi.os "darwin" -}}
-{{-   $hostname := output "scutil" "--get" "LocalHostName" | trim -}}
+{{- $shell := (eq .chezmoi.os "windows") | ternary "pwsh" "zsh" -}}
+{{- $isWSL := and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
+{{- $isVM := promptBoolOnce . "isVM" "Is this a virtual machine" false -}}
+
+{{- /* ===== PROFILE FLAGS ===== */ -}}
+{{- $headless := false -}}
+{{- if eq .chezmoi.os "linux" -}}
+{{-   if $isVM -}}
+{{-     $headless = promptBoolOnce . "headless" "Headless (no GUI)" true -}}
+{{-   else -}}
+{{-     $headless = promptBoolOnce . "headless" "Headless (no GUI)" false -}}
+{{-   end -}}
 {{- end -}}
 
 {{- $isLaptop := eq $hostname "mba" -}}
@@ -30,11 +40,11 @@ sshId = {{ $sshId | quote }}
 osid = {{ $osID | quote }}
 email = {{ $email | quote }}
 hostname = {{ $hostname | quote }}
+shell = {{ $shell | quote }}
 isLaptop = {{ $isLaptop }}
 isWSL = {{ $isWSL }}
 isVM = {{ $isVM }}
-shell = {{ $shell | quote }}
-obsiPath = {{ $obsiPath | quote }}
+headless = {{ $headless }}
 
 [age]
   identity = "~/.config/.key"
