@@ -411,9 +411,17 @@ if [[ "$HOST_EXISTS" == true ]]; then
 
         if [[ "$line" =~ ^[[:space:]]{4}${HOSTNAME}:[[:space:]]*$ ]]; then
             in_host=true
+            # DEBUG for main
+            if [[ "$HOSTNAME" == "main" ]]; then
+                echo "DEBUG: Found host main" >&2
+            fi
         elif [[ "$in_host" == true ]] && [[ "$line" =~ ^[[:space:]]{6}(brews|casks|pacman):[[:space:]]*$ ]]; then
             section_type="${BASH_REMATCH[1]}"
             in_section=true
+            # DEBUG for main
+            if [[ "$HOSTNAME" == "main" ]]; then
+                echo "DEBUG: Found section: $section_type" >&2
+            fi
         elif [[ "$in_section" == true ]] && [[ "$line" =~ ^[[:space:]]{8}-[[:space:]]*(.+)[[:space:]]*$ ]]; then
             pkg="${BASH_REMATCH[1]}"
             # Trim any trailing/leading whitespace from package name
@@ -424,12 +432,26 @@ if [[ "$HOST_EXISTS" == true ]]; then
                 casks) CURRENT_CASKS+=("$pkg") ;;
                 pacman) CURRENT_NATIVE+=("$pkg") ;;
             esac
+            # DEBUG for main
+            if [[ "$HOSTNAME" == "main" ]]; then
+                echo "DEBUG: Added package: $pkg to $section_type" >&2
+            fi
         elif [[ "$in_host" == true ]] && [[ "$line" =~ ^[[:space:]]{4}[a-zA-Z0-9_-]+:[[:space:]]*$ ]]; then
+            # DEBUG for main
+            if [[ "$HOSTNAME" == "main" ]]; then
+                echo "DEBUG: Found next host, breaking. Line: $line" >&2
+            fi
             break
         elif [[ "$in_section" == true ]] && [[ "$line" =~ ^[[:space:]]{6}[a-z]+:[[:space:]]*$ ]]; then
             in_section=false
         fi
     done < "$YAML_FILE"
+
+    # DEBUG OUTPUT
+    if [[ "$HOSTNAME" == "main" ]]; then
+        echo "DEBUG: Parsed ${#CURRENT_NATIVE[@]} pacman packages" >&2
+        echo "DEBUG: First 10 packages: ${CURRENT_NATIVE[@]:0:10}" >&2
+    fi
 fi
 
 # Find differences
