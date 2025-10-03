@@ -1,40 +1,15 @@
-# vim:ft=gitignore.chezmoitmpl
-
-{{ if (joinPath .chezmoi.homeDir ".config/.key" | lstat) }}
-.config/rclone/rclone.conf
-{{ end }}
-
 {{ if ne .chezmoi.os "linux" }}
 .chezmoiscripts/linux/**
-.config/gtk-*/
 {{ end }}
 
-{{/* Ignore GUI/desktop environment configs on headless Linux systems */}}
 {{ if and (eq .chezmoi.os "linux") .headless }}
-.config/environment.d/
 .config/wireplumber/
-.config/yay/
-.config/pacman/
-.config/gammastep/
-.config/cava/
 .config/Kvantum/
-.config/pacseek/
 .config/swaync/
-.config/satty/
-.config/mpv/
 .config/qimgv/
 .config/qt5ct/
-.config/rofi/
 .config/waybar/
-.config/zathura/
-.config/nwg-look/
-.config/MangoHud/
-.config/keyb/
 .config/hypr/
-.config/*.conf
-.config/*.list
-.config/dolphinrc
-.gtkrc*
 {{ end }}
 
 {{ if ne .chezmoi.os "windows" }}
@@ -62,37 +37,22 @@ Library/**
 .local/bin/*.sh
 .local/bin/*
 !.local/bin/*.*
-.config/btop/
-.config/gdu/
-.config/fish/
-.config/kitty/
-.font/
 {{ else }}
-
+.config/clink/
 .config/komorebi/
 .config/sharex/
 .config/scoop/
 .config/whkdrc
 .config/yasb/
-.config/clink/
 scoop/
 AppData/
 Documents/
-.wslconfig
-
 {{ end }}
 
 {{ if ne .chezmoi.os "linux" }}
-
 .config/systemd/
 .config/systemd/**
-.local/bin/bonsai
-.local/bin/tty-clock
-{{ end }}
-
-{{ if .isVM }}
-.config/sharex/**
-.config/yasb/
+.config/environment.d/
 {{ end }}
 
 .config/windows-terminal/
