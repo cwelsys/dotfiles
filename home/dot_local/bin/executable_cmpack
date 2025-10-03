@@ -630,7 +630,7 @@ print_color "$BLUE" "🔄 Updating manifest for host: $HOSTNAME"
 temp_file="$(mktemp)"
 in_host=false
 in_section=""
-last_was_package=false
+section_has_packages=false
 
 while IFS= read -r line; do
     # Detect current host section
@@ -643,15 +643,7 @@ while IFS= read -r line; do
     # Detect end of current host section - WRITE PACKAGES BEFORE WRITING THIS LINE
     if [[ "$in_host" == true ]] && [[ "$line" =~ ^[[:space:]]{4}[a-zA-Z0-9_-]+:[[:space:]]*$ ]]; then
         # Before leaving host, add any remaining packages
-        if [[ "$HOSTNAME" == "main" ]]; then
-            echo "DEBUG WRITE: in_section='$in_section', last_was_package='$last_was_package'" >&2
-            echo "DEBUG WRITE: NEW_NATIVE has ${#NEW_NATIVE[@]} packages" >&2
-        fi
-
-        if [[ "$in_section" != "" ]] && [[ "$last_was_package" == true ]]; then
-            if [[ "$HOSTNAME" == "main" ]]; then
-                echo "DEBUG WRITE: Writing ${#NEW_NATIVE[@]} packages to file" >&2
-            fi
+        if [[ "$in_section" != "" ]] && [[ "$section_has_packages" == true ]]; then
             case "$in_section" in
                 brews)
                     for pkg in "${NEW_BREWS[@]}"; do
@@ -666,9 +658,6 @@ while IFS= read -r line; do
                 pacman)
                     for pkg in "${NEW_NATIVE[@]}"; do
                         echo "        - $pkg" >> "$temp_file"
-                        if [[ "$HOSTNAME" == "main" ]]; then
-                            echo "DEBUG WRITE: Wrote package: $pkg" >&2
-                        fi
                     done
                     ;;
             esac
@@ -677,7 +666,7 @@ while IFS= read -r line; do
         fi
         in_host=false
         in_section=""
-        last_was_package=false
+        section_has_packages=false
         # Now write the line that triggered this
         echo "$line" >> "$temp_file"
         continue
@@ -687,7 +676,7 @@ while IFS= read -r line; do
     if [[ "$in_host" == true ]]; then
         if [[ "$line" =~ ^[[:space:]]{6}(brews|casks|pacman):[[:space:]]*$ ]]; then
             # Before starting new section, add packages from previous section
-            if [[ "$in_section" != "" ]] && [[ "$last_was_package" == true ]]; then
+            if [[ "$in_section" != "" ]] && [[ "$section_has_packages" == true ]]; then
                 case "$in_section" in
                     brews)
                         for pkg in "${NEW_BREWS[@]}"; do
@@ -707,7 +696,7 @@ while IFS= read -r line; do
                 esac
             fi
             in_section="${BASH_REMATCH[1]}"
-            last_was_package=false
+            section_has_packages=false
             echo "$line" >> "$temp_file"
             continue
         fi
@@ -749,12 +738,12 @@ while IFS= read -r line; do
 
             if [[ "$skip" == false ]]; then
                 echo "$line" >> "$temp_file"
-                last_was_package=true
+                section_has_packages=true
             fi
             continue
         else
             # Not a package line, so we're leaving the package list
-            if [[ "$in_section" != "" ]] && [[ "$last_was_package" == true ]]; then
+            if [[ "$in_section" != "" ]] && [[ "$section_has_packages" == true ]]; then
                 case "$in_section" in
                     brews)
                         for pkg in "${NEW_BREWS[@]}"; do
@@ -772,7 +761,7 @@ while IFS= read -r line; do
                         done
                         ;;
                 esac
-                last_was_package=false
+                section_has_packages=false
             fi
         fi
     fi
@@ -781,7 +770,7 @@ while IFS= read -r line; do
 done < "$YAML_FILE"
 
 # Handle case where host section is at the end of file
-if [[ "$in_host" == true ]] && [[ "$in_section" != "" ]] && [[ "$last_was_package" == true ]]; then
+if [[ "$in_host" == true ]] && [[ "$in_section" != "" ]] && [[ "$section_has_packages" == true ]]; then
     case "$in_section" in
         brews)
             for pkg in "${NEW_BREWS[@]}"; do
