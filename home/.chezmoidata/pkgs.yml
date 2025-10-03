@@ -370,6 +370,54 @@ pkgs:
         - zen-browser-bin
         - zoxide
         - zram-generator
+        - 1password-cli
+        - age
+        - bash-completion
+        - bat
+        - btop
+        - btrfs-progs
+        - cbonsai
+        - chezmoi
+        - cockpit
+        - cockpit-files
+        - cockpit-machines
+        - cockpit-packagekit
+        - cockpit-storaged
+        - cpio
+        - efibootmgr
+        - fastfetch
+        - fish
+        - ghostty
+        - git
+        - git-delta
+        - gum
+        - lazydocker
+        - lazygit
+        - less
+        - man-db
+        - neovim
+        - nextcloud-client
+        - ntfs-3g
+        - plocate
+        - plymouth
+        - snapper
+        - spicetify-cli
+        - spicetify-marketplace-bin
+        - starship
+        - tailscale
+        - thunderbird-beta-bin
+        - tldr
+        - topgrade
+        - tparted-bin
+        - trash-cli
+        - unzip
+        - uv
+        - waydroid
+        - waydroid-helper
+        - whois
+        - xdg-ninja
+        - yazi
+        - zsh
 
     wini:
       scoop:
