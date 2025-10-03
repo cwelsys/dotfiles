@@ -661,6 +661,8 @@ while IFS= read -r line; do
                     done
                     ;;
             esac
+            # Add blank line after packages before next host
+            echo "" >> "$temp_file"
         fi
         in_host=false
         in_section=""
