@@ -388,38 +388,37 @@ if [[ "$OS" == "linux" ]]; then
     print_color "$CYAN" "Found ${#INSTALLED_NATIVE[@]} $NATIVE_PKG_MANAGER packages"
 fi
 
-# Parse current manifest to get existing packages for this host
-CURRENT_BREWS=()
-CURRENT_CASKS=()
-CURRENT_NATIVE=()
-
-# Check if current hostname exists in manifest
+# Check if hostname already exists in manifest
 HOST_EXISTS=false
 if grep -q "^[[:space:]]*${HOSTNAME}:" "$YAML_FILE"; then
     HOST_EXISTS=true
 fi
 
-if [[ "$HOST_EXISTS" == false ]]; then
-    print_color "$YELLOW" "⚠️  Host '$HOSTNAME' not found in pkgs.yml"
-    print_color "$BLUE" "💡 Tip: Use 'cmpack --clone <hostname>' to bootstrap from an existing host"
-    print_color "$BLUE" "    Or continue to create a new host entry with your current packages"
-    echo ""
-fi
-
 # Parse packages for current hostname if it exists
+CURRENT_BREWS=()
+CURRENT_CASKS=()
+CURRENT_NATIVE=()
+
 if [[ "$HOST_EXISTS" == true ]]; then
     in_host=false
     in_section=false
     section_type=""
 
     while IFS= read -r line; do
+        # Remove any trailing whitespace/carriage returns
+        line="${line%$'\r'}"
+        line="${line%%[[:space:]]}"
+
         if [[ "$line" =~ ^[[:space:]]{4}${HOSTNAME}:[[:space:]]*$ ]]; then
             in_host=true
         elif [[ "$in_host" == true ]] && [[ "$line" =~ ^[[:space:]]{6}(brews|casks|pacman):[[:space:]]*$ ]]; then
             section_type="${BASH_REMATCH[1]}"
             in_section=true
-        elif [[ "$in_section" == true ]] && [[ "$line" =~ ^[[:space:]]{8}-[[:space:]]+(.+)$ ]]; then
+        elif [[ "$in_section" == true ]] && [[ "$line" =~ ^[[:space:]]{8}-[[:space:]]*(.+)[[:space:]]*$ ]]; then
             pkg="${BASH_REMATCH[1]}"
+            # Trim any trailing/leading whitespace from package name
+            pkg="${pkg#"${pkg%%[![:space:]]*}"}"
+            pkg="${pkg%"${pkg##*[![:space:]]}"}"
             case "$section_type" in
                 brews) CURRENT_BREWS+=("$pkg") ;;
                 casks) CURRENT_CASKS+=("$pkg") ;;
@@ -460,13 +459,27 @@ should_exclude_package() {
 # Find new packages
 if [[ "$OS" == "darwin" ]]; then
     for pkg in "${INSTALLED_BREWS[@]}"; do
-        if [[ ! " ${CURRENT_BREWS[*]:-} " =~ " ${pkg} " ]]; then
+        found=false
+        for current_pkg in "${CURRENT_BREWS[@]}"; do
+            if [[ "$pkg" == "$current_pkg" ]]; then
+                found=true
+                break
+            fi
+        done
+        if [[ "$found" == false ]]; then
             NEW_BREWS+=("$pkg")
         fi
     done
 
     for pkg in "${INSTALLED_CASKS[@]}"; do
-        if [[ ! " ${CURRENT_CASKS[*]:-} " =~ " ${pkg} " ]]; then
+        found=false
+        for current_pkg in "${CURRENT_CASKS[@]}"; do
+            if [[ "$pkg" == "$current_pkg" ]]; then
+                found=true
+                break
+            fi
+        done
+        if [[ "$found" == false ]]; then
             NEW_CASKS+=("$pkg")
         fi
     done
@@ -474,7 +487,17 @@ fi
 
 if [[ "$OS" == "linux" ]]; then
     for pkg in "${INSTALLED_NATIVE[@]}"; do
-        if [[ ! " ${CURRENT_NATIVE[*]:-} " =~ " ${pkg} " ]] && ! should_exclude_package "$pkg"; then
+        if should_exclude_package "$pkg"; then
+            continue
+        fi
+        found=false
+        for current_pkg in "${CURRENT_NATIVE[@]}"; do
+            if [[ "$pkg" == "$current_pkg" ]]; then
+                found=true
+                break
+            fi
+        done
+        if [[ "$found" == false ]]; then
             NEW_NATIVE+=("$pkg")
         fi
     done
@@ -483,13 +506,27 @@ fi
 # Find removed packages
 if [[ "$OS" == "darwin" ]]; then
     for pkg in "${CURRENT_BREWS[@]}"; do
-        if [[ ! " ${INSTALLED_BREWS[*]:-} " =~ " ${pkg} " ]]; then
+        found=false
+        for installed_pkg in "${INSTALLED_BREWS[@]}"; do
+            if [[ "$pkg" == "$installed_pkg" ]]; then
+                found=true
+                break
+            fi
+        done
+        if [[ "$found" == false ]]; then
             REMOVED_BREWS+=("$pkg")
         fi
     done
 
     for pkg in "${CURRENT_CASKS[@]}"; do
-        if [[ ! " ${INSTALLED_CASKS[*]:-} " =~ " ${pkg} " ]]; then
+        found=false
+        for installed_pkg in "${INSTALLED_CASKS[@]}"; do
+            if [[ "$pkg" == "$installed_pkg" ]]; then
+                found=true
+                break
+            fi
+        done
+        if [[ "$found" == false ]]; then
             REMOVED_CASKS+=("$pkg")
         fi
     done
@@ -497,7 +534,17 @@ fi
 
 if [[ "$OS" == "linux" ]]; then
     for pkg in "${CURRENT_NATIVE[@]}"; do
-        if [[ ! " ${INSTALLED_NATIVE[*]:-} " =~ " ${pkg} " ]] && ! should_exclude_package "$pkg"; then
+        if should_exclude_package "$pkg"; then
+            continue
+        fi
+        found=false
+        for installed_pkg in "${INSTALLED_NATIVE[@]}"; do
+            if [[ "$pkg" == "$installed_pkg" ]]; then
+                found=true
+                break
+            fi
+        done
+        if [[ "$found" == false ]]; then
             REMOVED_NATIVE+=("$pkg")
         fi
     done
@@ -561,7 +608,7 @@ print_color "$BLUE" "🔄 Updating manifest for host: $HOSTNAME"
 temp_file="$(mktemp)"
 in_host=false
 in_section=""
-section_end_line=-1
+last_was_package=false
 
 while IFS= read -r line; do
     # Detect current host section
@@ -573,51 +620,8 @@ while IFS= read -r line; do
 
     # Detect end of current host section
     if [[ "$in_host" == true ]] && [[ "$line" =~ ^[[:space:]]{4}[a-zA-Z0-9_-]+:[[:space:]]*$ ]]; then
-        in_host=false
-        in_section=""
-    fi
-
-    # Track which section we're in within the host
-    if [[ "$in_host" == true ]]; then
-        if [[ "$line" =~ ^[[:space:]]{6}(brews|casks|pacman):[[:space:]]*$ ]]; then
-            in_section="${BASH_REMATCH[1]}"
-            echo "$line" >> "$temp_file"
-            continue
-        fi
-
-        # Handle package lines
-        if [[ "$line" =~ ^[[:space:]]{8}-[[:space:]]+(.+)$ ]]; then
-            pkg="${BASH_REMATCH[1]}"
-
-            # Skip removed packages
-            skip=false
-            case "$in_section" in
-                brews)
-                    if [[ " ${REMOVED_BREWS[*]:-} " =~ " ${pkg} " ]]; then
-                        skip=true
-                    fi
-                    ;;
-                casks)
-                    if [[ " ${REMOVED_CASKS[*]:-} " =~ " ${pkg} " ]]; then
-                        skip=true
-                    fi
-                    ;;
-                pacman)
-                    if [[ " ${REMOVED_NATIVE[*]:-} " =~ " ${pkg} " ]]; then
-                        skip=true
-                    fi
-                    ;;
-            esac
-
-            if [[ "$skip" == false ]]; then
-                echo "$line" >> "$temp_file"
-            fi
-            continue
-        fi
-
-        # Detect end of package section to add new packages
-        if [[ "$in_section" != "" ]] && [[ "$line" =~ ^[[:space:]]{6}[a-z]+:[[:space:]]*$ ]]; then
-            # Add new packages before moving to next section
+        # Before leaving host, add any remaining packages
+        if [[ "$in_section" != "" ]] && [[ "$last_was_package" == true ]]; then
             case "$in_section" in
                 brews)
                     for pkg in "${NEW_BREWS[@]}"; do
@@ -635,12 +639,131 @@ while IFS= read -r line; do
                     done
                     ;;
             esac
-            in_section=""
+            last_was_package=false
+        fi
+        in_host=false
+        in_section=""
+        echo "$line" >> "$temp_file"
+        continue
+    fi
+
+    # Track which section we're in within the host
+    if [[ "$in_host" == true ]]; then
+        if [[ "$line" =~ ^[[:space:]]{6}(brews|casks|pacman):[[:space:]]*$ ]]; then
+            # Before starting new section, add packages from previous section
+            if [[ "$in_section" != "" ]] && [[ "$last_was_package" == true ]]; then
+                case "$in_section" in
+                    brews)
+                        for pkg in "${NEW_BREWS[@]}"; do
+                            echo "        - $pkg" >> "$temp_file"
+                        done
+                        ;;
+                    casks)
+                        for pkg in "${NEW_CASKS[@]}"; do
+                            echo "        - $pkg" >> "$temp_file"
+                        done
+                        ;;
+                    pacman)
+                        for pkg in "${NEW_NATIVE[@]}"; do
+                            echo "        - $pkg" >> "$temp_file"
+                        done
+                        ;;
+                esac
+                last_was_package=false
+            fi
+            in_section="${BASH_REMATCH[1]}"
+            echo "$line" >> "$temp_file"
+            continue
+        fi
+
+        # Handle package lines
+        if [[ "$line" =~ ^[[:space:]]{8}-[[:space:]]+(.+)$ ]]; then
+            pkg="${BASH_REMATCH[1]}"
+            pkg="${pkg#"${pkg%%[![:space:]]*}"}"
+            pkg="${pkg%"${pkg##*[![:space:]]}"}"
+
+            # Skip removed packages
+            skip=false
+            case "$in_section" in
+                brews)
+                    for removed_pkg in "${REMOVED_BREWS[@]}"; do
+                        if [[ "$pkg" == "$removed_pkg" ]]; then
+                            skip=true
+                            break
+                        fi
+                    done
+                    ;;
+                casks)
+                    for removed_pkg in "${REMOVED_CASKS[@]}"; do
+                        if [[ "$pkg" == "$removed_pkg" ]]; then
+                            skip=true
+                            break
+                        fi
+                    done
+                    ;;
+                pacman)
+                    for removed_pkg in "${REMOVED_NATIVE[@]}"; do
+                        if [[ "$pkg" == "$removed_pkg" ]]; then
+                            skip=true
+                            break
+                        fi
+                    done
+                    ;;
+            esac
+
+            if [[ "$skip" == false ]]; then
+                echo "$line" >> "$temp_file"
+                last_was_package=true
+            fi
+            continue
+        else
+            # Not a package line, so we're leaving the package list
+            if [[ "$in_section" != "" ]] && [[ "$last_was_package" == true ]]; then
+                case "$in_section" in
+                    brews)
+                        for pkg in "${NEW_BREWS[@]}"; do
+                            echo "        - $pkg" >> "$temp_file"
+                        done
+                        ;;
+                    casks)
+                        for pkg in "${NEW_CASKS[@]}"; do
+                            echo "        - $pkg" >> "$temp_file"
+                        done
+                        ;;
+                    pacman)
+                        for pkg in "${NEW_NATIVE[@]}"; do
+                            echo "        - $pkg" >> "$temp_file"
+                        done
+                        ;;
+                esac
+                last_was_package=false
+            fi
         fi
     fi
 
     echo "$line" >> "$temp_file"
 done < "$YAML_FILE"
+
+# Handle case where host section is at the end of file
+if [[ "$in_host" == true ]] && [[ "$in_section" != "" ]] && [[ "$last_was_package" == true ]]; then
+    case "$in_section" in
+        brews)
+            for pkg in "${NEW_BREWS[@]}"; do
+                echo "        - $pkg" >> "$temp_file"
+            done
+            ;;
+        casks)
+            for pkg in "${NEW_CASKS[@]}"; do
+                echo "        - $pkg" >> "$temp_file"
+            done
+            ;;
+        pacman)
+            for pkg in "${NEW_NATIVE[@]}"; do
+                echo "        - $pkg" >> "$temp_file"
+            done
+            ;;
+    esac
+fi
 
 mv "$temp_file" "$YAML_FILE"
 

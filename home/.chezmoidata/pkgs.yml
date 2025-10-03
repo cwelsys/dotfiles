@@ -127,6 +127,10 @@ pkgs:
         - yazi
         - yq
         - zoxide
+        - gpg-tui
+        - moghtech/komodo/km
+        - mpv
+        - termscp
       casks:
         - 1password-cli
         - alt-tab
@@ -193,6 +197,8 @@ pkgs:
         - vlc
         - zed
         - zoom
+        - gimp
+        - steamcmd
 
     main:
       pacman:
