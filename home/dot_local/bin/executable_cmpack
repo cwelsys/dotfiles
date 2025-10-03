@@ -408,9 +408,9 @@ fi
 
 # Parse packages for current hostname if it exists
 if [[ "$HOST_EXISTS" == true ]]; then
-    local in_host=false
-    local in_section=false
-    local section_type=""
+    in_host=false
+    in_section=false
+    section_type=""
 
     while IFS= read -r line; do
         if [[ "$line" =~ ^[[:space:]]{4}${HOSTNAME}:[[:space:]]*$ ]]; then
@@ -419,7 +419,7 @@ if [[ "$HOST_EXISTS" == true ]]; then
             section_type="${BASH_REMATCH[1]}"
             in_section=true
         elif [[ "$in_section" == true ]] && [[ "$line" =~ ^[[:space:]]{8}-[[:space:]]+(.+)$ ]]; then
-            local pkg="${BASH_REMATCH[1]}"
+            pkg="${BASH_REMATCH[1]}"
             case "$section_type" in
                 brews) CURRENT_BREWS+=("$pkg") ;;
                 casks) CURRENT_CASKS+=("$pkg") ;;
@@ -558,10 +558,134 @@ fi
 # Update existing host entry
 print_color "$BLUE" "🔄 Updating manifest for host: $HOSTNAME"
 
-# TODO: Implement update logic for existing hosts
-print_color "$YELLOW" "⚠️  Update logic for existing hosts coming soon"
-print_color "$CYAN" "New packages found: ${#NEW_BREWS[@]} brews, ${#NEW_CASKS[@]} casks, ${#NEW_NATIVE[@]} native"
-print_color "$CYAN" "Removed packages: ${#REMOVED_BREWS[@]} brews, ${#REMOVED_CASKS[@]} casks, ${#REMOVED_NATIVE[@]} native"
+temp_file="$(mktemp)"
+in_host=false
+in_section=""
+section_end_line=-1
+
+while IFS= read -r line; do
+    # Detect current host section
+    if [[ "$line" =~ ^[[:space:]]{4}${HOSTNAME}:[[:space:]]*$ ]]; then
+        in_host=true
+        echo "$line" >> "$temp_file"
+        continue
+    fi
+
+    # Detect end of current host section
+    if [[ "$in_host" == true ]] && [[ "$line" =~ ^[[:space:]]{4}[a-zA-Z0-9_-]+:[[:space:]]*$ ]]; then
+        in_host=false
+        in_section=""
+    fi
+
+    # Track which section we're in within the host
+    if [[ "$in_host" == true ]]; then
+        if [[ "$line" =~ ^[[:space:]]{6}(brews|casks|pacman):[[:space:]]*$ ]]; then
+            in_section="${BASH_REMATCH[1]}"
+            echo "$line" >> "$temp_file"
+            continue
+        fi
+
+        # Handle package lines
+        if [[ "$line" =~ ^[[:space:]]{8}-[[:space:]]+(.+)$ ]]; then
+            pkg="${BASH_REMATCH[1]}"
+
+            # Skip removed packages
+            skip=false
+            case "$in_section" in
+                brews)
+                    if [[ " ${REMOVED_BREWS[*]:-} " =~ " ${pkg} " ]]; then
+                        skip=true
+                    fi
+                    ;;
+                casks)
+                    if [[ " ${REMOVED_CASKS[*]:-} " =~ " ${pkg} " ]]; then
+                        skip=true
+                    fi
+                    ;;
+                pacman)
+                    if [[ " ${REMOVED_NATIVE[*]:-} " =~ " ${pkg} " ]]; then
+                        skip=true
+                    fi
+                    ;;
+            esac
+
+            if [[ "$skip" == false ]]; then
+                echo "$line" >> "$temp_file"
+            fi
+            continue
+        fi
+
+        # Detect end of package section to add new packages
+        if [[ "$in_section" != "" ]] && [[ "$line" =~ ^[[:space:]]{6}[a-z]+:[[:space:]]*$ ]]; then
+            # Add new packages before moving to next section
+            case "$in_section" in
+                brews)
+                    for pkg in "${NEW_BREWS[@]}"; do
+                        echo "        - $pkg" >> "$temp_file"
+                    done
+                    ;;
+                casks)
+                    for pkg in "${NEW_CASKS[@]}"; do
+                        echo "        - $pkg" >> "$temp_file"
+                    done
+                    ;;
+                pacman)
+                    for pkg in "${NEW_NATIVE[@]}"; do
+                        echo "        - $pkg" >> "$temp_file"
+                    done
+                    ;;
+            esac
+            in_section=""
+        fi
+    fi
+
+    echo "$line" >> "$temp_file"
+done < "$YAML_FILE"
+
+mv "$temp_file" "$YAML_FILE"
+
+# Report changes
+if [[ ${#NEW_BREWS[@]} -gt 0 ]]; then
+    print_color "$GREEN" "✅ Added ${#NEW_BREWS[@]} new brews:"
+    for pkg in "${NEW_BREWS[@]}"; do
+        print_color "$CYAN" "  + $pkg"
+    done
+fi
+
+if [[ ${#NEW_CASKS[@]} -gt 0 ]]; then
+    print_color "$GREEN" "✅ Added ${#NEW_CASKS[@]} new casks:"
+    for pkg in "${NEW_CASKS[@]}"; do
+        print_color "$CYAN" "  + $pkg"
+    done
+fi
+
+if [[ ${#NEW_NATIVE[@]} -gt 0 ]]; then
+    print_color "$GREEN" "✅ Added ${#NEW_NATIVE[@]} new pacman packages:"
+    for pkg in "${NEW_NATIVE[@]}"; do
+        print_color "$CYAN" "  + $pkg"
+    done
+fi
+
+if [[ ${#REMOVED_BREWS[@]} -gt 0 ]]; then
+    print_color "$GREEN" "✅ Removed ${#REMOVED_BREWS[@]} uninstalled brews:"
+    for pkg in "${REMOVED_BREWS[@]}"; do
+        print_color "$RED" "  - $pkg"
+    done
+fi
+
+if [[ ${#REMOVED_CASKS[@]} -gt 0 ]]; then
+    print_color "$GREEN" "✅ Removed ${#REMOVED_CASKS[@]} uninstalled casks:"
+    for pkg in "${REMOVED_CASKS[@]}"; do
+        print_color "$RED" "  - $pkg"
+    done
+fi
+
+if [[ ${#REMOVED_NATIVE[@]} -gt 0 ]]; then
+    print_color "$GREEN" "✅ Removed ${#REMOVED_NATIVE[@]} uninstalled pacman packages:"
+    for pkg in "${REMOVED_NATIVE[@]}"; do
+        print_color "$RED" "  - $pkg"
+    done
+fi
 
 echo ""
 print_color "$GREEN" "✨ DONE! Run 'chezmoi apply' to apply your changes."

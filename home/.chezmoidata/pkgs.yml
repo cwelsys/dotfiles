@@ -126,7 +126,6 @@ pkgs:
         - xxh
         - yazi
         - yq
-        - yt-dlp
         - zoxide
       casks:
         - 1password-cli
