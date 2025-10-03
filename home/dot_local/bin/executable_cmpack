@@ -105,7 +105,9 @@ USE_BREW=false
 USE_NATIVE=false
 NATIVE_PKG_MANAGER=""
 
+# Strip .local from Darwin hostnames
 if [[ "$OS" == "darwin" ]]; then
+    HOSTNAME="${HOSTNAME%.local}"
     PKG_MANAGER="brew"
     USE_BREW=true
 elif [[ "$OS" == "linux" ]]; then
@@ -512,9 +514,9 @@ if [[ "$HOST_EXISTS" == false ]]; then
     print_color "$BLUE" "🆕 Creating new host entry for: $HOSTNAME"
 
     # Find the hosts section and add new host
-    local temp_file="$(mktemp)"
-    local in_hosts=false
-    local added=false
+    temp_file="$(mktemp)"
+    in_hosts=false
+    added=false
 
     while IFS= read -r line; do
         echo "$line" >> "$temp_file"
