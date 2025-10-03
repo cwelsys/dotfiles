@@ -640,7 +640,7 @@ while IFS= read -r line; do
         continue
     fi
 
-    # Detect end of current host section
+    # Detect end of current host section - WRITE PACKAGES BEFORE WRITING THIS LINE
     if [[ "$in_host" == true ]] && [[ "$line" =~ ^[[:space:]]{4}[a-zA-Z0-9_-]+:[[:space:]]*$ ]]; then
         # Before leaving host, add any remaining packages
         if [[ "$in_section" != "" ]] && [[ "$last_was_package" == true ]]; then
@@ -661,10 +661,11 @@ while IFS= read -r line; do
                     done
                     ;;
             esac
-            last_was_package=false
         fi
         in_host=false
         in_section=""
+        last_was_package=false
+        # Now write the line that triggered this
         echo "$line" >> "$temp_file"
         continue
     fi
@@ -691,9 +692,9 @@ while IFS= read -r line; do
                         done
                         ;;
                 esac
-                last_was_package=false
             fi
             in_section="${BASH_REMATCH[1]}"
+            last_was_package=false
             echo "$line" >> "$temp_file"
             continue
         fi
