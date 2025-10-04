@@ -566,10 +566,9 @@ if [[ "$HOST_EXISTS" == false ]]; then
     added=false
 
     while IFS= read -r line; do
-        echo "$line" >> "$temp_file"
-
         if [[ "$line" =~ ^[[:space:]]*hosts:[[:space:]]*$ ]]; then
             in_hosts=true
+            echo "$line" >> "$temp_file"
         elif [[ "$in_hosts" == true ]] && [[ ! "$added" == true ]] && [[ "$line" =~ ^[[:space:]]{4}[a-zA-Z0-9_-]+:[[:space:]]*$ ]]; then
             # Add new host before first existing host
             echo "    # $(date +%Y-%m-%d) - Auto-created for $HOSTNAME" >> "$temp_file"
@@ -592,6 +591,9 @@ if [[ "$HOST_EXISTS" == false ]]; then
             fi
             echo "" >> "$temp_file"
             added=true
+            echo "$line" >> "$temp_file"
+        else
+            echo "$line" >> "$temp_file"
         fi
     done < "$YAML_FILE"
 
