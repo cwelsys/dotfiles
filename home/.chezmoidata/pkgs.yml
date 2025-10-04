@@ -1,6 +1,5 @@
 pkgs:
   hosts:
-    # 2025-10-04 - Auto-created for pbox
     pbox:
       pacman:
         - 1password-cli
