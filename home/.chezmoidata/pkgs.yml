@@ -113,6 +113,17 @@ pkgs:
         - zoxide
         - zram-generator
         - zsh
+        - bind
+        - lsof
+        - ncdu
+        - nmap
+        - rsync
+        - sysstat
+        - tcpdump
+        - tmux
+        - tree
+        - yq
+        - yt-dlp
 
     mba:
       brews:
