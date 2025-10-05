@@ -485,78 +485,15 @@ alias:
   - name: info
     value: brew info
     if: match .OS "darwin"
-  - name: cask-get
-    value: brew install --cask
-    if: match .OS "darwin"
-  - name: cask-rm
-    value: brew uninstall --cask
-    if: match .OS "darwin"
   - name: tap
     value: brew tap
     if: match .OS "darwin"
   - name: untap
     value: brew untap
     if: match .OS "darwin"
-
-  - name: clean
-    value: sudo dnf autoremove -y
-    if: hasCommand "dnf"
-  - name: update
-    value: sudo dnf upgrade -y
-    if: hasCommand "dnf"
-  - name: install
-    value: sudo dnf install -y
-    if: hasCommand "dnf"
-  - name: remove
-    value: sudo dnf remove -y
-    if: hasCommand "dnf"
-  - name: search
-    value: dnf search
-    if: hasCommand "dnf"
-  - name: info
-    value: dnf info
-    if: hasCommand "dnf"
-  - name: dnf
-    value: sudo dnf
-    if: hasCommand "dnf"
-
-  - name: clean
-    value: sudo apt autoremove -y && sudo apt autoclean
-    if: and (hasCommand "apt") (ne .OS "darwin")
-  - name: update
-    value: sudo apt update && sudo apt upgrade -y
-    if: and (hasCommand "apt") (ne .OS "darwin")
-  - name: install
-    value: sudo apt install -y
-    if: and (hasCommand "apt") (ne .OS "darwin")
-  - name: remove
-    value: sudo apt remove -y
-    if: and (hasCommand "apt") (ne .OS "darwin")
-  - name: search
-    value: apt search
-    if: and (hasCommand "apt") (ne .OS "darwin")
-  - name: info
-    value: apt show
-    if: and (hasCommand "apt") (ne .OS "darwin")
-
-  - name: clean
-    value: sudo zypper clean -a
-    if: hasCommand "zypper"
-  - name: update
-    value: sudo zypper refresh && sudo zypper update -y
-    if: hasCommand "zypper"
-  - name: install
-    value: sudo zypper install -y
-    if: hasCommand "zypper"
-  - name: remove
-    value: sudo zypper remove -y
-    if: hasCommand "zypper"
-  - name: search
-    value: zypper search
-    if: hasCommand "zypper"
-  - name: info
-    value: zypper info
-    if: hasCommand "zypper"
+  - name: in
+    value: 'brew formulae | fzf -m --preview "brew info {1}" --preview-window "right,75%,wrap,cycle,<65(down,80%,wrap,cycle)" | xargs brew install'
+    if: match .OS "darwin"
 
   - name: pacman
     value: sudo pacman
