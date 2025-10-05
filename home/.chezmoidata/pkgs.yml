@@ -124,6 +124,11 @@ pkgs:
         - tree
         - yq
         - yt-dlp
+        - dmidecode
+        - doggo
+        - fwupd
+        - smartmontools
+        - ttf-fantasque-nerd
 
     mba:
       brews:
