@@ -55,4 +55,8 @@ Documents/
 .config/environment.d/
 {{ end }}
 
+{{ if ne .osid "linux-arch" }}
+.config/yay
+{{ end }}
+
 .config/windows-terminal/
