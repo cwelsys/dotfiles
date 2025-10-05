@@ -2,7 +2,7 @@
 	"aururl": "https://aur.archlinux.org",
 	"buildDir": "{{ .chezmoi.homeDir }}/.cache/yay",
 	"absdir": "{{ .chezmoi.homeDir }}/.cache/yay/abs",
-	"editor": "",
+	"editor": "nvim",
 	"editorflags": "",
 	"makepkgbin": "makepkg",
 	"makepkgconf": "",
@@ -10,9 +10,9 @@
 	"pacmanconf": "/etc/pacman.conf",
 	"redownload": "no",
 	"rebuild": "no",
-	"answerclean": "",
-	"answerdiff": "",
-	"answeredit": "",
+	"answerclean": "N",
+	"answerdiff": "N",
+	"answeredit": "N",
 	"answerupgrade": "",
 	"gitbin": "git",
 	"gpgbin": "gpg",
@@ -39,5 +39,6 @@
 	"editmenu": false,
 	"combinedupgrade": false,
 	"useask": false,
-	"batchinstall": false
+	"batchinstall": false,
+	"doubleconfirm": true
 }
