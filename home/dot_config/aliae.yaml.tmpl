@@ -458,8 +458,6 @@ alias:
   - name: trash-empty
     value: m trash --clean
     if: and (match .OS "darwin") (hasCommand "m")
-
-  # Package Managers
   - name: update
     value: brew update && brew upgrade
     if: and (eq .OS "darwin") (ne .Shell "nu")
@@ -495,6 +493,7 @@ alias:
     value: 'brew formulae | fzf -m --preview "brew info {1}" --preview-window "right,75%,wrap,cycle,<65(down,80%,wrap,cycle)" | xargs brew install'
     if: match .OS "darwin"
 
+  # Arch
   - name: pacman
     value: sudo pacman
     if: hasCommand "pacman"
