@@ -490,7 +490,7 @@ alias:
     value: brew untap
     if: match .OS "darwin"
   - name: in
-    value: 'brew formulae | fzf -m --preview "brew info {1}" --preview-window "right,75%,wrap,cycle,<65(down,80%,wrap,cycle)" | xargs brew install'
+    value: '(brew formulae && brew casks) | fzf -q "$1" -m --preview "brew info {1}" --preview-window "right,75%,wrap,cycle,<65(down,80%,wrap,cycle)" | xargs brew install'
     if: match .OS "darwin"
 
   # Arch
