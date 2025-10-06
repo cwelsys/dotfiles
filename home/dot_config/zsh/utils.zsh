@@ -1,3 +1,6 @@
+export ZSH_PLUGINS_ALIAS_TIPS_TEXT="tip: "
+export ZSH_PLUGINS_ALIAS_TIPS_EXCLUDES="_ ll vi s l la"
+
 fdz-widget() {
 	fdz
 	zle reset-prompt
