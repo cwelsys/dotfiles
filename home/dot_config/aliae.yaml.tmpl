@@ -465,9 +465,6 @@ alias:
     type: function
     value: brew update; brew upgrade
     if: and (eq .OS "darwin") (eq .Shell "nu")
-  - name: install
-    value: brew install
-    if: match .OS "darwin"
   - name: list
     value: brew list
     if: match .OS "darwin"
@@ -501,9 +498,6 @@ alias:
     value: yay -Scc
   - name: update
     value: yay -Syyu --noconfirm
-    if: hasCommand "yay"
-  - name: install
-    value: yay -S $1 --needed --noconfirm
     if: hasCommand "yay"
   - name: remove
     value: yay -Rnsu $1
