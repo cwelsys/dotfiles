@@ -331,6 +331,7 @@ pkgs:
         - zoom
         - gimp
         - steamcmd
+        - maccy
 
     main:
       pacman:

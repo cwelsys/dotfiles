@@ -816,4 +816,4 @@ if [[ ${#REMOVED_NATIVE[@]} -gt 0 ]]; then
 fi
 
 echo ""
-print_color "$GREEN" "✨ DONE! Run 'chezmoi apply' to apply your changes."
+print_color "$GREEN" "✨ Done."
