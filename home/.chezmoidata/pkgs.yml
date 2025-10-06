@@ -129,6 +129,8 @@ pkgs:
         - fwupd
         - smartmontools
         - ttf-fantasque-nerd
+        - hdparm
+        - reflector
 
     mba:
       brews:
