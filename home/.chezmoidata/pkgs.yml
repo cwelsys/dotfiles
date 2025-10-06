@@ -550,6 +550,10 @@ pkgs:
         - xdg-ninja
         - yazi
         - zsh
+        - dmidecode
+        - doggo
+        - fwupd
+        - reflector
 
     wini:
       scoop:
