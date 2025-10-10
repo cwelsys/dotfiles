@@ -5,17 +5,10 @@ fi
 eval "$(aliae init zsh --config "$HOME/.config/aliae.yaml")"
 eval "$(starship init zsh)"
 
-# if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]] && command -v fastfetch >/dev/null 2>&1; then
-#   fastfetch
-# fi
-
 if [[ -n "$SSH_CONNECTION" ]]; then
     unset VISUAL
+    export BROWSER="local-open"
 fi
-
-# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-#   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-# fi
 
 HISTFILE="${XDG_STATE_HOME}/zsh/history"
 HISTSIZE=290000
@@ -33,10 +26,7 @@ TRANSIENT_PROMPT="${PROMPT// prompt / prompt --profile transient }"
 TRANSIENT_RPROMPT="${PROMPT// prompt / prompt --profile rtransient }"
 
 function transient-prompt-precmd {
-    # Fix ctrl+c behavior
     TRAPINT() { transient-prompt; return $(( 128 + $1 )) }
-
-    # Save transient prompt
     SAVED_PROMPT="$(eval "printf '%s' \"${TRANSIENT_PROMPT}\"")"
     SAVED_RPROMPT="$(eval "printf '%s' \"${TRANSIENT_RPROMPT}\"")"
 }
@@ -45,7 +35,6 @@ autoload -Uz add-zle-hook-widget
 add-zle-hook-widget zle-line-finish transient-prompt
 
 function transient-prompt() {
-    # Use saved transient prompt
     PROMPT="$SAVED_PROMPT" RPROMPT="$SAVED_RPROMPT" zle .reset-prompt
 }
 
@@ -77,9 +66,6 @@ zinit light-mode for \
   zdharma-continuum/zinit-annex-bin-gem-node \
   zdharma-continuum/zinit-annex-patch-dl \
   zdharma-continuum/zinit-annex-rust
-
-
-# zinit ice depth=1; zinit light romkatv/powerlevel10k
 
 zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
   atclone"./atuin init zsh > init.zsh; ./atuin gen-completions --shell zsh > _atuin" \
@@ -196,7 +182,6 @@ zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
 	*) git log --color=always $word ;;
 	esac'
 
-
 bindkey ' ' magic-space
 bindkey '^[[3~' delete-char
 bindkey '^[[1;5D' beginning-of-line
@@ -206,9 +191,3 @@ bindkey '^[w' kill-region
 bindkey '^Y' redo
 
 [ -x "$(command -v zoxide)" ] && eval "$(zoxide init --cmd cd zsh)"
-
-if [[ -n "$SSH_CONNECTION" ]]; then
-  export BROWSER="local-open"
-fi
-
-# [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
