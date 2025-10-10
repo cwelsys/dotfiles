@@ -43,6 +43,10 @@ disabled = false
 symbol = " "
 
 [status]
+symbol = '✘ '
+map_symbol = true
+format = "[$symbol$status]($style) "
+style = 'red'
 disabled = false
 
 [line_break]
