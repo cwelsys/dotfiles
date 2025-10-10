@@ -76,8 +76,8 @@ zsh_indicator = ''
 
 [cmd_duration]
 disabled = false
-format = "[$duration]($style) "
-style = "dimmed sapphire"
+format = "[$duration]($style)"
+style = "sapphire"
 
 [directory]
 fish_style_pwd_dir_length = 2
