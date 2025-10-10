@@ -4,6 +4,7 @@ add_newline = false
 command_timeout = 100
 continuation_prompt = "[❯❯ ](subtext0)"
 palette = "mocha"
+follow_symlinks = false
 
 format = """
 $os\
@@ -84,8 +85,8 @@ style = "dimmed sapphire"
 fish_style_pwd_dir_length = 2
 format = '[$path]($style)[$read_only]($read_only_style) '
 read_only = " "
-read_only_style = '197'
-style = "sapphire"
+read_only_style = 'overlay1'
+style = "blue"
 truncation_length = 2
 use_os_path_sep = false
 
