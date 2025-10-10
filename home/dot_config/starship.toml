@@ -1,9 +1,9 @@
 "$schema" = "https://starship.rs/config-schema.json"
 
-add_newline         = true
-command_timeout     = 100
+add_newline = false
+command_timeout = 100
 continuation_prompt = "[❯❯ ](subtext0)"
-palette             = "mocha"
+palette = "mocha"
 
 format = """
 $os\
@@ -23,307 +23,307 @@ $line_break\
 $character"""
 
 [profiles]
-    transient = """
+transient = """
 $character\
 """
 
-    rtransient = """
+rtransient = """
 $status\
 $cmd_duration\
 """
 
 [os]
-    disabled = true
-    format   = '[$symbol ](lavender)'
+disabled = true
+format = '[$symbol ](lavender)'
 
 [fill]
-    disabled = false
-    symbol   = " "
+disabled = false
+symbol = " "
 
 [status]
-    disabled = false
+disabled = false
 
 [line_break]
-    disabled = false
+disabled = false
 
 [container]
-    format = ' [$symbol \[$name\]]($style) '
-    symbol = ''
+format = ' [$symbol \[$name\]]($style) '
+symbol = ''
 
 [character]
-    # error_symbol   = "[](mauve)"
-    success_symbol = "[❯](peach)"
-    vimcmd_symbol  = "[❮](peach)"
+# error_symbol   = "[](mauve)"
+success_symbol = "[❯](peach)"
+vimcmd_symbol = "[❮](peach)"
 
 [username]
-    aliases     = { "Administrator" = '󱐋 ' }
-    format      = '[$user]($style)'
-    show_always = false
-    style_root  = 'red'
-    style_user  = 'yellow'
+aliases = { "Administrator" = '󱐋 ' }
+format = '[$user]($style)'
+show_always = false
+style_root = 'red'
+style_user = 'yellow'
 
 [shell]
-    disabled             = true
-    fish_indicator       = '󰈺'
-    format               = '[$indicator]($style)'
-    powershell_indicator = ''
-    style                = 'teal'
-    unknown_indicator    = ''
-    zsh_indicator        = ''
+disabled = true
+fish_indicator = '󰈺'
+format = '[$indicator]($style)'
+powershell_indicator = ''
+style = 'teal'
+unknown_indicator = ''
+zsh_indicator = ''
 
 [cmd_duration]
-    disabled           = false
-    format             = "[$duration]($style) "
-    min_time           = 2000
-    min_time_to_notify = 45000
-    show_milliseconds  = false
-    show_notifications = false
-    style              = "dimmed sapphire"
+disabled = false
+format = "[$duration]($style) "
+min_time = 2000
+min_time_to_notify = 45000
+show_milliseconds = false
+show_notifications = false
+style = "dimmed sapphire"
 
 [directory]
-    fish_style_pwd_dir_length = 2
-    format                    = '[$path]($style)[$read_only]($read_only_style) '
-    read_only                 = " "
-    read_only_style           = '197'
-    style                     = "sapphire"
-    truncation_length         = 2
-    use_os_path_sep           = false
+fish_style_pwd_dir_length = 2
+format = '[$path]($style)[$read_only]($read_only_style) '
+read_only = " "
+read_only_style = '197'
+style = "sapphire"
+truncation_length = 2
+use_os_path_sep = false
 
 [hostname]
-    format     = '[$ssh_symbol$hostname]($style)'
-    ssh_symbol = "󰥛 "
-    style      = 'bold dimmed green'
+format = '[$ssh_symbol$hostname]($style)'
+ssh_symbol = "󰥛 "
+style = 'bold dimmed green'
 
 [git_branch]
-    format            = '[$symbol$branch]($style)'
-    style             = "overlay2"
-    symbol            = ' '
-    truncation_length = 32
-    truncation_symbol = "…"
+format = '[$symbol$branch]($style)'
+style = "overlay2"
+symbol = ' '
+truncation_length = 32
+truncation_symbol = "…"
 
 [git_commit]
-    commit_hash_length = 8
-    format             = ' [@$hash$tag]($style)'
-    style              = "overlay2"
-    tag_symbol         = '  '
+commit_hash_length = 8
+format = ' [@$hash$tag]($style)'
+style = "overlay2"
+tag_symbol = '  '
 
 [git_state]
-    am          = "󰲾"
-    bisect      = "󱢇"
-    cherry_pick = " "
-    format      = ' <red>[$state( $progress_current/$progress_total)]($style)</>'
-    merge       = ""
-    rebase      = ""
-    revert      = " "
-    style       = "red"
+am = "󰲾"
+bisect = "󱢇"
+cherry_pick = " "
+format = ' <red>[$state( $progress_current/$progress_total)]($style)</>'
+merge = ""
+rebase = ""
+revert = " "
+style = "red"
 
 [git_status]
-    ahead      = '[ ⇡${count}](green)'
-    behind     = '[ ⇣${count}](green)'
-    conflicted = '[ ~${count}](red)'
-    deleted    = '[ -${count}](yellow)'
-    diverged   = '[ ⇕⇣${behind_count}⇡${ahead_count}](green)'
-    format     = '[$all_status$ahead_behind]($style)'
-    modified   = '[ !${count}](yellow)'
-    renamed    = '[ »${count}](yellow)'
-    staged     = '[ +${count}](yellow)'
-    stashed    = '[ *${count}](green)'
-    style      = "overlay2"
-    untracked  = '[ ?${count}](blue)'
-    up_to_date = ''
+ahead = '[ ⇡${count}](green)'
+behind = '[ ⇣${count}](green)'
+conflicted = '[ ~${count}](red)'
+deleted = '[ -${count}](yellow)'
+diverged = '[ ⇕⇣${behind_count}⇡${ahead_count}](green)'
+format = '[$all_status$ahead_behind]($style)'
+modified = '[ !${count}](yellow)'
+renamed = '[ »${count}](yellow)'
+staged = '[ +${count}](yellow)'
+stashed = '[ *${count}](green)'
+style = "overlay2"
+untracked = '[ ?${count}](blue)'
+up_to_date = ''
 
 [memory_usage]
-    symbol = "󰍛 "
+symbol = "󰍛 "
 
 [vagrant]
-    format = " [$symbol($version )]($style)"
-    symbol = ""
-    # symbol = "⋁"
-    disabled = false
-    style    = "sky bold"
+format = " [$symbol($version )]($style)"
+symbol = ""
+# symbol = "⋁"
+disabled = false
+style = "sky bold"
 
 [docker_context]
-    symbol = " "
+symbol = " "
 
 [aws]
-    disabled = true
-    symbol   = " "
+disabled = true
+symbol = " "
 
 [buf]
-    symbol = " "
+symbol = " "
 
 [c]
-    symbol = " "
+symbol = " "
 
 [conda]
-    symbol = "🐍 "
+symbol = "🐍 "
 
 [crystal]
-    symbol = " "
+symbol = " "
 
 [dart]
-    symbol = " "
+symbol = " "
 
 [elixir]
-    symbol = " "
+symbol = " "
 
 [elm]
-    symbol = " "
+symbol = " "
 
 [fennel]
-    symbol = " "
+symbol = " "
 
 [fossil_branch]
-    symbol = " "
+symbol = " "
 
 [golang]
-    symbol = " "
+symbol = " "
 
 [guix_shell]
-    symbol = " "
+symbol = " "
 
 [haskell]
-    symbol = " "
+symbol = " "
 
 [haxe]
-    symbol = " "
+symbol = " "
 
 [hg_branch]
-    symbol = " "
+symbol = " "
 
 [java]
-    symbol = " "
+symbol = " "
 
 [julia]
-    symbol = " "
+symbol = " "
 
 [kotlin]
-    symbol = " "
+symbol = " "
 
 [lua]
-    symbol = " "
+symbol = " "
 
 [meson]
-    symbol = "󰔷 "
+symbol = "󰔷 "
 
 [nim]
-    symbol = "󰆥 "
+symbol = "󰆥 "
 
 [nix_shell]
-    symbol = " "
+symbol = " "
 
 [nodejs]
-    symbol = " "
+symbol = " "
 
 [ocaml]
-    symbol = " "
+symbol = " "
 
 [package]
-    symbol = "󰏗 "
+symbol = "󰏗 "
 
 [perl]
-    symbol = " "
+symbol = " "
 
 [php]
-    symbol = " "
+symbol = " "
 
 [pijul_channel]
-    symbol = " "
+symbol = " "
 
 [python]
-    python_binary = ["./venv/bin/python", "python", "python2", "python3"]
-    symbol        = " "
+python_binary = ["./venv/bin/python", "python", "python2", "python3"]
+symbol = " "
 
 [rlang]
-    symbol = "󰟔 "
+symbol = "󰟔 "
 
 [ruby]
-    symbol = " "
+symbol = " "
 
 [rust]
-    symbol = "🦀 "
+symbol = "🦀 "
 
 [scala]
-    symbol = " "
+symbol = " "
 
 [swift]
-    symbol = " "
+symbol = " "
 
 [zig]
-    symbol = " "
+symbol = " "
 
 [gradle]
-    symbol = " "
+symbol = " "
 
-    [os.symbols]
-        AlmaLinux        = " "
-        Alpaquita        = " "
-        Alpine           = " "
-        Amazon           = " "
-        Android          = " "
-        Arch             = " "
-        Artix            = " "
-        CentOS           = " "
-        Debian           = " "
-        DragonFly        = " "
-        Emscripten       = " "
-        EndeavourOS      = " "
-        Fedora           = " "
-        FreeBSD          = " "
-        Garuda           = "󰛓 "
-        Gentoo           = " "
-        HardenedBSD      = "󰞌 "
-        Illumos          = "󰈸 "
-        Kali             = " "
-        Linux            = "󰌽 "
-        Mabox            = " "
-        Macos            = " "
-        Manjaro          = " "
-        Mariner          = " "
-        MidnightBSD      = " "
-        Mint             = " "
-        NetBSD           = " "
-        NixOS            = " "
-        OpenBSD          = "󰈺 "
-        OracleLinux      = "󰌷 "
-        Pop              = " "
-        Raspbian         = " "
-        RedHatEnterprise = " "
-        Redhat           = " "
-        Redox            = "󰀘 "
-        RockyLinux       = " "
-        SUSE             = " "
-        Solus            = "󰠳 "
-        Ubuntu           = " "
-        Unknown          = " "
-        Void             = " "
-        Windows          = "󰍲 "
-        openSUSE         = " "
+[os.symbols]
+AlmaLinux = " "
+Alpaquita = " "
+Alpine = " "
+Amazon = " "
+Android = " "
+Arch = " "
+Artix = " "
+CentOS = " "
+Debian = " "
+DragonFly = " "
+Emscripten = " "
+EndeavourOS = " "
+Fedora = " "
+FreeBSD = " "
+Garuda = "󰛓 "
+Gentoo = " "
+HardenedBSD = "󰞌 "
+Illumos = "󰈸 "
+Kali = " "
+Linux = "󰌽 "
+Mabox = " "
+Macos = " "
+Manjaro = " "
+Mariner = " "
+MidnightBSD = " "
+Mint = " "
+NetBSD = " "
+NixOS = " "
+OpenBSD = "󰈺 "
+OracleLinux = "󰌷 "
+Pop = " "
+Raspbian = " "
+RedHatEnterprise = " "
+Redhat = " "
+Redox = "󰀘 "
+RockyLinux = " "
+SUSE = " "
+Solus = "󰠳 "
+Ubuntu = " "
+Unknown = " "
+Void = " "
+Windows = "󰍲 "
+openSUSE = " "
 
 [palettes.mocha]
-    base      = "#1e1e2e"
-    blue      = "#89b4fa"
-    crust     = "#11111b"
-    flamingo  = "#f2cdcd"
-    green     = "#a6e3a1"
-    lavender  = "#b4befe"
-    mantle    = "#181825"
-    maroon    = "#eba0ac"
-    mauve     = "#cba6f7"
-    overlay0  = "#6c7086"
-    overlay1  = "#7f849c"
-    overlay2  = "#9399b2"
-    peach     = "#fab387"
-    pink      = "#f5c2e7"
-    red       = "#f38ba8"
-    rosewater = "#f5e0dc"
-    sapphire  = "#74c7ec"
-    sky       = "#89dceb"
-    subtext0  = "#a6adc8"
-    subtext1  = "#bac2de"
-    surface0  = "#313244"
-    surface1  = "#45475a"
-    surface2  = "#585b70"
-    teal      = "#94e2d5"
-    text      = "#cdd6f4"
-    yellow    = "#f9e2af"
+base = "#1e1e2e"
+blue = "#89b4fa"
+crust = "#11111b"
+flamingo = "#f2cdcd"
+green = "#a6e3a1"
+lavender = "#b4befe"
+mantle = "#181825"
+maroon = "#eba0ac"
+mauve = "#cba6f7"
+overlay0 = "#6c7086"
+overlay1 = "#7f849c"
+overlay2 = "#9399b2"
+peach = "#fab387"
+pink = "#f5c2e7"
+red = "#f38ba8"
+rosewater = "#f5e0dc"
+sapphire = "#74c7ec"
+sky = "#89dceb"
+subtext0 = "#a6adc8"
+subtext1 = "#bac2de"
+surface0 = "#313244"
+surface1 = "#45475a"
+surface2 = "#585b70"
+teal = "#94e2d5"
+text = "#cdd6f4"
+yellow = "#f9e2af"
