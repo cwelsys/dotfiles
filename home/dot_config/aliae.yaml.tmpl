@@ -591,6 +591,8 @@ env:
   - name: PASSWORD_STORE_DIR
     value: '{{ .chezmoi.homeDir }}/.local/share/pass'
     if: match .OS "linux"
+  - name: FORCE_COLOR
+    value: 1
   - name: GNUPGHOME
     value: '{{ .chezmoi.homeDir }}/.local/share/gnupg'
   - name: DOCKER_CONFIG
@@ -773,7 +775,12 @@ env:
   - name: RCLONE_CONFIG_DIR
     value: '{{ .chezmoi.homeDir }}/.config/rclone'
     if: match .OS "windows"
-    persist: true
+  - name: DO_NOT_TRACK
+    value: 1
+  - name: DISABLE_TELEMETRY
+    value: 1
+  - name: SNACKS_GHOSTTY
+    value: true
   - name: TERMINFO
     value: '{{ .chezmoi.homeDir }}/.local/share/terminfo'
     if: ne .OS "windows"

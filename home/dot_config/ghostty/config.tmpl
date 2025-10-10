@@ -1,12 +1,11 @@
 ## https://ghostty.org/docs/config/reference
 ## Theme
 {{ if and (eq .chezmoi.os "linux") (eq .chezmoi.osRelease.id "arch") }}
-config-file = ?"~/.config/omarchy/current/theme/ghostty.conf"
-font-size = 14
+font-size = 15
 {{ else }}
-theme = Catppuccin Mocha
 font-size = 17
 {{ end }}
+theme = Catppuccin Mocha
 background-opacity = .8969
 background-blur = true
 background-blur-radius = 20
@@ -15,14 +14,10 @@ background-blur-radius = 20
 font-family = "FantasqueSansM Nerd Font"
 font-feature = ss02, zero, liga
 font-thicken = true
-adjust-underline-position = 0
-adjust-underline-thickness = -50%
 
 ## Cursor
-adjust-cursor-thickness = -5
-adjust-cursor-height = -5
 cursor-style = block
-cursor-style-blink = true
+cursor-style-blink = false
 shell-integration-features = no-cursor
 
 ## General
