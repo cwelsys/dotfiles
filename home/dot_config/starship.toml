@@ -7,7 +7,6 @@ palette = "mocha"
 follow_symlinks = false
 
 format = """
-$os\
 $directory\
 $shell\
 $git_branch\
@@ -20,6 +19,8 @@ $container\
 $status\
 $cmd_duration\
 $jobs\
+$os\
+$hostname\
 $line_break\
 $character"""
 
@@ -57,11 +58,11 @@ success_symbol = "[❯](peach)"
 vimcmd_symbol = "[❮](peach)"
 
 [username]
+show_always = false
 aliases = { "Administrator" = '󱐋 ' }
 format = '[$user]($style)'
-show_always = false
-style_root = 'red'
-style_user = 'yellow'
+style_root = 'mauve'
+detect_env_vars = ['SSH_CONNECTION', '!SSH_CONNECTION']
 
 [shell]
 disabled = true
@@ -91,9 +92,10 @@ truncation_length = 2
 use_os_path_sep = false
 
 [hostname]
-format = '[$ssh_symbol$hostname]($style)'
-ssh_symbol = "󰥛 "
-style = 'bold dimmed green'
+ssh_only = true
+format = "[$hostname]($style) "
+ssh_symbol = "󰥛"
+style = 'bold dimmed blue'
 
 [git_branch]
 format = '[$symbol$branch]($style)'
