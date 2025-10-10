@@ -460,11 +460,7 @@ alias:
     if: and (match .OS "darwin") (hasCommand "m")
   - name: update
     value: brew update && brew upgrade
-    if: and (eq .OS "darwin") (ne .Shell "nu")
-  - name: update
-    type: function
-    value: brew update; brew upgrade
-    if: and (eq .OS "darwin") (eq .Shell "nu")
+    if: match .OS "darwin"
   - name: list
     value: brew list
     if: match .OS "darwin"
@@ -488,7 +484,7 @@ alias:
     if: match .OS "darwin"
   - name: in
     value: '(brew formulae && brew casks) | fzf -q "$1" -m --preview "brew info {1}" --preview-window "right,75%,wrap,cycle,<65(down,80%,wrap,cycle)" | xargs brew install'
-    if: match .OS "darwin"
+    if: and (eq .OS "darwin") (ne .Shell "fish")
 
   # Arch
   - name: pacman
