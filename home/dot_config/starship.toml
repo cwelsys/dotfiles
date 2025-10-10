@@ -93,7 +93,7 @@ use_os_path_sep = false
 
 [hostname]
 ssh_only = true
-format = "[$hostname]($style) "
+format = "[$hostname]($style)"
 ssh_symbol = "󰥛"
 style = 'bold dimmed blue'
 
