@@ -58,11 +58,12 @@ success_symbol = "[❯](peach)"
 vimcmd_symbol = "[❮](peach)"
 
 [username]
+disabled = true
 aliases = { "Administrator" = '󱐋 ' }
 format = '[$user]($style)'
 style_root = 'mauve'
 style_user = 'yellow'
-detect_env_vars = ['SSH_CONNECTION', '!SSH_CONNECTION']
+# detect_env_vars = ['SSH_CONNECTION', '!SSH_CONNECTION']
 
 [shell]
 disabled = true
@@ -91,7 +92,7 @@ use_os_path_sep = false
 ssh_only = true
 format = "[$hostname]($style)"
 ssh_symbol = "󰥛"
-style = 'bold dimmed blue'
+style = 'teal'
 
 [git_branch]
 format = '[$symbol$branch]($style)'
