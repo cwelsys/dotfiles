@@ -22,7 +22,7 @@ $jobs\
 $os\
 $hostname\
 $line_break\
-$character"""
+$username$character"""
 
 [profiles]
 transient = """
@@ -58,10 +58,10 @@ success_symbol = "[❯](peach)"
 vimcmd_symbol = "[❮](peach)"
 
 [username]
-show_always = false
 aliases = { "Administrator" = '󱐋 ' }
 format = '[$user]($style)'
 style_root = 'mauve'
+style_user = 'yellow'
 detect_env_vars = ['SSH_CONNECTION', '!SSH_CONNECTION']
 
 [shell]
@@ -76,10 +76,6 @@ zsh_indicator = ''
 [cmd_duration]
 disabled = false
 format = "[$duration]($style) "
-min_time = 2000
-min_time_to_notify = 45000
-show_milliseconds = false
-show_notifications = false
 style = "dimmed sapphire"
 
 [directory]
