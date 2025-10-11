@@ -23,6 +23,7 @@
     "plugins.extras.lang.python-extended",
     "plugins.extras.lang.web.html-css",
     "plugins.extras.lang.web.typescript-extended",
+    "plugins.extras.lang.yaml",
     "plugins.extras.linting.eslint-extended",
     "plugins.extras.lsp.lspconfig-extended",
     "plugins.extras.lsp.mason-extended",
