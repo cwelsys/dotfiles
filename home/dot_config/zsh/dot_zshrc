@@ -3,7 +3,6 @@ if [[ -f "$HOMEBREW_PREFIX/bin/brew" ]]; then
 fi
 
 eval "$(aliae init zsh --config "$HOME/.config/aliae.yaml")"
-eval "$(starship init zsh)"
 
 if [[ -n "$SSH_CONNECTION" ]]; then
     unset VISUAL
@@ -19,6 +18,8 @@ HISTDUP=erase
 if [[ -f "${ZDOTDIR:-$HOME}/.zsh_history" ]]; then
     mv "${ZDOTDIR:-$HOME}/.zsh_history" "${XDG_STATE_HOME}/zsh/history"
 fi
+
+eval "$(starship init zsh)"
 
 add-zsh-hook precmd transient-prompt-precmd
 
@@ -55,6 +56,8 @@ source "${ZINIT_HOME}/zinit.zsh"
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
+bindkey -e
+
 for file in utils.zsh local.zsh; do
   if [[ -r "$ZDOTDIR/$file" ]]; then
       source "$ZDOTDIR/$file"
@@ -66,6 +69,8 @@ zinit light-mode for \
   zdharma-continuum/zinit-annex-bin-gem-node \
   zdharma-continuum/zinit-annex-patch-dl \
   zdharma-continuum/zinit-annex-rust
+
+bindkey -e
 
 zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
   atclone"./atuin init zsh > init.zsh; ./atuin gen-completions --shell zsh > _atuin" \
