@@ -2,7 +2,7 @@
 .chezmoiscripts/linux/**
 {{ end }}
 
-{{ if and (eq .chezmoi.os "linux") .headless }}
+{{ if not (and (eq .chezmoi.os "linux") (not .headless)) }}
 .config/wireplumber/
 .config/Kvantum/
 .config/swaync/
