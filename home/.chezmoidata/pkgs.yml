@@ -290,7 +290,6 @@ pkgs:
         - font-sf-pro
         - font-symbols-only-nerd-font
         - ghostty@tip
-        - github
         - google-chrome
         - goreleaser
         - hammerspoon
@@ -332,6 +331,7 @@ pkgs:
         - gimp
         - steamcmd
         - maccy
+        - localsend
 
     main:
       pacman:
