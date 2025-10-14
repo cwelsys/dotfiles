@@ -11,15 +11,43 @@ if [ -z "$bundle_id" ]; then
     exit 1
 fi
 
-current=$(defaults read "$bundle_id" NSRequiresAquaSystemAppearance 2>/dev/null)
-if [ "$current" = "0" ] || [ "$current" = "" ]; then
-    echo "[$bundle_id] Unset → Light"
-    defaults write "$bundle_id" NSRequiresAquaSystemAppearance -bool true
-else
-    echo "[$bundle_id] Light → Dark"
-    defaults write "$bundle_id" NSRequiresAquaSystemAppearance -bool false
+# Find the app path first
+app_path=$(mdfind "kMDItemCFBundleIdentifier == '$bundle_id'" | head -n1)
+if [ -z "$app_path" ]; then
+    echo "Could not find app with bundle ID: $bundle_id"
+    exit 1
 fi
 
-app_path=$(mdfind "kMDItemCFBundleIdentifier == '$bundle_id'" | head -n1)
-app_name=$(basename "$app_path" .app)
-killall "$app_name" >/dev/null 2>&1 || true
+echo "[$bundle_id] Forcing dark mode..."
+
+# Path to Info.plist
+plist_path="$app_path/Info.plist"
+[ ! -e "$plist_path" ] && plist_path="$app_path/Contents/Info.plist"
+
+# Resolve symlink if necessary
+if [ -L "$plist_path" ]; then
+    real_plist_path=$(readlink "$plist_path")
+    # If readlink returns relative path, make it absolute
+    if [[ "$real_plist_path" != /* ]]; then
+        real_plist_path="$(dirname "$plist_path")/$real_plist_path"
+    fi
+    plist_path="$real_plist_path"
+fi
+
+echo "Modifying Info.plist at: $plist_path"
+
+# Set UIUserInterfaceStyle to Dark
+if /usr/libexec/PlistBuddy -c "Print :UIUserInterfaceStyle" "$plist_path" &>/dev/null; then
+    /usr/libexec/PlistBuddy -c "Set :UIUserInterfaceStyle Dark" "$plist_path"
+else
+    /usr/libexec/PlistBuddy -c "Add :UIUserInterfaceStyle string Dark" "$plist_path"
+fi
+
+# Set NSRequiresAquaSystemAppearance to false
+if /usr/libexec/PlistBuddy -c "Print :NSRequiresAquaSystemAppearance" "$plist_path" &>/dev/null; then
+    /usr/libexec/PlistBuddy -c "Set :NSRequiresAquaSystemAppearance false" "$plist_path"
+else
+    /usr/libexec/PlistBuddy -c "Add :NSRequiresAquaSystemAppearance bool false" "$plist_path"
+fi
+
+echo "Done. Launch the app and it should now be in dark mode."
