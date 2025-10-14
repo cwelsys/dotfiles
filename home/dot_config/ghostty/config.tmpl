@@ -2,6 +2,8 @@
 ## Theme
 {{ if and (eq .chezmoi.os "linux") (eq .chezmoi.osRelease.id "arch") }}
 font-size = 15
+keybind = performable:ctrl+c=copy_to_clipboard
+keybind = performable:ctrl+v=paste_from_clipboard
 {{ else }}
 font-size = 17
 {{ end }}
@@ -61,7 +63,5 @@ keybind = super+r=reload_config
 keybind = super+d=unbind
 keybind = global:cmd+grave_accent=toggle_quick_terminal
 keybind = shift+enter=text:\x1b\r
-keybind = performable:ctrl+c=copy_to_clipboard
-keybind = performable:ctrl+v=paste_from_clipboard
 keybind = performable:ctrl+t=new_tab
 keybind = ctrl+w=close_tab
