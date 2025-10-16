@@ -3,4 +3,4 @@
 --italic-text=always
 --style="changes"
 --color=always
---decorations=always
+--paging=never
