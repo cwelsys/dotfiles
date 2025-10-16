@@ -1,7 +1,6 @@
 --theme="Catppuccin Mocha"
 --strip-ansi=auto
 --italic-text=always
---style=full
+--style="changes"
 --color=always
 --decorations=always
---paging=never

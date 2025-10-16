@@ -112,6 +112,17 @@ image_bound = [5000, 5000]
 suppress_preload = false
 
 [plugin]
+prepend_fetchers = [
+	{ id = "git", name = "*", run = "git" },
+	{ id = "git", name = "*/", run = "git" },
+]
+prepend_previewers = [
+	{ name = "*.md", run = 'piper -- CLICOLOR_FORCE=1 glow -w=$w "$1"' },
+	{ name = "*.tar*", run = 'piper --format=url -- tar tf "$1"' },
+	{ name = "*.csv", run = 'piper -- xan view "$1"' },
+	{ mime = "text/*", run = 'piper -- bat -p --color=always "$1"' },
+	{ name = "*/", run = 'piper -- eza --icons=always --color=always --sort=extension "$1"' },
+]
 fetchers = [
 	# Mimetype
 	{ id = "mime", name = "*", run = "mime", prio = "high" },
@@ -176,7 +187,7 @@ previewers = [
 ]
 
 [input]
-cursor_blink = false
+cursor_blink = true
 
 # cd
 cd_title = "Change directory:"
@@ -189,7 +200,8 @@ create_origin = "top-center"
 create_offset = [0, 2, 50, 3]
 
 # rename
-rename_title = "Rename:"
+# rename_title = "Rename:"
+rename_title = " ✏️"
 rename_origin = "hovered"
 rename_offset = [0, 1, 50, 3]
 
@@ -204,12 +216,13 @@ find_origin = "top-center"
 find_offset = [0, 2, 50, 3]
 
 # search
-search_title = "Search via {n}:"
+search_title = " 🔍 file via {n}:"
 search_origin = "top-center"
 search_offset = [0, 2, 50, 3]
 
 # shell
-shell_title = ["Shell:", "Shell (block):"]
+# shell_title = ["Shell:", "Shell (block):"]
+shell_title = ["   ", "   "]
 shell_origin = "top-center"
 shell_offset = [0, 2, 50, 3]
 
@@ -237,7 +250,8 @@ quit_origin = "center"
 quit_offset = [0, 0, 50, 15]
 
 [pick]
-open_title = "Open with:"
+# open_title = "Open with:"
+open_title = " 👀 "
 open_origin = "hovered"
 open_offset = [0, 1, 50, 7]
 
@@ -246,13 +260,3 @@ sort_by = "none"
 sort_sensitive = false
 sort_reverse = false
 sort_translit = false
-
-[[plugin.prepend_fetchers]]
-id = "git"
-name = "*"
-run = "git"
-
-[[plugin.prepend_fetchers]]
-id = "git"
-name = "*/"
-run = "git"
