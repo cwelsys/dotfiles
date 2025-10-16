@@ -142,6 +142,12 @@ alias:
     value: bun pm ls -g
   - name: go-ls
     value: go-global-update --dry-runs
+  - name: cc
+    value: 'claude'
+    if: hasCommand "claude"
+  - name: cr
+    value: 'claude --resume'
+    if: hasCommand "claude"
   - name: cm
     value: chezmoi
   - name: cma
