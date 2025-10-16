@@ -26,6 +26,12 @@ local catppuccin_palette = {
 	mantle = "#181825",
 	crust = "#11111b",
 }
+-- Linemode
+
+function Linemode:size_only()
+	local size = self._file:size()
+	return string.format("%s", size and ya.readable_size(size) or "")
+end
 
 -- Plugins
 require("full-border"):setup({
