@@ -263,6 +263,8 @@ pkgs:
         - moghtech/komodo/km
         - mpv
         - termscp
+        - nushell
+        - xan
       casks:
         - 1password-cli
         - alt-tab
@@ -332,6 +334,7 @@ pkgs:
         - steamcmd
         - maccy
         - localsend
+        - zen
 
     main:
       pacman:
