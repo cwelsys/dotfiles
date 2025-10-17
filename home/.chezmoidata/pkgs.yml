@@ -131,6 +131,10 @@ pkgs:
         - ttf-fantasque-nerd
         - hdparm
         - reflector
+        - glow
+        - nushell
+        - terminus-font
+        - xan
 
     mba:
       brews:
