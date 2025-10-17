@@ -517,7 +517,6 @@ pkgs:
         - cockpit
         - cockpit-files
         - cockpit-machines
-        - cockpit-packagekit
         - cockpit-storaged
         - cpio
         - efibootmgr
@@ -576,6 +575,18 @@ pkgs:
         - python-gbinder-debug
         - vulkan-radeon
         - waydroid-launcher-git
+        - albert-git
+        - glow
+        - keyd
+        - mkinitcpio-firmware
+        - nushell
+        - nvidia-settings
+        - otf-font-awesome
+        - plymouth-theme-catppuccin-mocha-git
+        - terminus-font
+        - ttf-0xproto-nerd
+        - xan
+        - ydotool
 
     wini:
       scoop:
