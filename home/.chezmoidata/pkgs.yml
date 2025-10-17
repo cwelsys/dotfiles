@@ -803,6 +803,7 @@ yazi:
     - 'yazi-rs/plugins:smart-enter'
     - 'yazi-rs/plugins:piper'
     - 'yazi-rs/plugins:git'
+    - 'TD-Sky/sudo'
     - 'imsi32/yatline'
     - 'imsi32/yatline-githead'
     - 'KKV9/compress'
