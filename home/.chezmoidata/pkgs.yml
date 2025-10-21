@@ -142,7 +142,6 @@ pkgs:
         - armadillo
         - asciiquarium
         - ast-grep
-        - atuin
         - aview
         - bash-completion@2
         - bat
@@ -164,7 +163,6 @@ pkgs:
         - doggo
         - dooit
         - dua-cli
-        - ducker
         - dust
         - duti
         - espeak
@@ -312,7 +310,6 @@ pkgs:
         - openmtp
         - pearcleaner
         - pictogram
-        - powershell
         - processmonitor
         - proton-mail-bridge
         - protonvpn
