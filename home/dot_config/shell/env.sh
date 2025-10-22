@@ -1,22 +1,16 @@
 #!/bin/sh
-# Shell environment variables
-# Source this file from your shell RC file (.zshrc, .bashrc, etc.)
-# These variables require shell features or are shell-specific
-
-# Ensure XDG Base Directories are set (fallback if /etc/profile.d didn't load)
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 export XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
-export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 export XDG_PROJECTS_DIR="${XDG_PROJECTS_DIR:-$HOME/Projects}"
 
 # Chezmoi shortcuts
 export DOTS="$XDG_DATA_HOME/chezmoi"
 export DOTFILES="$XDG_DATA_HOME/chezmoi"
 
-# Development Tools - XDG-compliant paths
+# Development Tools
 export CARGO_HOME="$XDG_DATA_HOME/cargo"
 export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 export GOPATH="$XDG_DATA_HOME/go"
@@ -160,7 +154,7 @@ case "$HOSTNAME" in
         ;;
 esac
 
-# WSL-specific
+# WSL
 if [ -n "$WSLENV" ]; then
     export WIN_HOME="/mnt/c/users/cwel"
 fi
