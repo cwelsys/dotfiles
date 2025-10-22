@@ -2,7 +2,13 @@ if [[ -f "$HOMEBREW_PREFIX/bin/brew" ]]; then
   eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
 fi
 
-eval "$(aliae init zsh --config "$HOME/.config/aliae.yaml")"
+# eval "$(aliae init zsh --config "$HOME/.config/aliae.yaml")"
+
+for shell_config in path env aliases; do
+  if [[ -r "$XDG_CONFIG_HOME/shell/${shell_config}.sh" ]]; then
+    source "$XDG_CONFIG_HOME/shell/${shell_config}.sh"
+  fi
+done
 
 if [[ -n "$SSH_CONNECTION" ]]; then
     unset VISUAL

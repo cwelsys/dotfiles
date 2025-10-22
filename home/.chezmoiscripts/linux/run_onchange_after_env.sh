@@ -1,5 +1,23 @@
 #!/bin/bash
 
+# Create /etc/profile.d/xdg-base-dirs.sh for login shells (including SSH)
+# This ensures XDG Base Directory variables are set for all login shells
+sudo tee /etc/profile.d/xdg-base-dirs.sh > /dev/null <<'EOF'
+#!/bin/sh
+# XDG Base Directory Specification
+# Loaded by /etc/profile for all login shells including SSH sessions
+
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+export XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+export XDG_PROJECTS_DIR="${XDG_PROJECTS_DIR:-$HOME/Projects}"
+EOF
+
+sudo chmod +x /etc/profile.d/xdg-base-dirs.sh
+
 # Configure zsh to use XDG base directory
 sudo tee /etc/zsh/zshenv > /dev/null <<'EOF'
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
