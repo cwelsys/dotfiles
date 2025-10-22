@@ -8,19 +8,13 @@ if [[ -n "$SSH_CONNECTION" ]]; then
     unset VISUAL
     export BROWSER="local-open"
 
-    # Set Hyprland environment for SSH sessions
     if command -v hyprctl &>/dev/null && [[ -z "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
-        for pid in $(pgrep -u "$USER" Hyprland 2>/dev/null); do
-            if [[ -f "/proc/$pid/environ" ]]; then
-                while IFS='=' read -r -d '' key value; do
-                    case "$key" in
-                        HYPRLAND_INSTANCE_SIGNATURE|WAYLAND_DISPLAY|DISPLAY)
-                            export "$key=$value"
-                            ;;
-                    esac
-                done < "/proc/$pid/environ"
-                break
-            fi
+        for pid in $(pgrep -P $(pgrep -u "$USER" Hyprland) 2>/dev/null); do
+            [[ -f "/proc/$pid/environ" ]] || continue
+            while IFS='=' read -r -d '' k v; do
+                [[ "$k" =~ ^(HYPRLAND_INSTANCE_SIGNATURE|WAYLAND_DISPLAY|DISPLAY)$ ]] && export "$k=$v"
+            done < "/proc/$pid/environ"
+            [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]] && break
         done
     fi
 fi
