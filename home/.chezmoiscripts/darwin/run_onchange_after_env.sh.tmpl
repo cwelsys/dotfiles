@@ -11,6 +11,23 @@ sudo dseditgroup -o edit -a cwel -t user wheel
 {{-   $brewBin = "/usr/local/bin/brew" }}
 {{- end }}
 
+# Create /etc/zprofile for XDG Base Directories (similar to Linux /etc/profile.d/)
+# This ensures all login shells including SSH have XDG variables set
+sudo tee /etc/zprofile > /dev/null << 'EOF'
+# XDG Base Directory Specification
+# Loaded for all login shells including SSH sessions
+
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+export XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+export XDG_PROJECTS_DIR="${XDG_PROJECTS_DIR:-$HOME/Projects}"
+EOF
+
+echo "zprofile (/etc/zprofile) configured with XDG Base Directories"
+
 sudo tee /etc/zshenv > /dev/null << 'EOF'
 export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 EOF
