@@ -35,3 +35,7 @@ fi
 EOF
     fi
 fi
+
+if [ -f /etc/pulse/client.conf ]; then
+    sudo sed -i 's|^; cookie-file =.*|cookie-file = ~/.config/pulse/cookie|' /etc/pulse/client.conf
+fi

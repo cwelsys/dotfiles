@@ -258,6 +258,13 @@ if command -v ssh >/dev/null 2>&1 && [ "$(uname)" != "Darwin" ] && [ "$(uname)" 
 fi
 
 # ============================================================================
+# NVIDIA Settings
+# ============================================================================
+if command -v nvidia-settings >/dev/null 2>&1; then
+    alias nvidia-settings='nvidia-settings --config="$XDG_CONFIG_HOME/nvidia/settings"'
+fi
+
+# ============================================================================
 # Systemd (Linux only)
 # ============================================================================
 if command -v systemctl >/dev/null 2>&1; then

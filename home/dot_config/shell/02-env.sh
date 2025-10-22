@@ -18,6 +18,7 @@ export GOBIN="$XDG_DATA_HOME/go/bin"
 export DOTNET_CLI_HOME="$XDG_DATA_HOME/dotnet"
 export DOTNET_ROOT="$XDG_DATA_HOME/dotnet"
 export DOTNET_INSTALL_DIR="$XDG_DATA_HOME/dotnet"
+export DOTNET_BUNDLE_EXTRACT_BASE_DIR="$XDG_CACHE_HOME/dotnet"
 export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
 
 # Node.js / NPM
@@ -72,6 +73,10 @@ export CLAUDE_CONFIG_DIR="$XDG_CONFIG_HOME/claude"
 export GLOW_STYLE="$XDG_CONFIG_HOME/glow/catppuccin-mocha.json"
 export PARALLEL_HOME="$XDG_CONFIG_HOME/parallel"
 export WAKATIME_HOME="$XDG_CONFIG_HOME/wakatime"
+export VCPKG_ROOT="$XDG_DATA_HOME/vcpkg"
+export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
+export INPUTRC="$XDG_CONFIG_HOME/bash/inputrc"
+export SCREENRC="$XDG_CONFIG_HOME/screen/screenrc"
 
 # Telemetry Opt-out
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
