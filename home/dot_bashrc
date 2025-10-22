@@ -7,12 +7,19 @@ if [[ -f "$HOMEBREW_PREFIX/bin/brew" ]]; then
 	eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
 fi
 
-# eval "$(aliae init bash --config "$HOME/.config/aliae.yaml")"
+shopt -s histappend
+shopt -s cdspell
+shopt -s lithist
+shopt -s lastpipe
+shopt -s nullglob
+shopt -s globstar
+shopt -s checkwinsize
+shopt -s extglob
+shopt -s cmdhist
+shopt -s nocaseglob
 
-for shell_config in path env aliases; do
-  if [[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/shell/${shell_config}.sh" ]]; then
-    source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/${shell_config}.sh"
-  fi
+for shell_config in "$XDG_CONFIG_HOME"/shell/*.sh; do
+  [[ -r "$shell_config" ]] && source "$shell_config"
 done
 
 HISTFILE="$XDG_STATE_HOME/bash/history"
@@ -35,16 +42,6 @@ fi
 [[ -f "$XDG_DATA_HOME"/blesh/ble.sh ]] \
     && source "$XDG_DATA_HOME"/blesh/ble.sh
 
-shopt -s histappend
-shopt -s cdspell
-shopt -s lithist
-shopt -s lastpipe
-shopt -s nullglob
-shopt -s globstar
-shopt -s checkwinsize
-shopt -s extglob
-shopt -s cmdhist
-shopt -s nocaseglob
 
 if ! shopt -oq posix; then
 	if [[ -s "$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh" ]]; then
