@@ -1,0 +1,40 @@
+#!/bin/bash
+# Toggle floating mode while preserving size and position (respecting persistentsize)
+
+WINDOW_INFO=$(hyprctl activewindow -j)
+FLOATING=$(echo "$WINDOW_INFO" | jq -r '.floating')
+
+if [ "$FLOATING" = "false" ]; then
+    # Get current tiled size and position
+    TILED_SIZE=$(echo "$WINDOW_INFO" | jq -r '.size')
+    TILED_WIDTH=$(echo "$TILED_SIZE" | jq -r '.[0]')
+    TILED_HEIGHT=$(echo "$TILED_SIZE" | jq -r '.[1]')
+
+    POSITION=$(echo "$WINDOW_INFO" | jq -r '.at')
+    X=$(echo "$POSITION" | jq -r '.[0]')
+    Y=$(echo "$POSITION" | jq -r '.[1]')
+
+    # Toggle to floating
+    hyprctl dispatch togglefloating
+    sleep 0.05  # Small delay for state to update
+
+    # Check if persistentsize kicked in by comparing new size to tiled size
+    NEW_SIZE=$(hyprctl activewindow -j | jq -r '.size')
+    NEW_WIDTH=$(echo "$NEW_SIZE" | jq -r '.[0]')
+    NEW_HEIGHT=$(echo "$NEW_SIZE" | jq -r '.[1]')
+
+    # If size changed significantly (more than 50px difference), persistentsize worked - keep it
+    WIDTH_DIFF=$(( NEW_WIDTH > TILED_WIDTH ? NEW_WIDTH - TILED_WIDTH : TILED_WIDTH - NEW_WIDTH ))
+    HEIGHT_DIFF=$(( NEW_HEIGHT > TILED_HEIGHT ? NEW_HEIGHT - TILED_HEIGHT : TILED_HEIGHT - NEW_HEIGHT ))
+
+    if [ "$WIDTH_DIFF" -lt 50 ] && [ "$HEIGHT_DIFF" -lt 50 ]; then
+        # Size didn't change much, persistentsize didn't kick in - apply tiled size
+        hyprctl dispatch resizeactive exact $TILED_WIDTH $TILED_HEIGHT
+    fi
+
+    # Always restore position
+    hyprctl dispatch moveactive exact $X $Y
+else
+    # Window is floating, just toggle back to tiled
+    hyprctl dispatch togglefloating
+fi
