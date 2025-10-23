@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Save currently focused window
+focused_window=$(hyprctl activewindow -j | jq -r '.address')
+
+# Get unique x positions (columns) sorted
+x_positions=$(hyprctl clients -j | jq -r '[.[].at[0]] | unique | sort | .[]')
+readarray -t x_array <<< "$x_positions"
+
+# Get leftmost and rightmost x positions (skip middle = master)
+left_x="${x_array[0]}"
+right_x="${x_array[-1]}"
+
+# Get all windows on left side, sorted by y position
+left_windows=$(hyprctl clients -j | jq -r --arg x "$left_x" 'map(select(.at[0] == ($x | tonumber))) | sort_by(.at[1]) | .[].address')
+readarray -t left_array <<< "$left_windows"
+
+# Get all windows on right side, sorted by y position
+right_windows=$(hyprctl clients -j | jq -r --arg x "$right_x" 'map(select(.at[0] == ($x | tonumber))) | sort_by(.at[1]) | .[].address')
+readarray -t right_array <<< "$right_windows"
+
+# Swap each left window with corresponding right window
+for i in "${!left_array[@]}"; do
+    if [ -n "${left_array[$i]}" ] && [ -n "${right_array[$i]}" ]; then
+        hyprctl dispatch focuswindow address:${left_array[$i]}
+        hyprctl dispatch swapwindow address:${right_array[$i]}
+    fi
+done
+
+# Restore focus to the originally focused window (now in its new position)
+if [ -n "$focused_window" ]; then
+    hyprctl dispatch focuswindow address:$focused_window
+fi
