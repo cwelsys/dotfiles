@@ -63,15 +63,12 @@ export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:/usr/share/terminfo"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgrep/config"
 export LESSHISTFILE="$XDG_CACHE_HOME/lesshsts"
 
-# Cloud & Infrastructure
+# AWS
 export AWS_CONFIG_FILE="$XDG_DATA_HOME/aws/config"
 export AWS_DATA_PATH="$XDG_DATA_HOME/aws"
 export AWS_SHARED_CREDENTIALS_FILE="$XDG_DATA_HOME/aws/credentials"
-export RCLONE_CONFIG_DIR="$XDG_CONFIG_HOME/rclone"
 
 # Misc Tools
-export BAT_CONFIG_DIR="$XDG_CONFIG_HOME/bat"
-export BAT_CONFIG_PATH="$XDG_CONFIG_HOME/bat/config"
 export CLAUDE_CONFIG_DIR="$XDG_CONFIG_HOME/claude"
 export GLOW_STYLE="$XDG_CONFIG_HOME/glow/catppuccin-mocha.json"
 export PARALLEL_HOME="$XDG_CONFIG_HOME/parallel"

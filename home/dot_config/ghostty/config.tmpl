@@ -1,11 +1,15 @@
 ## https://ghostty.org/docs/config/reference
+shell-integration-features = sudo,title,ssh-env,ssh-terminfo,no-cursor
 ## Theme
 {{ if and (eq .chezmoi.os "linux") (eq .chezmoi.osRelease.id "arch") }}
 font-size = 15
 keybind = performable:ctrl+c=copy_to_clipboard
 keybind = performable:ctrl+v=paste_from_clipboard
+keybind = performable:ctrl+t=new_tab
+keybind = ctrl+w=close_tab
 {{ else }}
 font-size = 17
+keybind = global:cmd+grave_accent=toggle_quick_terminal
 {{ end }}
 theme = Catppuccin Mocha
 background-opacity = .8969
@@ -19,8 +23,7 @@ font-thicken = true
 
 ## Cursor
 cursor-style = block
-cursor-style-blink = false
-shell-integration-features = no-cursor
+cursor-style-blink = true
 
 ## General
 confirm-close-surface = false
@@ -57,11 +60,7 @@ macos-option-as-alt = left
 macos-non-native-fullscreen = visible-menu
 
 ## Binds
-keybind = global:shift+escape=toggle_visibility
 keybind = super+shift+i=inspector:toggle
-keybind = super+r=reload_config
+keybind = super+shift+r=reload_config
 keybind = super+d=unbind
-keybind = global:cmd+grave_accent=toggle_quick_terminal
 keybind = shift+enter=text:\x1b\r
-keybind = performable:ctrl+t=new_tab
-keybind = ctrl+w=close_tab

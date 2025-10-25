@@ -7,6 +7,10 @@ if [[ -f "$HOMEBREW_PREFIX/bin/brew" ]]; then
 	eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
 fi
 
+if [ -n "${GHOSTTY_RESOURCES_DIR}" ]; then
+    builtin source "${GHOSTTY_RESOURCES_DIR}/shell-integration/bash/ghostty.bash"
+fi
+
 shopt -s histappend
 shopt -s cdspell
 shopt -s lithist

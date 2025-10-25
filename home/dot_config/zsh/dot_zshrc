@@ -2,6 +2,10 @@ if [[ -f "$HOMEBREW_PREFIX/bin/brew" ]]; then
   eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
 fi
 
+if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
+  source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
+fi
+
 for shell_config in "$XDG_CONFIG_HOME/shell"/*.sh(N); do
   [[ -r "$shell_config" ]] && source "$shell_config"
 done
@@ -124,7 +128,6 @@ omzPlugin github
 zinit wait lucid light-mode for \
   olets/zsh-transient-prompt \
   ryanccn/vivid-zsh \
-  cwelsys/zsh-tab-title \
   Aloxaf/fzf-tab \
   djui/alias-tips \
   atload'_zsh_autosuggest_start' \

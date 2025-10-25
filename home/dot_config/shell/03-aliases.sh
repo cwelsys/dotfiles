@@ -253,9 +253,9 @@ fi
 # ============================================================================
 # SSH
 # ============================================================================
-if command -v ssh >/dev/null 2>&1 && [ "$(uname)" != "Darwin" ] && [ "$(uname)" != "Windows_NT" ]; then
-    alias ssh='TERM=xterm-256color ssh'
-fi
+# if command -v ssh >/dev/null 2>&1 && [ "$(uname)" != "Darwin" ] && [ "$(uname)" != "Windows_NT" ]; then
+#     alias ssh='TERM=xterm-256color ssh'
+# fi
 
 # ============================================================================
 # NVIDIA Settings
