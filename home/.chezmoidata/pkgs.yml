@@ -440,7 +440,6 @@ pkgs:
         - obs-studio
         - obsidian
         - omarchy-chromium
-        - omarchy-lazyvim
         - pamixer
         - pinta
         - pipewire
@@ -486,16 +485,13 @@ pkgs:
         - uwsm
         - vesktop
         - visual-studio-code-bin
-        - walker-bin
         - waybar
-        - wf-recorder
         - wget
         - wireless-regdb
         - wiremix
         - wireplumber
         - wl-clip-persist
         - wl-clipboard
-        - wl-screenrec
         - woff2-font-awesome
         - wtype
         - xdg-desktop-portal-gtk
@@ -588,6 +584,30 @@ pkgs:
         - ttf-0xproto-nerd
         - xan
         - ydotool
+        - dms-shell-bin
+        - elephant
+        - elephant-bluetooth
+        - elephant-calc
+        - elephant-clipboard
+        - elephant-desktopapplications
+        - elephant-files
+        - elephant-menus
+        - elephant-providerlist
+        - elephant-runner
+        - elephant-symbols
+        - elephant-todo
+        - elephant-unicode
+        - elephant-websearch
+        - gpu-screen-recorder
+        - gvfs-nfs
+        - jdk11-openjdk
+        - nodejs
+        - npm
+        - protontricks
+        - runelite
+        - sddm
+        - walker
+        - wayfreeze-git
 
     wini:
       scoop:
