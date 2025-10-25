@@ -7,8 +7,8 @@ export XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
 export XDG_PROJECTS_DIR="${XDG_PROJECTS_DIR:-$HOME/Projects}"
 
 # Chezmoi shortcuts
-export DOTS="$XDG_DATA_HOME/chezmoi"
-export DOTFILES="$XDG_DATA_HOME/chezmoi"
+export DOTS="$XDG_DATA_HOME/chezmoi/home"
+export DOTFILES="$XDG_DATA_HOME/chezmoi/home"
 
 # Development Tools
 export CARGO_HOME="$XDG_DATA_HOME/cargo"
