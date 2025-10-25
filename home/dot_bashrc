@@ -7,10 +7,6 @@ if [[ -f "$HOMEBREW_PREFIX/bin/brew" ]]; then
 	eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
 fi
 
-if [ -n "${GHOSTTY_RESOURCES_DIR}" ]; then
-    builtin source "${GHOSTTY_RESOURCES_DIR}/shell-integration/bash/ghostty.bash"
-fi
-
 shopt -s histappend
 shopt -s cdspell
 shopt -s lithist
@@ -25,6 +21,10 @@ shopt -s nocaseglob
 for shell_config in "$XDG_CONFIG_HOME"/shell/*.sh; do
   [[ -r "$shell_config" ]] && source "$shell_config"
 done
+
+if [ -n "${GHOSTTY_RESOURCES_DIR}" ]; then
+    builtin source "${GHOSTTY_RESOURCES_DIR}/shell-integration/bash/ghostty.bash"
+fi
 
 HISTFILE="$XDG_STATE_HOME/bash/history"
 unset HISTTIMEFORMAT

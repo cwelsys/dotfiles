@@ -139,7 +139,7 @@ if command -v sudo >/dev/null 2>&1; then
     alias s='sudo'
     alias se='sudo -e'
     alias svim='SUDO_EDITOR="nvim" sudo -e'
-    alias sudo='sudo ' # Trailing space allows alias expansion
+    # alias sudo='sudo ' # alias expansion
     alias su='sudo su'
 fi
 
