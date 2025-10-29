@@ -2,8 +2,8 @@ if [[ -f "$HOMEBREW_PREFIX/bin/brew" ]]; then
   eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
 fi
 
-for shell_config in "$XDG_CONFIG_HOME/shell"/*.sh(N); do
-  [[ -r "$shell_config" ]] && source "$shell_config"
+for shells in "${XDG_CONFIG_HOME:-$HOME/.config}/shell"/*.sh(N); do
+  [[ -r "$shells" ]] && source "$shells"
 done
 
 if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then

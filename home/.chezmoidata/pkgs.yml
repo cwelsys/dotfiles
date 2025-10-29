@@ -210,7 +210,6 @@ pkgs:
         - ninvaders
         - nmap
         - nowplaying-cli
-        - oh-my-posh
         - openjdk
         - openjdk@11
         - parallel
