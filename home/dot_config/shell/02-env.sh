@@ -147,7 +147,6 @@ if command -v brew >/dev/null 2>&1; then
     export HOMEBREW_COLOR=1
     export HOMEBREW_CLEANUP_MAX_AGE_DAYS=7
     export HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS=3
-    export HOMEBREW_DOWNLOAD_CONCURRENCY="auto"
 fi
 
 # Hostname-specific variables
