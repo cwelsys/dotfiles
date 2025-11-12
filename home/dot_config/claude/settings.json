@@ -48,7 +48,7 @@
     ],
     "deny": []
   },
+  "alwaysThinkingEnabled": true,
   "theme": "dark",
-  "preferredNotifChannel": "terminal_bell",
-  "alwaysThinkingEnabled": true
+  "preferredNotifChannel": "terminal_bell"
 }
