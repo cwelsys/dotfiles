@@ -366,7 +366,6 @@ pkgs:
         - docker-buildx
         - docker-compose
         - dust
-        - egl-wayland
         - evince
         - eza
         - fcitx5
@@ -391,7 +390,6 @@ pkgs:
         - gvfs-smb
         - hypridle
         - hyprland
-        - hyprland-qtutils
         - hyprlock
         - hyprpicker
         - hyprshot
@@ -406,11 +404,9 @@ pkgs:
         - kvantum-qt5
         - lazyjournal
         - lazysql-bin
-        - lib32-nvidia-utils
         - libpulse
         - libqalculate
         - libreoffice-fresh
-        - libva-nvidia-driver
         - libyaml
         - limine
         - limine-mkinitcpio-hook
@@ -434,11 +430,8 @@ pkgs:
         - noto-fonts-emoji
         - noto-fonts-extra
         - nss-mdns
-        - nvidia-open-dkms
-        - nvidia-utils
         - obs-studio
         - obsidian
-        - omarchy-chromium
         - pamixer
         - pinta
         - pipewire
@@ -556,7 +549,6 @@ pkgs:
         - catppuccin-gtk-theme-git
         - dnsmasq
         - gtk-engine-murrine
-        - jellyfin-media-player
         - libgbinder
         - libglibutil
         - libglibutil-debug
@@ -566,14 +558,12 @@ pkgs:
         - nftables
         - nwg-look
         - python-gbinder
-        - vulkan-radeon
         - waydroid-launcher-git
         - albert-git
         - glow
         - keyd
         - mkinitcpio-firmware
         - nushell
-        - nvidia-settings
         - otf-font-awesome
         - plymouth-theme-catppuccin-mocha-git
         - terminus-font
@@ -604,6 +594,15 @@ pkgs:
         - sddm
         - walker
         - wayfreeze-git
+        - bluetui
+        - gamescope
+        - hyprland-guiutils
+        - lib32-vulkan-radeon
+        - mesa-git
+        - nvtop
+        - python-pipx
+        - wol
+        - xpadneo-dkms
 
     wini:
       scoop:
