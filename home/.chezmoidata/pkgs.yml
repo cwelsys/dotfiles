@@ -539,7 +539,6 @@ pkgs:
         - thunderbird-beta-bin
         - tldr
         - topgrade
-        - tparted-bin
         - trash-cli
         - unzip
         - uv
@@ -559,7 +558,6 @@ pkgs:
         - gtk-engine-murrine
         - jellyfin-media-player
         - libgbinder
-        - libgbinder-debug
         - libglibutil
         - libglibutil-debug
         - libva-utils
@@ -568,7 +566,6 @@ pkgs:
         - nftables
         - nwg-look
         - python-gbinder
-        - python-gbinder-debug
         - vulkan-radeon
         - waydroid-launcher-git
         - albert-git
