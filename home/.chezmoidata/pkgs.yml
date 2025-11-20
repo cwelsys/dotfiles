@@ -21,7 +21,6 @@ pkgs:
         - cockpit-docker
         - cockpit-files
         - cockpit-machines
-        - cockpit-packagekit
         - cockpit-storaged
         - cowsay
         - cpio
@@ -86,7 +85,6 @@ pkgs:
         - python-gobject
         - python-jinja
         - python-poetry-core
-        - python-terminaltexteffects
         - qemu-full
         - resvg
         - snapper
@@ -107,7 +105,6 @@ pkgs:
         - wireless-regdb
         - xdg-ninja
         - xmlstarlet
-        - yay
         - yay-debug
         - yazi
         - zoxide
@@ -135,6 +132,11 @@ pkgs:
         - nushell
         - terminus-font
         - xan
+        - archlinux-appstream-data
+        - ducker
+        - python-annotated-doc
+        - paru
+        - paru-debug
 
     mba:
       brews:
