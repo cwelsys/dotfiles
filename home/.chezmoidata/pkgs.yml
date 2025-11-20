@@ -105,7 +105,6 @@ pkgs:
         - wireless-regdb
         - xdg-ninja
         - xmlstarlet
-        - yay-debug
         - yazi
         - zoxide
         - zram-generator
