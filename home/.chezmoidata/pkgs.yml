@@ -135,7 +135,6 @@ pkgs:
         - ducker
         - python-annotated-doc
         - paru
-        - paru-debug
 
     mba:
       brews:
@@ -602,7 +601,6 @@ pkgs:
         - wol
         - xpadneo-dkms
         - paru
-        - paru-debug
         - python-hatchling
 
     wini:
