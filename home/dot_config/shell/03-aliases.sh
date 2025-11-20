@@ -327,27 +327,27 @@ if command -v flatpak >/dev/null 2>&1; then
 fi
 
 # ============================================================================
-# Arch Linux (Pacman/Yay)
+# Arch Linux (Pacman/Paru)
 # ============================================================================
 if command -v pacman >/dev/null 2>&1; then
     alias pacman='sudo pacman'
 fi
 
-if command -v yay >/dev/null 2>&1; then
-    alias clean='yay -Scc'
-    alias update='yay -Syyu --noconfirm'
-    alias remove='yay -Rnsu'
-    alias search='yay -Ss'
-    alias list='yay -Qq'
-    alias orphans='yay -Qtdq'
-    alias in='yay -Slq | fzf -q "$1" -m --preview "yay -Si {1}" --preview-window "right,75%,wrap,cycle,<65(down,80%,wrap,cycle)" | xargs -ro yay -S'
-    alias re='yay -Qq | fzf -q "$1" -m --preview "yay -Qi {1}" --preview-window bottom | xargs -ro yay -Rns'
+if command -v paru >/dev/null 2>&1; then
+    alias clean='paru -Scc'
+    alias update='paru -Syyu --noconfirm'
+    alias remove='paru -Rnsu'
+    alias search='paru -Ss'
+    alias list='paru -Qq'
+    alias orphans='paru -Qtdq'
+    alias in='paru -Slq | fzf -q "$1" -m --preview "paru -Si {1}" --preview-window "right,75%,wrap,cycle,<65(down,80%,wrap,cycle)" | xargs -ro paru -S'
+    alias re='paru -Qq | fzf -q "$1" -m --preview "paru -Qi {1}" --preview-window bottom | xargs -ro paru -Rns'
 
     clean-orphans() {
-        orphan_pkgs=$(yay -Qtdq)
+        orphan_pkgs=$(paru -Qtdq)
         if [ -n "$orphan_pkgs" ]; then
             # shellcheck disable=SC2086
-            yay -Rns $orphan_pkgs
+            paru -Rns $orphan_pkgs
         else
             echo "No orphaned packages found."
         fi

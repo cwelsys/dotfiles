@@ -157,7 +157,6 @@ pkgs:
         - colima
         - coreutils
         - cowsay
-        - deno
         - docker
         - dockutil
         - doggo
