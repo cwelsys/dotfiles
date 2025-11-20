@@ -313,7 +313,6 @@ pkgs:
         - protonvpn
         - qbittorrent
         - runelite
-        - rustdesk
         - sf-symbols
         - slack
         - spotify
