@@ -342,6 +342,7 @@ if command -v paru >/dev/null 2>&1; then
     alias orphans='paru -Qtdq'
     alias in='paru -Slq | fzf -q "$1" -m --preview "paru -Si {1}" --preview-window "right,75%,wrap,cycle,<65(down,80%,wrap,cycle)" | xargs -ro paru -S'
     alias re='paru -Qq | fzf -q "$1" -m --preview "paru -Qi {1}" --preview-window bottom | xargs -ro paru -Rns'
+    alias yay=paru
 
     clean-orphans() {
         orphan_pkgs=$(paru -Qtdq)
