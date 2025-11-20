@@ -490,7 +490,6 @@ pkgs:
         - xmlstarlet
         - xournalpp
         - yaru-icon-theme
-        - yay
         - zen-browser-bin
         - zoxide
         - zram-generator
@@ -602,6 +601,9 @@ pkgs:
         - python-pipx
         - wol
         - xpadneo-dkms
+        - paru
+        - paru-debug
+        - python-hatchling
 
     wini:
       scoop:
