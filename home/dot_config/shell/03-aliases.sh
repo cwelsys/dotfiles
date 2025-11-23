@@ -334,28 +334,24 @@ if command -v pacman >/dev/null 2>&1; then
 fi
 
 if command -v paru >/dev/null 2>&1; then
-    alias clean='paru -Scc'
+    alias clean='paru --clean'
     alias update='paru -Syyu --noconfirm'
-    alias remove='paru -Rnsu'
+    alias remove='paru -Rn'
+    alias purge='paru -Rnsc'
     alias search='paru -Ss'
     alias orphans='paru -Qtdq'
-    alias in='paru -Slq | fzf -q "$1" -m --preview "paru -Si {1}" --preview-window "right,75%,wrap,cycle,<65(down,80%,wrap,cycle)" | xargs -ro paru -S'
+    alias in='paru -Slq | fzf -q "$1" -m --preview "paru -Si {1}" --preview-window bottom | xargs -ro paru -S'
     alias re='paru -Qq | fzf -q "$1" -m --preview "paru -Qi {1}" --preview-window bottom | xargs -ro paru -Rns'
     alias yay=paru
 
-    # Package info (like 'brew info')
-    # Try repo/AUR info first (-Si), fall back to installed package info (-Qi)
-    pkginfo() {
+    info() {
         if [ -z "$1" ]; then
-            echo "Usage: pkginfo <package_name>"
+            echo "Usage: (pkg)info <package_name>"
             return 1
         fi
         paru -Si "$1" 2>/dev/null || paru -Qi "$1"
     }
 
-    # List packages (like 'brew list')
-    # No args: list all installed packages
-    # With args: search installed packages by pattern
     list() {
         if [ -z "$1" ]; then
             paru -Qq
@@ -364,7 +360,6 @@ if command -v paru >/dev/null 2>&1; then
         fi
     }
 
-    # List files from a package (like 'brew list <package>' on macOS)
     files() {
         if [ -z "$1" ]; then
             echo "Usage: files <package_name>"
@@ -373,15 +368,6 @@ if command -v paru >/dev/null 2>&1; then
         paru -Ql "$1"
     }
 
-    clean-orphans() {
-        orphan_pkgs=$(paru -Qtdq)
-        if [ -n "$orphan_pkgs" ]; then
-            # shellcheck disable=SC2086
-            paru -Rns $orphan_pkgs
-        else
-            echo "No orphaned packages found."
-        fi
-    }
 fi
 
 # ============================================================================
@@ -397,9 +383,6 @@ if [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
     alias tap='brew tap'
     alias untap='brew untap'
 
-    # List packages
-    # No args: list all installed packages
-    # With args: search installed packages by pattern
     list() {
         if [ -z "$1" ]; then
             brew list
@@ -408,7 +391,6 @@ if [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
         fi
     }
 
-    # List files from a package
     files() {
         if [ -z "$1" ]; then
             echo "Usage: files <package_name>"
