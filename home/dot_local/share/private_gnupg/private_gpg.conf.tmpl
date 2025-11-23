@@ -1,1 +1,43 @@
 trusted-key {{ .gpgId }}
+
+default-key {{ .gpgId }}
+
+default-recipient {{ .email }}
+
+default-recipient-self
+
+encrypt-to {{ .email }}
+
+use-agent
+
+no-emit-version
+
+no-comments
+
+display-charset utf-8
+
+no-greeting
+
+no-expert
+
+auto-check-trustdb
+
+with-fingerprint
+
+keyid-format 0xlong
+
+auto-key-locate keyserver cert pka
+
+keyserver hkp://pgp.mit.edu
+
+list-options show-uid-validity,show-keyring,show-sig-expire
+
+verify-options show-uid-validity
+
+personal-cipher-preferences AES256 AES192 AES CAST5
+
+personal-digest-preferences SHA512 SHA384 SHA256 SHA224
+
+cert-digest-algo SHA512
+
+default-preference-list SHA512 SHA384 SHA256 SHA224 AES256 AES192 AES CAST5 ZLIB BZIP2 ZIP Uncompressed
