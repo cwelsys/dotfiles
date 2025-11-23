@@ -454,7 +454,7 @@ if [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
     fi
 
     if command -v fzf >/dev/null 2>&1; then
-        alias in='(brew formulae && brew casks) | fzf --multi --ansi --preview "brew info {1}" --preview-window "right,65%,border-left,wrap,noinfo,<80(down,60%,border-top,wrap,noinfo)" | xargs --no-run-if-empty brew install'
+        alias in='(brew formulae && brew casks) | awk "NR==FNR{inst[\$1]=1;next} {if(\$1 in inst) print \$0\" [installed]\"; else print}" <(brew list) - | fzf --multi --ansi --preview "brew info {1}" --preview-window "right,65%,border-left,wrap,noinfo,<80(down,60%,border-top,wrap,noinfo)" | xargs --no-run-if-empty brew install'
         alias re='brew list | fzf --multi --ansi --preview "brew info {1}" --preview-window "right,65%,border-left,wrap,noinfo,<80(down,60%,border-top,wrap,noinfo)" | xargs --no-run-if-empty brew uninstall'
     fi
 fi
