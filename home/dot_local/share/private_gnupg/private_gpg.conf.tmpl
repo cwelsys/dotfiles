@@ -24,9 +24,10 @@ with-fingerprint
 
 keyid-format 0xlong
 
-auto-key-locate keyserver cert pka
+auto-key-locate  wkd,dane,local,keyserver
+auto-key-retrieve
 
-keyserver hkp://keyserver.ubuntu.com
+keyserver hkps://keys.openpgp.org
 
 list-options show-uid-validity,show-keyring,show-sig-expire
 
