@@ -338,8 +338,8 @@ if command -v paru >/dev/null 2>&1; then
     alias update='paru -Syyu --noconfirm'
     alias search='paru -Ss'
     alias orphans='paru -Qtdq'
-    alias in='paru -Slq | fzf -q "$1" -m --preview "paru -Si {1}" --preview-window bottom | xargs -ro paru -S'
-    alias re='paru -Qq | fzf -q "$1" -m --preview "paru -Qi {1}" --preview-window bottom | xargs -ro paru -Rns'
+    alias in='paru --color=always -Sl | sed -e "s: :/:; s/unknown-version//" | fzf --multi --ansi --preview="paru --color=always -Si {1}" --preview-window "bottom,noinfo" | xargs --no-run-if-empty --open-tty paru -S --cleanafter'
+    alias re='paru -Qq | fzf --multi --ansi --preview="paru --color=always -Qi {1}" --preview-window "bottom,noinfo" | xargs --no-run-if-empty --open-tty paru -Rns'
     alias yay=paru
 
     remove() {
@@ -454,7 +454,8 @@ if [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
     fi
 
     if command -v fzf >/dev/null 2>&1; then
-        alias in='(brew formulae && brew casks) | fzf -q "$1" -m --preview "brew info {1}" --preview-window "right,75%,wrap,cycle,<65(down,80%,wrap,cycle)" | xargs brew install'
+        alias in='(brew formulae && brew casks) | fzf --multi --ansi --preview "brew info {1}" --preview-window "right,65%,border-left,wrap,noinfo,<80(down,60%,border-top,wrap,noinfo)" | xargs --no-run-if-empty brew install'
+        alias re='brew list | fzf --multi --ansi --preview "brew info {1}" --preview-window "right,65%,border-left,wrap,noinfo,<80(down,60%,border-top,wrap,noinfo)" | xargs --no-run-if-empty brew uninstall'
     fi
 fi
 
