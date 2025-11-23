@@ -554,7 +554,6 @@ pkgs:
         - nwg-look
         - python-gbinder
         - waydroid-launcher-git
-        - albert-git
         - glow
         - keyd
         - mkinitcpio-firmware
@@ -566,19 +565,6 @@ pkgs:
         - xan
         - ydotool
         - dms-shell-bin
-        - elephant
-        - elephant-bluetooth
-        - elephant-calc
-        - elephant-clipboard
-        - elephant-desktopapplications
-        - elephant-files
-        - elephant-menus
-        - elephant-providerlist
-        - elephant-runner
-        - elephant-symbols
-        - elephant-todo
-        - elephant-unicode
-        - elephant-websearch
         - gpu-screen-recorder
         - gvfs-nfs
         - jdk11-openjdk
@@ -587,7 +573,6 @@ pkgs:
         - protontricks
         - runelite
         - sddm
-        - walker
         - wayfreeze-git
         - bluetui
         - gamescope
@@ -600,6 +585,8 @@ pkgs:
         - xpadneo-dkms
         - paru
         - python-hatchling
+        - pacman-contrib
+        - python-pip
 
     wini:
       scoop:

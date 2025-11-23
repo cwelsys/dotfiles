@@ -336,13 +336,63 @@ fi
 if command -v paru >/dev/null 2>&1; then
     alias clean='paru --clean'
     alias update='paru -Syyu --noconfirm'
-    alias remove='paru -Rn'
-    alias purge='paru -Rnsc'
     alias search='paru -Ss'
     alias orphans='paru -Qtdq'
     alias in='paru -Slq | fzf -q "$1" -m --preview "paru -Si {1}" --preview-window bottom | xargs -ro paru -S'
     alias re='paru -Qq | fzf -q "$1" -m --preview "paru -Qi {1}" --preview-window bottom | xargs -ro paru -Rns'
     alias yay=paru
+
+    remove() {
+        if [ -z "$1" ]; then
+            echo "Usage: remove <package>        - Remove package"
+            echo "       remove -a <pattern>     - Remove all packages matching pattern"
+            echo "       remove -p <package>     - Purge package (with dependencies & configs)"
+            echo "       remove -ap <pattern>    - Purge all packages matching pattern"
+            return 1
+        fi
+
+        local use_pattern=0
+        local use_purge=0
+        local pattern=""
+
+        # Parse flags
+        while [ $# -gt 0 ]; do
+            case "$1" in
+                -a|-ap|-pa)
+                    use_pattern=1
+                    [ "$1" = "-ap" ] || [ "$1" = "-pa" ] && use_purge=1
+                    shift
+                    pattern="$1"
+                    shift
+                    ;;
+                -p)
+                    use_purge=1
+                    shift
+                    ;;
+                *)
+                    break
+                    ;;
+            esac
+        done
+
+        # Execute based on flags
+        if [ $use_pattern -eq 1 ]; then
+            if [ -z "$pattern" ]; then
+                echo "Error: pattern required"
+                return 1
+            fi
+            # shellcheck disable=SC2046
+            if [ $use_purge -eq 1 ]; then
+                paru -Rnsc $(paru -Qq | grep "$pattern")
+            else
+                paru -R $(paru -Qq | grep "$pattern")
+            fi
+        elif [ $use_purge -eq 1 ]; then
+            paru -Rnsc "$@"
+        else
+            paru -Rn "$@"
+        fi
+    }
 
     info() {
         if [ -z "$1" ]; then
