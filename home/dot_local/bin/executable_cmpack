@@ -444,6 +444,7 @@ REMOVED_NATIVE=()
 EXCLUDED_PATTERNS=(
     "^kmod-.*"
     "^kernel-.*"
+    ".*-debug$"
 )
 
 should_exclude_package() {

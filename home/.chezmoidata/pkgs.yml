@@ -341,7 +341,6 @@ pkgs:
         - alacritty
         - amd-ucode
         - asciiquarium-transparent-git
-        - asdcontrol-git
         - base
         - base-devel
         - bat-extras
@@ -548,7 +547,6 @@ pkgs:
         - gtk-engine-murrine
         - libgbinder
         - libglibutil
-        - libglibutil-debug
         - libva-utils
         - lxc
         - mesa-utils

@@ -338,11 +338,40 @@ if command -v paru >/dev/null 2>&1; then
     alias update='paru -Syyu --noconfirm'
     alias remove='paru -Rnsu'
     alias search='paru -Ss'
-    alias list='paru -Qq'
     alias orphans='paru -Qtdq'
     alias in='paru -Slq | fzf -q "$1" -m --preview "paru -Si {1}" --preview-window "right,75%,wrap,cycle,<65(down,80%,wrap,cycle)" | xargs -ro paru -S'
     alias re='paru -Qq | fzf -q "$1" -m --preview "paru -Qi {1}" --preview-window bottom | xargs -ro paru -Rns'
     alias yay=paru
+
+    # Package info (like 'brew info')
+    # Try repo/AUR info first (-Si), fall back to installed package info (-Qi)
+    pkginfo() {
+        if [ -z "$1" ]; then
+            echo "Usage: pkginfo <package_name>"
+            return 1
+        fi
+        paru -Si "$1" 2>/dev/null || paru -Qi "$1"
+    }
+
+    # List packages (like 'brew list')
+    # No args: list all installed packages
+    # With args: search installed packages by pattern
+    list() {
+        if [ -z "$1" ]; then
+            paru -Qq
+        else
+            paru -Qs "$@"
+        fi
+    }
+
+    # List files from a package (like 'brew list <package>' on macOS)
+    files() {
+        if [ -z "$1" ]; then
+            echo "Usage: files <package_name>"
+            return 1
+        fi
+        paru -Ql "$1"
+    }
 
     clean-orphans() {
         orphan_pkgs=$(paru -Qtdq)
@@ -360,13 +389,33 @@ fi
 # ============================================================================
 if [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
     alias update='brew update && brew upgrade'
-    alias list='brew list'
     alias clean='brew cleanup'
     alias remove='brew uninstall'
     alias search='brew search'
     alias info='brew info'
+    alias pkginfo='brew info'
     alias tap='brew tap'
     alias untap='brew untap'
+
+    # List packages
+    # No args: list all installed packages
+    # With args: search installed packages by pattern
+    list() {
+        if [ -z "$1" ]; then
+            brew list
+        else
+            brew list | grep -i "$@"
+        fi
+    }
+
+    # List files from a package
+    files() {
+        if [ -z "$1" ]; then
+            echo "Usage: files <package_name>"
+            return 1
+        fi
+        brew list "$1"
+    }
 
     if command -v m >/dev/null 2>&1; then
         alias trash-empty='m trash --clean'
