@@ -135,7 +135,6 @@ pkgs:
         - ducker
         - python-annotated-doc
         - paru
-
     mba:
       brews:
         - age
@@ -333,7 +332,6 @@ pkgs:
         - maccy
         - localsend
         - zen
-
     main:
       pacman:
         - 1password-beta
@@ -587,7 +585,6 @@ pkgs:
         - python-hatchling
         - pacman-contrib
         - python-pip
-
     wini:
       scoop:
         buckets:
@@ -802,7 +799,6 @@ pkgs:
         - 'PSToml'
         - 'Microsoft.PowerShell.SecretManagement'
         - 'Microsoft.PowerShell.SecretStore'
-
 yazi:
   plugins:
     - 'yazi-rs/plugins:chmod'
