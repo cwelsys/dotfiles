@@ -1,0 +1,187 @@
+#!/bin/bash
+
+locate_steam_css() {
+    local os_type=$(uname -s)
+    local search_paths=()
+
+    case "$os_type" in
+        Darwin)
+            search_paths=(
+                "$HOME/Library/Application Support/Steam/Steam.AppBundle/Steam/Contents/MacOS/steamui/css"
+            )
+            ;;
+        Linux)
+            search_paths=(
+                "$HOME/.steam/steam/steamui/css"
+                "$HOME/.local/share/Steam/steamui/css"
+                "$HOME/.var/app/com.valvesoftware.Steam/.steam/steam/steamui/css"
+                "$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamui/css"
+                "/usr/share/steam/steamui/css"
+                "/opt/steam/steamui/css"
+            )
+            ;;
+        *)
+            ;;
+    esac
+
+    for path in "${search_paths[@]}"; do
+        if [ -f "$path/chunk~2dcc5aaf7.css" ]; then
+            echo "$path/chunk~2dcc5aaf7.css"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+CSS_FILE=$(locate_steam_css)
+
+if [ -z "$CSS_FILE" ]; then
+    echo "Can't find Steam CSS file"
+    exit 1
+fi
+
+echo "Found target file: $CSS_FILE"
+
+OS_TYPE=$(uname -s)
+steamisrunning=1
+echo
+echo "Checking if Steam is running..."
+
+case "$OS_TYPE" in
+    Darwin)
+        if pgrep -x "steam_osx" > /dev/null; then
+            steamisrunning=1
+            echo "Steam running :/"
+            echo "Move to strike..."
+        else
+            steamisrunning=0
+            echo "Steam no running :)"
+        fi
+        ;;
+    Linux)
+        if pgrep steam > /dev/null || pgrep steamservice > /dev/null || pgrep steamwebhelper > /dev/null; then
+            steamisrunning=1
+            echo "Steam running :/"
+            echo "Move to strike..."
+        else
+            steamisrunning=0
+            echo "Steam no running :)"
+        fi
+        ;;
+esac
+
+apply_the_thing() {
+    echo
+    if [ $steamisrunning -eq 1 ]; then
+        echo "Killing Steam processes..."
+        case "$OS_TYPE" in
+            Darwin)
+                pkill -x Steam
+                sleep 1
+                pkill -x steam_osx
+                sleep 1
+                ;;
+            Linux)
+                pkill steam
+                sleep 1
+                pkill steamwebhelper
+                sleep 1
+                pkill steamservice
+                ;;
+        esac
+    fi
+
+    echo "Backing up 'chunk~2dcc5aaf7.css'..."
+    cp "$CSS_FILE" "$CSS_FILE.bak"
+
+    # Get original file size (OS-specific)
+    case "$OS_TYPE" in
+        Darwin)
+            original_size=$(stat -f%z "$CSS_FILE")
+            ;;
+        *)
+            original_size=$(stat -c%s "$CSS_FILE")
+            ;;
+    esac
+    echo "Original file size: $original_size bytes"
+
+    # height:324px is what tells the UI to display the what's new section
+    # Replacing this with display:none prevents the what's new section from being rendered
+    echo "Engaging the target..."
+    case "$OS_TYPE" in
+        Darwin)
+            sed -i '' 's/height:324px/display:none/g' "$CSS_FILE"
+            ;;
+        *)
+            sed -i 's/height:324px/display:none/g' "$CSS_FILE"
+            ;;
+    esac
+
+    echo "Verifying modification..."
+    if grep -q "display:none" "$CSS_FILE"; then
+        echo "Modification successful"
+    else
+        echo "Modification failed"
+        if [ $steamisrunning -eq 1 ]; then
+            echo "Reopening Steam..."
+            case "$OS_TYPE" in
+                Darwin)
+                    open -a Steam
+                    ;;
+                Linux)
+                    steam &
+                    ;;
+            esac
+        fi
+        exit 1
+    fi
+
+    # Get new file size (OS-specific)
+    case "$OS_TYPE" in
+        Darwin)
+            new_size=$(stat -f%z "$CSS_FILE")
+            ;;
+        *)
+            new_size=$(stat -c%s "$CSS_FILE")
+            ;;
+    esac
+    bytes_to_trim=$((new_size - original_size))
+
+    if [ $bytes_to_trim -gt 0 ]; then
+        echo "Trimming $bytes_to_trim bytes to maintain file size..."
+        # Read file, remove last N bytes, write back
+        head -c $original_size "$CSS_FILE" > "$CSS_FILE.tmp"
+        mv "$CSS_FILE.tmp" "$CSS_FILE"
+        echo "File size maintained at $original_size bytes"
+    fi
+
+    if [ $steamisrunning -eq 1 ]; then
+        echo "Reopening Steam..."
+        sleep 2
+        case "$OS_TYPE" in
+            Darwin)
+                open -a Steam
+                ;;
+            Linux)
+                steam &
+                ;;
+        esac
+    fi
+
+    echo
+    echo "Done!"
+}
+
+if [ ! -f "$CSS_FILE" ]; then
+    echo
+    echo "can't find 'chunk~2dcc5aaf7.css'"
+    echo "Expected location: $CSS_FILE"
+    exit 1
+elif grep -q "height:324px" "$CSS_FILE"; then
+    apply_the_thing
+else
+    echo
+    echo "'chunk~2dcc5aaf7.css' already modified..."
+    echo "What's New' should be hidden"
+fi
