@@ -338,7 +338,7 @@ if command -v paru >/dev/null 2>&1; then
     alias update='paru -Syyu --noconfirm'
     alias search='paru -Ss'
     alias orphans='paru -Qtdq'
-    alias in='paru --color=always -Sl | sed -e "s: :/:; s/unknown-version//" | fzf --multi --ansi --preview="paru --color=always -Si {1}" --preview-window "bottom,noinfo" | xargs --no-run-if-empty --open-tty paru -S --cleanafter'
+    alias in='paru -Slq | awk "NR==FNR{inst[\$1]=1;next} {if(\$1 in inst) print \$0\" \033[1;32m[installed]\033[0m\"; else print}" <(paru -Qq) - | fzf --multi --ansi -0 --tiebreak=index --preview="paru --color=always -Si {1}" --preview-window "bottom,noinfo" | awk "{print \$1}" | xargs --no-run-if-empty --open-tty paru -S --cleanafter'
     alias re='paru -Qq | fzf --multi --ansi --preview="paru --color=always -Qi {1}" --preview-window "bottom,noinfo" | xargs --no-run-if-empty --open-tty paru -Rns'
     alias yay=paru
 
@@ -454,8 +454,8 @@ if [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
     fi
 
     if command -v fzf >/dev/null 2>&1; then
-        alias in='(brew formulae && brew casks) | awk "NR==FNR{inst[\$1]=1;next} {if(\$1 in inst) print \$0\" \033[1;32m[installed]\033[0m\"; else print}" <(brew list) - | fzf --multi --ansi --preview "brew info {1}" --preview-window "right,65%,border-left,wrap,noinfo,<80(down,60%,border-top,wrap,noinfo)" | xargs --no-run-if-empty brew install'
-        alias re='brew list | fzf --multi --ansi --preview "brew info {1}" --preview-window "right,65%,border-left,wrap,noinfo,<80(down,60%,border-top,wrap,noinfo)" | xargs --no-run-if-empty brew uninstall'
+        alias in='(brew formulae && brew casks) | awk "NR==FNR{inst[\$1]=1;next} {if(\$1 in inst) print \$0\" \033[1;32m[installed]\033[0m\"; else print}" <(brew list) - | fzf --multi --ansi -0 --tiebreak=index --preview "brew info {1}" --preview-window "bottom,noinfo" | awk "{print \$1}" | xargs --no-run-if-empty brew install'
+        alias re='brew list | fzf --multi --ansi --preview "brew info {1}" --preview-window "bottom,noinfo" | xargs --no-run-if-empty brew uninstall'
     fi
 fi
 
