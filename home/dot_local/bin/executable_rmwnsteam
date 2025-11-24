@@ -83,11 +83,13 @@ apply_the_thing() {
                 sleep 1
                 ;;
             Linux)
-                pkill steam
+                pkill -x steam
                 sleep 1
-                pkill steamwebhelper
+                pkill -x steamwebhelper
                 sleep 1
-                pkill steamservice
+                pkill -x steamservice
+                sleep 1
+                pkill -x reaper
                 ;;
         esac
     fi
