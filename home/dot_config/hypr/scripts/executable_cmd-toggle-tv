@@ -1,0 +1,352 @@
+#!/usr/bin/env bash
+# TV gaming mode: wake TV, switch input, enable/disable display
+
+# Function to show current state
+show_status() {
+    echo "=== TV Gaming Mode Status ==="
+
+    # Check display status
+    if command -v hyprctl &>/dev/null; then
+        local monitors_json=$(hyprctl monitors -j 2>/dev/null)
+        local is_disabled=$(echo "$monitors_json" | jq -r ".[] | select(.name==\"HDMI-A-2\") | .disabled" 2>/dev/null)
+        if [[ "$is_disabled" == "false" ]]; then
+            echo "Display: ON (HDMI-A-2 enabled)"
+        else
+            echo "Display: OFF (HDMI-A-2 disabled)"
+        fi
+    fi
+
+    # Check gamescope status
+    if pgrep -f "gamescope.*steam" > /dev/null; then
+        echo "Gamescope: RUNNING"
+    else
+        echo "Gamescope: NOT RUNNING"
+    fi
+
+    echo ""
+}
+
+# Parse command line arguments
+ACTION=""
+if [ $# -eq 0 ]; then
+    show_status
+    echo "Usage: $0 {on|off|kill}"
+    echo "  on     - Enable TV gaming mode"
+    echo "  off    - Disable TV gaming mode"
+    echo "  kill   - Kill gamescope and restore desktop Steam"
+    exit 1
+fi
+
+case "${1}" in
+    on)
+        ACTION="on"
+        ;;
+    off)
+        ACTION="off"
+        ;;
+    kill|--kill|-k)
+        ACTION="kill"
+        ;;
+    *)
+        echo "Usage: $0 {on|off|kill}"
+        echo "  on     - Enable TV gaming mode"
+        echo "  off    - Disable TV gaming mode"
+        echo "  kill   - Kill gamescope and restore desktop Steam"
+        exit 1
+        ;;
+esac
+
+# Setup Hyprland environment if not already set (for SSH/remote execution)
+if command -v hyprctl &>/dev/null && [[ -z "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
+    for pid in $(pgrep -P $(pgrep -u "$USER" Hyprland) 2>/dev/null); do
+        [[ -f "/proc/$pid/environ" ]] || continue
+        while IFS='=' read -r -d '' k v; do
+            [[ "$k" =~ ^(HYPRLAND_INSTANCE_SIGNATURE|WAYLAND_DISPLAY|DISPLAY)$ ]] && export "$k=$v"
+        done < "/proc/$pid/environ"
+        [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]] && break
+    done
+fi
+
+# Setup environment for remote execution
+if [ -z "$XDG_RUNTIME_DIR" ]; then
+    runtime_dir="/run/user/$(id -u)"
+    if [ -d "$runtime_dir" ]; then
+        export XDG_RUNTIME_DIR="$runtime_dir"
+    fi
+fi
+
+# Configuration
+TV_MONITOR="HDMI-A-2"  # Updated for AMD RX 9070 XT
+STATE_FILE="/tmp/tv-gaming-steam-state"
+
+# Home Assistant Configuration
+HA_URL="http://192.168.4.114:8123"  # HAOS VM IP
+HA_TOKEN_FILE="${HOME}/.config/hypr/scripts/.ha-token"
+HA_TV_ENTITY="media_player.cwel_lgtv"
+
+# Load Home Assistant token
+if [ -f "$HA_TOKEN_FILE" ]; then
+    HA_TOKEN=$(cat "$HA_TOKEN_FILE")
+else
+    echo "Warning: Home Assistant token file not found at $HA_TOKEN_FILE"
+    HA_TOKEN=""
+fi
+
+# Check if TV display is currently enabled
+is_tv_enabled() {
+    local monitors_json=$(hyprctl monitors -j 2>/dev/null)
+    if [ $? -ne 0 ] || [ -z "$monitors_json" ]; then
+        echo "Error: Failed to get monitor information from hyprctl"
+        return 1
+    fi
+    local is_disabled=$(echo "$monitors_json" | jq -r ".[] | select(.name==\"$TV_MONITOR\") | .disabled" 2>/dev/null)
+    # If disabled is false or empty, the monitor is enabled
+    [[ "$is_disabled" == "false" ]] || [[ -z "$is_disabled" ]]
+}
+
+# Check if TV is on via Home Assistant
+is_tv_on() {
+    if [ -z "$HA_TOKEN" ]; then
+        echo "Warning: No Home Assistant token available"
+        return 1
+    fi
+
+    local state=$(curl -s -H "Authorization: Bearer $HA_TOKEN" \
+        "$HA_URL/api/states/$HA_TV_ENTITY" | jq -r '.state' 2>/dev/null)
+
+    [[ "$state" == "on" || "$state" == "playing" || "$state" == "paused" ]]
+}
+
+# Turn on TV via Home Assistant
+wake_tv() {
+    if [ -z "$HA_TOKEN" ]; then
+        echo "Warning: No Home Assistant token, skipping TV wake"
+        return 1
+    fi
+
+    if is_tv_on; then
+        echo "TV is already on"
+        return 0
+    fi
+
+    echo "Turning on TV via Home Assistant..."
+    curl -s -X POST -H "Authorization: Bearer $HA_TOKEN" \
+        -H "Content-Type: application/json" \
+        "$HA_URL/api/services/media_player/turn_on" \
+        -d "{\"entity_id\":\"$HA_TV_ENTITY\"}" > /dev/null
+
+    # Wait for TV to turn on (max 10 seconds)
+    for i in {1..20}; do
+        if is_tv_on; then
+            echo "TV is on"
+            return 0
+        fi
+        sleep 0.5
+    done
+
+    echo "Warning: TV may not have turned on, continuing anyway..."
+    return 1
+}
+
+# Switch TV to HDMI 3 via Home Assistant
+switch_tv_input() {
+    if [ -z "$HA_TOKEN" ]; then
+        echo "Warning: No Home Assistant token, skipping input switch"
+        return 1
+    fi
+
+    echo "Switching TV to HDMI 3..."
+    curl -s -X POST -H "Authorization: Bearer $HA_TOKEN" \
+        -H "Content-Type: application/json" \
+        "$HA_URL/api/services/media_player/select_source" \
+        -d "{\"entity_id\":\"$HA_TV_ENTITY\",\"source\":\"HDMI 3\"}" > /dev/null
+
+    if [ $? -eq 0 ]; then
+        echo "TV switched to HDMI 3"
+    else
+        echo "Warning: Failed to switch TV input"
+    fi
+}
+
+# Enable TV display in Hyprland
+enable_display() {
+    echo "Enabling TV display..."
+
+    # Enable the monitor (uses positioning from monitors.conf)
+    hyprctl keyword monitor "$TV_MONITOR,enable" > /dev/null
+
+    # notify-send "TV Gaming Mode" "Enabled" -t 2000
+}
+
+# Disable TV display in Hyprland
+disable_display() {
+    echo "Disabling TV display..."
+    hyprctl keyword monitor "$TV_MONITOR,disable"
+    # notify-send "TV Gaming Mode" "Disabled" -t 2000
+}
+
+# Put TV into standby (optional)
+tv_standby() {
+    if [ -z "$HA_TOKEN" ]; then
+        echo "Warning: No Home Assistant token, skipping TV standby"
+        return 1
+    fi
+
+    echo "Putting TV into standby..."
+    curl -s -X POST -H "Authorization: Bearer $HA_TOKEN" \
+        -H "Content-Type: application/json" \
+        "$HA_URL/api/services/media_player/turn_off" \
+        -d "{\"entity_id\":\"$HA_TV_ENTITY\"}" > /dev/null
+}
+
+# Check if desktop Steam is running (not in gamescope)
+is_desktop_steam_running() {
+    pgrep -x "steam" > /dev/null && ! pgrep -f "gamescope.*steam" > /dev/null
+}
+
+# Check if gamescope/Steam is running
+is_gamescope_running() {
+    pgrep -f "gamescope.*steam" > /dev/null
+}
+
+# Kill desktop Steam and save state
+kill_desktop_steam() {
+    if ! is_desktop_steam_running; then
+        return 0
+    fi
+
+    echo "Killing desktop Steam..."
+    steam -shutdown &> /dev/null
+    sleep 2
+
+    # Force kill if still running
+    if pgrep -x "steam" > /dev/null; then
+        pkill -9 steam
+    fi
+
+    # Mark that we killed desktop Steam
+    touch "$STATE_FILE"
+    echo "Desktop Steam killed"
+}
+
+# Restart desktop Steam if we killed it
+restart_desktop_steam() {
+    if [ ! -f "$STATE_FILE" ]; then
+        return 0
+    fi
+
+    echo "Restarting desktop Steam..."
+    uwsm app -- steam -silent </dev/null &>/dev/null &
+    sleep 2
+
+    # Verify steam started
+    if pgrep -x "steam" > /dev/null; then
+        echo "Desktop Steam restarted successfully"
+    else
+        echo "Warning: Desktop Steam may not have started"
+    fi
+
+    # Remove state file
+    rm -f "$STATE_FILE"
+}
+
+# Launch gamescope with Steam
+launch_gamescope() {
+    if is_gamescope_running; then
+        echo "Gamescope/Steam is already running"
+        return 0
+    fi
+
+    # Kill desktop Steam if it's running
+    kill_desktop_steam
+
+    echo "Launching gamescope/Steam..."
+
+    # Get TV resolution
+    local monitors_json=$(hyprctl monitors -j 2>/dev/null)
+    local tv_width=$(echo "$monitors_json" | jq -r ".[] | select(.name==\"$TV_MONITOR\") | .width" 2>/dev/null)
+    local tv_height=$(echo "$monitors_json" | jq -r ".[] | select(.name==\"$TV_MONITOR\") | .height" 2>/dev/null)
+
+    # Launch in nested mode with fullscreen on TV resolution
+    # Create a temporary wrapper script to preserve environment and properly detach
+    local wrapper_script="/tmp/gamescope-launch-$$.sh"
+    cat > "$wrapper_script" << EOF
+#!/bin/bash
+export WAYLAND_DISPLAY="$WAYLAND_DISPLAY"
+export DISPLAY="$DISPLAY"
+export XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR"
+export HYPRLAND_INSTANCE_SIGNATURE="$HYPRLAND_INSTANCE_SIGNATURE"
+export ENABLE_GAMESCOPE_WSI=1
+exec gamescope -W $tv_width -H $tv_height -w $tv_width -h $tv_height --fullscreen --steam -- steam -gamepadui
+EOF
+    chmod +x "$wrapper_script"
+
+    # Launch the wrapper with setsid -f to properly detach from SSH session
+    # -f forks the process, ensuring full detachment
+    # Background it to prevent blocking the script
+    setsid -f bash "$wrapper_script" &>/dev/null &
+
+    # Clean up wrapper script after a delay (in background)
+    (sleep 10; rm -f "$wrapper_script") &>/dev/null &
+
+    sleep 3
+
+    # Verify it started
+    if is_gamescope_running; then
+        echo "Gamescope/Steam launched successfully"
+    else
+        echo "Warning: Gamescope/Steam may not have started properly"
+        return 1
+    fi
+}
+
+# Kill gamescope/Steam
+kill_gamescope() {
+    if ! is_gamescope_running; then
+        echo "Gamescope/Steam is not running"
+        restart_desktop_steam
+        return 0
+    fi
+
+    echo "Killing gamescope/Steam..."
+    pkill -f "gamescope.*steam"
+    sleep 2
+    # Force kill if still running
+    if is_gamescope_running; then
+        pkill -9 -f "gamescope.*steam"
+    fi
+    echo "Gamescope/Steam killed"
+
+    # Restart desktop Steam if we killed it earlier
+    restart_desktop_steam
+}
+
+# Main logic
+case "$ACTION" in
+    kill)
+        kill_gamescope
+        exit 0
+        ;;
+
+    off)
+        echo "Turning TV gaming mode OFF..."
+        disable_display
+        # Uncomment the line below if you want the TV to go into standby when disabling
+        # tv_standby
+        ;;
+
+    on)
+        echo "Turning TV gaming mode ON..."
+
+        # Check if TV is already on, turn it on if not
+        if ! is_tv_on; then
+            wake_tv
+        else
+            echo "TV is already on"
+        fi
+
+        switch_tv_input
+        enable_display
+        launch_gamescope
+        ;;
+esac
