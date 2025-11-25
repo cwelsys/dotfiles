@@ -1,12 +1,7 @@
 # dots
 
+![Tools](https://private-user-images.githubusercontent.com/16944548/518397600-2b637b77-4946-4478-a3b5-9aba46e0da2a.jpg?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjQwMzY4MDIsIm5iZiI6MTc2NDAzNjUwMiwicGF0aCI6Ii8xNjk0NDU0OC81MTgzOTc2MDAtMmI2MzdiNzctNDk0Ni00NDc4LWEzYjUtOWFiYTQ2ZTBkYTJhLmpwZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTExMjUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUxMTI1VDAyMDgyMlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTRkYTQxNDZjNzI4Y2JhMDI1NDNkZGU3MDJmZGQ2MjVlNjQ5ZmE5Yjk0ZTQ0YjZmYjMwYjI4MDRjYjMyMGViNmImWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.NTJcbN1txUVU5-CLhEwY1vadgQ8wsZEs1OMUx2LSwc0)
+
 ```console
 $ chezmoi init cwelsys
 ```
-
-> Makes heavy use of [1Password](https://1password.com) and [age](https://github.com/FiloSottile/age) you'll
-need the [1Password CLI](https://developer.1password.com/docs/cli/) installed.
-
-> If you are not me and wish to proceed anyways, try chezmoi apply `--exclude=encrypted`
-
-Managed with [`chezmoi`](https://github.com/twpayne/chezmoi).
