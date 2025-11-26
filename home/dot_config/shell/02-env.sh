@@ -86,8 +86,9 @@ export DISABLE_TELEMETRY=1
 # Editor preferences
 export EDITOR="nvim"
 export VISUAL="code --wait"
-export SUDO_EDITOR="nvim"
-export MANPAGER="nvim +Man!"
+export SUDO_EDITOR=$EDITOR
+export SYSTEMD_EDITOR=$EDITOR
+export MANPAGER="$EDITOR +Man!"
 
 # Pagers
 export PAGER="bat"
