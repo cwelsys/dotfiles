@@ -15,7 +15,7 @@ if [[ -n "$SSH_CONNECTION" ]]; then
     export BROWSER="local-open"
 
     if command -v hyprctl &>/dev/null && [[ -z "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
-        for pid in $(pgrep -P $(pgrep -u "$USER" Hyprland) 2>/dev/null); do
+        for pid in $(pgrep -P $(pgrep -u "$USER" hyprland) 2>/dev/null); do
             [[ -f "/proc/$pid/environ" ]] || continue
             while IFS='=' read -r -d '' k v; do
                 [[ "$k" =~ ^(HYPRLAND_INSTANCE_SIGNATURE|WAYLAND_DISPLAY|DISPLAY)$ ]] && export "$k=$v"
