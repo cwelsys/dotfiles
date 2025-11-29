@@ -610,16 +610,37 @@ function Invoke-WindhawkBackup {
 	[Alias('windhawk-backup')]
 	[CmdletBinding()]
 	param()
-	# Self-elevate
-	if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) {
-		if ([int](Get-CimInstance -Class Win32_OperatingSystem | Select-Object -ExpandProperty BuildNumber) -ge 6000) {
-			$CommandLine = "-File `"" + $MyInvocation.MyCommand.Path + "`" " + $MyInvocation.UnboundArguments
-			Start-Process -Wait -FilePath PowerShell.exe -Verb Runas -ArgumentList $CommandLine
+
+	$backupZipPath = Join-Path $env:USERPROFILE 'Downloads\windhawk-backup.zip'
+
+	# Detect Windhawk installation type and location
+	$scoopWindhawkPath = Join-Path $env:USERPROFILE 'scoop\apps\windhawk\current'
+	$scoopWindhawkIni = Join-Path $scoopWindhawkPath 'windhawk.ini'
+	$isPortable = $false
+	$windhawkRoot = 'C:\ProgramData\Windhawk'
+
+	if (Test-Path $scoopWindhawkIni) {
+		$iniContent = Get-Content $scoopWindhawkIni -Raw -Encoding Unicode
+		if ($iniContent -match 'Portable\s*=\s*1') {
+			$isPortable = $true
+			$windhawkRoot = Join-Path $scoopWindhawkPath 'AppData'
+			Write-Host "Detected portable Windhawk installation at: $scoopWindhawkPath" -ForegroundColor Cyan
 		}
 	}
 
-	$backupZipPath = Join-Path $env:USERPROFILE 'Downloads\windhawk-backup.zip'
-	$windhawkRoot = 'C:\ProgramData\Windhawk'
+	if (-not $isPortable) {
+		Write-Host "Using standard Windhawk installation at: $windhawkRoot" -ForegroundColor Cyan
+	}
+
+	# Check if running as administrator (only required for non-portable)
+	$isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
+
+	if (-not $isPortable -and -not $isAdmin) {
+		Write-Host "`nERROR: Non-portable Windhawk installations require administrator privileges." -ForegroundColor Red
+		Write-Host "Please run PowerShell as Administrator and try again.`n" -ForegroundColor Yellow
+		return
+	}
+
 	$registryKey = 'HKLM:\SOFTWARE\Windhawk'
 
 	function Test-WindhawkInstalled {
@@ -638,7 +659,8 @@ function Invoke-WindhawkBackup {
 		param(
 			[string]$WindhawkFolder,
 			[string]$BackupPath,
-			[string]$RegistryKey
+			[string]$RegistryKey,
+			[bool]$IsPortable
 		)
 
 		Write-Host "`n--- Starting Windhawk backup ---" -ForegroundColor Cyan
@@ -648,37 +670,46 @@ function Invoke-WindhawkBackup {
 		$backupFolder = Join-Path $env:TEMP ("WindhawkBackup_$timeStamp")
 		New-Item -ItemType Directory -Path $backupFolder -Force | Out-Null
 
-		# Prepare Engine folder structure inside the backup
-		$engineFolder = Join-Path $backupFolder 'Engine'
-		New-Item -ItemType Directory -Path $engineFolder -Force | Out-Null
-
-		# Define the paths to copy from
-		$modsSourceFolder = Join-Path $WindhawkFolder 'ModsSource'
-		$modsFolder = Join-Path $WindhawkFolder 'Engine\Mods'
-
-		# Copy ModsSource if it exists
-		if (Test-Path $modsSourceFolder) {
-			Write-Host 'Copying ModsSource folder...'
-			Copy-Item -Path $modsSourceFolder -Destination $backupFolder -Recurse -Force
+		if ($IsPortable) {
+			# For portable mode, backup the entire AppData folder
+			Write-Host 'Backing up portable Windhawk AppData folder...'
+			Copy-Item -Path (Join-Path $WindhawkFolder '*') -Destination $backupFolder -Recurse -Force
 		}
 		else {
-			Write-Warning "ModsSource folder not found at: $modsSourceFolder"
-		}
+			# Prepare Engine folder structure inside the backup
+			$engineFolder = Join-Path $backupFolder 'Engine'
+			New-Item -ItemType Directory -Path $engineFolder -Force | Out-Null
 
-		# Copy Mods folder if it exists
-		if (Test-Path $modsFolder) {
-			Write-Host 'Copying Engine\Mods folder...'
-			Copy-Item -Path $modsFolder -Destination $engineFolder -Recurse -Force
-		}
-		else {
-			Write-Warning "Mods folder not found at: $modsFolder"
-		}
+			# Define the paths to copy from
+			$modsSourceFolder = Join-Path $WindhawkFolder 'ModsSource'
+			$modsFolder = Join-Path $WindhawkFolder 'Engine\Mods'
 
-		# Export registry key
-		Write-Host 'Exporting Windhawk registry key...'
-		$regExportFile = Join-Path $backupFolder 'Windhawk.reg'
-		# Using reg.exe for consistent export. /y overwrites without prompt.
-		reg export 'HKLM\SOFTWARE\Windhawk' $regExportFile /y | Out-Null
+			# Copy ModsSource if it exists
+			if (Test-Path $modsSourceFolder) {
+				Write-Host 'Copying ModsSource folder...'
+				Copy-Item -Path $modsSourceFolder -Destination $backupFolder -Recurse -Force
+			}
+			else {
+				Write-Warning "ModsSource folder not found at: $modsSourceFolder"
+			}
+
+			# Copy Mods folder if it exists
+			if (Test-Path $modsFolder) {
+				Write-Host 'Copying Engine\Mods folder...'
+				Copy-Item -Path $modsFolder -Destination $engineFolder -Recurse -Force
+			}
+			else {
+				Write-Warning "Mods folder not found at: $modsFolder"
+			}
+
+			# Export registry key (only for non-portable)
+			Write-Host 'Exporting Windhawk registry key...'
+			$regExportFile = Join-Path $backupFolder 'Windhawk.reg'
+			$regExportOutput = reg export 'HKLM\SOFTWARE\Windhawk' $regExportFile /y 2>&1
+			if ($LASTEXITCODE -ne 0) {
+				Write-Warning "Failed to export registry: $regExportOutput"
+			}
+		}
 
 		# Create/overwrite the existing backup zip
 		if (Test-Path $BackupPath) {
@@ -697,10 +728,22 @@ function Invoke-WindhawkBackup {
 		param(
 			[string]$WindhawkFolder,
 			[string]$BackupPath,
-			[string]$RegistryKey
+			[string]$RegistryKey,
+			[bool]$IsPortable
 		)
 
 		Write-Host "`n--- Starting Windhawk restore ---" -ForegroundColor Cyan
+
+		# Check if Windhawk is running
+		$windhawkProcesses = Get-Process | Where-Object { $_.ProcessName -match 'windhawk' -or $_.ProcessName -match 'WindhawkUI' }
+		if ($windhawkProcesses) {
+			Write-Host "`nERROR: Windhawk is currently running!" -ForegroundColor Red
+			Write-Host "Please close Windhawk completely before restoring:" -ForegroundColor Yellow
+			Write-Host "  1. Right-click the Windhawk system tray icon" -ForegroundColor Yellow
+			Write-Host "  2. Select 'Exit Windhawk'" -ForegroundColor Yellow
+			Write-Host "  3. Run this restore again`n" -ForegroundColor Yellow
+			return
+		}
 
 		# Check if the backup zip exists
 		if (!(Test-Path $BackupPath)) {
@@ -716,48 +759,101 @@ function Invoke-WindhawkBackup {
 		Write-Host "Extracting backup zip: $BackupPath"
 		Expand-Archive -Path $BackupPath -DestinationPath $extractFolder -Force
 
-		# After extraction, we expect:
-		#   ModsSource in the root of $extractFolder
-		#   Engine\Mods in $extractFolder\Engine
-		#   Windhawk.reg also in $extractFolder
+		# Check if backup is from portable or non-portable installation
+		$hasRegFile = Test-Path (Join-Path $extractFolder 'Windhawk.reg')
+		$hasSettingsIni = Test-Path (Join-Path $extractFolder 'settings.ini')
+		$isPortableBackup = -not $hasRegFile
 
-		$modsSourceBackup = Join-Path $extractFolder 'ModsSource'
-		$modsBackup = Join-Path $extractFolder 'Engine\Mods'
-		$regBackup = Join-Path $extractFolder 'Windhawk.reg'
-
-		# Copy ModsSource back if present
-		if (Test-Path $modsSourceBackup) {
-			Write-Host 'Copying ModsSource to Windhawk folder...'
-			Copy-Item -Path $modsSourceBackup -Destination $WindhawkFolder -Recurse -Force
-		}
-		else {
-			Write-Warning 'ModsSource not found in backup.'
-		}
-
-		# Copy Mods back if present
-		if (Test-Path $modsBackup) {
-			Write-Host 'Copying Engine\Mods to Windhawk folder...'
-			# Ensure Engine folder exists
-			$engineFolder = Join-Path $WindhawkFolder 'Engine'
-			if (!(Test-Path $engineFolder)) {
-				New-Item -ItemType Directory -Path $engineFolder -Force | Out-Null
+		if ($IsPortable) {
+			if ($isPortableBackup) {
+				# Portable backup to portable installation - direct copy
+				Write-Host 'Restoring portable Windhawk AppData folder...'
+				if (!(Test-Path $WindhawkFolder)) {
+					New-Item -ItemType Directory -Path $WindhawkFolder -Force | Out-Null
+				}
+				Copy-Item -Path (Join-Path $extractFolder '*') -Destination $WindhawkFolder -Recurse -Force
+				Write-Host "`nRestore completed successfully!"
 			}
-			Copy-Item -Path $modsBackup -Destination $engineFolder -Recurse -Force
+			else {
+				# Non-portable backup to portable installation - copy only files
+				Write-Host 'Converting non-portable backup to portable installation...'
+
+				$modsSourceBackup = Join-Path $extractFolder 'ModsSource'
+				$modsBackup = Join-Path $extractFolder 'Engine\Mods'
+
+				if (Test-Path $modsSourceBackup) {
+					Write-Host 'Copying ModsSource...'
+					Copy-Item -Path $modsSourceBackup -Destination $WindhawkFolder -Recurse -Force
+				}
+
+				if (Test-Path $modsBackup) {
+					Write-Host 'Copying Engine\Mods...'
+					$destEngine = Join-Path $WindhawkFolder 'Engine'
+					if (!(Test-Path $destEngine)) {
+						New-Item -ItemType Directory -Path $destEngine -Force | Out-Null
+					}
+					Copy-Item -Path $modsBackup -Destination $destEngine -Recurse -Force
+				}
+
+				Write-Host "`nRestore completed successfully!"
+				Write-Host "Note: Registry settings were not imported (portable mode uses settings.ini)" -ForegroundColor Yellow
+			}
 		}
 		else {
-			Write-Warning 'Mods folder not found in backup.'
-		}
+			# After extraction, we expect:
+			#   ModsSource in the root of $extractFolder
+			#   Engine\Mods in $extractFolder\Engine
+			#   Windhawk.reg also in $extractFolder
 
-		# Import registry if present
-		if (Test-Path $regBackup) {
-			Write-Host 'Importing Windhawk registry settings...'
-			reg import $regBackup | Out-Null
-		}
-		else {
-			Write-Warning 'Windhawk registry file not found in backup.'
-		}
+			$modsSourceBackup = Join-Path $extractFolder 'ModsSource'
+			$modsBackup = Join-Path $extractFolder 'Engine\Mods'
+			$regBackup = Join-Path $extractFolder 'Windhawk.reg'
 
-		Write-Host "`nRestore completed successfully!"
+			# Copy ModsSource back if present
+			if (Test-Path $modsSourceBackup) {
+				Write-Host 'Copying ModsSource to Windhawk folder...'
+				Copy-Item -Path $modsSourceBackup -Destination $WindhawkFolder -Recurse -Force
+			}
+			else {
+				Write-Warning 'ModsSource not found in backup.'
+			}
+
+			# Copy Mods back if present
+			if (Test-Path $modsBackup) {
+				Write-Host 'Copying Engine\Mods to Windhawk folder...'
+				# Ensure Engine folder exists
+				$engineFolder = Join-Path $WindhawkFolder 'Engine'
+				if (!(Test-Path $engineFolder)) {
+					New-Item -ItemType Directory -Path $engineFolder -Force | Out-Null
+				}
+				Copy-Item -Path $modsBackup -Destination $engineFolder -Recurse -Force
+			}
+			else {
+				Write-Warning 'Mods folder not found in backup.'
+			}
+
+			# Import registry if present
+			$registryImportSuccess = $true
+			if (Test-Path $regBackup) {
+				Write-Host 'Importing Windhawk registry settings...'
+				$regImportOutput = reg import $regBackup 2>&1
+				if ($LASTEXITCODE -ne 0) {
+					Write-Warning "Failed to import registry: $regImportOutput"
+					$registryImportSuccess = $false
+				}
+			}
+			else {
+				Write-Warning 'Windhawk registry file not found in backup.'
+				$registryImportSuccess = $false
+			}
+
+			if ($registryImportSuccess) {
+				Write-Host "`nRestore completed successfully!"
+			}
+			else {
+				Write-Host "`nRestore completed with errors. Please check the warnings above." -ForegroundColor Yellow
+			}
+		}
 	}
 
 	Write-Host "Checking if Windhawk is installed at: $windhawkRoot"
@@ -776,10 +872,10 @@ function Invoke-WindhawkBackup {
 
 	switch ($action.ToUpper()) {
 		'B' {
-			Do-Backup -WindhawkFolder $windhawkRoot -BackupPath $backupZipPath -RegistryKey $registryKey
+			Do-Backup -WindhawkFolder $windhawkRoot -BackupPath $backupZipPath -RegistryKey $registryKey -IsPortable $isPortable
 		}
 		'R' {
-			Do-Restore -WindhawkFolder $windhawkRoot -BackupPath $backupZipPath -RegistryKey $registryKey
+			Do-Restore -WindhawkFolder $windhawkRoot -BackupPath $backupZipPath -RegistryKey $registryKey -IsPortable $isPortable
 		}
 		'E' {
 			Write-Host 'Exiting script.'
