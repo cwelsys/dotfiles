@@ -18,10 +18,6 @@ Remove-Item Alias:rm -Force -ErrorAction SilentlyContinue
 Remove-Item Alias:ls -Force -ErrorAction SilentlyContinue
 Remove-Item Alias:cat -Force -ErrorAction SilentlyContinue
 
-if (Get-Command aliae -ErrorAction SilentlyContinue) {
-	aliae init pwsh --config "$HOME/.config/aliae.yaml" | Invoke-Expression
-}
-
 foreach ($file in $((Get-ChildItem -Path "$env:PWSH\lib\*" -Include *.ps1 -Exclude '7.ps1').FullName)) {
 	. "$file"
 }
@@ -33,10 +29,6 @@ if (Get-Command starship -ErrorAction SilentlyContinue) {
 	Invoke-Expression (&starship init powershell)
 	Enable-TransientPrompt
 }
-
-# if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
-# 	oh-my-posh init pwsh --config "$HOME/.config/posh.toml" | Invoke-Expression
-# }
 
 if ($PSVersionTable.PSVersion.Major -ge 7) {
 	. "$env:PWSH\lib\7.ps1"
