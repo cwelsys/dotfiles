@@ -765,8 +765,6 @@ pkgs:
         - 'BlueBubbles.BlueBubbles'
         - 'Valve.Steam'
         - 'Oracle.VirtualBox'
-        - 'File-New-Project.EarTrumpet'
-        - 'RamenSoftware.Windhawk'
         - 'StartIsBack.StartAllBack'
         - 'LesFerch.WinSetView'
         - 'Logitech.GHUB'
@@ -779,8 +777,6 @@ pkgs:
         - 'Microsoft.VisualStudio.2022.BuildTools'
         - 'WinFsp.WinFsp'
         - 'Nextcloud.NextcloudDesktop'
-        - 'Nvidia.PhysX'
-        - 'JanDeDobbeleer.Aliae'
       psGallery:
         - 'PsReadLine'
         - 'Terminal-Icons'
