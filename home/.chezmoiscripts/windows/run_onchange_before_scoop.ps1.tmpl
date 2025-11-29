@@ -48,8 +48,6 @@ try {
 {{- if and (hasKey .pkgs.hosts .hostname) (hasKey (index .pkgs.hosts .hostname) "scoop") -}}
 {{-   $hostPkgs := index .pkgs.hosts .hostname -}}
 
-{{ end }}
-
 
 {{ if hasKey $hostPkgs.scoop "buckets" }}
 Write-Color -Text "🔄 Adding Scoop buckets..." -Color Green
