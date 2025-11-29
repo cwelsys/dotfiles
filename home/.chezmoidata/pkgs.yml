@@ -601,7 +601,6 @@ pkgs:
           - 'main/aria2'
           - 'main/cacert'
           - 'main/innounp'
-          - 'main/wixtoolset'
           - 'main/docker'
           - 'main/dust'
           - 'main/ghostscript'
@@ -630,7 +629,6 @@ pkgs:
           - 'extras/scoop-completion'
           - 'extras/keyboard-chatter-blocker'
           - 'extras/unigetui'
-          - 'games/sudachi'
           - 'versions/komorebi-nightly'
           - 'extras/qbittorrent'
           - 'versions/systeminformer-nightly'
@@ -745,6 +743,7 @@ pkgs:
           - 'nerd-fonts/JetBrainsMono-NF-Mono'
           - 'nerd-fonts/JetBrainsMono-NF-Propo'
           - 'extras/windhawk'
+          - 'main/dark'
         importRegistry:
           - '$env:USERPROFILE\scoop\apps\7zip\current\install-context.reg'
           - '$env:USERPROFILE\scoop\apps\python\current\install-pep-514.reg'
@@ -782,6 +781,7 @@ pkgs:
         - 'Microsoft.DotNet.SDK.3_1'
         - 'Microsoft.AppInstaller'
         - 'Microsoft.UI.Xaml.2.8'
+        - 'Microsoft.DotNet.Runtime.6'
       psGallery:
         - 'PsReadLine'
         - 'Terminal-Icons'
@@ -824,4 +824,5 @@ yazi:
     - 'pirafrank/what-size'
     - 'Ape/open-with-cmd'
     - 'yazi-rs/flavors:catppuccin-mocha'
+
 

@@ -23,7 +23,6 @@ config:
         VAGRANT_DEFAULT_PROVIDER: 'virtualbox'
         BAT_CONFIG_DIR: 'C:\Users\cwel\.config\bat'
         DOCKER_CONFIG: 'C:\Users\cwel\.config\docker'
-        DOTNET_CLI_HOME: 'C:\Users\cwel\.local\share\dotnet'
         PIPX_HOME: 'C:\Users\cwel\.local\share\pipx'
         PIPX_GLOBAL_HOME: 'C:\Users\cwel\.local\share\pipx'
         DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
