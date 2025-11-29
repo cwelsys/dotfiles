@@ -327,20 +327,19 @@ if command -v flatpak >/dev/null 2>&1; then
 fi
 
 # ============================================================================
-# Arch Linux (Pacman/Paru)
+# Arch Linux (Pacman/yay)
 # ============================================================================
 if command -v pacman >/dev/null 2>&1; then
     alias pacman='sudo pacman'
 fi
 
-if command -v paru >/dev/null 2>&1; then
-    alias clean='paru --clean'
-    alias update='paru -Syyu --noconfirm'
-    alias search='paru -Ss'
-    alias orphans='paru -Qtdq'
-    alias in='paru -Slq | awk "NR==FNR{inst[\$1]=1;next} {if(\$1 in inst) print \$0\" \033[1;32m[installed]\033[0m\"; else print}" <(paru -Qq) - | fzf --multi --ansi -0 --tiebreak=index --preview="paru --color=always -Si {1}" --preview-window "bottom,noinfo" | awk "{print \$1}" | xargs --no-run-if-empty --open-tty paru -S --cleanafter'
-    alias re='paru -Qq | fzf --multi --ansi --preview="paru --color=always -Qi {1}" --preview-window "bottom,noinfo" | xargs --no-run-if-empty --open-tty paru -Rns'
-    alias yay=paru
+if command -v yay >/dev/null 2>&1; then
+    alias clean='yay --clean'
+    alias update='yay -Syyu --noconfirm'
+    alias search='yay -Ss'
+    alias orphans='yay -Qtdq'
+    alias in='yay -Slq | awk "NR==FNR{inst[\$1]=1;next} {if(\$1 in inst) print \$0\" \033[1;32m[installed]\033[0m\"; else print}" <(yay -Qq) - | fzf --multi --ansi -0 --tiebreak=index --preview="yay --color=always -Si {1}" --preview-window "bottom,noinfo" | awk "{print \$1}" | xargs --no-run-if-empty --open-tty yay -S --cleanafter'
+    alias re='yay -Qq | fzf --multi --ansi --preview="yay --color=always -Qi {1}" --preview-window "bottom,noinfo" | xargs --no-run-if-empty --open-tty yay -Rns'
 
     remove() {
         if [ -z "$1" ]; then
@@ -383,14 +382,14 @@ if command -v paru >/dev/null 2>&1; then
             fi
             # shellcheck disable=SC2046
             if [ $use_purge -eq 1 ]; then
-                paru -Rnsc $(paru -Qq | grep "$pattern")
+                yay -Rnsc $(yay -Qq | grep "$pattern")
             else
-                paru -R $(paru -Qq | grep "$pattern")
+                yay -R $(yay -Qq | grep "$pattern")
             fi
         elif [ $use_purge -eq 1 ]; then
-            paru -Rnsc "$@"
+            yay -Rnsc "$@"
         else
-            paru -Rn "$@"
+            yay -Rn "$@"
         fi
     }
 
@@ -399,14 +398,14 @@ if command -v paru >/dev/null 2>&1; then
             echo "Usage: (pkg)info <package_name>"
             return 1
         fi
-        paru -Si "$1" 2>/dev/null || paru -Qi "$1"
+        yay -Si "$1" 2>/dev/null || yay -Qi "$1"
     }
 
     list() {
         if [ -z "$1" ]; then
-            paru -Qq
+            yay -Qq
         else
-            paru -Qs "$@"
+            yay -Qs "$@"
         fi
     }
 
@@ -415,7 +414,7 @@ if command -v paru >/dev/null 2>&1; then
             echo "Usage: files <package_name>"
             return 1
         fi
-        paru -Ql "$1"
+        yay -Ql "$1"
     }
 
 fi
