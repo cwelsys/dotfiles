@@ -11,8 +11,8 @@ $env:XDG_PROJECTS_DIR = "$HOME/Projects"
 # ============================================================================
 # Chezmoi Shortcuts
 # ============================================================================
-$env:DOTS = "$env:XDG_DATA_HOME/chezmoi"
-$env:DOTFILES = "$env:XDG_DATA_HOME/chezmoi"
+$env:DOTS = "$env:XDG_DATA_HOME/chezmoi/home"
+$env:DOTFILES = "$env:XDG_DATA_HOME/chezmoi/home"
 
 # ============================================================================
 # Development Tools

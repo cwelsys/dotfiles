@@ -88,6 +88,29 @@ if (Get-Command ghostty -ErrorAction SilentlyContinue) {
 # ============================================================================
 # File Operations
 # ============================================================================
+# Interactive copy/move (confirm before overwrite)
+function cp { Copy-Item -Confirm @args }
+function mv { Move-Item -Confirm @args }
+
+# rsync-like copy/move with progress
+function rcp {
+    param([string]$Source, [string]$Destination)
+    Copy-Item -Path $Source -Destination $Destination -Recurse -Force -Verbose
+}
+
+function rmv {
+    param([string]$Source, [string]$Destination)
+    Move-Item -Path $Source -Destination $Destination -Force -Verbose
+}
+
+# Make file executable (remove read-only flag on Windows)
+function x {
+    param([string]$File)
+    if (Test-Path $File) {
+        Set-ItemProperty $File -Name IsReadOnly -Value $false
+    }
+}
+
 function e { Invoke-Item . }
 Set-Alias -Name xo -Value Invoke-Item
 
@@ -95,13 +118,16 @@ Set-Alias -Name xo -Value Invoke-Item
 # Listing (eza)
 # ============================================================================
 if (Get-Command eza -ErrorAction SilentlyContinue) {
-    function l { eza --git --hyperlink --color=always --group-directories-first --icons -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" @args }
-    function ls { eza --git --hyperlink --color=always --group-directories-first --icons -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" @args }
-    function la { eza -a --git --hyperlink --color=always --group-directories-first --icons -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" @args }
-    function ll { eza -l --git --hyperlink --color=always --group-directories-first --icons -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" @args }
-    function lla { eza -al --header --git --hyperlink --color=always --group-directories-first --icons -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" @args }
-    function lo { eza --oneline --git --hyperlink --color=always --group-directories-first --icons -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" @args }
-    function l. { eza -a --git --hyperlink --color=always --group-directories-first --icons -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" @args | Select-String "^\." }
+    $ezaParams = '--git --hyperlink --color=always --group-directories-first --icons'
+    $ezaIgnore = '-I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv"'
+
+    function l { eza $ezaParams.Split() @args }
+    function ls { eza $ezaParams.Split() @args }
+    function la { eza -a $ezaParams.Split() @args }
+    function ll { eza -l $ezaParams.Split() $ezaIgnore.Split() @args }
+    function lla { eza -al --header $ezaParams.Split() $ezaIgnore.Split() @args }
+    function lo { eza --oneline $ezaParams.Split() @args }
+    function l. { eza -a $ezaParams.Split() @args | Select-String "^\." }
 }
 
 if (Get-Command tree -ErrorAction SilentlyContinue) {
@@ -110,6 +136,18 @@ if (Get-Command tree -ErrorAction SilentlyContinue) {
 
 if (Get-Command bat -ErrorAction SilentlyContinue) {
     function cat { bat --paging=never @args }
+}
+
+# ============================================================================
+# Process Management
+# ============================================================================
+function psg {
+    param([string]$Pattern)
+    if (-not $Pattern) {
+        Write-Host "Usage: psg <process_name_pattern>"
+        return
+    }
+    Get-Process | Where-Object { $_.ProcessName -match $Pattern }
 }
 
 # ============================================================================
@@ -127,7 +165,10 @@ if (Get-Command chezmoi -ErrorAction SilentlyContinue) {
 }
 
 function cdc { Set-Location "$HOME/.config" }
-function cdcm { Set-Location (Split-Path $env:DOTFILES -Parent) }
+function cdcm {
+    $dotfiles = if ($env:DOTFILES) { $env:DOTFILES } else { "$HOME\.local\share\chezmoi\home" }
+    Set-Location $dotfiles
+}
 
 # Python
 if (Get-Command python3 -ErrorAction SilentlyContinue) {
@@ -170,6 +211,133 @@ if (Get-Command cargo-binstall -ErrorAction SilentlyContinue) {
     Set-Alias -Name cargob -Value cargo-binstall
 }
 
+# Scoop (Windows package manager)
+if (Get-Command scoop -ErrorAction SilentlyContinue) {
+    function update { scoop update * }
+    function clean { scoop cleanup * }
+    function search { scoop search @args }
+
+    function info {
+        param([string]$Package)
+        if (-not $Package) {
+            Write-Host "Usage: info <package_name>"
+            return
+        }
+        scoop info $Package
+    }
+
+    function list {
+        if ($args.Count -eq 0) {
+            scoop list
+        } else {
+            scoop list | Where-Object { $_.Name -match $args[0] }
+        }
+    }
+
+    function files {
+        param([string]$Package)
+        if (-not $Package) {
+            Write-Host "Usage: files <package_name>"
+            return
+        }
+        $scoopDir = if ($env:SCOOP) { $env:SCOOP } else { "$HOME\scoop" }
+        $appDir = "$scoopDir\apps\$Package\current"
+        if (Test-Path $appDir) {
+            Get-ChildItem -Path $appDir -Recurse -File | Select-Object -ExpandProperty FullName
+        } else {
+            Write-Host "Package '$Package' not found or not installed"
+        }
+    }
+
+    function remove {
+        param(
+            [string]$Package,
+            [switch]$a,  # Remove all matching pattern
+            [switch]$p   # Purge (remove with --purge flag)
+        )
+
+        if (-not $Package) {
+            Write-Host "Usage: remove <package>           - Remove package"
+            Write-Host "       remove -a <pattern>        - Remove all packages matching pattern"
+            Write-Host "       remove -p <package>        - Purge package (remove persistent data)"
+            Write-Host "       remove -a -p <pattern>     - Purge all packages matching pattern"
+            return
+        }
+
+        if ($a) {
+            # Remove all packages matching pattern
+            $packages = scoop list | Where-Object { $_.Name -match $Package } | Select-Object -ExpandProperty Name
+            if ($packages) {
+                foreach ($pkg in $packages) {
+                    if ($p) {
+                        scoop uninstall --purge $pkg
+                    } else {
+                        scoop uninstall $pkg
+                    }
+                }
+            } else {
+                Write-Host "No packages found matching: $Package"
+            }
+        } else {
+            # Remove single package
+            if ($p) {
+                scoop uninstall --purge $Package
+            } else {
+                scoop uninstall $Package
+            }
+        }
+    }
+
+    # Bucket management (like brew tap/untap)
+    function bucket {
+        param([string]$BucketName, [string]$Repo)
+        if (-not $BucketName) {
+            scoop bucket list
+            return
+        }
+        if ($Repo) {
+            scoop bucket add $BucketName $Repo
+        } else {
+            scoop bucket add $BucketName
+        }
+    }
+
+    function unbucket {
+        param([string]$BucketName)
+        if (-not $BucketName) {
+            Write-Host "Usage: unbucket <bucket_name>"
+            return
+        }
+        scoop bucket rm $BucketName
+    }
+
+    # Interactive installer with fzf (if available)
+    if (Get-Command fzf -ErrorAction SilentlyContinue) {
+        function in {
+            $installed = scoop list | Select-Object -ExpandProperty Name
+            scoop search | Out-String | ForEach-Object {
+                $_ -split "`n" | Where-Object { $_ -match '\S' } | ForEach-Object {
+                    $name = ($_ -split '\s+')[0]
+                    if ($installed -contains $name) {
+                        "$_ [32m[installed][0m"
+                    } else {
+                        $_
+                    }
+                }
+            } | fzf --ansi --multi | ForEach-Object {
+                $pkg = ($_ -split '\s+')[0]
+                scoop install $pkg
+            }
+        }
+
+        function re {
+            scoop list | Select-Object -ExpandProperty Name | fzf --multi --preview "scoop info {}" | ForEach-Object {
+                scoop uninstall $_
+            }
+        }
+    }
+}
+
 # ============================================================================
 # Docker
 # ============================================================================
@@ -207,8 +375,8 @@ if (Get-Command nerdctl -ErrorAction SilentlyContinue) {
 # Utilities
 # ============================================================================
 if (Get-Command jq -ErrorAction SilentlyContinue) {
-    function jq-color { jq -C @args }
-    function jl { jq -C @args | less }
+    function jq { & jq.exe -C @args }
+    function jl { & jq.exe -C @args | less }
 }
 
 # ============================================================================
@@ -242,7 +410,17 @@ if (Get-Command wsl.exe -ErrorAction SilentlyContinue) {
 
 # Sudo equivalent (gsudo)
 if (Get-Command gsudo -ErrorAction SilentlyContinue) {
+    Set-Alias -Name s -Value gsudo
     Set-Alias -Name su -Value gsudo
+
+    function se {
+        param([string]$File)
+        if (-not $File) {
+            Write-Host "Usage: se <file>"
+            return
+        }
+        gsudo nvim $File
+    }
 }
 
 # Windows utilities

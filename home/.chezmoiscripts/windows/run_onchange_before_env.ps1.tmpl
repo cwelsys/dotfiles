@@ -68,8 +68,7 @@ Write-Host ""
 # --- Other Environment Variables ---
 Write-Color -Text "Processing other environment variables..." -Color DarkMagenta
 {{- if .config.windows.envs.others }}
-{{- range .config.windows.envs.others }}
-{{- range $name, $value := . }}
+{{- range $name, $value := .config.windows.envs.others }}
 try {
     $varName = "{{ $name }}"
     # Ensure desiredValue from template is treated as a literal string, handling special characters
@@ -92,7 +91,6 @@ try {
 } catch {
     Write-Color -Text "[env] ", "{{ $name }}", ": ", "(failed) ", "Error: $($_.Exception.Message)" -Color Blue, White, White, Red, Gray
 }
-{{- end }}
 {{- end }}
 {{- else }}
 Write-Color -Text "[env] ", "Other env vars: ", "(skipped) ", "No other environment variables configuration found" -Color Blue, White, Yellow, Gray

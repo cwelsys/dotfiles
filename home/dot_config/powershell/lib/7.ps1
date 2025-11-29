@@ -497,14 +497,14 @@
 			elseif ($currentSection -eq 'scoop' && $line -match '^\s*apps:\s*$') {
 				$currentSubSection = 'apps'
 			}
-			elseif ($currentSection -eq 'scoop' && $line -match '^\s*importRegistry:\s*$') {
+			elseif ($currentSection -eq 'scoop' && $line -match '^\s*importRegistry:') {
 				$currentSubSection = 'importRegistry'
 			}
-			elseif ($currentSection -eq 'currenthost' && $line -match '^\s*winget:\s*$') {
+			elseif (($currentSection -eq 'currenthost' -or $currentSection -eq 'scoop') && $line -match '^\s*winget:\s*$') {
 				$currentSection = 'winget'
 				$currentSubSection = ''
 			}
-			elseif ($currentSection -eq 'currenthost' && $line -match '^\s*psGallery:\s*$') {
+			elseif (($currentSection -eq 'currenthost' -or $currentSection -eq 'scoop' -or $currentSection -eq 'winget') && $line -match '^\s*psGallery:\s*$') {
 				$currentSection = 'psGallery'
 				$currentSubSection = ''
 			}
@@ -513,6 +513,12 @@
 				$inHostSection = $false
 				$currentSection = ''
 				$currentSubSection = ''
+			}
+
+			# Never skip section/subsection headers - always preserve structural elements
+			if ($line -match '^\s*(pkgs|hosts|scoop|winget|psGallery|buckets|apps|importRegistry):') {
+				$updatedContent += $line
+				continue
 			}
 
 			$shouldSkipLine = $false
@@ -540,6 +546,8 @@
 			if (-not $shouldSkipLine) {
 				$updatedContent += $line
 			}
+
+			# Add new scoop packages after the last app line
 			if ($i -eq $scoopPkgsEndIndex) {
 				foreach ($pkg in $newPackages) {
 					$updatedContent += "$packageIndentation- '$pkg'"
