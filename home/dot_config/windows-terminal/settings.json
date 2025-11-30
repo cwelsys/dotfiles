@@ -34,7 +34,7 @@
     "copyFormatting": "none",
     "copyOnSelect": false,
     "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
-    "focusFollowMouse": false,
+    "focusFollowMouse": true,
     "initialCols": 100,
     "initialPosition": ",",
     "initialRows": 32,
@@ -897,6 +897,8 @@
             }
         }
     ],
+    "useAcrylicInTabRow": true,
     "warning.confirmCloseAllTabs": false,
+    "warning.largePaste": false,
     "warning.multiLinePaste": false
 }
