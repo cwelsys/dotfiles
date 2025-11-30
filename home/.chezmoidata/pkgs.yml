@@ -134,7 +134,9 @@ pkgs:
         - archlinux-appstream-data
         - ducker
         - python-annotated-doc
-        - paru
+        - sbctl
+        - yay
+
     mba:
       brews:
         - age
