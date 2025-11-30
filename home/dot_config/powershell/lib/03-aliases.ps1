@@ -211,13 +211,17 @@ if (Get-Command cargo-binstall -ErrorAction SilentlyContinue) {
     Set-Alias -Name cargob -Value cargo-binstall
 }
 
+function wi { winget install @args }
+function wr { winget remove @args }
+
 # Scoop (Windows package manager)
 if (Get-Command scoop -ErrorAction SilentlyContinue) {
+    Remove-Item -Path Alias:si -Force -ErrorAction SilentlyContinue
     function update { scoop update * }
     function clean { scoop cleanup * }
     function search { scoop search @args }
-    function sci { scoop install @args }
-    function scr { scoop uninstall @args }
+    function si { scoop install @args }
+    function sr { scoop uninstall @args }
 
     function info {
         param([string]$Package)
