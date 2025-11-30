@@ -14,6 +14,8 @@ return {
 ██████  █████████████████████ ████ █████ █████ ████ ██████
         ]],
       },
+      -- Use simpler borders on Windows to prevent rendering issues
+      win = vim.fn.has("win32") == 1 and { border = "single" } or nil,
     },
     lazygit = {
       configure = false,

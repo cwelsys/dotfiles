@@ -65,3 +65,18 @@ o.conceallevel = 2
 if os.getenv("WSL_DISTRO_NAME") ~= nil then
   o.clipboard = "unnamedplus"
 end
+
+-- Fix shell issues on Windows (MSYS/Git Bash) that cause nvim_exec2() errors
+if vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1 then
+  o.shell = "cmd.exe"
+  o.shellcmdflag = "/s /c"
+  o.shellxquote = '"'
+  o.shellquote = ""
+  o.shellpipe = ">%s 2>&1"
+  o.shellredir = ">%s 2>&1"
+
+  -- Ensure termguicolors is properly set for Windows terminals
+  if os.getenv("TERM") then
+    o.termguicolors = true
+  end
+end

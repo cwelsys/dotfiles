@@ -21,7 +21,8 @@ require("lazy").setup({
     },
   },
   ui = {
-    backdrop = 100,
+    -- Disable backdrop on Windows to prevent nvim_open_win errors in MSYS/Git Bash
+    backdrop = vim.fn.has("win32") == 1 and 0 or 100,
   },
   defaults = {
     lazy = true,
