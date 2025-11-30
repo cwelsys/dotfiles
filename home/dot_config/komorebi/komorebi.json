@@ -6,15 +6,15 @@
 	"cross_boundary_behaviour": "Monitor",
 	"mouse_follows_focus": false,
 	"floating_window_aspect_ratio": "Widescreen",
-	"default_workspace_padding": 10,
-	"default_container_padding": 10,
+	"default_workspace_padding": 7,
+	"default_container_padding": 7,
 	"resize_delta": 200,
 	"stackbar": {
 		"height": 35,
 		"mode": "OnStack",
 		"tabs": { "width": 300, "font_family": "JetBrainsMono NFP", "font_size": 30 }
 	},
-	"animation": { "enabled": true, "fps": 120, "style": { "movement": "EaseOutBack", "transparency": "Linear" } },
+	"animation": { "enabled": false, "fps": 120, "style": { "movement": "EaseOutBack", "transparency": "Linear" } },
 	"border": true,
 	"border_implementation": "Komorebi",
 	"border_width": 3,
