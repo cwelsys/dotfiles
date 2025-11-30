@@ -80,11 +80,6 @@ if (Get-Command claude -ErrorAction SilentlyContinue) {
     function cr { claude --resume }
 }
 
-if (Get-Command ghostty -ErrorAction SilentlyContinue) {
-    function boo { ghostty +boo }
-    function fonts { ghostty +list-fonts }
-}
-
 # ============================================================================
 # File Operations
 # ============================================================================
@@ -232,13 +227,7 @@ if (Get-Command scoop -ErrorAction SilentlyContinue) {
         scoop info $Package
     }
 
-    function list {
-        if ($args.Count -eq 0) {
-            scoop list
-        } else {
-            scoop list | Where-Object { $_.Name -match $args[0] }
-        }
-    }
+    function list { scoop list @args }
 
     function files {
         param([string]$Package)

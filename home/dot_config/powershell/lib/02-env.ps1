@@ -154,11 +154,6 @@ $env:TZ = 'America/New_York'
 # ============================================================================
 # Windows-specific
 # ============================================================================
-if (Get-Command ghostty -ErrorAction SilentlyContinue) {
-    $env:SNACKS_GHOSTTY = 'true'
-}
-
-# File.exe location for Yazi on Windows
 if (Test-Path 'C:/Program Files/Git/usr/bin/file.exe') {
     $env:YAZI_FILE_ONE = 'C:/Program Files/Git/usr/bin/file.exe'
 }
