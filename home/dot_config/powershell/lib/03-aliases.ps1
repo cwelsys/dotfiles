@@ -216,6 +216,8 @@ if (Get-Command scoop -ErrorAction SilentlyContinue) {
     function update { scoop update * }
     function clean { scoop cleanup * }
     function search { scoop search @args }
+    function si { scoop install @args }
+    function sr { scoop uninstall @args }
 
     function info {
         param([string]$Package)
