@@ -1,7 +1,7 @@
 #!/bin/bash
 {{- if and (hasKey .pkgs.hosts .hostname) (hasKey (index .pkgs.hosts .hostname) "pacman") -}}
 {{ $pkgs := (index .pkgs.hosts .hostname).pacman }}
-paru -S {{ $pkgs | quoteList | join " " }} --needed --noconfirm
+yay -S {{ $pkgs | quoteList | join " " }} --needed --noconfirm
 {{- else }}
 echo "⚠️  No package configuration found for hostname: {{ .hostname }}"
 echo "💡 Run 'cmpack --clone <template-host>' to bootstrap this machine"
