@@ -786,6 +786,7 @@ pkgs:
         - 'Microsoft.DotNet.Runtime.6'
         - 'RARLab.WinRAR'
         - 'Discord.Discord'
+        - 'BrechtSanders.WinLibs.POSIX.UCRT'
       psGallery:
         - 'PsReadLine'
         - 'Terminal-Icons'
@@ -828,6 +829,7 @@ yazi:
     - 'pirafrank/what-size'
     - 'Ape/open-with-cmd'
     - 'yazi-rs/flavors:catppuccin-mocha'
+
 
 
 
