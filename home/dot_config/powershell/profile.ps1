@@ -36,6 +36,7 @@ if ($PSVersionTable.PSVersion.Major -ge 7) {
 
 if (Get-Command scoop -ErrorAction SilentlyContinue) {
 	Invoke-Expression (&scoop-search --hook)
+	Import-Module git-aliases -DisableNameChecking
 }
 
 if (Get-Command chezmoi -ErrorAction 'SilentlyContinue') {

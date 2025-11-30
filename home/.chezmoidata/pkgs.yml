@@ -744,6 +744,8 @@ pkgs:
           - 'nerd-fonts/JetBrainsMono-NF-Propo'
           - 'extras/windhawk'
           - 'main/dark'
+          - 'extras/git-aliases'
+          - 'main/nircmd'
         importRegistry:
           - '$env:USERPROFILE\scoop\apps\7zip\current\install-context.reg'
           - '$env:USERPROFILE\scoop\apps\python\current\install-pep-514.reg'
@@ -782,6 +784,8 @@ pkgs:
         - 'Microsoft.AppInstaller'
         - 'Microsoft.UI.Xaml.2.8'
         - 'Microsoft.DotNet.Runtime.6'
+        - 'RARLab.WinRAR'
+        - 'Discord.Discord'
       psGallery:
         - 'PsReadLine'
         - 'Terminal-Icons'
@@ -824,5 +828,7 @@ yazi:
     - 'pirafrank/what-size'
     - 'Ape/open-with-cmd'
     - 'yazi-rs/flavors:catppuccin-mocha'
+
+
 
 
