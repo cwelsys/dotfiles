@@ -4,10 +4,6 @@ if test -f "$HOMEBREW_PREFIX/bin/brew"
     eval ($HOMEBREW_PREFIX/bin/brew shellenv)
 end
 
-if type -q aliae
-    aliae init fish --config "$HOME/.config/aliae.yaml" | source
-end
-
 function mark_prompt_start --on-event fish_prompt
     echo -en "\e]133;A\e\\"
 end
