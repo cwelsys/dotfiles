@@ -572,21 +572,45 @@ pkgs:
         - npm
         - protontricks
         - runelite
-        - sddm
         - wayfreeze-git
         - bluetui
-        - gamescope
         - hyprland-guiutils
         - lib32-vulkan-radeon
-        - mesa-git
         - nvtop
         - python-pipx
         - wol
         - xpadneo-dkms
-        - paru
         - python-hatchling
         - pacman-contrib
         - python-pip
+        - bc
+        - benchmark
+        - game-devices-udev
+        - gamemode
+        - gamescope-git
+        - glm
+        - gptfdisk
+        - greetd-dms-greeter-git
+        - hdparm
+        - lib32-libcups
+        - lib32-libpulse
+        - lib32-openal
+        - lutris
+        - mesa
+        - mtools
+        - networkmanager
+        - pnpm
+        - protonup-qt
+        - qbittorrent
+        - qt5-quickcontrols2
+        - sbctl
+        - steam-boilr-gui
+        - vulkan-mesa-layers
+        - vulkan-tools
+        - wofi
+        - xdg-terminal-exec
+        - yay
+
     wini:
       scoop:
         buckets:

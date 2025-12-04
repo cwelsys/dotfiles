@@ -6,17 +6,38 @@ if ! command -v tte &>/dev/null; then
 fi
 
 # Exit early if screensave is already running
-pgrep -f "alacritty --class Screensaver" && exit 0
+pgrep -f "tte.screenie" && exit 0
 
 focused=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')
+terminal=$(xdg-terminal-exec --print-id)
 
 for m in $(hyprctl monitors -j | jq -r '.[] | .name'); do
   hyprctl dispatch focusmonitor $m
 
-  hyprctl dispatch exec -- \
-    alacritty --class Screensaver \
-    --config-file ~/.config/alacritty/screensaver.toml \
-    -e cmd-screensaver
+  case $terminal in
+  *Alacritty*)
+    hyprctl dispatch exec -- \
+      alacritty --class=tte.screenie \
+      --config-file ~/.config/alacritty/screensaver.toml \
+      -e cmd-screensaver
+    ;;
+  *ghostty*)
+    hyprctl dispatch exec -- \
+      ghostty --class=tte.screenie \
+      --font-size=18 \
+      -e cmd-screensaver
+    ;;
+  *kitty*)
+    hyprctl dispatch exec -- \
+      kitty --class=tte.screenie \
+      --override font_size=18 \
+      --override window_padding_width=0 \
+      -e cmd-screensaver
+    ;;
+  *)
+    notify-send "✋  Screensaver only runs in Alacritty, Ghostty, or Kitty"
+    ;;
+  esac
 done
 
 hyprctl dispatch focusmonitor $focused
