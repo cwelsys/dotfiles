@@ -18,6 +18,6 @@ url = "https://raw.githubusercontent.com/catppuccin/glamour/refs/heads/main/them
 type = "file"
 url = "https://raw.githubusercontent.com/eza-community/eza-themes/refs/heads/main/themes/catppuccin.yml"
 
-[".config/alacritty/themes/catppuccin-mocha.toml"]
-type = "file"
-url = "https://github.com/catppuccin/alacritty/raw/main/catppuccin-mocha.toml"
+# [".config/alacritty/themes/catppuccin-mocha.toml"]
+# type = "file"
+# url = "https://github.com/catppuccin/alacritty/raw/main/catppuccin-mocha.toml"
