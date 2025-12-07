@@ -1,7 +1,4 @@
-# Changes require a relaunch of Hyprland to take effect.
-
-export OMARCHY_PATH=$HOME/.local/share/omarchy
-export PATH=$OMARCHY_PATH/bin/:$HOME/.config/hypr/scripts/:$PATH
-
-# Set default terminal and editor
-source ~/.config/uwsm/default
+export HDOTDIR=$HOME/.config/hypr
+export PATH=$HDOTDIR/scripts/:$PATH
+export TERMINAL=ghostty
+export EDITOR=nvim

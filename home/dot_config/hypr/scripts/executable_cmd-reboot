@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cmd-close-all-windows
+sleep 1
+systemctl reboot --no-wall
