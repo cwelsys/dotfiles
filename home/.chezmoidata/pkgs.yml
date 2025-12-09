@@ -263,7 +263,6 @@ pkgs:
         - gpg-tui
         - moghtech/komodo/km
         - mpv
-        - termscp
         - nushell
         - xan
       casks:
@@ -301,7 +300,6 @@ pkgs:
         - jordanbaird-ice@beta
         - karabiner-elements
         - knockknock
-        - lulu
         - moonlight
         - neat
         - nextcloud-vfs
@@ -334,6 +332,13 @@ pkgs:
         - maccy
         - localsend
         - zen
+        - alfred
+        - font-iosevka-comfy
+        - font-noto-serif
+        - font-overpass
+        - font-rubik
+        - syntax-highlight
+
     main:
       pacman:
         - 1password-beta
