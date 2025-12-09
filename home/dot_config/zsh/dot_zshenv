@@ -1,3 +1,9 @@
+if [[ -f /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -f /usr/local/bin/brew ]]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
+
 for shells in "${XDG_CONFIG_HOME:-$HOME/.config}/shell"/{path,env,priv}.sh(N); do
   [[ -r "$shells" ]] && source "$shells"
 done

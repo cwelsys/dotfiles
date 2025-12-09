@@ -1,7 +1,3 @@
-if [[ -f "$HOMEBREW_PREFIX/bin/brew" ]]; then
-  eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
-fi
-
 [[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/shell/aliasi.sh" ]] && source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/aliasi.sh"
 
 if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then

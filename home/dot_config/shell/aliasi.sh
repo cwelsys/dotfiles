@@ -1,19 +1,10 @@
 #!/bin/sh
-# Shell aliases
-# Source this file from your shell RC file (.zshrc, .bashrc, etc.)
-# These aliases are POSIX-compatible and work across bash, zsh, and other shells
 
-# ============================================================================
-# Navigation
-# ============================================================================
 alias ..='cd ..'
 alias …='cd ../..'
 alias ….='cd ../../..'
 alias …..='cd ../../../..'
 
-# ============================================================================
-# Quick Commands
-# ============================================================================
 alias c='clear'
 alias qq='exit'
 
@@ -28,18 +19,13 @@ if command -v fastfetch >/dev/null 2>&1; then
     alias mobo='fastfetch --logo none --structure board'
 fi
 
-# ============================================================================
-# Editor
-# ============================================================================
+
 if command -v nvim >/dev/null 2>&1; then
     alias v='nvim'
     alias vi='nvim'
     alias vim='nvim'
 fi
 
-# ============================================================================
-# Common Tool Shortcuts
-# ============================================================================
 if command -v lazydocker >/dev/null 2>&1; then
     alias ld='lazydocker'
 fi
@@ -91,9 +77,6 @@ if command -v ghostty >/dev/null 2>&1; then
     alias fonts='ghostty +list-fonts'
 fi
 
-# ============================================================================
-# XDG-compliant tool wrappers
-# ============================================================================
 alias adb='HOME="$XDG_DATA_HOME"/android adb'
 
 if command -v wget >/dev/null 2>&1; then
@@ -104,9 +87,6 @@ if command -v svn >/dev/null 2>&1; then
     alias svn='svn --config-dir "$XDG_CONFIG_HOME/subversion"'
 fi
 
-# ============================================================================
-# File Operations
-# ============================================================================
 if command -v cp >/dev/null 2>&1; then
     alias cp='cp -i'
 fi
@@ -132,9 +112,6 @@ elif [ "$(uname)" = "Darwin" ]; then
     e() { open . ; }
 fi
 
-# ============================================================================
-# Sudo
-# ============================================================================
 if command -v sudo >/dev/null 2>&1; then
     # alias s='sudo'
     alias se='sudo -e'
@@ -143,9 +120,6 @@ if command -v sudo >/dev/null 2>&1; then
     alias su='sudo su'
 fi
 
-# ============================================================================
-# Listing (eza/ls)
-# ============================================================================
 if command -v eza >/dev/null 2>&1; then
     # shellcheck disable=SC2139
     alias l='ls'
@@ -165,11 +139,6 @@ if command -v bat >/dev/null 2>&1; then
     alias cat='bat --paging=never'
 fi
 
-# ============================================================================
-# Package Managers
-# ============================================================================
-
-# Chezmoi
 if command -v chezmoi >/dev/null 2>&1; then
     alias cm='chezmoi'
     alias cma='chezmoi add'
@@ -182,7 +151,6 @@ fi
 cdc() { cd "$HOME/.config" || return 1; }
 cdcm() { cd "${DOTFILES:-$HOME/.local/share/chezmoi}" || return 1; }
 
-# Python
 if command -v python3 >/dev/null 2>&1; then
     alias py='python3'
     alias venv='python3 -m venv'
@@ -192,7 +160,6 @@ if command -v pip3 >/dev/null 2>&1 && ! command -v pip >/dev/null 2>&1; then
     alias pip='pip3'
 fi
 
-# Node.js package managers
 if command -v npm >/dev/null 2>&1; then
     alias npm-ls='npm list -g'
 fi
@@ -209,7 +176,6 @@ if command -v go-global-update >/dev/null 2>&1; then
     alias go-ls='go-global-update --dry-runs'
 fi
 
-# Cargo
 if command -v cargo >/dev/null 2>&1; then
     alias cargols='cargo install --list'
 fi
@@ -218,9 +184,6 @@ if command -v cargo-binstall >/dev/null 2>&1; then
     alias cargob='cargo-binstall'
 fi
 
-# ============================================================================
-# Docker
-# ============================================================================
 if command -v docker >/dev/null 2>&1; then
     alias d='docker'
     alias dc='docker compose'
@@ -230,13 +193,10 @@ if command -v docker >/dev/null 2>&1; then
     alias dcr='docker compose restart'
     alias dcp='docker compose pull'
     alias dcre='docker compose down && docker compose up -d --remove-orphans'
-
-    # Docker-based tool shortcuts
     alias cscli='docker exec crowdsec cscli'
     alias occ='docker exec --user www-data nextcloud-aio-nextcloud php occ'
     alias nc-clear='docker exec -it nextcloud-aio-database psql -U oc_nextcloud -d nextcloud_database -c "TRUNCATE oc_activity;"'
 
-    # Docker inspect IP
     dip() {
         if [ -z "$1" ]; then
             echo "Usage: dip <container_name_or_id>"
@@ -250,25 +210,15 @@ if command -v nerdctl >/dev/null 2>&1; then
     alias n='nerdctl'
 fi
 
-# ============================================================================
-# SSH
-# ============================================================================
 # if command -v ssh >/dev/null 2>&1 && [ "$(uname)" != "Darwin" ] && [ "$(uname)" != "Windows_NT" ]; then
 #     alias ssh='TERM=xterm-256color ssh'
 # fi
 
-# ============================================================================
-# NVIDIA Settings
-# ============================================================================
 if command -v nvidia-settings >/dev/null 2>&1; then
     alias nvidia-settings='nvidia-settings --config="$XDG_CONFIG_HOME/nvidia/settings"'
 fi
 
-# ============================================================================
-# Systemd (Linux only)
-# ============================================================================
 if command -v systemctl >/dev/null 2>&1; then
-    # System-level
     alias sy='systemctl'
     alias sydr='systemctl daemon-reload'
     alias syd='systemctl disable'
@@ -278,8 +228,6 @@ if command -v systemctl >/dev/null 2>&1; then
     alias sys='systemctl status'
     alias syz='systemctl stop'
     alias failed='sudo systemctl list-units --failed'
-
-    # User-level
     alias syu='systemctl --user'
     alias sydru='systemctl daemon-reload --user'
     alias sydu='systemctl disable --user'
@@ -295,9 +243,6 @@ if command -v journalctl >/dev/null 2>&1; then
     alias jcu='journalctl -r --user'
 fi
 
-# ============================================================================
-# Process Management
-# ============================================================================
 if command -v ps >/dev/null 2>&1; then
     alias psg='ps aux | grep -i'
 fi
@@ -306,9 +251,6 @@ if command -v iotop >/dev/null 2>&1 && [ "$(uname)" = "Linux" ]; then
     alias iotop='sudo iotop --delay 2'
 fi
 
-# ============================================================================
-# Utilities
-# ============================================================================
 if command -v jq >/dev/null 2>&1; then
     alias jq='jq -C'
     alias jl='jq -C | less'
@@ -326,9 +268,6 @@ if command -v flatpak >/dev/null 2>&1; then
     alias fp='flatpak'
 fi
 
-# ============================================================================
-# Arch Linux (Pacman/yay)
-# ============================================================================
 if command -v pacman >/dev/null 2>&1; then
     alias pacman='sudo pacman'
 fi
@@ -341,7 +280,7 @@ if command -v yay >/dev/null 2>&1; then
     alias in='yay -Slq | awk "NR==FNR{inst[\$1]=1;next} {if(\$1 in inst) print \$0\" \033[1;32m[installed]\033[0m\"; else print}" <(yay -Qq) - | fzf --multi --ansi -0 --tiebreak=index --preview="yay --color=always -Si {1}" --preview-window "bottom,noinfo" | awk "{print \$1}" | xargs --no-run-if-empty --open-tty yay -S --cleanafter'
     alias re='yay -Qq | fzf --multi --ansi --preview="yay --color=always -Qi {1}" --preview-window "bottom,noinfo" | xargs --no-run-if-empty --open-tty yay -Rns'
 
-    remove() {
+    function remove {
         if [ -z "$1" ]; then
             echo "Usage: remove <package>        - Remove package"
             echo "       remove -a <pattern>     - Remove all packages matching pattern"
@@ -354,7 +293,6 @@ if command -v yay >/dev/null 2>&1; then
         local use_purge=0
         local pattern=""
 
-        # Parse flags
         while [ $# -gt 0 ]; do
             case "$1" in
                 -a|-ap|-pa)
@@ -374,7 +312,6 @@ if command -v yay >/dev/null 2>&1; then
             esac
         done
 
-        # Execute based on flags
         if [ $use_pattern -eq 1 ]; then
             if [ -z "$pattern" ]; then
                 echo "Error: pattern required"
@@ -393,7 +330,7 @@ if command -v yay >/dev/null 2>&1; then
         fi
     }
 
-    info() {
+    function info {
         if [ -z "$1" ]; then
             echo "Usage: (pkg)info <package_name>"
             return 1
@@ -401,7 +338,7 @@ if command -v yay >/dev/null 2>&1; then
         yay -Si "$1" 2>/dev/null || yay -Qi "$1"
     }
 
-    list() {
+    function list {
         if [ -z "$1" ]; then
             yay -Qq
         else
@@ -409,7 +346,7 @@ if command -v yay >/dev/null 2>&1; then
         fi
     }
 
-    files() {
+    function files {
         if [ -z "$1" ]; then
             echo "Usage: files <package_name>"
             return 1
@@ -419,9 +356,6 @@ if command -v yay >/dev/null 2>&1; then
 
 fi
 
-# ============================================================================
-# macOS (Homebrew)
-# ============================================================================
 if [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
     alias update='brew update && brew upgrade'
     alias clean='brew cleanup'
@@ -432,7 +366,7 @@ if [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
     alias tap='brew tap'
     alias untap='brew untap'
 
-    list() {
+    function list {
         if [ -z "$1" ]; then
             brew list
         else
@@ -440,7 +374,7 @@ if [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
         fi
     }
 
-    files() {
+    function files {
         if [ -z "$1" ]; then
             echo "Usage: files <package_name>"
             return 1
@@ -458,17 +392,10 @@ if [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
     fi
 fi
 
-# ============================================================================
-# Shell reload
-# ============================================================================
 rl() {
-    # Reload shell by executing a new login shell
     exec "$SHELL" -l
 }
 
-# ============================================================================
-# Change directory to WSL Windows home
-# ============================================================================
 if [ -n "$WSLENV" ]; then
     cdw() { cd "${WIN_HOME:-/mnt/c/users/$USER}" || return 1; }
 fi
