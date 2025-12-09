@@ -569,7 +569,6 @@ pkgs:
         - ttf-0xproto-nerd
         - xan
         - ydotool
-        - dms-shell-bin
         - gpu-screen-recorder
         - gvfs-nfs
         - jdk11-openjdk
@@ -615,6 +614,16 @@ pkgs:
         - wofi
         - xdg-terminal-exec
         - yay
+        - chromium
+        - cliphist
+        - dms-shell-git
+        - kooha
+        - mate-polkit
+        - matugen
+        - plymouth-theme-arch-logo-symbol
+        - quickshell
+        - swappy
+        - wf-recorder
 
     wini:
       scoop:
