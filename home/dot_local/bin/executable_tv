@@ -151,13 +151,15 @@ cmd_mute() {
 }
 
 cmd_status() {
-    local state
-    state=$(tv_state)
-    local source
-    source=$(ha_call "states/$HA_TV_ENTITY" | jq -r '.attributes.source // "unknown"' 2>/dev/null)
-    local vol
-    vol=$(ha_call "states/$HA_TV_ENTITY" | jq -r '.attributes.volume_level // 0' 2>/dev/null)
-    local pct
+    check_token || return 1
+
+    local data
+    data=$(ha_call "states/$HA_TV_ENTITY") || { log_error "Failed to reach Home Assistant"; return 1; }
+
+    local state source vol pct
+    state=$(echo "$data" | jq -r '.state // "unknown"')
+    source=$(echo "$data" | jq -r '.attributes.source // "unknown"')
+    vol=$(echo "$data" | jq -r '.attributes.volume_level // 0')
     pct=$(awk "BEGIN {printf \"%.0f\", $vol * 100}")
 
     echo -e "${BOLD}TV Status${RESET}"
