@@ -1,0 +1,3 @@
+for shells in "${XDG_CONFIG_HOME:-$HOME/.config}/shell"/{path,env,priv}.sh(N); do
+  [[ -r "$shells" ]] && source "$shells"
+done

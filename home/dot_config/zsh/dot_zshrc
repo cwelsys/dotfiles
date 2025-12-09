@@ -1,10 +1,8 @@
+[[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/shell/aliasi.sh" ]] && source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/aliasi.sh"
+
 if [[ -f "$HOMEBREW_PREFIX/bin/brew" ]]; then
   eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
 fi
-
-for shells in "${XDG_CONFIG_HOME:-$HOME/.config}/shell"/*.sh(N); do
-  [[ -r "$shells" ]] && source "$shells"
-done
 
 if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
   source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
