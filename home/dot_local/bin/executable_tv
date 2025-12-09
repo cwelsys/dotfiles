@@ -7,7 +7,6 @@ SPINNER_LIB="${HOME}/.local/share/spinners/spinner.sh"
 
 GAMING_HOST="main"
 HA_URL="http://192.168.4.114:8123"
-HA_TOKEN_FILE="${HOME}/.config/tv/ha-token"
 HA_TV_ENTITY="media_player.cwel_lgtv"
 
 RED='\033[0;31m'
@@ -23,11 +22,10 @@ log_success() { echo -e "${GREEN}✓${RESET} $1"; }
 log_error()   { echo -e "${RED}✗${RESET} $1" >&2; }
 log_warn()    { echo -e "${YELLOW}!${RESET} $1"; }
 
-load_token() {
-    if [[ -f "$HA_TOKEN_FILE" ]]; then
-        HA_TOKEN=$(<"$HA_TOKEN_FILE")
-    else
-        HA_TOKEN=""
+check_token() {
+    if [[ -z "${HA_TOKEN:-}" ]]; then
+        log_error "HA_TOKEN not set"
+        return 1
     fi
 }
 
@@ -36,7 +34,7 @@ ha_call() {
     local method="${2:-GET}"
     local data="${3:-}"
 
-    [[ -z "$HA_TOKEN" ]] && { log_error "No HA token"; return 1; }
+    check_token || return 1
 
     if [[ "$method" == "GET" ]]; then
         curl -sf -H "Authorization: Bearer $HA_TOKEN" "$HA_URL/api/$endpoint"
@@ -198,8 +196,6 @@ show_help() {
     echo -e "  ${CYAN}game${RESET} [CMD]    Control gaming session (runs on $GAMING_HOST)"
     echo -e "                 ${DIM}on, off, kill, switch, status${RESET}"
 }
-
-load_token
 
 case "${1:-}" in
     on)      cmd_on ;;
