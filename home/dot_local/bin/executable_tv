@@ -10,23 +10,21 @@ HA_URL="http://192.168.4.114:8123"
 HA_TV_ENTITY="media_player.cwel_lgtv"
 
 declare -A INPUT_ALIASES=(
-    [1]="HDMI 1"
-    [2]="HDMI 2"
-    [3]="HDMI 3"
-    [4]="HDMI 4"
-    [hdmi1]="HDMI 1"
-    [hdmi2]="HDMI 2"
-    [hdmi3]="HDMI 3"
-    [hdmi4]="HDMI 4"
-    [pc]="HDMI 3"
-    [switch]="Nintendo Switch"
-    [ns]="Nintendo Switch"
+    [1]="Box"
+    [2]="Console"
+    [3]="PC"
+    [box]="Box"
+    [c]="Console"
+    [console]="Console"
+    [switch]="Console"
+    [ns]="Console"
+    [ps]="Console"
+    [pc]="PC"
     [yt]="YouTube AdFree"
     [youtube]="YouTube AdFree"
     [jellyfin]="Jellyfin"
     [jf]="Jellyfin"
     [kodi]="Kodi"
-    [tv]="Live TV"
     [livetv]="Live TV"
 )
 
@@ -135,6 +133,17 @@ cmd_off() {
     log_success "TV off"
 }
 
+get_source_list() {
+    ha_call "states/$HA_TV_ENTITY" | jq -r '.attributes.source_list[]' 2>/dev/null
+}
+
+is_valid_input() {
+    local input="$1"
+    local sources
+    sources=$(get_source_list)
+    echo "$sources" | grep -qxF "$input"
+}
+
 cmd_input() {
     local source="${1:-}"
     if [[ -z "$source" ]]; then
@@ -153,12 +162,16 @@ cmd_input() {
             fi
         done <<< "$sources"
         echo ""
-        echo -e "${BOLD}Aliases:${RESET} ${DIM}1-4, pc, switch/ns, yt, jellyfin/jf, kodi, tv${RESET}"
+        echo -e "${BOLD}Aliases:${RESET} ${DIM}1-3, pc, c/ns/switch/ps, box, yt, jf, kodi${RESET}"
         return 0
     fi
-    ensure_tv_on || return 1
     local resolved
     resolved=$(resolve_input "$source")
+    if ! is_valid_input "$resolved"; then
+        log_error "Unknown input: $resolved"
+        return 1
+    fi
+    ensure_tv_on || return 1
     log_info "Switching to $resolved..."
     ha_call "services/media_player/select_source" POST "{\"entity_id\":\"$HA_TV_ENTITY\",\"source\":\"$resolved\"}" >/dev/null
     log_success "Switched to $resolved"
@@ -208,13 +221,12 @@ cmd_status() {
     vol=$(echo "$data" | jq -r '.attributes.volume_level // 0')
     pct=$(awk "BEGIN {printf \"%.0f\", $vol * 100}")
 
-    echo -e "${BOLD}TV Status${RESET}"
     if [[ "$state" == "on" || "$state" == "playing" || "$state" == "paused" ]]; then
-        echo -e "  Power:  ${GREEN}ON${RESET}"
-        echo -e "  Input:  $source"
-        echo -e "  Volume: ${pct}%"
+        echo -e "  ${GREEN}✓${RESET} Power:   ${GREEN}ON${RESET}"
+        echo -e "  ${CYAN}→${RESET} Input:   $source"
+        echo -e "  ${CYAN}→${RESET} Volume:  ${pct}%"
     else
-        echo -e "  Power:  ${DIM}OFF${RESET}"
+        echo -e "  ${RED}✗${RESET} Power:   ${DIM}OFF${RESET}"
     fi
 }
 
@@ -240,7 +252,7 @@ show_help() {
     echo -e "  ${CYAN}v${RESET}|${CYAN}vol${RESET} [0-100]   Show or set volume"
     echo -e "  ${CYAN}m${RESET}|${CYAN}mute${RESET}          Toggle mute"
     echo ""
-    echo -e "${BOLD}Input Aliases:${RESET} ${DIM}1-4, pc, switch/ns, yt, jellyfin/jf, kodi, tv${RESET}"
+    echo -e "${BOLD}Input Aliases:${RESET} ${DIM}1-3, pc, c/ns/switch/ps, box, yt, jf, kodi${RESET}"
     echo ""
     echo -e "${BOLD}Gaming Commands:${RESET}"
     echo -e "  ${CYAN}g${RESET}|${CYAN}game${RESET} [CMD]    Control gaming session (runs on $GAMING_HOST)"
