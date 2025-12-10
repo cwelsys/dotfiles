@@ -5,8 +5,10 @@ shell-integration-features = sudo,title,ssh-env,no-cursor
 font-size = 15
 keybind = performable:ctrl+c=copy_to_clipboard
 keybind = performable:ctrl+v=paste_from_clipboard
-keybind = super+w=close_tab
-keybind = super+t=new_tab
+keybind = performable:ctrl+t=new_tab
+keybind = ctrl+w=close_tab
+keybind = ctrl+a=select_all
+keybind = ctrl+backspace=text:\x17
 {{ else }}
 font-size = 17
 keybind = global:cmd+grave_accent=toggle_quick_terminal
