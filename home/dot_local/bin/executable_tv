@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eo pipefail
 
 SPINNER_LIB="${HOME}/.local/share/spinners/spinner.sh"
 [[ -f "$SPINNER_LIB" ]] && source "$SPINNER_LIB"
@@ -65,14 +65,19 @@ wait_for_tv() {
     return 1
 }
 
+wake_tv() {
+    is_tv_on && return 0
+    ha_call "services/media_player/turn_on" POST "{\"entity_id\":\"$HA_TV_ENTITY\"}" >/dev/null
+    wait_for_tv
+}
+
 cmd_on() {
     if is_tv_on; then
         log_success "TV already on"
         return 0
     fi
-    ha_call "services/media_player/turn_on" POST "{\"entity_id\":\"$HA_TV_ENTITY\"}" >/dev/null
     if type run_with_spinner &>/dev/null; then
-        if run_with_spinner "dots" "Waiting for TV" "cyan" wait_for_tv; then
+        if run_with_spinner "dots" "Waiting for TV" "cyan" wake_tv; then
             printf "\r\033[K"
             log_success "TV is on"
         else
@@ -82,7 +87,7 @@ cmd_on() {
         fi
     else
         log_info "Turning TV on..."
-        if wait_for_tv; then
+        if wake_tv; then
             log_success "TV is on"
         else
             log_error "TV failed to turn on"
