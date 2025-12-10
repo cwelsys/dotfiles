@@ -1,0 +1,34 @@
+#!/bin/bash
+# user.js hash: {{ include "dot_config/zen/user.js" | sha256sum }}
+
+set -eufo pipefail
+
+# Determine profile directory based on OS
+case "$(uname -s)" in
+    Darwin)
+        ZEN_DIR="$HOME/Library/Application Support/zen/Profiles"
+        ;;
+    Linux)
+        ZEN_DIR="$HOME/.zen/Profiles"
+        if [[ ! -d "$ZEN_DIR" ]]; then
+            ZEN_DIR="$HOME/.var/app/io.github.nickvision.zen/data/zen/Profiles"
+        fi
+        ;;
+    *)
+        echo "Unsupported OS for this script"
+        exit 0
+        ;;
+esac
+
+if [[ ! -d "$ZEN_DIR" ]]; then
+    echo "Zen Browser profiles directory not found, skipping"
+    exit 0
+fi
+
+# Find and update default (release) profile(s)
+while IFS= read -r -d '' profile; do
+    if [[ "$profile" == *"(release)"* ]]; then
+        cp "$HOME/.config/zen/user.js" "$profile/user.js"
+        echo "Updated user.js in $(basename "$profile")"
+    fi
+done < <(find "$ZEN_DIR" -maxdepth 1 -type d -print0)

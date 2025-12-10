@@ -1,0 +1,30 @@
+# user.js hash: {{ include "dot_config/zen/user.js" | sha256sum }}
+
+$ErrorActionPreference = "Stop"
+
+$ZenDir = "$env:APPDATA\zen\Profiles"
+
+if (-not (Test-Path $ZenDir)) {
+    Write-Host "Zen Browser profiles directory not found, skipping"
+    exit 0
+}
+
+$UserJsSource = "$env:USERPROFILE\.config\zen\user.js"
+
+if (-not (Test-Path $UserJsSource)) {
+    Write-Host "user.js source not found at: $UserJsSource"
+    exit 1
+}
+
+$profiles = Get-ChildItem -Path $ZenDir -Directory | Where-Object { $_.Name -like "*(release)*" }
+
+if (-not $profiles) {
+    Write-Host "No (release) profile found in $ZenDir"
+    exit 0
+}
+
+$profiles | ForEach-Object {
+    $dest = Join-Path $_.FullName "user.js"
+    Copy-Item -Path $UserJsSource -Destination $dest -Force
+    Write-Host "Updated user.js in $($_.Name)" -ForegroundColor Green
+}
