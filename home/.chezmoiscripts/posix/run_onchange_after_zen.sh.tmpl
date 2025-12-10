@@ -9,9 +9,9 @@ case "$(uname -s)" in
         ZEN_DIR="$HOME/Library/Application Support/zen/Profiles"
         ;;
     Linux)
-        ZEN_DIR="$HOME/.zen/Profiles"
+        ZEN_DIR="$HOME/.zen"
         if [[ ! -d "$ZEN_DIR" ]]; then
-            ZEN_DIR="$HOME/.var/app/io.github.nickvision.zen/data/zen/Profiles"
+            ZEN_DIR="$HOME/.var/app/io.github.nickvision.zen/data/zen"
         fi
         ;;
     *)
