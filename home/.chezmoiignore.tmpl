@@ -3,13 +3,7 @@
 {{ end }}
 
 {{ if not (and (eq .chezmoi.os "linux") (not .headless)) }}
-.config/wireplumber/
-.config/Kvantum/
-.config/swaync/
-.config/qimgv/
-.config/qt5ct/
-.config/waybar/
-.config/hypr/
+.config/hypr
 .config/uwsm
 .config/swappy
 {{ end }}
@@ -25,10 +19,7 @@
 
 {{ if ne .chezmoi.os "darwin" }}
 .chezmoiscripts/darwin/**
-.config/yabai/
-.config/skhd/
 .config/karabiner/
-.config/hammerspoon/
 .local/bin/aid
 .local/bin/darkn
 Library/**
@@ -39,6 +30,7 @@ Library/**
 .local/bin/*.sh
 .local/bin/*
 !.local/bin/*.*
+.local/share/spinners
 {{ else }}
 .config/clink/
 .config/komorebi/
@@ -48,7 +40,6 @@ Library/**
 .config/yasb/
 scoop/
 AppData/
-Documents/
 {{ end }}
 
 {{ if ne .chezmoi.os "linux" }}
@@ -59,6 +50,7 @@ Documents/
 
 {{ if ne .osid "linux-arch" }}
 .config/paru
+.config/yay
 {{ end }}
 
 .config/windows-terminal/
