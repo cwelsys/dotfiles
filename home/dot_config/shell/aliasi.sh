@@ -79,9 +79,9 @@ fi
 
 alias adb='HOME="$XDG_DATA_HOME"/android adb'
 
-if command -v wget >/dev/null 2>&1; then
-    alias wget='wget --hsts-file="$XDG_DATA_HOME/wget-hsts"'
-fi
+# if command -v wget >/dev/null 2>&1; then
+#     alias wget='wget --hsts-file="$XDG_CACHE_HOME/wget-hsts"'
+# fi
 
 if command -v svn >/dev/null 2>&1; then
     alias svn='svn --config-dir "$XDG_CONFIG_HOME/subversion"'
