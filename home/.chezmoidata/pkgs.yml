@@ -630,7 +630,7 @@ pkgs:
         - papirus-icon-theme
         - tk
         - tmux
-        - zed
+        - visual-studio-code-bin
 
     wini:
       scoop:
