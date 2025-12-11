@@ -1,23 +1,23 @@
 [".config/bat/themes/Catppuccin Mocha.tmTheme"]
-type = "file"
-url = "https://raw.githubusercontent.com/catppuccin/bat/refs/heads/main/themes/Catppuccin%20Mocha.tmTheme"
-
-[".config/zed/themes/catppuccin-teal.json"]
-type = "file"
-url = "https://github.com/catppuccin/zed/releases/download/v0.2.23/catppuccin-teal.json"
+    type = "file"
+    url  = "https://raw.githubusercontent.com/catppuccin/bat/refs/heads/main/themes/Catppuccin%20Mocha.tmTheme"
 
 [".config/delta/catppuccin.gitconfig"]
-type = "file"
-url = "https://raw.githubusercontent.com/catppuccin/delta/refs/heads/main/catppuccin.gitconfig"
+    type = "file"
+    url  = "https://raw.githubusercontent.com/catppuccin/delta/refs/heads/main/catppuccin.gitconfig"
 
 [".config/glow/catppuccin-mocha.json"]
-type = "file"
-url = "https://raw.githubusercontent.com/catppuccin/glamour/refs/heads/main/themes/catppuccin-mocha.json"
+    type = "file"
+    url  = "https://raw.githubusercontent.com/catppuccin/glamour/refs/heads/main/themes/catppuccin-mocha.json"
 
 [".config/eza/theme.yml"]
-type = "file"
-url = "https://raw.githubusercontent.com/eza-community/eza-themes/refs/heads/main/themes/catppuccin.yml"
+    type = "file"
+    url  = "https://raw.githubusercontent.com/eza-community/eza-themes/refs/heads/main/themes/catppuccin.yml"
 
-# [".config/alacritty/themes/catppuccin-mocha.toml"]
-# type = "file"
-# url = "https://github.com/catppuccin/alacritty/raw/main/catppuccin-mocha.toml"
+    # [".config/alacritty/themes/catppuccin-mocha.toml"]
+    # type = "file"
+    # url = "https://github.com/catppuccin/alacritty/raw/main/catppuccin-mocha.toml"
+
+    # [".config/zed/themes/catppuccin-blue.json"]
+    # type = "file"
+    # url = "https://github.com/catppuccin/zed/releases/download/v0.2.24/catppuccin-blue.json"

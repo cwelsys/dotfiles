@@ -4,41 +4,11 @@ set -eufo pipefail
 
 sudo dseditgroup -o edit -a cwel -t user wheel
 
-{{- $brewPrefix := "/opt/homebrew" }}
-{{- $brewBin := "/opt/homebrew/bin/brew" }}
-{{- if lookPath "/usr/local/bin/brew" }}
-{{-   $brewPrefix = "/usr/local" }}
-{{-   $brewBin = "/usr/local/bin/brew" }}
-{{- end }}
-
-# Create /etc/zprofile for XDG Base Directories (similar to Linux /etc/profile.d/)
-# This ensures all login shells including SSH have XDG variables set
-sudo tee /etc/zprofile > /dev/null << 'EOF'
-# XDG Base Directory Specification
-# Loaded for all login shells including SSH sessions
-
-export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
-export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
-export XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
-export XDG_PROJECTS_DIR="${XDG_PROJECTS_DIR:-$HOME/Projects}"
-EOF
-
-echo "zprofile (/etc/zprofile) configured with XDG Base Directories"
-
 sudo tee /etc/zshenv > /dev/null << 'EOF'
 export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 EOF
 
-echo "zshenv (/etc/zshenv) configured"
-
-sudo tee /etc/zshrc > /dev/null << 'EOF'
-eval "$({{ $brewBin }} shellenv)"
-fpath+=("{{ $brewPrefix }}/share/zsh/site-functions")
-EOF
-
-echo "zshrc (/etc/zshrc) configured brew at {{ $brewPrefix }}"
+echo "(/etc/zshenv) configured"
 
 if [ -f /etc/bashrc ]; then
     if ! grep -q "BASHRCSOURCED" /etc/bashrc; then
@@ -73,3 +43,39 @@ fi
 EOF
     fi
 fi
+
+{{- if not .isVM }}
+LAUNCH_AGENTS_DIR="$HOME/Library/LaunchAgents"
+PLIST_PATH="$LAUNCH_AGENTS_DIR/sh.cwel.darwenv.plist"
+DARWENV_PATH="$HOME/.local/bin/darwenv"
+
+if [[ ! -f "$PLIST_PATH" ]]; then
+    mkdir -p "$LAUNCH_AGENTS_DIR"
+
+    cat > "$PLIST_PATH" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>sh.cwel.darwenv</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>$DARWENV_PATH</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+</dict>
+</plist>
+EOF
+
+    echo "LaunchAgent plist created at $PLIST_PATH"
+fi
+
+if ! launchctl list | grep -q "sh.cwel.darwenv"; then
+    launchctl bootstrap "gui/$(id -u)" "$PLIST_PATH"
+    echo "LaunchAgent (sh.cwel.darwenv) loaded"
+else
+    echo "LaunchAgent (sh.cwel.darwenv) already loaded"
+fi
+{{- end }}

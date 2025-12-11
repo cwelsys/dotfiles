@@ -323,9 +323,7 @@ pkgs:
         - tor-browser
         - trackweight
         - vagrant
-        - visual-studio-code
         - vlc
-        - zed
         - zoom
         - gimp
         - steamcmd
@@ -338,6 +336,7 @@ pkgs:
         - font-overpass
         - font-rubik
         - syntax-highlight
+        - kitty
 
     main:
       pacman:

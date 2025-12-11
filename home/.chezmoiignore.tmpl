@@ -22,6 +22,7 @@
 .config/karabiner/
 .local/bin/aid
 .local/bin/darkn
+.local/bin/darwenv
 Library/**
 {{ end }}
 
@@ -45,6 +46,9 @@ AppData/
 {{ if ne .chezmoi.os "linux" }}
 .config/systemd/
 .config/systemd/**
+{{ end }}
+
+{{ if eq .chezmoi.os "windows" }}
 .config/environment.d/
 {{ end }}
 
