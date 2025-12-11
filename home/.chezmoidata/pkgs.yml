@@ -477,7 +477,6 @@ pkgs:
         - ufw-docker
         - uwsm
         - vesktop
-        - visual-studio-code-bin
         - waybar
         - wget
         - wireless-regdb
