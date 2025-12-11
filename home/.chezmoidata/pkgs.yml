@@ -453,7 +453,6 @@ pkgs:
         - rust
         - rustdesk-bin
         - satty
-        - signal-desktop
         - slack-desktop-wayland
         - slurp
         - spotify
@@ -624,6 +623,15 @@ pkgs:
         - quickshell
         - swappy
         - wf-recorder
+        - dualsensectl
+        - evtest
+        - linux-mainline
+        - linux-mainline-headers
+        - linux-zen
+        - linux-zen-headers
+        - papirus-icon-theme
+        - tk
+        - tmux
 
     wini:
       scoop:
