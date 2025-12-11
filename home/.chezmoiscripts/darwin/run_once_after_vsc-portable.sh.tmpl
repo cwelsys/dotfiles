@@ -1,0 +1,53 @@
+#!/bin/bash
+{{- if .isVM }}
+exit 0
+{{- end }}
+
+set -eufo pipefail
+
+VSCODE_DIR="$HOME/Applications/Code"
+APP_PATH="$VSCODE_DIR/Visual Studio Code.app"
+DATA_DIR="$VSCODE_DIR/code-portable-data"
+
+if [[ -d "$APP_PATH" ]]; then
+    echo "VS Code already installed at: $APP_PATH"
+    exit 0
+fi
+
+echo "Installing VS Code to $VSCODE_DIR..."
+
+mkdir -p "$VSCODE_DIR"
+mkdir -p "$DATA_DIR"/{user-data,extensions,cli,tmp}
+DOWNLOAD_URL="https://code.visualstudio.com/sha/download?build=stable&os=darwin-arm64"
+ZIP_PATH="/tmp/vscode-darwin-arm64.zip"
+
+echo "Downloading VS Code..."
+curl -fSL "$DOWNLOAD_URL" -o "$ZIP_PATH"
+
+echo "Extracting..."
+unzip -q "$ZIP_PATH" -d "$VSCODE_DIR"
+rm "$ZIP_PATH"
+
+echo "Removing quarantine attribute..."
+xattr -dr com.apple.quarantine "$APP_PATH"
+
+if [[ -d "$HOME/Library/Application Support/Code" && ! -d "$DATA_DIR/user-data/User" ]]; then
+    echo "Migrating existing user data..."
+    cp -R "$HOME/Library/Application Support/Code/"* "$DATA_DIR/user-data/"
+fi
+
+if [[ -d "$HOME/.vscode/extensions" && -z "$(ls -A "$DATA_DIR/extensions" 2>/dev/null)" ]]; then
+    echo "Migrating existing extensions..."
+    cp -R "$HOME/.vscode/extensions/"* "$DATA_DIR/extensions/"
+fi
+
+CODE_BIN="$APP_PATH/Contents/Resources/app/bin/code"
+if [[ -x "$CODE_BIN" ]]; then
+    ln -sf "$CODE_BIN" /usr/local/bin/code
+    echo "code is on path: $(which code)"
+    echo "Location: $VSCODE_DIR"
+else
+    echo "ERROR: VS Code binary not found at $CODE_BIN"
+    echo "Installation may have failed"
+    exit 1
+fi
