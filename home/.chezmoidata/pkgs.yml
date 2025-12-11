@@ -632,6 +632,7 @@ pkgs:
         - papirus-icon-theme
         - tk
         - tmux
+        - zed
 
     wini:
       scoop:
