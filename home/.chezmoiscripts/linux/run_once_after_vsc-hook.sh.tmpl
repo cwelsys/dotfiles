@@ -1,0 +1,73 @@
+#!/bin/bash
+{{- if or .isVM .headless }}
+exit 0
+{{- end }}
+
+set -eufo pipefail
+
+HOOK_DIR="/etc/pacman.d/hooks"
+SCRIPT_DIR="/usr/lib/vscode-portable-hook"
+HOOK_FILE="$HOOK_DIR/vscode-portable.hook"
+SCRIPT_FILE="$SCRIPT_DIR/setup-portable.sh"
+
+if [[ -f "$HOOK_FILE" && -f "$SCRIPT_FILE" ]]; then
+    echo "hook already exists at $HOOK_FILE"
+    exit 0
+fi
+
+echo "Setting up vscode pacman hook..."
+
+sudo mkdir -p "$HOOK_DIR" "$SCRIPT_DIR"
+
+sudo tee "$SCRIPT_FILE" > /dev/null << 'EOF'
+#!/bin/bash
+VSCODE_DIR="/opt/visual-studio-code"
+DATA_DIR="$VSCODE_DIR/data"
+USER_NAME="${SUDO_USER:-$USER}"
+USER_HOME=$(getent passwd "$USER_NAME" | cut -d: -f6)
+
+if [[ ! -d "$VSCODE_DIR" ]]; then
+    exit 0
+fi
+
+mkdir -p "$DATA_DIR"/{user-data,extensions,cli}
+
+if [[ -z "$(ls -A "$DATA_DIR/user-data" 2>/dev/null)" ]]; then
+    if [[ -d "$USER_HOME/.config/Code" ]]; then
+        cp -R "$USER_HOME/.config/Code/"* "$DATA_DIR/user-data/"
+        echo "Migrated user data from: $USER_HOME/.config/Code"
+    fi
+fi
+
+if [[ -z "$(ls -A "$DATA_DIR/extensions" 2>/dev/null)" ]]; then
+    if [[ -d "$USER_HOME/.vscode/extensions" ]]; then
+        cp -R "$USER_HOME/.vscode/extensions/"* "$DATA_DIR/extensions/"
+        echo "Migrated data from: $USER_HOME/.vscode/extensions"
+    fi
+fi
+
+chown -R "$USER_NAME:$USER_NAME" "$DATA_DIR"
+
+# electron sandbox perms
+if [[ -f "$VSCODE_DIR/chrome-sandbox" ]]; then
+    chown root:root "$VSCODE_DIR/chrome-sandbox"
+    chmod 4755 "$VSCODE_DIR/chrome-sandbox"
+fi
+
+echo "Boxed"
+EOF
+
+sudo chmod +x "$SCRIPT_FILE"
+
+sudo tee "$HOOK_FILE" > /dev/null << 'EOF'
+[Trigger]
+Type = Path
+Operation = Install
+Operation = Upgrade
+Target = opt/visual-studio-code/*
+
+[Action]
+Description = Fixing vscode...
+When = PostTransaction
+Exec = /usr/lib/vscode-portable-hook/setup-portable.sh
+EOF
