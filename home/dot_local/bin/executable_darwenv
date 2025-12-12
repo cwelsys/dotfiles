@@ -19,3 +19,9 @@ for conf in "$ENV_DIR"/*.conf; do
         fi
     done < "$conf"
 done
+
+# reusing the same launch agent to keep cursor theme applied
+if command -v mousecloak >/dev/null 2>&1; then
+    CAPE="$HOME/Library/Application Support/Mousecape/capes/bibata.modern.ice.420.cape"
+    mousecloak --apply "$CAPE" &> /dev/null
+fi

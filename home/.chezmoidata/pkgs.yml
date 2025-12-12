@@ -336,7 +336,6 @@ pkgs:
         - font-overpass
         - font-rubik
         - syntax-highlight
-        - kitty
 
     main:
       pacman:
