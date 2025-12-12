@@ -1,5 +1,7 @@
 ## https://ghostty.org/docs/config/reference
 shell-integration-features = sudo,title,ssh-env,no-cursor
+bell-features = no-system
+app-notification = no-clipboard-copy
 ## Theme
 {{ if and (eq .chezmoi.os "linux") (eq .chezmoi.osRelease.id "arch") }}
 font-size = 15
