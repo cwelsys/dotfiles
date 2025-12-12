@@ -1,13 +1,24 @@
 #!/bin/sh
 
+export EDITOR="nvim"
+export VISUAL="code --wait"
+export SUDO_EDITOR=$EDITOR
+export SYSTEMD_EDITOR=$EDITOR
+export MANPAGER="$EDITOR +Man!"
+export PAGER="bat"
+export GIT_PAGER="delta"
+export LESS="-cgiRF"
+
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 export XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
 export XDG_PROJECTS_DIR="${XDG_PROJECTS_DIR:-$HOME/Projects}"
+
 export DOTS="$XDG_DATA_HOME/chezmoi/home"
 export DOTFILES="$XDG_DATA_HOME/chezmoi/home"
+export GITHUB_USERNAME="cwelsys"
 export CARGO_HOME="$XDG_DATA_HOME/cargo"
 export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 export GOPATH="$XDG_DATA_HOME/go"
@@ -28,9 +39,7 @@ export GNUPGHOME="$XDG_DATA_HOME/gnupg"
 export PASSWORD_STORE_DIR="$XDG_DATA_HOME/pass"
 export DOCKER_CONFIG="$XDG_CONFIG_HOME/docker"
 export VAGRANT_HOME="$XDG_DATA_HOME/vagrant"
-export ANDROID_USER_HOME="$XDG_DATA_HOME/android"
 export ANDROID_HOME="$XDG_DATA_HOME/android"
-export ANDROID_SDK_HOME="$XDG_DATA_HOME/android"
 export ADB_VENDOR_KEYS="$XDG_DATA_HOME/android"
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME/nv"
 export XAUTHORITY="$XDG_STATE_HOME/.Xauthority"
@@ -40,12 +49,10 @@ export TERMINFO="$XDG_DATA_HOME/terminfo"
 export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:/usr/share/terminfo"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgrep/config"
 export LESSHISTFILE="$XDG_CACHE_HOME/lesshsts"
-export GITHUB_USERNAME="cwelsys"
 export AWS_CONFIG_FILE="$XDG_DATA_HOME/aws/config"
 export AWS_DATA_PATH="$XDG_DATA_HOME/aws"
 export AWS_SHARED_CREDENTIALS_FILE="$XDG_DATA_HOME/aws/credentials"
 export CLAUDE_CONFIG_DIR="$XDG_CONFIG_HOME/claude"
-export GLOW_STYLE="$XDG_CONFIG_HOME/glow/catppuccin-mocha.json"
 export PARALLEL_HOME="$XDG_CONFIG_HOME/parallel"
 export WAKATIME_HOME="$XDG_CONFIG_HOME/wakatime"
 export VCPKG_ROOT="$XDG_DATA_HOME/vcpkg"
@@ -56,17 +63,11 @@ export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
 export INPUTRC="$XDG_CONFIG_HOME/bash/inputrc"
 export SCREENRC="$XDG_CONFIG_HOME/screen/screenrc"
 export WINEPREFIX="$XDG_DATA_HOME"/wine
-export DOTNET_CLI_TELEMETRY_OPTOUT=1
+
 export DO_NOT_TRACK=1
 export DISABLE_TELEMETRY=1
-export EDITOR="nvim"
-export VISUAL="code --wait"
-export SUDO_EDITOR=$EDITOR
-export SYSTEMD_EDITOR=$EDITOR
-export MANPAGER="$EDITOR +Man!"
-export PAGER="bat"
-export GIT_PAGER="delta"
-export LESS="-cgiRF"
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export GLOW_STYLE="$XDG_CONFIG_HOME/glow/catppuccin-mocha.json"
 
 if command -v tty >/dev/null 2>&1; then
     export GPG_TTY=$(tty)
