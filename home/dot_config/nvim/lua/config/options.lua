@@ -40,8 +40,8 @@ o.showcmd = false
 o.laststatus = 3
 o.cmdheight = 0
 
--- Disable mouse
-o.mouse = ""
+-- mouse
+o.mouse = "a"
 
 -- Disable native bufferline
 o.showtabline = 0

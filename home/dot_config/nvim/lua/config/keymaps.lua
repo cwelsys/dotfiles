@@ -140,3 +140,6 @@ end
 
 -- Select first option for spelling
 map("n", "<leader>S", "1z=", { desc = "Spelling (First Option)" })
+
+-- Remove context menu item
+vim.cmd([[aunmenu PopUp.How-to\ disable\ mouse]])

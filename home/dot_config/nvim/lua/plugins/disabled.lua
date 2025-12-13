@@ -1,7 +1,6 @@
 local disabled = {
   { "akinsho/bufferline.nvim" },
   { "nvim-neo-tree/neo-tree.nvim" },
-  { "folke/flash.nvim" },
   { "mfussenegger/nvim-dap-python" },
 }
 
