@@ -336,6 +336,8 @@ pkgs:
         - font-overpass
         - font-rubik
         - syntax-highlight
+        - font-fantasque-sans-mono
+        - font-fantasque-sans-mono-nerd-font
 
     main:
       pacman:

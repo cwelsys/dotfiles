@@ -5,7 +5,7 @@ set -eo pipefail
 SPINNER_LIB="${HOME}/.local/share/spinners/spinner.sh"
 [[ -f "$SPINNER_LIB" ]] && source "$SPINNER_LIB"
 
-GAMING_HOST="main"
+HTPC="main"
 HA_URL="http://192.168.4.114:8123"
 HA_TV_ENTITY="media_player.cwel_lgtv"
 
@@ -75,10 +75,22 @@ is_tv_on() {
 }
 
 wait_for_tv() {
-    for _ in {1..20}; do
+    sleep 1
+
+    for _ in {1..10}; do
         is_tv_on && return 0
         sleep 0.5
     done
+
+    for _ in {1..20}; do
+        is_tv_on && return 0
+        sleep 0.75
+    done
+
+    sleep 1.5
+
+    is_tv_on && return 0
+
     return 1
 }
 
@@ -234,10 +246,10 @@ cmd_game() {
     local current_host
     current_host=$(hostname)
 
-    if [[ "$current_host" == "$GAMING_HOST" ]]; then
+    if [[ "$current_host" == "$HTPC" ]]; then
         exec ~/.local/bin/gamer "$@"
     else
-        exec ssh -t "$GAMING_HOST" "~/.local/bin/gamer $*"
+        exec ssh -t "$HTPC" "~/.local/bin/gamer $*"
     fi
 }
 
@@ -255,13 +267,13 @@ show_help() {
     echo -e "${BOLD}Input Aliases:${RESET} ${DIM}1-3, pc, c/ns/switch/ps, box, yt, jf, kodi${RESET}"
     echo ""
     echo -e "${BOLD}Gaming Commands:${RESET}"
-    echo -e "  ${CYAN}g${RESET}|${CYAN}game${RESET} [CMD]    Control gaming session (runs on $GAMING_HOST)"
+    echo -e "  ${CYAN}g${RESET}|${CYAN}game${RESET} [CMD]    Control gaming session (runs on $HTPC)"
     echo -e "                   ${DIM}on, off, kill, switch, status${RESET}"
 }
 
 case "${1:-}" in
-    on)                     cmd_on ;;
-    off)                    cmd_off ;;
+    o|on)                     cmd_on ;;
+    q|off)                    cmd_off ;;
     i|input)                cmd_input "${2:-}" ;;
     v|vol|volume)           cmd_volume "${2:-}" ;;
     m|mute)                 cmd_mute ;;

@@ -1,8 +1,4 @@
 ## https://ghostty.org/docs/config/reference
-shell-integration-features = sudo,title,ssh-env,no-cursor
-bell-features = no-system
-app-notifications = no-clipboard-copy
-## Theme
 {{ if and (eq .chezmoi.os "linux") (eq .chezmoi.osRelease.id "arch") }}
 font-size = 15
 keybind = performable:ctrl+c=copy_to_clipboard
@@ -14,33 +10,37 @@ keybind = ctrl+a=select_all
 font-size = 17
 keybind = global:cmd+grave_accent=toggle_quick_terminal
 {{ end }}
+shell-integration-features = sudo,title,ssh-env,no-cursor
+app-notifications = no-clipboard-copy
 theme = Catppuccin Mocha
 background-opacity = .8969
 background-blur = true
 background-blur-radius = 20
 
 ## Font
-font-family = "FantasqueSansM Nerd Font"
-font-feature = ss02, zero, liga
-font-thicken = true
+font-family = FantasqueSansMNoLig Nerd Font
+font-family = FantasqueSansM Nerd Font
+font-family = Fantasque Sans Mono
 
 ## Cursor
 cursor-style = block
 cursor-style-blink = true
+adjust-cursor-height = 5
+adjust-underline-position = 3
 
 ## General
 confirm-close-surface = false
 quit-after-last-window-closed = false
 quick-terminal-autohide = true
 link-url = true
+link-previews = true
 clipboard-trim-trailing-spaces = true
 clipboard-read = allow
 clipboard-write = allow
 clipboard-paste-protection = false
-mouse-hide-while-typing = true
-mouse-scroll-multiplier = 2
-resize-overlay = never
 copy-on-select = true
+mouse-hide-while-typing = true
+mouse-scroll-multiplier = 3
 quick-terminal-animation-duration = 0.08
 
 ## Window
@@ -48,13 +48,13 @@ window-theme = ghostty
 window-subtitle = false
 window-padding-color = extend
 window-padding-balance = true
-adjust-cell-height = 10%
+adjust-cell-height = 5
 selection-foreground = CBE0F0
 selection-background = 033259
-window-save-state = always
 #custom-shader = ~/.config/ghostty/shaders/cursor_smear.glsl
 
 ## Darwin
+font-thicken = true
 desktop-notifications = true
 macos-titlebar-style = tabs
 macos-auto-secure-input = true
