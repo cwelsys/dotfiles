@@ -352,7 +352,6 @@ pkgs:
         - bibata-cursor-theme-bin
         - binder_linux-dkms
         - blueberry
-        - bluebubbles-bin
         - brightnessctl
         - bun-bin
         - clang
@@ -632,6 +631,9 @@ pkgs:
         - tk
         - tmux
         - visual-studio-code-bin
+        - flatpak
+        - flatseal
+        - waydroidsu
 
     wini:
       scoop:

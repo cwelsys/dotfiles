@@ -23,7 +23,14 @@ if [ $# -eq 0 ]; then
     file_path="$config_default"
   else
 
-    os_name=$(uname -s | tr '[:upper:]' '[:lower:]')
+    os_kernel=$(uname -s | tr '[:upper:]' '[:lower:]')
+
+    if [ "$os_kernel" = "linux" ] && [ -f /etc/os-release ]; then
+      os_name=$(grep '^ID=' /etc/os-release | cut -d= -f2 | tr -d '"')
+    else
+      os_name="$os_kernel"
+    fi
+
     ascii_dir="$HOME/Pictures/ascii"
     os_file="$ascii_dir/$os_name.txt"
 
