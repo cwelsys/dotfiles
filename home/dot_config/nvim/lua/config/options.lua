@@ -1,82 +1,52 @@
-local go = vim.g
-local o = vim.opt
-
--- Optimizations on startup
-vim.loader.enable()
-
--- Personal Config and LazyVim global options
-go.lualine_info_extras = false
-go.snacks_animate = true
-go.codeium_cmp_hide = false
-go.lazygit_config = false
-go.lazyvim_cmp = "blink"
-go.lazyvim_picker = "snacks"
-go.trouble_lualine = false
-
--- Define leader key
-go.mapleader = " "
-go.maplocalleader = "\\"
-
--- Autoformat on save (Global)
-go.autoformat = true
-
--- Font
-go.gui_font_default_size = 10
-go.gui_font_size = go.gui_font_default_size
-go.gui_font_face = "FantasqueSansM Nerd Font"
-
--- Enable EditorConfig integration
-go.editorconfig = true
-
--- Root dir detection
-go.root_spec = {
-  "lsp",
-  { ".git", "lua", ".obsidian", "package.json", "Makefile", "go.mod", "cargo.toml", "pyproject.toml", "src" },
-  "cwd",
-}
-
--- Disable annoying cmd line stuff
-o.showcmd = false
-o.laststatus = 3
-o.cmdheight = 0
-
--- mouse
-o.mouse = "a"
-
--- Disable native bufferline
-o.showtabline = 0
-
--- Enable spell checking
-o.spell = true
-o.spelllang:append("es")
-
--- Backspacing and indentation when wrapping
-o.backspace = { "start", "eol", "indent" }
-o.breakindent = true
-
--- Smoothscroll
-if vim.fn.has("nvim-0.10") == 1 then
-  o.smoothscroll = true
-end
-
-o.conceallevel = 2
-
--- Fix the clipboard when using WSL. Install https://github.com/equalsraf/win32yank (https://github.com/microsoft/WSL/issues/4440#issuecomment-1212350183)
-if os.getenv("WSL_DISTRO_NAME") ~= nil then
-  o.clipboard = "unnamedplus"
-end
-
--- Fix shell issues on Windows (MSYS/Git Bash) that cause nvim_exec2() errors
-if vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1 then
-  o.shell = "cmd.exe"
-  o.shellcmdflag = "/s /c"
-  o.shellxquote = '"'
-  o.shellquote = ""
-  o.shellpipe = ">%s 2>&1"
-  o.shellredir = ">%s 2>&1"
-
-  -- Ensure termguicolors is properly set for Windows terminals
-  if os.getenv("TERM") then
-    o.termguicolors = true
-  end
-end
+-- Options are automatically loaded before lazy.nvim startup
+-- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
+-- Add any additional options here
+--
+-- local g = vim.g
+-- local o = vim.opt
+--
+-- -- LazyVim config choices
+-- g.lazyvim_cmp = "blink"
+-- g.lazyvim_picker = "snacks"
+--
+-- -- Root dir detection (expanded patterns)
+-- g.root_spec = {
+--   "lsp",
+--   { ".git", "lua", ".obsidian", "package.json", "Makefile", "go.mod", "cargo.toml", "pyproject.toml", "src" },
+--   "cwd",
+-- }
+--
+-- -- Minimal UI
+-- o.cmdheight = 0
+-- o.showcmd = false
+-- o.showtabline = 0
+--
+-- -- Spelling (English only)
+-- o.spell = true
+-- o.spelllang = { "en" }
+--
+-- -- Better indentation on wrap
+-- o.breakindent = true
+--
+-- -- Font (for GUI Neovim like Neovide)
+-- g.gui_font_default_size = 10
+-- g.gui_font_size = g.gui_font_default_size
+-- g.gui_font_face = "FantasqueSansM Nerd Font"
+--
+-- -- WSL clipboard fix
+-- if os.getenv("WSL_DISTRO_NAME") ~= nil then
+--   o.clipboard = "unnamedplus"
+-- end
+--
+-- -- Windows shell fixes
+-- if vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1 then
+--   o.shell = "cmd.exe"
+--   o.shellcmdflag = "/s /c"
+--   o.shellxquote = '"'
+--   o.shellquote = ""
+--   o.shellpipe = ">%s 2>&1"
+--   o.shellredir = ">%s 2>&1"
+--   if os.getenv("TERM") then
+--     o.termguicolors = true
+--   end
+-- end
