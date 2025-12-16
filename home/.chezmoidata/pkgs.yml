@@ -369,9 +369,6 @@ pkgs:
         - dust
         - evince
         - eza
-        - fcitx5
-        - fcitx5-gtk
-        - fcitx5-qt
         - fd
         - ffmpegthumbnailer
         - figlet
@@ -576,7 +573,6 @@ pkgs:
         - wayfreeze-git
         - bluetui
         - hyprland-guiutils
-        - lib32-vulkan-radeon
         - nvtop
         - python-pipx
         - wol
@@ -597,7 +593,6 @@ pkgs:
         - lib32-libpulse
         - lib32-openal
         - lutris
-        - mesa
         - mtools
         - networkmanager
         - pnpm
@@ -606,7 +601,6 @@ pkgs:
         - qt5-quickcontrols2
         - sbctl
         - steam-boilr-gui
-        - vulkan-mesa-layers
         - vulkan-tools
         - wofi
         - xdg-terminal-exec
@@ -623,8 +617,6 @@ pkgs:
         - wf-recorder
         - dualsensectl
         - evtest
-        - linux-mainline
-        - linux-mainline-headers
         - linux-zen
         - linux-zen-headers
         - papirus-icon-theme
@@ -634,6 +626,11 @@ pkgs:
         - flatpak
         - flatseal
         - waydroidsu
+        - bindfs
+        - bluebubbles-bin
+        - lib32-mesa-git
+        - mesa-git
+        - nano
 
     wini:
       scoop:

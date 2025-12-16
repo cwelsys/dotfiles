@@ -1,4 +1,0 @@
-export HDOTDIR=$HOME/.config/hypr
-export PATH=$HDOTDIR/scripts/:$PATH
-export TERMINAL=ghostty
-export EDITOR=nvim
