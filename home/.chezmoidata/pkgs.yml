@@ -415,7 +415,6 @@ pkgs:
         - localsend-bin
         - lolcat
         - luarocks
-        - mako
         - mariadb-libs
         - meson
         - mise
@@ -631,6 +630,8 @@ pkgs:
         - kdenlive
         - xorg-xhost
         - quickshell-git
+        - cava
+        - dsearch-bin
 
     wini:
       scoop:
