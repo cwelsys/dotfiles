@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Install a custom icon override for an application
+
+set -e
+
+LOCAL_APPS="$HOME/.local/share/applications"
+LOCAL_ICONS="$HOME/.local/share/icons/hicolor/256x256/apps"
+SYSTEM_APPS="/usr/share/applications"
+
+mkdir -p "$LOCAL_APPS" "$LOCAL_ICONS"
+
+app=$(find "$SYSTEM_APPS" -maxdepth 1 -name "*.desktop" -printf "%f\n" | sort | fzf --prompt="Select application: " --height=40%)
+
+if [[ -z "$app" ]]; then
+  echo "No application selected."
+  exit 1
+fi
+
+app_name="${app%.desktop}"
+echo "Selected: $app_name"
+
+read -e -p "Path to new icon: " icon_path
+
+if [[ ! -f "$icon_path" ]]; then
+  echo "Icon file not found: $icon_path"
+  exit 1
+fi
+
+ext="${icon_path##*.}"
+dest_icon="$LOCAL_ICONS/${app_name}.${ext}"
+
+cp "$icon_path" "$dest_icon"
+echo "Copied icon to: $dest_icon"
+
+cp "$SYSTEM_APPS/$app" "$LOCAL_APPS/$app"
+sed -i "s|^Icon=.*|Icon=$dest_icon|" "$LOCAL_APPS/$app"
+echo "Created override: $LOCAL_APPS/$app"
+
+update-desktop-database "$LOCAL_APPS" 2>/dev/null || true

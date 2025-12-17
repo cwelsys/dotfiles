@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Remove a custom icon override for an application
+
+set -e
+
+LOCAL_APPS="$HOME/.local/share/applications"
+LOCAL_ICONS="$HOME/.local/share/icons/hicolor/256x256/apps"
+
+overrides=$(grep -l "Icon=$HOME" "$LOCAL_APPS"/*.desktop 2>/dev/null | xargs -I{} basename {} | sort)
+
+if [[ -z "$overrides" ]]; then
+  echo "No icon overrides found."
+  exit 0
+fi
+
+app=$(echo "$overrides" | fzf --prompt="Select override to remove: " --height=40%)
+
+if [[ -z "$app" ]]; then
+  echo "No application selected."
+  exit 1
+fi
+
+app_name="${app%.desktop}"
+desktop_file="$LOCAL_APPS/$app"
+
+icon_path=$(grep "^Icon=" "$desktop_file" | cut -d= -f2)
+
+rm -f "$desktop_file"
+echo "Removed: $desktop_file"
+
+if [[ "$icon_path" == "$LOCAL_ICONS"/* ]]; then
+  rm -f "$icon_path"
+  echo "Removed: $icon_path"
+fi
+
+update-desktop-database "$LOCAL_APPS" 2>/dev/null || true
