@@ -398,7 +398,6 @@ pkgs:
         - inetutils
         - iwd
         - jq
-        - kdenlive
         - kvantum-qt5
         - lazyjournal
         - lazysql-bin
@@ -524,7 +523,6 @@ pkgs:
         - spicetify-marketplace-bin
         - starship
         - tailscale
-        - thunderbird-beta-bin
         - tldr
         - topgrade
         - trash-cli
@@ -612,7 +610,6 @@ pkgs:
         - mate-polkit
         - matugen
         - plymouth-theme-arch-logo-symbol
-        - quickshell
         - swappy
         - wf-recorder
         - dualsensectl
@@ -631,6 +628,9 @@ pkgs:
         - lib32-mesa-git
         - mesa-git
         - nano
+        - kdenlive
+        - xorg-xhost
+        - quickshell-git
 
     wini:
       scoop:

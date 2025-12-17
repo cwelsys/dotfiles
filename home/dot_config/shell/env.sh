@@ -42,8 +42,6 @@ export DOCKER_CONFIG="$XDG_CONFIG_HOME/docker"
 export VAGRANT_HOME="$XDG_DATA_HOME/vagrant"
 export ANDROID_HOME="$XDG_DATA_HOME/android"
 export ADB_VENDOR_KEYS="$XDG_DATA_HOME/android"
-export CUDA_CACHE_PATH="$XDG_CACHE_HOME/nv"
-export XAUTHORITY="$XDG_STATE_HOME/.Xauthority"
 export XCOMPOSEFILE="$XDG_CONFIG_HOME/X11/xcompose"
 export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
 export TERMINFO="$XDG_DATA_HOME/terminfo"
@@ -64,6 +62,7 @@ export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
 export INPUTRC="$XDG_CONFIG_HOME/bash/inputrc"
 export SCREENRC="$XDG_CONFIG_HOME/screen/screenrc"
 export WINEPREFIX="$XDG_DATA_HOME"/wine
+export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/gtkrc
 
 export DO_NOT_TRACK=1
 export DISABLE_TELEMETRY=1
@@ -71,65 +70,65 @@ export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export GLOW_STYLE="$XDG_CONFIG_HOME/glow/catppuccin-mocha.json"
 
 if command -v tty >/dev/null 2>&1; then
-    export GPG_TTY=$(tty)
+  export GPG_TTY=$(tty)
 fi
 
 if [ -n "$ZSH_VERSION" ]; then
-    export WORDCHARS='~!#$%^&*(){}[]<>?.+;'
-    export PROMPT_EOL_MARK=''
+  export WORDCHARS='~!#$%^&*(){}[]<>?.+;'
+  export PROMPT_EOL_MARK=''
 fi
 
 if command -v java >/dev/null 2>&1; then
-    export _JAVA_OPTIONS="-Djava.util.prefs.userRoot=\"$XDG_CONFIG_HOME/java\""
+  export _JAVA_OPTIONS="-Djava.util.prefs.userRoot=\"$XDG_CONFIG_HOME/java\""
 fi
 
 if command -v bat >/dev/null 2>&1; then
-    export BAT_THEME="Catppuccin Mocha"
-    export BATDIFF_USE_DELTA="true"
+  export BAT_THEME="Catppuccin Mocha"
+  export BATDIFF_USE_DELTA="true"
 fi
 
 export vivid_theme="catppuccin-mocha"
 
 if command -v fzf >/dev/null 2>&1; then
-    export FZF_COLORS='--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc --color=hl:#f38ba8,fg:#cdd6f4,header:#f38ba8 --color=info:#94e2d5,pointer:#f5e0dc,marker:#f5e0dc --color=fg+:#cdd6f4,prompt:#94e2d5,hl+:#f38ba8 --color=border:#585b70'
-    export FZF_DEFAULT_OPTS="$FZF_COLORS --layout=reverse --cycle --height=70% --min-height=20 --border=rounded --info=right --bind=alt-w:toggle-preview-wrap --bind=ctrl-a:toggle-all --bind=?:toggle-preview"
-    export FZF_DEFAULT_COMMAND="fd --one-file-system --strip-cwd-prefix --follow --hidden --exclude '.git' --exclude 'node_modules' --exclude '.var'"
-    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND --type f --type d"
-    export FZF_ALT_C_COMMAND="$FZF_DEFAULT_COMMAND --type d"
-    export FZF_CTRL_R_OPTS="$FZF_DEFAULT_OPTS --preview 'echo {}' --preview-window 'down:3:hidden:wrap'"
-    export FZF_CTRL_T_OPTS="$FZF_DEFAULT_OPTS --preview 'less {}' --preview-window 'right:wrap'"
-    export FZF_HISTDIR="$XDG_DATA_HOME/fzf/history"
+  export FZF_COLORS='--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc --color=hl:#f38ba8,fg:#cdd6f4,header:#f38ba8 --color=info:#94e2d5,pointer:#f5e0dc,marker:#f5e0dc --color=fg+:#cdd6f4,prompt:#94e2d5,hl+:#f38ba8 --color=border:#585b70'
+  export FZF_DEFAULT_OPTS="$FZF_COLORS --layout=reverse --cycle --height=70% --min-height=20 --border=rounded --info=right --bind=alt-w:toggle-preview-wrap --bind=ctrl-a:toggle-all --bind=?:toggle-preview"
+  export FZF_DEFAULT_COMMAND="fd --one-file-system --strip-cwd-prefix --follow --hidden --exclude '.git' --exclude 'node_modules' --exclude '.var'"
+  export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND --type f --type d"
+  export FZF_ALT_C_COMMAND="$FZF_DEFAULT_COMMAND --type d"
+  export FZF_CTRL_R_OPTS="$FZF_DEFAULT_OPTS --preview 'echo {}' --preview-window 'down:3:hidden:wrap'"
+  export FZF_CTRL_T_OPTS="$FZF_DEFAULT_OPTS --preview 'less {}' --preview-window 'right:wrap'"
+  export FZF_HISTDIR="$XDG_DATA_HOME/fzf/history"
 
-    if command -v eza >/dev/null 2>&1; then
-        export FZF_ALT_C_OPTS="$FZF_DEFAULT_OPTS --preview 'eza -al --color=always --group-directories-first --icons -I=\"*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\" {}'"
-        export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --preview 'eza -al --color=always --group-directories-first --icons -I=\"*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\" {2..}' --preview-window=down:wrap"
-    fi
+  if command -v eza >/dev/null 2>&1; then
+    export FZF_ALT_C_OPTS="$FZF_DEFAULT_OPTS --preview 'eza -al --color=always --group-directories-first --icons -I=\"*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\" {}'"
+    export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --preview 'eza -al --color=always --group-directories-first --icons -I=\"*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\" {2..}' --preview-window=down:wrap"
+  fi
 fi
 
 if command -v eza >/dev/null 2>&1; then
-    export eza_params="--git --hyperlink --color=always --group-directories-first --icons -I \"NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\""
+  export eza_params="--git --hyperlink --color=always --group-directories-first --icons -I \"NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\""
 fi
 
 if command -v brew >/dev/null 2>&1; then
-    export HOMEBREW_NO_ENV_HINTS="true"
-    export HOMEBREW_BAT=1
-    export HOMEBREW_COLOR=1
-    export HOMEBREW_CLEANUP_MAX_AGE_DAYS=7
-    export HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS=3
+  export HOMEBREW_NO_ENV_HINTS="true"
+  export HOMEBREW_BAT=1
+  export HOMEBREW_COLOR=1
+  export HOMEBREW_CLEANUP_MAX_AGE_DAYS=7
+  export HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS=3
 fi
 
 case "$HOSTNAME" in
-    pbox)
-        export RUST="/mnt/media"
-        export FLASH="/mnt/bool"
-        export BRICK="/mnt/backup"
-        ;;
+pbox)
+  export RUST="/mnt/media"
+  export FLASH="/mnt/bool"
+  export BRICK="/mnt/backup"
+  ;;
 esac
 
 if [ -n "$WSLENV" ]; then
-    export WIN_HOME="/mnt/c/users/cwel"
+  export WIN_HOME="/mnt/c/users/cwel"
 fi
 
 if [ "$(uname)" = "Darwin" ]; then
-    export OP_BIOMETRIC_UNLOCK_ENABLED="true"
+  export OP_BIOMETRIC_UNLOCK_ENABLED="true"
 fi

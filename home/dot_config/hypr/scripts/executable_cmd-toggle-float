@@ -1,33 +1,29 @@
 #!/bin/bash
-# Toggle floating mode while preserving size and position (respecting persistentsize)
+# Toggle floating mode, remembering size and position per window class
+
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/hypr-float-sizes"
+mkdir -p "$STATE_DIR"
+
+DEFAULT_WIDTH=1500
+DEFAULT_HEIGHT=1000
 
 WINDOW_INFO=$(hyprctl activewindow -j)
 FLOATING=$(echo "$WINDOW_INFO" | jq -r '.floating')
+CLASS=$(echo "$WINDOW_INFO" | jq -r '.class')
+STATE_FILE="$STATE_DIR/$CLASS"
 
 if [ "$FLOATING" = "false" ]; then
-    TILED_SIZE=$(echo "$WINDOW_INFO" | jq -r '.size')
-    TILED_WIDTH=$(echo "$TILED_SIZE" | jq -r '.[0]')
-    TILED_HEIGHT=$(echo "$TILED_SIZE" | jq -r '.[1]')
-
-    POSITION=$(echo "$WINDOW_INFO" | jq -r '.at')
-    X=$(echo "$POSITION" | jq -r '.[0]')
-    Y=$(echo "$POSITION" | jq -r '.[1]')
-
-    hyprctl dispatch togglefloating
-    sleep 0.05
-
-    NEW_SIZE=$(hyprctl activewindow -j | jq -r '.size')
-    NEW_WIDTH=$(echo "$NEW_SIZE" | jq -r '.[0]')
-    NEW_HEIGHT=$(echo "$NEW_SIZE" | jq -r '.[1]')
-
-    WIDTH_DIFF=$(( NEW_WIDTH > TILED_WIDTH ? NEW_WIDTH - TILED_WIDTH : TILED_WIDTH - NEW_WIDTH ))
-    HEIGHT_DIFF=$(( NEW_HEIGHT > TILED_HEIGHT ? NEW_HEIGHT - TILED_HEIGHT : TILED_HEIGHT - NEW_HEIGHT ))
-
-    if [ "$WIDTH_DIFF" -lt 50 ] && [ "$HEIGHT_DIFF" -lt 50 ]; then
-        hyprctl dispatch resizeactive exact $TILED_WIDTH $TILED_HEIGHT
-    fi
-
-    hyprctl dispatch moveactive exact $X $Y
+  if [ -f "$STATE_FILE" ]; then
+    read -r WIDTH HEIGHT X Y <"$STATE_FILE"
+    hyprctl --batch "dispatch togglefloating; dispatch resizeactive exact $WIDTH $HEIGHT; dispatch moveactive exact $X $Y"
+  else
+    hyprctl --batch "dispatch togglefloating; dispatch resizeactive exact $DEFAULT_WIDTH $DEFAULT_HEIGHT; dispatch centerwindow"
+  fi
 else
-    hyprctl dispatch togglefloating
+  WIDTH=$(echo "$WINDOW_INFO" | jq -r '.size[0]')
+  HEIGHT=$(echo "$WINDOW_INFO" | jq -r '.size[1]')
+  X=$(echo "$WINDOW_INFO" | jq -r '.at[0]')
+  Y=$(echo "$WINDOW_INFO" | jq -r '.at[1]')
+  echo "$WIDTH $HEIGHT $X $Y" >"$STATE_FILE"
+  hyprctl dispatch togglefloating
 fi
