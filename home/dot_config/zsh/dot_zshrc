@@ -137,6 +137,8 @@ zinit wait lucid light-mode for \
   zicdreplay' \
     zdharma-continuum/fast-syntax-highlighting \
 
+[[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/shell/ctpgum.sh" ]] && source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/ctpgum.sh" mocha blue
+
 setopt extended_history
 setopt hist_expire_dups_first
 setopt hist_ignore_all_dups
