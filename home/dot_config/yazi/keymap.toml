@@ -18,7 +18,7 @@
         { on = "O", run = "plugin open-with-cmd", desc = "Open with command" },
         { on = "S", run = "search --via=fd", desc = "Search files by name using fd" },
         { on = "o", run = "plugin open-with-cmd --args=block", desc = "Open with command in the terminal" },
-        { on = "p", run = "plugin smart-paste", desc = "Paste into the hovered directory or CWD" },
+        # { on = "p", run = "plugin smart-paste", desc = "Paste into the hovered directory or CWD" },
         { on = [
             "!",
         ], run = 'shell "$SHELL" --block', desc = "Open shell here" },
