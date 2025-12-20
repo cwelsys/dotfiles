@@ -400,7 +400,6 @@ pkgs:
         - jq
         - kvantum-qt5
         - lazyjournal
-        - lazysql-bin
         - libpulse
         - libqalculate
         - libreoffice-fresh
@@ -632,6 +631,16 @@ pkgs:
         - quickshell-git
         - cava
         - dsearch-bin
+        - cemu-bin
+        - claude-code-acp
+        - libicns
+        - ps3iso-utils-git
+        - retroarch-steam-launcher
+        - rpcs3-bin
+        - ryujinx-bin
+        - steam-rom-manager-bin
+        - sunshine
+        - wine-mono
 
     wini:
       scoop:
