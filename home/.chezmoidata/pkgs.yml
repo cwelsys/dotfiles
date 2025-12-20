@@ -197,7 +197,6 @@ pkgs:
         - lazyjournal
         - lazysql
         - lesspipe
-        - llvm
         - lolcat
         - luarocks
         - m-cli
@@ -217,7 +216,6 @@ pkgs:
         - pinentry-mac
         - pipes-sh
         - pipx
-        - pkgconf
         - pngpaste
         - poppler
         - pv
@@ -265,6 +263,9 @@ pkgs:
         - mpv
         - nushell
         - xan
+        - crystal
+        - morantron/tmux-fingers/tmux-fingers
+        - zellij
       casks:
         - 1password-cli
         - alt-tab
