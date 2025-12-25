@@ -196,6 +196,7 @@ if command -v docker >/dev/null 2>&1; then
     alias cscli='docker exec crowdsec cscli'
     alias occ='docker exec --user www-data nextcloud-aio-nextcloud php occ'
     alias nc-clear='docker exec -it nextcloud-aio-database psql -U oc_nextcloud -d nextcloud_database -c "TRUNCATE oc_activity;"'
+    alias ollama='docker exec ollama ollama'
 
     dip() {
         if [ -z "$1" ]; then
