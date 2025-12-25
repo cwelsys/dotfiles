@@ -72,6 +72,11 @@ if command -v claude >/dev/null 2>&1; then
     alias cr='claude --resume'
 fi
 
+if command -v opencode >/dev/null 2>&1; then
+    alias opc='opencode'
+fi
+
+
 if command -v ghostty >/dev/null 2>&1; then
     alias boo='ghostty +boo'
     alias fonts='ghostty +list-fonts'
