@@ -1,26 +1,27 @@
 {
-  "$schema": "https://opencode.ai/config.json",
-  "provider": {
-    "ollama": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "pbox",
-      "options": {
-        "baseURL": "http://slop.cwel.casa/v1"
-      },
-      "models": {
-        "devstral-small-2:24b": {
-          "name": "Devstral Small 2 24B"
-        },
-        "gpt-oss:20b": {
-          "name": "GPT-OSS 20B"
-        },
-        "qwen3-coder:30b": {
-          "name": "Qwen3 Coder 30B"
-        },
-        "qwen2.5-coder:14b": {
-          "name": "Qwen 2.5 Coder 14B"
-        }
-      }
-    }
-  }
+	"$schema": "https://opencode.ai/config.json",
+	"theme": "catppuccin",
+	"provider": {
+		"ollama": {
+			"npm": "@ai-sdk/openai-compatible",
+			"name": "pbox",
+			"options": {
+				"baseURL": "http://slop.cwel.casa/v1"
+			},
+			"models": {
+				"devstral-small-2:24b": {
+					"name": "Devstral Small 2 24B"
+				},
+				"gpt-oss:20b": {
+					"name": "GPT-OSS 20B"
+				},
+				"qwen3-coder:30b": {
+					"name": "Qwen3 Coder 30B"
+				},
+				"qwen2.5-coder:14b": {
+					"name": "Qwen 2.5 Coder 14B"
+				}
+			}
+		}
+	}
 }
