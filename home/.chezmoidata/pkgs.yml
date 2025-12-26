@@ -224,7 +224,6 @@ pkgs:
         - resvg
         - rich-cli
         - rig
-        - ripgrep
         - rsync
         - ruff
         - sd
@@ -266,6 +265,8 @@ pkgs:
         - crystal
         - morantron/tmux-fingers/tmux-fingers
         - zellij
+        - gnu-sed
+        - opencode
       casks:
         - 1password-cli
         - alt-tab
@@ -307,7 +308,6 @@ pkgs:
         - obsidian
         - openmtp
         - pearcleaner
-        - pictogram
         - processmonitor
         - proton-mail-bridge
         - protonvpn

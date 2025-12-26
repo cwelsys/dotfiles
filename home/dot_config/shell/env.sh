@@ -62,6 +62,7 @@ export INPUTRC="$XDG_CONFIG_HOME/bash/inputrc"
 export SCREENRC="$XDG_CONFIG_HOME/screen/screenrc"
 export WINEPREFIX="$XDG_DATA_HOME"/wine
 export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtk-2.0/gtkrc
+export OLLAMA_HOST="https://slop.cwel.casa"
 
 export DO_NOT_TRACK=1
 export DISABLE_TELEMETRY=1
