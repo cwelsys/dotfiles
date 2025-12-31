@@ -4,6 +4,14 @@ if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
   source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
 fi
 
+if [[ -n "$KMUX_MODE" && -z "$ZMX_SESSION" ]] && command -v zmx &>/dev/null; then
+    if [[ -n "$KMUX_SESSION" ]]; then
+        exec zmx attach "$KMUX_SESSION"
+    elif [[ -n "$KITTY_WINDOW_ID" ]]; then
+        exec zmx attach "kmux-${KITTY_WINDOW_ID}"
+    fi
+fi
+
 if [[ -n "$SSH_CONNECTION" ]]; then
     unset VISUAL
     export BROWSER="local-open"
@@ -133,6 +141,7 @@ zinit wait lucid light-mode for \
   denisidoro/navi \
   laggardkernel/zsh-thefuck \
   paulirish/git-open \
+  Freed-Wu/fzf-tab-source \
   atinit'zicompinit;
   zicdreplay' \
     zdharma-continuum/fast-syntax-highlighting \
@@ -155,6 +164,8 @@ setopt bang_hist
 setopt nobeep
 
 zstyle ":completion:*" matcher-list "" "m:{a-z}={A-Z}" "m:{a-zA-Z}={A-Za-z}" "r:|[._-]=* r:|=* l:|=*"
+zstyle ':fzf-tab:*' fzf-min-height 15
+zstyle ':fzf-tab:*' popup-pad 30 0
 zstyle ':fzf-tab:*' prefix ''
 zstyle ':fzf-tab:*' switch-group ',' '.'
 zstyle ':fzf-tab:*' continuous-trigger 'tab'
@@ -207,3 +218,6 @@ bindkey '^[w' kill-region
 bindkey '^Y' redo
 
 [ -x "$(command -v zoxide)" ] && eval "$(zoxide init --cmd cd zsh)"
+
+# kmux - kitty + zmx session manager
+alias kmux='~/.config/kitty/scripts/kmux.sh'

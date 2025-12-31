@@ -82,6 +82,10 @@ if command -v ghostty >/dev/null 2>&1; then
     alias fonts='ghostty +list-fonts'
 fi
 
+if command -v kitten >/dev/null 2>&1; then
+  alias icat='kitten icat'
+fi
+
 alias adb='HOME="$XDG_DATA_HOME"/android adb'
 
 # if command -v wget >/dev/null 2>&1; then

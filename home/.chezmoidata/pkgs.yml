@@ -237,7 +237,6 @@ pkgs:
         - switchaudio-osx
         - telnet
         - thefuck
-        - tmux
         - toilet
         - topgrade
         - tree
@@ -264,15 +263,22 @@ pkgs:
         - xan
         - crystal
         - morantron/tmux-fingers/tmux-fingers
-        - zellij
         - gnu-sed
         - opencode
+        - bc
+        - glab
+        - neurosnap/tap/zmx
+        - onefetch
+        - tmux
+        - chafa
+        - emojify
+        - pandoc
+        - autossh
       casks:
         - 1password-cli
         - alt-tab
         - android-platform-tools
         - atv-remote
-        - background-music
         - betterdisplay
         - blockblock
         - boring-notch
@@ -282,9 +288,7 @@ pkgs:
         - dolphin
         - font-commit-mono-nerd-font
         - font-fira-code
-        - font-geist-mono-nerd-font
         - font-hack-nerd-font
-        - font-iosevka-nerd-font
         - font-jetbrains-mono
         - font-lato
         - font-maple-mono
@@ -309,7 +313,6 @@ pkgs:
         - openmtp
         - pearcleaner
         - processmonitor
-        - proton-mail-bridge
         - protonvpn
         - qbittorrent
         - runelite
@@ -339,6 +342,12 @@ pkgs:
         - syntax-highlight
         - font-fantasque-sans-mono
         - font-fantasque-sans-mono-nerd-font
+        - font-blex-mono-nerd-font
+        - font-commit-mono
+        - font-monaspice-nerd-font
+        - font-noto-sans-symbols-2
+        - font-twitter-color-emoji
+        - kitty
 
     main:
       pacman:
@@ -868,24 +877,18 @@ yazi:
     - 'yazi-rs/plugins:chmod'
     - 'yazi-rs/plugins:diff'
     - 'yazi-rs/plugins:mount'
-    - 'yazi-rs/plugins:smart-paste'
     - 'yazi-rs/plugins:full-border'
+    - 'yazi-rs/plugins:jump-to-char'
+    - 'yazi-rs/plugins:vcs-files'
+    - 'yazi-rs/plugins:mime-ext'
     - 'yazi-rs/plugins:zoom'
-    - 'yazi-rs/plugins:hide-preview'
-    - 'yazi-rs/plugins:max-preview'
+    - 'yazi-rs/plugins:toggle-pane'
     - 'yazi-rs/plugins:smart-filter'
     - 'yazi-rs/plugins:smart-enter'
     - 'yazi-rs/plugins:piper'
     - 'yazi-rs/plugins:git'
-    - 'TD-Sky/sudo'
-    - 'imsi32/yatline'
-    - 'imsi32/yatline-githead'
-    - 'KKV9/compress'
-    - 'DreamMaoMao/searchjump'
-    - 'DreamMaoMao/fg'
     - 'KKV9/command'
-    - 'pirafrank/what-size'
-    - 'Ape/open-with-cmd'
+    - 'KKV9/compress'
     - 'yazi-rs/flavors:catppuccin-mocha'
 
 

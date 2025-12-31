@@ -22,6 +22,8 @@ export CARGO_HOME="$XDG_DATA_HOME/cargo"
 export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 export GOPATH="$XDG_DATA_HOME/go"
 export GOBIN="$XDG_DATA_HOME/go/bin"
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 export DOTNET_CLI_HOME="$XDG_DATA_HOME/dotnet"
 export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
 export NPM_CONFIG_PREFIX="$XDG_DATA_HOME/npm"
@@ -43,8 +45,8 @@ export ANDROID_HOME="$XDG_DATA_HOME/android"
 export ADB_VENDOR_KEYS="$XDG_DATA_HOME/android"
 export XCOMPOSEFILE="$XDG_CONFIG_HOME/X11/xcompose"
 export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
-export TERMINFO="$XDG_DATA_HOME/terminfo"
-export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:/usr/share/terminfo"
+export TERMINFO="${TERMINFO:-$XDG_DATA_HOME/terminfo}"
+export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:${TERMINFO}:/usr/share/terminfo"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgrep/config"
 export LESSHISTFILE="$XDG_CACHE_HOME/lesshsts"
 export AWS_CONFIG_FILE="$XDG_DATA_HOME/aws/config"
@@ -103,6 +105,12 @@ if command -v fzf >/dev/null 2>&1; then
     export FZF_ALT_C_OPTS="$FZF_DEFAULT_OPTS --preview 'eza -al --color=always --group-directories-first --icons -I=\"*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\" {}'"
     export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --preview 'eza -al --color=always --group-directories-first --icons -I=\"*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\" {2..}' --preview-window=down:wrap"
   fi
+fi
+
+if command -v lesspipe.sh >/dev/null 2>&1; then
+  export LESSOPEN="| lesspipe.sh %s"
+elif command -v lesspipe >/dev/null 2>&1; then
+  export LESSOPEN="| lesspipe %s"
 fi
 
 if command -v eza >/dev/null 2>&1; then

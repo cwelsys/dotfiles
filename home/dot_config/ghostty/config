@@ -1,0 +1,83 @@
+## https://ghostty.org/docs/config/reference
+
+## Options
+
+# Font
+font-size = 16
+font-family = "BlexMono Nerd Font Mono"
+font-family = "CommitMono"
+font-family = "Twemoji"
+font-thicken = true
+font-thicken-strength = 195
+# adjust-cell-height = 10%
+# adjust-cursor-height = 10%
+
+
+# Flags
+confirm-close-surface = false
+shell-integration-features = sudo,title,ssh-env,no-cursor
+custom-shader = ~/.config/ghostty/shaders/cursor_warp.glsl
+custom-shader-animation = true
+clipboard-read = allow
+clipboard-write = allow
+clipboard-paste-protection = false
+copy-on-select = clipboard
+mouse-hide-while-typing = true
+mouse-scroll-multiplier = 4.2
+focus-follows-mouse = true
+window-colorspace = display-p3
+window-padding-balance = true
+background-opacity = 0.9
+background-blur = 20
+unfocused-split-opacity = 0.78
+window-step-resize = true
+resize-overlay = never
+minimum-contrast = 1.2
+macos-titlebar-style = tabs
+macos-window-buttons = hidden
+macos-option-as-alt = true
+macos-shortcuts = allow
+app-notifications = no-clipboard-copy
+
+## Colors
+theme = Catppuccin Mocha
+background = #1e1e2e
+foreground = #cdd6f4
+selection-background = #585b70
+selection-foreground = #cdd6f4
+cursor-color = #f5e0dc
+cursor-text = #1e1e2e
+palette = 0=#45475a
+palette = 1=#f38ba8
+palette = 2=#a6e3a1
+palette = 3=#f9e2af
+palette = 4=#89b4fa
+palette = 5=#f5c2e7
+palette = 6=#94e2d5
+palette = 7=#a6adc8
+palette = 8=#585b70
+palette = 9=#f37799
+palette = 10=#89d88b
+palette = 11=#ebd391
+palette = 12=#74a8fc
+palette = 13=#f2aede
+palette = 14=#6bd7ca
+palette = 15=#bac2de
+
+## Binds
+keybind = global:cmd+grave_accent=toggle_quick_terminal
+#keybind = super+shift+i=inspector:toggle
+keybind = super+shift+r=reload_config
+keybind = super+d=unbind
+keybind = shift+enter=text:\x1b\r
+keybind = super+s=text:\x13
+#keybind = super+t=text:\x00\x63
+keybind = shift+command+h=new_split:left
+keybind = shift+command+j=new_split:down
+keybind = shift+command+k=new_split:up
+keybind = shift+command+l=new_split:right
+keybind = performable:ctrl+t=new_tab
+keybind = super+w=close_tab
+keybind = performable:ctrl+c=copy_to_clipboard
+keybind = performable:ctrl+v=paste_from_clipboard
+

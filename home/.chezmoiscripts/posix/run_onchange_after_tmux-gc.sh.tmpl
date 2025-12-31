@@ -1,0 +1,3 @@
+#!/bin/bash
+# hash: {{ include "dot_local/bin/get-cmd.c" | sha256sum }}
+cc -O2 -o ~/.local/bin/get-cmdc {{ .chezmoi.sourceDir }}/dot_local/bin/get-cmd.c

@@ -8,6 +8,18 @@
 [include]
   path = ~/.config/git/gitaliases
 
+[pager]
+  tag = sort -V
+	format-patch = cat
+	diff = delta
+	blame = delta
+	log = emojify | less
+	reflog = emojify | less
+	config = bat -pplproperties
+	remote = bat -ppltsv
+	ls-files = parallel eza --color=always --icons
+	check-ignore = parallel eza --color=always --icons
+
 [user]
   name = Connor Welsh
   email = {{ .email }}
@@ -47,6 +59,7 @@
   context = 10
   mnemonicPrefix = true
   renames = true
+  submodule = log
 
 [fetch]
 	all = true
@@ -58,6 +71,10 @@
 
 [transfer]
 	fsckobjects = true
+
+[grep]
+	lineNumber = true
+	extendedRegexp = true
 
 [trim]
 	bases = master,gh-pages
@@ -128,9 +145,10 @@
 
 [merge]
   conflictstyle = zdiff3
-
+  
 [submodule]
   fetchJobs = 8
+  recurse = true
 
 [status]
 	submoduleSummary = true
