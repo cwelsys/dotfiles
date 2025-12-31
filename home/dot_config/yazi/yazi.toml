@@ -15,13 +15,17 @@ mouse_events = ["click", "scroll", "touch", "move", "drag"]
 
 [plugin]
 prepend_fetchers = [
-	{ id = "git", url = "*", run = "git" },
-	{ id = "git", url = "*/", run = "git" },
-	{ id = "mime", url = "*", run = "mime-ext", prio = "high" },
-]
+  { id = "git", name = "*", run = "git" },
+  { id = "git", name = "*/", run = "git" },
+  { id = "mime", name = "*", run = "mime", prio = "high" },
 
+]
 prepend_previewers = [
-	{ url = "*.md", run = 'piper -- glow -s dark -w $w "$1"' },
-	{ url = "*.csv", run = 'piper -- column -s, -t "$1"' },
-	{ url = "*.tar*", run = 'piper --format=url -- tar tf "$1"' },
+  # { url = "*.md", run = 'piper -- CLICOLOR_FORCE=1 glow -w=$w -s=$GLOW_STYLE "$1"' },
+  # { url = "*.tar*", run = 'piper --format=url -- tar tf "$1"' },
+  { url = "*.csv", run = 'piper -- xan view "$1"' },
+  { mime = "text/*", run = 'piper -- bat -p --color=always "$1"' },
+  # { url = "*/", run = 'piper -- eza --icons=always --color=always --sort=extension -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" "$1"' },
+  { mime = "application/{*zip,tar,bzip2,7z*,rar,xz,zstd,java-archive}", run = "ouch --archive-icon='🗄️ ' --show-file-icons --list-view" },
+
 ]

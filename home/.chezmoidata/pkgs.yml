@@ -274,6 +274,7 @@ pkgs:
         - emojify
         - pandoc
         - autossh
+        - ouch
       casks:
         - 1password-cli
         - alt-tab
@@ -348,6 +349,7 @@ pkgs:
         - font-noto-sans-symbols-2
         - font-twitter-color-emoji
         - kitty
+        - font-noto-color-emoji
 
     main:
       pacman:
@@ -909,6 +911,7 @@ yazi:
     - 'KKV9/command'
     - 'KKV9/compress'
     - 'DreamMaoMao/searchjump'
+    - 'ndtoan96/ouch'
     - 'yazi-rs/flavors:catppuccin-mocha'
 
 
