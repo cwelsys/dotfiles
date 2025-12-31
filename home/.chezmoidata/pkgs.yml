@@ -606,7 +606,6 @@ pkgs:
         - qbittorrent
         - qt5-quickcontrols2
         - sbctl
-        - steam-boilr-gui
         - vulkan-tools
         - wofi
         - xdg-terminal-exec
@@ -644,13 +643,33 @@ pkgs:
         - cemu-bin
         - claude-code-acp
         - libicns
-        - ps3iso-utils-git
         - retroarch-steam-launcher
         - rpcs3-bin
         - ryujinx-bin
         - steam-rom-manager-bin
         - sunshine
         - wine-mono
+        - circumflex-bin
+        - aria2
+        - autossh
+        - chafa
+        - emojify
+        - espeak
+        - gpg-tui
+        - innoextract
+        - kitty
+        - lesspipe
+        - onefetch
+        - opencode-bin
+        - otf-commit-mono
+        - pandoc-bin
+        - sl
+        - spotify-adblock
+        - ttf-ibmplex-mono-nerd
+        - ttf-twemoji
+        - unarc-git
+        - vivid
+        - zmx-git
 
     wini:
       scoop:
