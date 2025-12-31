@@ -908,6 +908,7 @@ yazi:
     - 'yazi-rs/plugins:git'
     - 'KKV9/command'
     - 'KKV9/compress'
+    - 'DreamMaoMao/searchjump'
     - 'yazi-rs/flavors:catppuccin-mocha'
 
 
