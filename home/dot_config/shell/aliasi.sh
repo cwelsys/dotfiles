@@ -76,14 +76,18 @@ if command -v opencode >/dev/null 2>&1; then
     alias opc='opencode'
 fi
 
-
 if command -v ghostty >/dev/null 2>&1; then
     alias boo='ghostty +boo'
-    alias fonts='ghostty +list-fonts'
 fi
 
 if command -v kitten >/dev/null 2>&1; then
-  alias icat='kitten icat'
+    alias icat='kitten icat'
+fi
+
+if [ -n "$KITTY_INSTALLATION_DIR" ]; then
+    alias fonts='kitten choose-fonts'
+elif [ -n "$GHOSTTY_RESOURCES_DIR" ] || command -v ghostty >/dev/null 2>&1; then
+    alias fonts='ghostty +list-fonts'
 fi
 
 alias adb='HOME="$XDG_DATA_HOME"/android adb'
@@ -154,11 +158,33 @@ if command -v chezmoi >/dev/null 2>&1; then
     alias cme='chezmoi edit'
     alias cmu='chezmoi update'
     alias cmapl='chezmoi apply'
-    alias cmra='chezmoi re-add'
 fi
 
 cdc() { cd "$HOME/.config" || return 1; }
 cdcm() { cd "${DOTFILES:-$HOME/.local/share/chezmoi}" || return 1; }
+
+cmra() {
+    if [ $# -gt 0 ]; then
+        chezmoi re-add "$@"
+        return
+    fi
+    local files
+    files=$(chezmoi status 2>/dev/null | awk '$1 ~ /^.M/ {print $2}')
+    if [ -z "$files" ]; then
+        echo "No locally modified files to re-add"
+        return 0
+    fi
+    local selected
+    selected=$(echo "$files" | fzf --multi --ansi \
+        --header="Select files to re-add (TAB to multi-select)" \
+        --preview="chezmoi diff ~/{}" \
+        --preview-window="right:60%:wrap")
+    if [ -n "$selected" ]; then
+        echo "$selected" | while IFS= read -r file; do
+            chezmoi re-add ~/"$file"
+        done
+    fi
+}
 
 if command -v python3 >/dev/null 2>&1; then
     alias py='python3'

@@ -4,6 +4,17 @@ if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
   source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
 fi
 
+if test -n "$KITTY_INSTALLATION_DIR"; then
+    export KITTY_SHELL_INTEGRATION="no-cursor"
+    autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
+    kitty-integration
+    unfunction kitty-integration
+
+    autoload -Uz add-zsh-hook
+    _refresh_kitty_tab_bar() { : > /tmp/kitty_tab_refresh }
+    add-zsh-hook preexec _refresh_kitty_tab_bar
+fi
+
 if [[ -n "$KMUX_MODE" && -z "$ZMX_SESSION" ]] && command -v zmx &>/dev/null; then
     if [[ -n "$KMUX_SESSION" ]]; then
         exec zmx attach "$KMUX_SESSION"
@@ -218,6 +229,3 @@ bindkey '^[w' kill-region
 bindkey '^Y' redo
 
 [ -x "$(command -v zoxide)" ] && eval "$(zoxide init --cmd cd zsh)"
-
-# kmux - kitty + zmx session manager
-alias kmux='~/.config/kitty/scripts/kmux.sh'

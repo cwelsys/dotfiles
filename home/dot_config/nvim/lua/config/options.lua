@@ -10,3 +10,5 @@ if os.getenv("SSH_TTY") then
     paste = { ["+"] = osc52.paste("+"), ["*"] = osc52.paste("*") },
   }
 end
+
+vim.opt.mousescroll = "ver:3,hor:1"

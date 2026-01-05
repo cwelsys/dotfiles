@@ -68,3 +68,9 @@ th.git.ignored_sign = "!"
 th.git.deleted_sign = "D"
 th.git.updated_sign = "U"
 require("git"):setup()
+
+require("starship"):setup({
+	hide_flags = true,
+	show_right_prompt = true,
+	hide_count = true,
+})

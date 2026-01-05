@@ -14,8 +14,9 @@ $git_state\
 $git_status\
 $git_metrics\
 $fill\
-$all\
-$container\
+$env_var \
+$container \
+$all \
 $status\
 $cmd_duration\
 $jobs\
@@ -23,8 +24,6 @@ $os\
 $hostname\
 $line_break\
 $username$character"""
-
-right_format = """$env_var"""
 
 [env_var.ZMX_SESSION]
 variable = 'ZMX_SESSION'
@@ -111,19 +110,6 @@ format = "[$hostname]($style)"
 ssh_symbol = "󰥛"
 style = 'teal'
 
-[git_branch]
-format = '[$symbol$branch]($style)'
-style = "overlay2"
-symbol = ' '
-truncation_length = 32
-truncation_symbol = "…"
-
-[git_commit]
-commit_hash_length = 8
-format = ' [@$hash$tag]($style)'
-style = "overlay2"
-tag_symbol = '  '
-
 [git_state]
 am = "󰲾"
 bisect = "󱢇"
@@ -135,142 +121,303 @@ revert = " "
 style = "red"
 
 [git_status]
-ahead = '[ ⇡${count}](green)'
-behind = '[ ⇣${count}](green)'
+format = "[$all_status$ahead_behind]($style) "
 conflicted = '[ ~${count}](red)'
-deleted = '[ -${count}](yellow)'
-diverged = '[ ⇕⇣${behind_count}⇡${ahead_count}](green)'
-format = '[$all_status$ahead_behind]($style)'
-modified = '[ !${count}](yellow)'
-renamed = '[ »${count}](yellow)'
-staged = '[ +${count}](yellow)'
-stashed = '[ *${count}](green)'
-style = "overlay2"
-untracked = '[ ?${count}](blue)'
-up_to_date = ''
+ahead = "[ ⇡${count}](green)"
+behind = "[ ⇣${count}](red)"
+diverged = "[ ⇕⇡${ahead_count}](teal)[⇣${behind_count}](peach)"
+untracked = "[ ?${count}](blue)"
+stashed = "[ *${count}](subtext0)"
+modified = "[ !${count}](yellow)"
+staged = "[ +${count}](sapphire)"
+renamed = "[ »${count}](peach)"
+deleted = "[ ✘${count}](mauve)"
 
-[memory_usage]
-symbol = "󰍛 "
+[git_branch]
+format = '[$symbol](overlay2)[$branch](mauve)'
+symbol = ' '
+truncation_length = 12
+truncation_symbol = "…"
+#ignore_branches = ['master','main']
 
-[vagrant]
-format = " [$symbol($version )]($style)"
-symbol = ""
-# symbol = "⋁"
-disabled = false
-style = "sky bold"
+[git_commit]
+format = "[@$hash]($style) "
+style = "green"
+only_detached = true
+tag_disabled = false
+tag_symbol = '  '
 
-[docker_context]
-symbol = " "
+[git_metrics]
+disabled = true
+added_style = "green"
+deleted_style = "red"
+format = "([+$added]($added_style) )([-$deleted]($deleted_style) )"
 
 [aws]
-disabled = true
-symbol = " "
+style = 'yellow'
+format = '[$symbol($profile )(\($region\) )(\[$duration\] )]($style)'
+
+[azure]
+style = 'blue'
+format = '[$symbol($subscription)]($style) '
 
 [buf]
-symbol = " "
+style = 'blue'
+format = '[$symbol($version )]($style)'
+
+[bun]
+style = 'red'
+format = '[$symbol($version )]($style)'
 
 [c]
-symbol = " "
+style = '149'
+format = '[$symbol($version(-$name) )]($style)'
+
+[cmake]
+style = 'blue'
+format = '[$symbol($version )]($style)'
+
+[cobol]
+style = 'blue'
+format = '[$symbol($version )]($style)'
 
 [conda]
-symbol = "🐍 "
+style = 'green'
+format = '[$symbol$environment]($style) '
 
 [crystal]
-symbol = " "
+style = 'red'
+symbol = ' '
+format = '[$symbol($version )]($style)'
+
+[daml]
+style = 'cyan'
+format = '[$symbol($version )]($style)'
 
 [dart]
-symbol = " "
+style = 'blue'
+symbol = ' '
+format = '[$symbol($version )]($style)'
+
+[deno]
+style = 'green'
+format = '[$symbol($version )]($style)'
+
+[direnv]
+style = 'orange'
+
+[docker_context]
+style = 'blue'
+symbol = ' '
+format = '[$symbol$context]($style) '
+
+[dotnet]
+style = 'blue'
+format = '[$symbol($version )( $tfm )]($style)'
 
 [elixir]
-symbol = " "
+style = 'purple'
+symbol = ' '
+format = '[$symbol($version \(OTP $otp_version\) )]($style)'
 
 [elm]
-symbol = " "
+style = 'cyan'
+symbol = ' '
+format = '[$symbol($version )]($style)'
+
+[erlang]
+style = 'red'
+format = '[$symbol($version )]($style)'
 
 [fennel]
-symbol = " "
+style = 'green'
+format = '[$symbol($version )]($style)'
 
-[fossil_branch]
-symbol = " "
+[gcloud]
+symbol = ' '
+style = 'blue'
+format = '[$symbol$account(@$domain)(\($region\))]($style) '
+
+[gleam]
+style = '#FFAFF3'
+format = '[$symbol($version )]($style)'
 
 [golang]
-symbol = " "
+style = 'cyan'
+not_capable_style = 'red'
+symbol = ' '
+format = '[$symbol($version )]($style)'
 
 [guix_shell]
-symbol = " "
-
-[haskell]
-symbol = " "
-
-[haxe]
-symbol = " "
-
-[hg_branch]
-symbol = " "
-
-[java]
-symbol = " "
-
-[julia]
-symbol = " "
-
-[kotlin]
-symbol = " "
-
-[lua]
-symbol = " "
-
-[meson]
-symbol = "󰔷 "
-
-[nim]
-symbol = "󰆥 "
-
-[nix_shell]
-symbol = " "
-
-[nodejs]
-symbol = " "
-
-[ocaml]
-symbol = " "
-
-[package]
-symbol = "󰏗 "
-
-[perl]
-symbol = " "
-
-[php]
-symbol = " "
-
-[pijul_channel]
-symbol = " "
-
-[python]
-python_binary = ["./venv/bin/python", "python", "python2", "python3"]
-symbol = " "
-
-[rlang]
-symbol = "󰟔 "
-
-[ruby]
-symbol = " "
-
-[rust]
-symbol = "🦀 "
-
-[scala]
-symbol = " "
-
-[swift]
-symbol = " "
-
-[zig]
-symbol = " "
+style = 'yellow'
+format = '[$symbol]($style) '
 
 [gradle]
-symbol = " "
+style = 'bright-cyan'
+symbol = '⬡ '
+format = '[$symbol($version )]($style)'
+
+[haskell]
+style = 'purple'
+format = '[$symbol($version )]($style)'
+
+[haxe]
+style = 'fg:202'
+format = '[$symbol($version )]($style)'
+
+[helm]
+style = 'white'
+format = '[$symbol($version )]($style)'
+
+[java]
+symbol = ' '
+format = '[$symbol($version )]($style)'
+
+[julia]
+style = 'purple'
+format = '[$symbol($version )]($style)'
+
+[kotlin]
+style = 'blue'
+symbol = '🅺 '
+format = '[$symbol($version )]($style)'
+
+[kubernetes]
+style = 'cyan'
+format = '[$symbol$context( \($namespace\))]($style) '
+
+[lua]
+style = 'cyan'
+symbol = ' '
+format = '[$symbol($version )]($style)'
+
+[meson]
+style = 'blue'
+format = '[$symbol$project]($style) '
+
+[nats]
+style = 'purple'
+
+[nim]
+style = 'yellow'
+format = '[$symbol($version )]($style)'
+
+[nix_shell]
+style = 'blue'
+format = '[$symbol$state( \($name\))]($style) '
+
+[nodejs]
+style = 'green'
+not_capable_style = 'red'
+format = '[$symbol($version )]($style)'
+
+[ocaml]
+style = 'yellow'
+symbol = ' '
+format = '[$symbol($version )(\($switch_indicator$switch_name\) )]($style)'
+
+[odin]
+style = 'bright-blue'
+format = '[$symbol($version )]($style)'
+
+[opa]
+style = 'blue'
+format = '[$symbol($version )]($style)'
+
+[openstack]
+style = 'yellow'
+format = '[$symbol$cloud(\($project\))]($style) '
+
+[package]
+style = '208'
+format = '[$symbol($version )]($style)'
+
+[perl]
+style = '149'
+symbol = ' '
+format = '[$symbol($version )]($style)'
+
+[php]
+style = '147'
+format = '[$symbol($version )]($style)'
+
+[pulumi]
+style = '5'
+format = '[$symbol($username@)$stack]($style) '
+
+[purescript]
+style = 'white'
+format = '[$symbol($version )]($style)'
+
+[python]
+style = 'yellow'
+symbol = ' '
+format = '[${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+
+[quarto]
+style = '#75AADB'
+format = '[$symbol($version )]($style)'
+
+[rlang]
+style = 'blue'
+format = '[$symbol($version )]($style)'
+
+[raku]
+style = '149'
+format = '[$symbol($version-$vm_version )]($style)'
+
+[red]
+style = 'red'
+format = '[$symbol($version )]($style)'
+
+[ruby]
+style = 'red'
+symbol = ' '
+format = '[$symbol($version )]($style)'
+
+[rust]
+style = 'red'
+symbol = ' '
+format = '[$symbol($version )]($style)'
+
+[scala]
+format = '[${symbol}(${version} )]($style)'
+
+[singularity]
+format = '[$symbol\[$env\]]($style) '
+
+[solidity]
+style = 'blue'
+format = '[$symbol($version )]($style)'
+
+[spack]
+format = '[$symbol$environment]($style) '
+
+[swift]
+style = '202'
+symbol = ' '
+format = '[$symbol($version )]($style)'
+
+[terraform]
+style = '105'
+symbol = '🛠 '
+format = '[$symbol$workspace]($style) '
+
+[typst]
+style = '#0093A7'
+format = '[$symbol($version )]($style)'
+
+[vagrant]
+style = 'cyan'
+format = '[$symbol($version )]($style)'
+
+[vlang]
+style = 'blue'
+format = '[$symbol($version )]($style)'
+
+[zig]
+style = 'yellow'
+format = '[$symbol($version )]($style)'
 
 [os.symbols]
 AlmaLinux = " "

@@ -1,105 +1,105 @@
 {
-	"$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
-	"logo": {
-		"type": "small",
-		"printRemaining": false,
-		"padding": {
-			"top": 1,
-			"left": 2
-		}
-	},
-	"display": {
-		"separator": "",
-		"key": {
-			"width": 16
-		}
-	},
-	"modules": [
-		{
-			"key": "╭───────────╮",
-			"type": "custom"
-		},
-		{
-			"key": "│           │\u001b[11D{#96}󰇅\u001b[37m host",
-			"type": "title",
-			"format": "{2}",
-			"outputColor": "96"
-		},
-		{
-			"key": "│           │\u001b[11D{#95}󰅐\u001b[37m uptime",
-			"type": "uptime",
-			"outputColor": "95"
-		},
-		{
-			"key": "│           │\u001b[11D{#94}󰟾\u001b[37m distro",
-			"type": "os",
-			"outputColor": "94",
-			"format": "{name} {version} {#90}({arch})"
-		},
-		{
-			"key": "│           │\u001b[11D{#93}\u001b[37m kernel",
-			"type": "kernel",
-			"outputColor": "93"
-		},
-		{
-			"key": "│           │\u001b[11D{#92}󰏗\u001b[37m pkgs",
-			"type": "packages",
-			"outputColor": "92"
-		},
-		{
-			"key": "│           │\u001b[11D{#96}󰇄\u001b[37m desktop",
-			"type": "de",
-			"outputColor": "96"
-		},
-		{
-			"key": "│           │\u001b[11D{#95}\u001b[37m term",
-			"type": "terminal",
-			"format": "{5}",
-			"outputColor": "95"
-		},
-		{
-			"key": "│           │\u001b[11D{#94}\u001b[37m shell",
-			"type": "shell",
-			"outputColor": "94"
-		},
-		{
-			"key": "│           │\u001b[11D{#93}󰍛\u001b[37m cpu",
-			"type": "cpu",
-			"format": "{1}",
-			"showPeCoreCount": true,
-			"outputColor": "93"
-		},
-		{
-			"key": "│           │\u001b[11D{#92}󰢮\u001b[37m gpu",
-			"type": "gpu",
-			"format": "{2}",
-			"hideType": "integrated",
-			"outputColor": "92"
-		},
-		{
-			"key": "│           │\u001b[11D{#96}\u001b[37m memory",
-			"type": "memory",
-			"format": "{2}",
-			"outputColor": "96"
-		},
-		{
-			"key": "│           │\u001b[11D{#95}󰩟\u001b[37m network",
-			"type": "localip",
-			"format": "{1} ({4})",
-			"outputColor": "95"
-		},
-		{
-			"key": "├───────────┤",
-			"type": "custom"
-		},
-		{
-			"key": "│           │\u001b[11D{#94}󰏘\u001b[37m {#96}c{#95}o{#94}l{#93}o{#92}r{#96}s",
-			"type": "colors",
-			"symbol": "circle"
-		},
-		{
-			"key": "╰───────────╯",
-			"type": "custom"
-		}
-	]
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "type": "small",
+    "printRemaining": false,
+    "padding": {
+      "top": 1,
+      "left": 2
+    }
+  },
+  "display": {
+    "separator": "",
+    "key": {
+      "width": 16
+    }
+  },
+  "modules": [
+    {
+      "key": "╭───────────╮",
+      "type": "custom"
+    },
+    {
+      "key": "│           │\u001b[11D{#96}󰇅\u001b[37m host",
+      "type": "title",
+      "format": "{2}",
+      "outputColor": "96"
+    },
+    {
+      "key": "│           │\u001b[11D{#95}󰅐\u001b[37m uptime",
+      "type": "uptime",
+      "outputColor": "95"
+    },
+    {
+      "key": "│           │\u001b[11D{#94}󰟾\u001b[37m distro",
+      "type": "os",
+      "outputColor": "94",
+      "format": "{name} {codename} ({arch})"
+    },
+    {
+      "key": "│           │\u001b[11D{#93}\u001b[37m kernel",
+      "type": "kernel",
+      "outputColor": "93"
+    },
+    {
+      "key": "│           │\u001b[11D{#92}󰏗\u001b[37m pkgs",
+      "type": "packages",
+      "outputColor": "92"
+    },
+    {
+      "key": "│           │\u001b[11D{#96}󰇄\u001b[37m desktop",
+      "type": "de",
+      "outputColor": "96"
+    },
+    {
+      "key": "│           │\u001b[11D{#95}\u001b[37m term",
+      "type": "terminal",
+      "format": "{5}",
+      "outputColor": "95"
+    },
+    {
+      "key": "│           │\u001b[11D{#94}\u001b[37m shell",
+      "type": "shell",
+      "outputColor": "94"
+    },
+    {
+      "key": "│           │\u001b[11D{#93}󰍛\u001b[37m cpu",
+      "type": "cpu",
+      "format": "{1}",
+      "showPeCoreCount": true,
+      "outputColor": "93"
+    },
+    {
+      "key": "│           │\u001b[11D{#92}󰢮\u001b[37m gpu",
+      "type": "gpu",
+      "format": "{2}",
+      "hideType": "integrated",
+      "outputColor": "92"
+    },
+    {
+      "key": "│           │\u001b[11D{#96}\u001b[37m memory",
+      "type": "memory",
+      "format": "{2}",
+      "outputColor": "96"
+    },
+    {
+      "key": "│           │\u001b[11D{#95}󰩟\u001b[37m network",
+      "type": "localip",
+      "format": "{1} ({4})",
+      "outputColor": "95"
+    },
+    {
+      "key": "├───────────┤",
+      "type": "custom"
+    },
+    {
+      "key": "│           │\u001b[11D{#94}󰏘\u001b[37m {#96}c{#95}o{#94}l{#93}o{#92}r{#96}s",
+      "type": "colors",
+      "symbol": "circle"
+    },
+    {
+      "key": "╰───────────╯",
+      "type": "custom"
+    }
+  ]
 }

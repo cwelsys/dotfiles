@@ -275,11 +275,13 @@ pkgs:
         - pandoc
         - autossh
         - ouch
+        - cava
+        - pstree
+        - rmpc
       casks:
         - 1password-cli
         - alt-tab
         - android-platform-tools
-        - atv-remote
         - betterdisplay
         - blockblock
         - boring-notch
@@ -909,6 +911,7 @@ yazi:
     - 'yazi-rs/plugins:piper'
     - 'yazi-rs/plugins:git'
     - 'KKV9/command'
+    - 'Rolv-Apneseth/starship'
     - 'KKV9/compress'
     - 'DreamMaoMao/searchjump'
     - 'ndtoan96/ouch'
