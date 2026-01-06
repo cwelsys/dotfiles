@@ -1,9 +1,19 @@
 Host *
 	AddKeysToAgent yes
 	ForwardAgent yes
-	StrictHostKeyChecking=no
-  ServerAliveInterval 60
-  ServerAliveCountMax 10
+	StrictHostKeyChecking no
+	HashKnownHosts yes
+	TCPKeepAlive yes
+	ServerAliveInterval 60
+	ServerAliveCountMax 10
+	Compression yes
+	LogLevel ERROR
+	KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512
+	Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+	MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256
+	ControlMaster auto
+	ControlPath ~/.ssh/control/%r@%h:%p
+	ControlPersist 600
 {{- if and (eq .chezmoi.os "darwin") (not .isVM) }}
 	IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 {{- else }}
