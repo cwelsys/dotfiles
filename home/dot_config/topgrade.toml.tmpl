@@ -40,6 +40,7 @@ ignore_failures = ["powershell", "spicetify"]
 
 # List of remote machines with Topgrade installed on them
 # remote_topgrades = ["toothless", "pi", "parnas"]
+remote_topgrades = ["main", "pbox"]
 
 # Path to Topgrade executable on remote machines
 # remote_topgrade_path = ".cargo/bin/topgrade"
@@ -101,6 +102,8 @@ no_self_update = false
 
 # Custom commands
 [commands]
+"zinit" = "-i zinit self-update"
+"zsh" = "-i setopt NO_HUP; zinit update --parallel 40"
 # "Python Environment" = "~/dev/.env/bin/pip install -i https://pypi.python.org/simple -U --upgrade-strategy eager jupyter"
 # "Custom command using interactive shell (unix)" = "-i vim_upgrade"
 [python]
@@ -181,7 +184,7 @@ arch_package_manager = "autodetect"
 # max_concurrency = 5
 
 # Additional git repositories to pull
-
+repos = ["~/src"]
 # repos = ["~/Documents/Code/*/"]
 # repos = ["~/Code/*/"]
 # repos = ["~\\Downloads\\Code\\*\\"]
