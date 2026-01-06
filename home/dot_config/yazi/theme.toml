@@ -1,2 +1,11 @@
 [flavor]
 dark = "catppuccin-mocha"
+
+[icon]
+prepend_dirs = [
+  { name = "src", text = "", },
+  { name = ".Trash", text = "", },
+  { name = ".cache", text = "", },
+  { name = ".ssh", text = "󱧼", },
+  { name = ".local", text = "󰉌", }, 
+]
