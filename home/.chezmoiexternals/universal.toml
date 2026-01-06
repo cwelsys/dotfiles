@@ -10,9 +10,9 @@ url = "https://raw.githubusercontent.com/catppuccin/delta/refs/heads/main/catppu
 type = "file"
 url = "https://raw.githubusercontent.com/catppuccin/glamour/refs/heads/main/themes/catppuccin-mocha.json"
 
-[".config/eza/theme.yml"]
-type = "file"
-url = "https://raw.githubusercontent.com/eza-community/eza-themes/refs/heads/main/themes/catppuccin.yml"
+# [".config/eza/theme.yml"]
+# type = "file"
+# url = "https://raw.githubusercontent.com/eza-community/eza-themes/refs/heads/main/themes/catppuccin.yml"
 
 [".config/tmux/plugins/tpm"]
 type = "git-repo"

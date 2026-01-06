@@ -102,6 +102,7 @@ if command -v fzf >/dev/null 2>&1; then
   export FZF_HISTDIR="$XDG_DATA_HOME/fzf/history"
 
   if command -v eza >/dev/null 2>&1; then
+    export EZA_CONFIG_DIR="$XDG_CONFIG_HOME/eza"
     export FZF_ALT_C_OPTS="$FZF_DEFAULT_OPTS --preview 'eza -al --color=always --group-directories-first --icons -I=\"*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\" {}'"
     export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --preview 'eza -al --color=always --group-directories-first --icons -I=\"*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\" {2..}' --preview-window=down:wrap"
   fi
