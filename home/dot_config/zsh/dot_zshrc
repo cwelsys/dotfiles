@@ -137,6 +137,7 @@ omzPlugin jsontools
 omzPlugin chezmoi
 omzPlugin gpg-agent
 omzPlugin github
+omzPlugin direnv
 
 zinit wait lucid light-mode for \
   olets/zsh-transient-prompt \

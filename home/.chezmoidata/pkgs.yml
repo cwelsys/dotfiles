@@ -228,7 +228,6 @@ pkgs:
         - ruff
         - sd
         - sevenzip
-        - sf
         - shellcheck
         - sl
         - sniffnet
@@ -278,6 +277,7 @@ pkgs:
         - cava
         - pstree
         - rmpc
+        - direnv
       casks:
         - 1password-cli
         - alt-tab
@@ -301,7 +301,6 @@ pkgs:
         - font-sf-pro
         - font-symbols-only-nerd-font
         - ghostty@tip
-        - google-chrome
         - goreleaser
         - hammerspoon
         - iina
@@ -352,6 +351,7 @@ pkgs:
         - font-twitter-color-emoji
         - kitty
         - font-noto-color-emoji
+        - helium-browser
 
     main:
       pacman:
