@@ -43,7 +43,8 @@ ignore_failures = ["powershell", "spicetify"]
 remote_topgrades = ["main", "pbox"]
 
 # Path to Topgrade executable on remote machines
-# remote_topgrade_path = ".cargo/bin/topgrade"
+# When invoked via SSH, disable the remotes step to prevent recursion
+remote_topgrade_path = "topgrade --disable remotes"
 
 # Arguments to pass to SSH when upgrading remote systems
 # ssh_arguments = "-o ConnectTimeout=2"
