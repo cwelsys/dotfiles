@@ -222,6 +222,7 @@ fi
 
 if command -v docker >/dev/null 2>&1; then
     alias d='docker'
+    alias dr='docker restart'
     alias dc='docker compose'
     alias dcu='docker compose up -d --remove-orphans'
     alias dcd='docker compose down'
@@ -246,10 +247,6 @@ fi
 if command -v nerdctl >/dev/null 2>&1; then
     alias n='nerdctl'
 fi
-
-# if command -v ssh >/dev/null 2>&1 && [ "$(uname)" != "Darwin" ] && [ "$(uname)" != "Windows_NT" ]; then
-#     alias ssh='TERM=xterm-256color ssh'
-# fi
 
 if command -v nvidia-settings >/dev/null 2>&1; then
     alias nvidia-settings='nvidia-settings --config="$XDG_CONFIG_HOME/nvidia/settings"'

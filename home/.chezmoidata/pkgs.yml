@@ -18,7 +18,6 @@ pkgs:
         - clang
         - cmake
         - cockpit
-        - cockpit-docker
         - cockpit-files
         - cockpit-machines
         - cockpit-storaged
@@ -72,7 +71,6 @@ pkgs:
         - nodejs
         - npm
         - nss-mdns
-        - nvidia
         - nvidia-container-toolkit
         - nvidia-utils
         - openssh
@@ -136,6 +134,12 @@ pkgs:
         - python-annotated-doc
         - sbctl
         - yay
+        - bc
+        - direnv
+        - hactool
+        - kitty
+        - nvidia-open
+        - unrar
 
     mba:
       brews:
