@@ -1,5 +1,18 @@
 [mgr]
 prepend_keymap = [
+  { on = "E", run = "shell 'sudo $EDITOR \"$1\"' --block --confirm", desc = "Sudo edit" },
+  { on = "R", run = "plugin sudo-ops -- rename", desc = "Sudo rename" },
+  { on = "A", run = "plugin sudo-ops -- create", desc = "Sudo create" },
+
+  { on = [
+    "g",
+    "j",
+  ], run = "plugin recycle-bin -- open", desc = "Open trash directory" },
+  { on = [
+    "g",
+    "J",
+  ], run = "plugin recycle-bin", desc = "Trash menu" },
+
   { on = "l", run = "plugin smart-enter", desc = "Enter directory or open file" },
   { on = "f", run = "plugin searchjump", desc = "Search jump" },
   { on = "F", run = "plugin smart-filter", desc = "Smart filter" },
@@ -8,6 +21,10 @@ prepend_keymap = [
   { on = "+", run = "plugin zoom 1", desc = "Zoom in preview" },
   { on = "-", run = "plugin zoom -1", desc = "Zoom out preview" },
   { on = "<C-d>", run = "plugin diff", desc = "Diff selected with hovered" },
+  { on = [
+    "g",
+    "i",
+  ], run = "plugin lazygit", desc = "run lazygit" },
   { on = [
     "c",
     "p",

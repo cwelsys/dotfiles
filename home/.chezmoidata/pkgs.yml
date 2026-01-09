@@ -910,6 +910,7 @@ yazi:
     - 'yazi-rs/plugins:smart-enter'
     - 'yazi-rs/plugins:piper'
     - 'yazi-rs/plugins:git'
+    - 'uhs-robert/recycle-bin'
     - 'KKV9/command'
     - 'Rolv-Apneseth/starship'
     - 'KKV9/compress'

@@ -152,6 +152,12 @@ clone() {
   cd $dest
 }
 
+# Get Unicode codepoint of a character
+iconcp() {
+  local char="${1:-$(cat)}"
+  python3 -c "print(''.join(f'U+{ord(c):04X} ' for c in '$char').strip())"
+}
+
 extract() {
   setopt localoptions noautopushd
 

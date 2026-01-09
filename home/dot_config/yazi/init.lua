@@ -74,3 +74,5 @@ require("starship"):setup({
 	show_right_prompt = true,
 	hide_count = true,
 })
+
+require("recycle-bin"):setup()
