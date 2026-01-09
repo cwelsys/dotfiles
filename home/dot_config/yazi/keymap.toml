@@ -1,6 +1,6 @@
 [mgr]
 prepend_keymap = [
-  { on = "E", run = "shell 'sudo $EDITOR \"$1\"' --block --confirm", desc = "Sudo edit" },
+  { on = 'E', run = 'shell "sudo -e $@" --block --confirm' },
   { on = "R", run = "plugin sudo-ops -- rename", desc = "Sudo rename" },
   { on = "A", run = "plugin sudo-ops -- create", desc = "Sudo create" },
 
