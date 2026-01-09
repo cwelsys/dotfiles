@@ -289,15 +289,11 @@ pkgs:
         - claude
         - discord
         - dolphin
-        - font-commit-mono-nerd-font
         - font-fira-code
-        - font-hack-nerd-font
         - font-jetbrains-mono
         - font-lato
         - font-maple-mono
-        - font-monaspace
         - font-noto-sans-symbols
-        - font-sf-mono
         - font-sf-pro
         - font-symbols-only-nerd-font
         - ghostty@tip
@@ -337,21 +333,18 @@ pkgs:
         - localsend
         - zen
         - alfred
-        - font-iosevka-comfy
         - font-noto-serif
         - font-overpass
         - font-rubik
         - syntax-highlight
-        - font-fantasque-sans-mono
         - font-fantasque-sans-mono-nerd-font
-        - font-blex-mono-nerd-font
-        - font-commit-mono
-        - font-monaspice-nerd-font
         - font-noto-sans-symbols-2
         - font-twitter-color-emoji
         - kitty
         - font-noto-color-emoji
         - helium-browser
+        - doll
+        - font-juliamono
 
     main:
       pacman:
