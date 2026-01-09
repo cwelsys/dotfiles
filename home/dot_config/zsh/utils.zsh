@@ -1,5 +1,5 @@
 export ZSH_PLUGINS_ALIAS_TIPS_TEXT="tip: "
-export ZSH_PLUGINS_ALIAS_TIPS_EXCLUDES="_ ll vi s l la g d yay paru"
+export ZSH_PLUGINS_ALIAS_TIPS_EXCLUDES="_ ll vi s l la g d z yay paru"
 
 fdz-widget() {
 	fdz

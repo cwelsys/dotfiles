@@ -1,5 +1,6 @@
 #!/bin/sh
 
+alias z='cd'
 alias ..='cd ..'
 alias …='cd ../..'
 alias ….='cd ../../..'
