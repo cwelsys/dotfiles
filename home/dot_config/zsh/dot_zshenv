@@ -7,3 +7,18 @@ fi
 for shells in "${XDG_CONFIG_HOME:-$HOME/.config}/shell"/{path,env,priv}.sh(N); do
   [[ -r "$shells" ]] && source "$shells"
 done
+
+# Set up Hyprland env vars for SSH sessions (needed for non-interactive shells like topgrade remotes)
+if [[ -n "$SSH_CONNECTION" ]]; then
+    [[ -z "$XDG_RUNTIME_DIR" && -d "/run/user/$UID" ]] && export XDG_RUNTIME_DIR="/run/user/$UID"
+
+    if command -v hyprctl &>/dev/null && [[ -z "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
+        for pid in $(pgrep -P $(pgrep -xu "$USER" Hyprland) 2>/dev/null); do
+            [[ -f "/proc/$pid/environ" ]] || continue
+            while IFS='=' read -r -d '' k v; do
+                [[ "$k" =~ ^(HYPRLAND_INSTANCE_SIGNATURE|WAYLAND_DISPLAY|DISPLAY)$ ]] && export "$k=$v"
+            done < "/proc/$pid/environ"
+            [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]] && break
+        done
+    fi
+fi

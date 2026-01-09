@@ -26,17 +26,6 @@ fi
 if [[ -n "$SSH_CONNECTION" ]]; then
     unset VISUAL
     export BROWSER="local-open"
-    [[ -z "$XDG_RUNTIME_DIR" ]] && export XDG_RUNTIME_DIR="/run/user/$UID"
-
-    if command -v hyprctl &>/dev/null && [[ -z "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
-        for pid in $(pgrep -P $(pgrep -xu "$USER" Hyprland) 2>/dev/null); do
-            [[ -f "/proc/$pid/environ" ]] || continue
-            while IFS='=' read -r -d '' k v; do
-                [[ "$k" =~ ^(HYPRLAND_INSTANCE_SIGNATURE|WAYLAND_DISPLAY|DISPLAY)$ ]] && export "$k=$v"
-            done < "/proc/$pid/environ"
-            [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]] && break
-        done
-    fi
 fi
 
 HISTFILE="${XDG_STATE_HOME}/zsh/history"
