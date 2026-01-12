@@ -9,7 +9,6 @@ if test -n "$KITTY_INSTALLATION_DIR"; then
     autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
     kitty-integration
     unfunction kitty-integration
-
     autoload -Uz add-zsh-hook
     _refresh_kitty_tab_bar() { : > /tmp/kitty_tab_refresh }
     add-zsh-hook preexec _refresh_kitty_tab_bar
@@ -26,6 +25,9 @@ fi
 if [[ -n "$SSH_CONNECTION" ]]; then
     unset VISUAL
     export BROWSER="local-open"
+    autoload -Uz add-zsh-hook
+    _set_title_to_cwd() { print -Pn "\e]0;%~\a" }
+    add-zsh-hook precmd _set_title_to_cwd
 fi
 
 HISTFILE="${XDG_STATE_HOME}/zsh/history"

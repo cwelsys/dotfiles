@@ -74,8 +74,8 @@
     "code-review@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "planning-with-files@planning-with-files": true,
-    "swift-lsp@claude-plugins-official": true
+    "planning-with-files@planning-with-files": true{{ if eq .chezmoi.os "darwin" }},
+    "swift-lsp@claude-plugins-official": true{{ end }}
   },
   "theme": "dark",
   "preferredNotifChannel": "notifications_disabled"

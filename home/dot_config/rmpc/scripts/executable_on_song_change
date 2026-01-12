@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 # Set terminal title to current song
-printf '\e]0;%s\a' "${TITLE:-${FILE##*/}}" > /dev/tty
+printf '\e]0;%.25s\a' "${TITLE:-${FILE##*/}}" > /dev/tty
 
 # Increment play count
 sticker=$(rmpc sticker get "$FILE" "playCount" | jq -r '.value')

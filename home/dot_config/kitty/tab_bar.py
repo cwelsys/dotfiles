@@ -13,7 +13,7 @@ from kitty.tab_bar import (
 # "index", "icon", "name", "path"
 DISPLAY_ELEMENTS = ["index", "icon", "path"]
 RAINBOW_PATH = True
-MAX_PATH_SEGMENTS = 3
+MAX_PATH_SEGMENTS = 2
 PAD_START = ""
 PAD_END = ""
 ELEMENT_SEP = " "
