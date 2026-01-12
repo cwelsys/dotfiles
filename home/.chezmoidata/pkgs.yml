@@ -671,6 +671,15 @@ pkgs:
         - unarc-git
         - vivid
         - zmx-git
+        - ouch
+        - ttf-meslo-nerd
+        - direnv
+        - mpd
+        - mpdscribble
+        - nfs-utils
+        - otf-apple-sf-pro
+        - rmpc-git
+        - ttf-cascadia-code-nerd
 
     wini:
       scoop:

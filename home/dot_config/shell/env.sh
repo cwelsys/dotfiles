@@ -115,6 +115,7 @@ elif command -v lesspipe >/dev/null 2>&1; then
 fi
 
 if command -v eza >/dev/null 2>&1; then
+  export EZA_COLORS="or=31"
   export eza_params="--git --hyperlink --color=always --group-directories-first --icons -I \"NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\""
 fi
 
