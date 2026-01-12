@@ -1,0 +1,42 @@
+music_directory         "~/Music"
+playlist_directory      "~/.config/mpd/playlists"
+db_file                 "~/.local/share/mpd/database"
+log_file                "/tmp/mpd.log"
+state_file              "~/.local/share/mpd/state"
+sticker_file            "~/.local/share/mpd/sticker.sql"
+
+bind_to_address         "127.0.0.1"
+bind_to_address         "/tmp/mpd_socket"
+port                    "6600"
+
+auto_update             "yes"
+restore_paused          "yes"
+
+playlist_plugin {
+    name "cue"
+    enabled "true"
+}
+
+playlist_plugin {
+    name "pls"
+    enabled "true"
+}
+
+{{- if eq .chezmoi.os "darwin" }}
+audio_output {
+    type        "osx"
+    name        "CoreAudio"
+}
+{{- else }}
+audio_output {
+    type        "pipewire"
+    name        "pipewire"
+}
+{{- end }}
+
+audio_output {
+    type                    "fifo"
+    name                    "cava_fifo"
+    path                    "/tmp/mpd.fifo"
+    format                  "44100:16:2"
+}

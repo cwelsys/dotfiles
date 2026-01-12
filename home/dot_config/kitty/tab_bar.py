@@ -10,16 +10,10 @@ from kitty.tab_bar import (
     draw_tab_with_powerline,
 )
 
-# Elements to show in tab (order matters): "index", "icon", "name", "path"
+# "index", "icon", "name", "path"
 DISPLAY_ELEMENTS = ["index", "icon", "path"]
-
-# Rainbow-colored path segments (inactive tabs only)
 RAINBOW_PATH = True
-
-# Max path segments to show (from the end)
 MAX_PATH_SEGMENTS = 3
-
-# Spacing
 PAD_START = ""
 PAD_END = ""
 ELEMENT_SEP = " "
@@ -53,8 +47,8 @@ PALETTE = {
     "crust": "11111b",
 }
 
-ACTIVE_PATH_MAIN = "surface0"  # current directory
-ACTIVE_PATH_MUTED = "surface0"  # preceding directories
+ACTIVE_PATH_MAIN = "crust"  # current directory
+ACTIVE_PATH_MUTED = "crust"  # preceding directories
 ICON_COLOR_ACTIVE = "mantle"
 ICON_COLOR_INACTIVE = "blue"
 RAINBOW_COLORS = ["red", "peach", "yellow", "green", "teal", "blue", "lavender"]
@@ -62,8 +56,7 @@ MODE_INDICATOR_COLOR = "mauve"
 MODE_INDICATOR_BG = "surface0"
 SHOW_MODE_INDICATOR = True
 
-# Custom display names for modes (mode_name -> display text)
-# If not listed, defaults to MODE_NAME (uppercase)
+# defaults to MODE_NAME
 MODE_DISPLAY_NAMES = {
     "leader": "󰌌",
 }
@@ -184,8 +177,10 @@ def get_path_parts(cwd: str) -> tuple[str, ...]:
 
 
 @lru_cache(maxsize=128)
-def colorize_path(parts: tuple[str, ...], tab_index: int, is_active: bool) -> str:
-    """Colorize path segments."""
+def colorize_parts(
+    parts: tuple[str, ...], sep: str, tab_index: int, is_active: bool
+) -> str:
+    """Colorize segments with rainbow colors."""
     colored_parts = []
     num_parts = len(parts)
 
@@ -200,15 +195,37 @@ def colorize_path(parts: tuple[str, ...], tab_index: int, is_active: bool) -> st
 
         colored_parts.append(f"{{fmt.fg._{color}}}{part}")
 
-    sep = "{fmt.fg.tab}/"
-    return sep.join(colored_parts) + "{fmt.fg.tab}"
+    colored_sep = f"{{fmt.fg.tab}}{sep}"
+    return colored_sep.join(colored_parts) + "{fmt.fg.tab}"
+
+
+# Separators to try for rainbow coloring, first match wins
+TITLE_SEPARATORS = ["/", " - ", ": ", " | "]
+
+
+def colorize_title(text: str, tab_index: int, is_active: bool) -> str:
+    """Colorize any title by splitting on common separators."""
+    if not RAINBOW_PATH:
+        return text
+
+    for sep in TITLE_SEPARATORS:
+        if sep in text:
+            parts = tuple(text.split(sep))
+            return colorize_parts(parts, sep, tab_index, is_active)
+
+    if is_active:
+        color = _c(ACTIVE_PATH_MAIN)
+    else:
+        color_idx = tab_index % len(RAINBOW_COLORS)
+        color = _c(RAINBOW_COLORS[color_idx])
+    return f"{{fmt.fg._{color}}}{text}{{fmt.fg.tab}}"
 
 
 def format_path(cwd: str, index: int, is_active: bool) -> str:
     """Format path, optionally with rainbow colors."""
     parts = get_path_parts(cwd)
     if RAINBOW_PATH:
-        return colorize_path(parts, index, is_active)
+        return colorize_parts(parts, "/", index, is_active)
     return "/".join(parts)
 
 
@@ -258,7 +275,9 @@ def get_foreground_process(tab_id: int) -> tuple[str, str]:
     return (exe, cwd)
 
 
-def format_tab_title(exe: str, cwd: str, index: int, is_active: bool) -> str:
+def format_tab_title(
+    exe: str, cwd: str, title: str, index: int, is_active: bool
+) -> str:
     """Format tab title based on DISPLAY_ELEMENTS."""
     parts = []
     icon_color = _c(ICON_COLOR_ACTIVE) if is_active else _c(ICON_COLOR_INACTIVE)
@@ -272,8 +291,12 @@ def format_tab_title(exe: str, cwd: str, index: int, is_active: bool) -> str:
         elif element == "name":
             parts.append(exe)
         elif element == "path":
-            if cwd:
-                parts.append(format_path(cwd, index, is_active))
+            display = title or cwd
+            if display:
+                if display.startswith(("~", "/", ".", "…")):
+                    parts.append(format_path(display, index, is_active))
+                else:
+                    parts.append(colorize_title(display, index, is_active))
 
     content = ELEMENT_SEP.join(parts)
     return f"{PAD_START}{content}{PAD_END}"
@@ -329,10 +352,11 @@ def draw_tab(
     _check_refresh_request()
 
     exe, cwd = get_foreground_process(tab.tab_id)
-    title = format_tab_title(exe, cwd, index, tab.is_active)
+    formatted = format_tab_title(exe, cwd, tab.title, index, tab.is_active)
 
     new_draw_data = draw_data._replace(
-        title_template="{fmt.fg.red}{bell_symbol}{activity_symbol}{fmt.fg.tab}" + title
+        title_template="{fmt.fg.red}{bell_symbol}{activity_symbol}{fmt.fg.tab}"
+        + formatted
     )
 
     end = draw_tab_with_powerline(
@@ -346,7 +370,6 @@ def draw_tab(
         extra_data,
     )
 
-    # Draw right status after the last tab
     if is_last:
         draw_right_status(screen, draw_data)
 

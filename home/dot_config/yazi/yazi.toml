@@ -12,6 +12,7 @@ show_hidden = true
 show_symlink = true
 scrolloff = 5
 mouse_events = ["click", "scroll", "touch", "move", "drag"]
+title_format = "{cwd}"
 
 [plugin]
 prepend_fetchers = [

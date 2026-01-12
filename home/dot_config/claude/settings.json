@@ -3,6 +3,7 @@
     "DISABLE_TELEMETRY": "1",
     "DISABLE_ERROR_REPORTING": "1"
   },
+  "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
       "Bash(cd:*)",
@@ -73,9 +74,9 @@
     "code-review@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "planning-with-files@planning-with-files": true
+    "planning-with-files@planning-with-files": true,
+    "swift-lsp@claude-plugins-official": true
   },
-  "includeCoAuthoredBy": false,
   "theme": "dark",
   "preferredNotifChannel": "notifications_disabled"
 }
