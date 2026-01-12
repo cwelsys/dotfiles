@@ -140,6 +140,7 @@ pkgs:
         - kitty
         - nvidia-open
         - unrar
+        - nfs-utils
 
     mba:
       brews:

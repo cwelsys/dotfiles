@@ -60,6 +60,7 @@ export BUNDLE_USER_CONFIG="$XDG_CONFIG_HOME"/bundle
 export BUNDLE_USER_CACHE="$XDG_CACHE_HOME"/bundle
 export BUNDLE_USER_PLUGIN="$XDG_DATA_HOME"/bundle
 export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
+export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
 export INPUTRC="$XDG_CONFIG_HOME/bash/inputrc"
 export SCREENRC="$XDG_CONFIG_HOME/screen/screenrc"
 export WINEPREFIX="$XDG_DATA_HOME"/wine
