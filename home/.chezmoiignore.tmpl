@@ -8,6 +8,10 @@
 .config/swappy
 {{ end }}
 
+{{ if eq .chezmoi.hostname "pbox" }}
+.config/mpd
+{{ end }}
+
 {{ if ne .chezmoi.os "windows" }}
 .chezmoiscripts/windows/**
 .local/bin/*.bat
