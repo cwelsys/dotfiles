@@ -11,12 +11,6 @@ done
 if [[ -n "$SSH_CONNECTION" ]]; then
     [[ -z "$XDG_RUNTIME_DIR" && -d "/run/user/$UID" ]] && export XDG_RUNTIME_DIR="/run/user/$UID"
 
-    if [[ -n $SSH_KITTEN_KITTY_DIR ]] && [[ -d ~/.terminfo ]]; then
-        t=${XDG_DATA_HOME:-~/.local/share}/terminfo
-        mkdir -p $t && cp -a ~/.terminfo/. $t/ && rm -rf ~/.terminfo
-        unset TERMINFO
-    fi
-
     if [[ -n $SSH_KITTEN_KITTY_DIR && -d ~/.terminfo ]]; then
       t=${XDG_DATA_HOME:-~/.local/share}/terminfo
       [[ -f $t/x/xterm-kitty ]] || { mkdir -p $t && cp -a ~/.terminfo/. $t/ }
