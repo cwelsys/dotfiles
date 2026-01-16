@@ -12,6 +12,7 @@ if test -n "$KITTY_INSTALLATION_DIR"; then
     autoload -Uz add-zsh-hook
     _refresh_kitty_tab_bar() { : > /tmp/kitty_tab_refresh }
     add-zsh-hook preexec _refresh_kitty_tab_bar
+    alias ssh="kitten ssh"
 fi
 
 if [[ -n "$KMUX_MODE" && -z "$ZMX_SESSION" ]] && command -v zmx &>/dev/null; then
