@@ -34,7 +34,7 @@
       "key": "│           │\u001b[11D{#94}󰟾\u001b[37m distro",
       "type": "os",
       "outputColor": "94",
-      "format": "{name} {codename} ({arch})"
+      "format": "{name} {codename}"
     },
     {
       "key": "│           │\u001b[11D{#93}\u001b[37m kernel",
