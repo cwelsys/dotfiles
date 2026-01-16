@@ -3,7 +3,7 @@ prepend_keymap = [
   { on = 'E', run = 'shell "sudo -e $@" --block --confirm' },
   { on = "R", run = "plugin sudo-ops -- rename", desc = "Sudo rename" },
   { on = "A", run = "plugin sudo-ops -- create", desc = "Sudo create" },
-
+  { on = "<C-p>", run = "shell -- qlmanage -p %s", desc ="Quick look (Darwin)" },
   { on = [
     "g",
     "j",
