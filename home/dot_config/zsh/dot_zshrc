@@ -20,14 +20,17 @@ fi
 if [[ -n "$KITTY_INSTALLATION_DIR" || -n "$SSH_KITTEN_KITTY_DIR" ]]; then
     autoload -Uz add-zsh-hook
     _kitty_uservar() { printf '\e]1337;SetUserVar=%s=%s\a' "$1" "$(printf '%s' "$2" | base64)" }
-    [[ -n "$SSH_KITTEN_KITTY_DIR" ]] && _kitty_uservar REMOTE_HOST "$HOST"
     _kitty_preexec() {
         _kitty_uservar PROC "${3%% *}"
         print -Pn "\e]0;${3%% *}\a"
     }
     _kitty_precmd() {
         _kitty_uservar PROC "${SHELL:t}"
-        [[ -z "$SSH_KITTEN_KITTY_DIR" ]] && _kitty_uservar REMOTE_HOST ""
+        if [[ -n "$SSH_KITTEN_KITTY_DIR" ]]; then
+            _kitty_uservar REMOTE_HOST "$HOST"
+        else
+            _kitty_uservar REMOTE_HOST ""
+        fi
         print -Pn "\e]0;%~\a"
     }
     add-zsh-hook preexec _kitty_preexec
