@@ -17,7 +17,7 @@ if [[ -n "$KITTY_INSTALLATION_DIR" ]]; then
     alias ssh="kitten ssh"
 fi
 
-if [[ -n "$KITTY_INSTALLATION_DIR" || -n "$SSH_KITTEN_KITTY_DIR" ]]; then
+if [[ -n "$KITTY_INSTALLATION_DIR" || -n "$_KITTY_IS_REMOTE" ]]; then
     autoload -Uz add-zsh-hook
     _kitty_uservar() { printf '\e]1337;SetUserVar=%s=%s\a' "$1" "$(printf '%s' "$2" | base64)" }
     _kitty_preexec() {
@@ -26,7 +26,7 @@ if [[ -n "$KITTY_INSTALLATION_DIR" || -n "$SSH_KITTEN_KITTY_DIR" ]]; then
     }
     _kitty_precmd() {
         _kitty_uservar PROC "${SHELL:t}"
-        if [[ -n "$SSH_KITTEN_KITTY_DIR" ]]; then
+        if [[ -n "$_KITTY_IS_REMOTE" ]]; then
             _kitty_uservar REMOTE_HOST "$HOST"
         else
             _kitty_uservar REMOTE_HOST ""
