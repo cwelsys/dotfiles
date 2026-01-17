@@ -11,13 +11,6 @@ done
 if [[ -n "$SSH_CONNECTION" ]]; then
     [[ -z "$XDG_RUNTIME_DIR" && -d "/run/user/$UID" ]] && export XDG_RUNTIME_DIR="/run/user/$UID"
 
-    if [[ -n $SSH_KITTEN_KITTY_DIR && -d ~/.terminfo ]]; then
-      t=${XDG_DATA_HOME:-~/.local/share}/terminfo
-      [[ -f $t/x/xterm-kitty ]] || { mkdir -p $t && cp -a ~/.terminfo/. $t/ }
-      rm -rf ~/.terminfo
-      unset TERMINFO t
-    fi
-
     if command -v hyprctl &>/dev/null && [[ -z "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
         for pid in $(pgrep -P $(pgrep -xu "$USER" Hyprland) 2>/dev/null); do
             [[ -f "/proc/$pid/environ" ]] || continue
@@ -27,4 +20,12 @@ if [[ -n "$SSH_CONNECTION" ]]; then
             [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]] && break
         done
     fi
+fi
+
+if [[ -n $SSH_KITTEN_KITTY_DIR && -d ~/.terminfo ]]; then
+    t=${XDG_DATA_HOME:-~/.local/share}/terminfo
+    [[ -f $t/x/xterm-kitty ]] || { mkdir -p $t && cp -a ~/.terminfo/. $t/ }
+    rm -rf ~/.terminfo
+    export TERMINFO=$t
+    unset t
 fi

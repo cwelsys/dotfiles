@@ -2,7 +2,7 @@ import os
 from functools import lru_cache
 
 from kitty.boss import get_boss
-from kitty.fast_data_types import Screen, add_timer
+from kitty.fast_data_types import Screen
 from kitty.tab_bar import (
     DrawData,
     ExtraData,
@@ -61,37 +61,12 @@ MODE_DISPLAY_NAMES = {
     "leader": "󰌌",
 }
 
+SSH_ICON = "\ueb3a"
+
 
 def _c(name: str) -> str:
     """Resolve color name to hex value."""
     return PALETTE.get(name, name)
-
-
-_REFRESH_FLAG = "/tmp/kitty_tab_refresh"
-_REFRESH_DELAY = 0.15
-
-_last_refresh_mtime: float = 0
-_pending_timer = None
-
-
-def _do_refresh(timer_id) -> None:
-    global _pending_timer
-    _pending_timer = None
-    tm = get_boss().active_tab_manager
-    if tm is not None:
-        tm.mark_tab_bar_dirty()
-
-
-def _check_refresh_request() -> None:
-    global _last_refresh_mtime, _pending_timer
-    try:
-        mtime = os.path.getmtime(_REFRESH_FLAG)
-        if mtime > _last_refresh_mtime:
-            _last_refresh_mtime = mtime
-            if _pending_timer is None:
-                _pending_timer = add_timer(_do_refresh, _REFRESH_DELAY, False)
-    except FileNotFoundError:
-        pass
 
 
 _ICONS_CACHE: dict[str, str] | None = None
@@ -161,6 +136,7 @@ def get_icon(exe_name: str) -> str:
 
 
 _home = os.path.expanduser("~")
+_SHELLS = {"zsh", "bash", "fish", "sh", "nu", "tcsh", "-zsh", "-bash"}
 
 
 @lru_cache(maxsize=64)
@@ -199,7 +175,6 @@ def colorize_parts(
     return colored_sep.join(colored_parts) + "{fmt.fg.tab}"
 
 
-# Separators to try for rainbow coloring, first match wins
 TITLE_SEPARATORS = ["/", " - ", ": ", " | "]
 
 
@@ -229,19 +204,20 @@ def format_path(cwd: str, index: int, is_active: bool) -> str:
     return "/".join(parts)
 
 
-def get_foreground_process(tab_id: int) -> tuple[str, str]:
-    """Get the foreground process name and cwd for a tab."""
+def get_foreground_process(tab_id: int) -> tuple[str, str, str | None]:
+    """Get the foreground process name, cwd, and optional remote host."""
     boss = get_boss()
     tab = boss.tab_for_id(tab_id)
     if not tab:
-        return ("zsh", "")
+        return ("zsh", "", None)
 
     window = tab.active_window
     if not window:
-        return ("zsh", "")
+        return ("zsh", "", None)
 
     exe = "zsh"
     cwd = ""
+    remote_host = None
 
     try:
         procs = window.child.foreground_processes
@@ -249,12 +225,11 @@ def get_foreground_process(tab_id: int) -> tuple[str, str]:
             procs = sorted(procs, key=lambda p: p.get("pid", 0))
             cwd = procs[0].get("cwd", "")
 
-            shells = {"zsh", "bash", "fish", "sh", "nu", "tcsh", "-zsh", "-bash"}
             for proc in procs:
                 cmdline = proc.get("cmdline", [])
                 if cmdline:
                     proc_exe = os.path.basename(cmdline[0])
-                    if proc_exe not in shells:
+                    if proc_exe not in _SHELLS:
                         exe = proc_exe
                         break
             else:
@@ -272,11 +247,22 @@ def get_foreground_process(tab_id: int) -> tuple[str, str]:
         ta = TabAccessor(tab_id)
         cwd = ta.active_wd or ""
 
-    return (exe, cwd)
+    # Check for process via user vars (shell hooks)
+    proc = window.user_vars.get("PROC")
+    if proc and proc not in _SHELLS:
+        exe = proc
+    remote_host = window.user_vars.get("REMOTE_HOST")
+
+    return (exe, cwd, remote_host)
 
 
 def format_tab_title(
-    exe: str, cwd: str, title: str, index: int, is_active: bool
+    exe: str,
+    cwd: str,
+    title: str,
+    index: int,
+    is_active: bool,
+    remote_host: str | None = None,
 ) -> str:
     """Format tab title based on DISPLAY_ELEMENTS."""
     parts = []
@@ -299,6 +285,15 @@ def format_tab_title(
                     parts.append(colorize_title(display, index, is_active))
 
     content = ELEMENT_SEP.join(parts)
+
+    if remote_host:
+        if is_active:
+            ssh_color = _c(ICON_COLOR_ACTIVE)
+        else:
+            ssh_color = _c(RAINBOW_COLORS[index % len(RAINBOW_COLORS)])
+        ssh_indicator = f"{{fmt.fg._{ssh_color}}}{SSH_ICON}{{fmt.fg.tab}}"
+        content = f"{content} {ssh_indicator}"
+
     return f"{PAD_START}{content}{PAD_END}"
 
 
@@ -349,10 +344,8 @@ def draw_tab(
     extra_data: ExtraData,
 ) -> int:
     """Draw a single tab with foreground process info and nerd font icon."""
-    _check_refresh_request()
-
-    exe, cwd = get_foreground_process(tab.tab_id)
-    formatted = format_tab_title(exe, cwd, tab.title, index, tab.is_active)
+    exe, cwd, remote_host = get_foreground_process(tab.tab_id)
+    formatted = format_tab_title(exe, cwd, tab.title, index, tab.is_active, remote_host)
 
     new_draw_data = draw_data._replace(
         title_template="{fmt.fg.red}{bell_symbol}{activity_symbol}{fmt.fg.tab}"

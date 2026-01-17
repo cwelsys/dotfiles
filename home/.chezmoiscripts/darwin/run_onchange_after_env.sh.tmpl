@@ -5,7 +5,9 @@ set -eufo pipefail
 sudo dseditgroup -o edit -a cwel -t user wheel
 
 sudo tee /etc/zshenv > /dev/null << 'EOF'
-export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
+if [[ -z "$KITTY_ORIG_ZDOTDIR" ]]; then
+    export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
+fi
 EOF
 
 echo "(/etc/zshenv) configured"
@@ -46,7 +48,7 @@ fi
 
 {{- if not .isVM }}
 LAUNCH_AGENTS_DIR="$HOME/Library/LaunchAgents"
-PLIST_PATH="$LAUNCH_AGENTS_DIR/sh.cwel.darwenv.plist"
+PLIST_PATH="$LAUNCH_AGENTS_DIR/com.cwel.darwenv.plist"
 DARWENV_PATH="$HOME/.local/bin/darwenv"
 
 if [[ ! -f "$PLIST_PATH" ]]; then
@@ -58,7 +60,7 @@ if [[ ! -f "$PLIST_PATH" ]]; then
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>sh.cwel.darwenv</string>
+    <string>com.cwel.darwenv</string>
     <key>ProgramArguments</key>
     <array>
         <string>$DARWENV_PATH</string>
@@ -72,10 +74,10 @@ EOF
     echo "LaunchAgent plist created at $PLIST_PATH"
 fi
 
-if ! launchctl list | grep -q "sh.cwel.darwenv"; then
+if ! launchctl list | grep -q "com.cwel.darwenv"; then
     launchctl bootstrap "gui/$(id -u)" "$PLIST_PATH"
-    echo "LaunchAgent (sh.cwel.darwenv) loaded"
+    echo "LaunchAgent (com.cwel.darwenv) loaded"
 else
-    echo "LaunchAgent (sh.cwel.darwenv) already loaded"
+    echo "LaunchAgent (com.cwel.darwenv) already loaded"
 fi
 {{- end }}

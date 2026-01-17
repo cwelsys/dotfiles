@@ -4,15 +4,37 @@ if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
   source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
 fi
 
-if test -n "$KITTY_INSTALLATION_DIR"; then
-    export KITTY_SHELL_INTEGRATION="no-cursor"
+if [[ -n "$SSH_CONNECTION" ]]; then
+    unset VISUAL
+    export BROWSER="local-open"
+fi
+
+if [[ -n "$KITTY_INSTALLATION_DIR" ]]; then
+    export KITTY_SHELL_INTEGRATION="no-cursor no-title"
     autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
     kitty-integration
     unfunction kitty-integration
-    autoload -Uz add-zsh-hook
-    _refresh_kitty_tab_bar() { : > /tmp/kitty_tab_refresh }
-    add-zsh-hook preexec _refresh_kitty_tab_bar
     alias ssh="kitten ssh"
+fi
+
+if [[ -n "$KITTY_INSTALLATION_DIR" || -n "$SSH_KITTEN_KITTY_DIR" ]]; then
+    autoload -Uz add-zsh-hook
+    _kitty_uservar() { printf '\e]1337;SetUserVar=%s=%s\a' "$1" "$(printf '%s' "$2" | base64)" }
+    [[ -n "$SSH_KITTEN_KITTY_DIR" ]] && _kitty_uservar REMOTE_HOST "$HOST"
+    _kitty_preexec() {
+        _kitty_uservar PROC "${3%% *}"
+        print -Pn "\e]0;${3%% *}\a"
+    }
+    _kitty_precmd() {
+        _kitty_uservar PROC "${SHELL:t}"
+        print -Pn "\e]0;%~\a"
+    }
+    add-zsh-hook preexec _kitty_preexec
+    add-zsh-hook precmd _kitty_precmd
+elif [[ -n "$SSH_CONNECTION" ]]; then
+    autoload -Uz add-zsh-hook
+    _ssh_precmd() { print -Pn "\e]0;%~\a" }
+    add-zsh-hook precmd _ssh_precmd
 fi
 
 if [[ -n "$KMUX_MODE" && -z "$ZMX_SESSION" ]] && command -v zmx &>/dev/null; then
@@ -21,14 +43,6 @@ if [[ -n "$KMUX_MODE" && -z "$ZMX_SESSION" ]] && command -v zmx &>/dev/null; the
     elif [[ -n "$KITTY_WINDOW_ID" ]]; then
         exec zmx attach "kmux-${KITTY_WINDOW_ID}"
     fi
-fi
-
-if [[ -n "$SSH_CONNECTION" ]]; then
-    unset VISUAL
-    export BROWSER="local-open"
-    autoload -Uz add-zsh-hook
-    _set_title_to_cwd() { print -Pn "\e]0;%~\a" }
-    add-zsh-hook precmd _set_title_to_cwd
 fi
 
 HISTFILE="${XDG_STATE_HOME}/zsh/history"
@@ -41,25 +55,42 @@ if [[ -f "${ZDOTDIR:-$HOME}/.zsh_history" ]]; then
     mv "${ZDOTDIR:-$HOME}/.zsh_history" "${XDG_STATE_HOME}/zsh/history"
 fi
 
-eval "$(starship init zsh)"
+if [[ -o interactive ]] && command -v starship &>/dev/null; then
+    eval "$(starship init zsh)"
 
-add-zsh-hook precmd transient-prompt-precmd
+    STARSHIP_TRANSIENT_PROMPT="${${PROMPT[@]:2:-1}// prompt / prompt --profile transient }"
+    STARSHIP_TRANSIENT_RPROMPT="${${PROMPT[@]:2:-1}// prompt / prompt --profile rtransient }"
 
-TRANSIENT_PROMPT="${PROMPT// prompt / prompt --profile transient }"
-TRANSIENT_RPROMPT="${PROMPT// prompt / prompt --profile rtransient }"
+    function starship-transient-prompt-precmd {
+        STARSHIP_SAVED_PROMPT="$(eval "${STARSHIP_TRANSIENT_PROMPT}")"
+        STARSHIP_SAVED_RPROMPT="$(eval "${STARSHIP_TRANSIENT_RPROMPT}")"
 
-function transient-prompt-precmd {
-    TRAPINT() { transient-prompt; return $(( 128 + $1 )) }
-    SAVED_PROMPT="$(eval "printf '%s' \"${TRANSIENT_PROMPT}\"")"
-    SAVED_RPROMPT="$(eval "printf '%s' \"${TRANSIENT_RPROMPT}\"")"
-}
+        # Fix ctrl+c behavior
+        TRAPINT() { starship-transient-prompt 2>/dev/null; return $(( 128 + $1 )) }
+    }
 
-autoload -Uz add-zle-hook-widget
-add-zle-hook-widget zle-line-finish transient-prompt
+    autoload -Uz add-zsh-hook
+    add-zsh-hook precmd starship-transient-prompt-precmd
 
-function transient-prompt() {
-    PROMPT="$SAVED_PROMPT" RPROMPT="$SAVED_RPROMPT" zle .reset-prompt
-}
+    function starship-transient-prompt() {
+        if [[ "$PWD" == "$STARSHIP_SAVED_PROMPT_PWD" ]]; then
+            PROMPT="$STARSHIP_SAVED_PROMPT" RPROMPT="$STARSHIP_SAVED_RPROMPT" zle .reset-prompt
+        else
+            STARSHIP_SAVED_PROMPT_PWD="$PWD"
+        fi
+    }
+
+    autoload -Uz add-zle-hook-widget
+    add-zle-hook-widget zle-line-finish starship-transient-prompt
+
+    function clear-screen() {
+        # Save transient prompt before clearing screen
+        starship-transient-prompt-precmd
+        zle .clear-screen
+    }
+
+    zle -N clear-screen
+fi
 
 typeset -A ZINIT=(
   BIN_DIR         ${XDG_DATA_HOME:-$HOME/.local/share}/zinit/bin
@@ -91,8 +122,6 @@ zinit light-mode for \
   zdharma-continuum/zinit-annex-bin-gem-node \
   zdharma-continuum/zinit-annex-patch-dl \
   zdharma-continuum/zinit-annex-rust
-
-bindkey -e
 
 zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
   atclone"./atuin init zsh > init.zsh; ./atuin gen-completions --shell zsh > _atuin" \
@@ -133,7 +162,6 @@ omzPlugin github
 omzPlugin direnv
 
 zinit wait lucid light-mode for \
-  olets/zsh-transient-prompt \
   ryanccn/vivid-zsh \
   Aloxaf/fzf-tab \
   djui/alias-tips \
@@ -184,6 +212,8 @@ zstyle ':fzf-tab:complete:*:*' fzf-flags --preview-window 'right,60%,wrap,<36(do
 zstyle ':fzf-tab:complete:*:options' fzf-preview
 zstyle ':fzf-tab:complete:*:argument-1' fzf-preview
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompcache"
 zstyle ':fzf-tab:complete:yay:*' fzf-preview 'yay -Si $word'
 zstyle ':fzf-tab:complete:-command-:*' fzf-preview \
     '(out=$(tldr --color "$word") 2>/dev/null && echo $out) || (out=$(MANWIDTH=$FZF_PREVIEW_COLUMNS man "$word") 2>/dev/null && echo $out) || (out=$(which "$word") && echo $out) || echo "${(P)word}"'
