@@ -78,7 +78,7 @@
     "typescript-lsp@claude-plugins-official": true,
     "astral@astral-sh": true,
     "superpowers@claude-plugins-official": true,
-    "planning-with-files@planning-with-files": true,
+    "planning-with-files@planning-with-files": true
   },
   "theme": "dark",
   "preferredNotifChannel": "notifications_disabled"
