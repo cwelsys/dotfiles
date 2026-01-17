@@ -27,6 +27,7 @@ if [[ -n "$KITTY_INSTALLATION_DIR" || -n "$SSH_KITTEN_KITTY_DIR" ]]; then
     }
     _kitty_precmd() {
         _kitty_uservar PROC "${SHELL:t}"
+        [[ -z "$SSH_KITTEN_KITTY_DIR" ]] && _kitty_uservar REMOTE_HOST ""
         print -Pn "\e]0;%~\a"
     }
     add-zsh-hook preexec _kitty_preexec
