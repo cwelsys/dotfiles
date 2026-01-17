@@ -63,6 +63,7 @@
     "defaultMode": "default"
   },
   "enabledPlugins": {
+    "swift-lsp@claude-plugins-official": false,
     "gopls-lsp@claude-plugins-official": true,
     "clangd-lsp@claude-plugins-official": true,
     "superpowers@superpowers-marketplace": true,
@@ -76,8 +77,8 @@
     "commit-commands@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "astral@astral-sh": true,
-    "planning-with-files@planning-with-files": true{{ if eq .chezmoi.os "darwin" }},
-    "swift-lsp@claude-plugins-official": true{{ end }}
+    "superpowers@claude-plugins-official": true,
+    "planning-with-files@planning-with-files": true,
   },
   "theme": "dark",
   "preferredNotifChannel": "notifications_disabled"
