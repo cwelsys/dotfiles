@@ -10,8 +10,8 @@ from kitty.tab_bar import (
     draw_tab_with_powerline,
 )
 
-# "index", "icon", "name", "path"
-DISPLAY_ELEMENTS = ["index", "icon", "path"]
+# "index", "hostname", "icon", "name", "path", "ssh"
+DISPLAY_ELEMENTS = ["index", "hostname", "icon", "path", "ssh"]
 RAINBOW_PATH = True
 MAX_PATH_SEGMENTS = 2
 PAD_START = ""
@@ -283,17 +283,20 @@ def format_tab_title(
                     parts.append(format_path(display, index, is_active))
                 else:
                     parts.append(colorize_title(display, index, is_active))
+        elif element == "ssh" and remote_host:
+            if is_active:
+                ssh_color = _c(ICON_COLOR_ACTIVE)
+            else:
+                ssh_color = _c(RAINBOW_COLORS[index % len(RAINBOW_COLORS)])
+            parts.append(f"{{fmt.fg._{ssh_color}}}{SSH_ICON}{{fmt.fg.tab}}")
+        elif element == "hostname" and remote_host:
+            if is_active:
+                host_color = _c(ICON_COLOR_ACTIVE)
+            else:
+                host_color = _c(RAINBOW_COLORS[index % len(RAINBOW_COLORS)])
+            parts.append(f"{{fmt.fg._{host_color}}}{remote_host}{{fmt.fg.tab}}")
 
     content = ELEMENT_SEP.join(parts)
-
-    if remote_host:
-        if is_active:
-            ssh_color = _c(ICON_COLOR_ACTIVE)
-        else:
-            ssh_color = _c(RAINBOW_COLORS[index % len(RAINBOW_COLORS)])
-        ssh_indicator = f"{{fmt.fg._{ssh_color}}}{SSH_ICON}{{fmt.fg.tab}}"
-        content = f"{content} {ssh_indicator}"
-
     return f"{PAD_START}{content}{PAD_END}"
 
 
