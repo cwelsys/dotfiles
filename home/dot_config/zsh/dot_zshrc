@@ -248,4 +248,3 @@ bindkey '^[w' kill-region
 bindkey '^Y' redo
 
 [ -x "$(command -v zoxide)" ] && eval "$(zoxide init --cmd cd zsh)"
-source <(kmux completion zsh)
