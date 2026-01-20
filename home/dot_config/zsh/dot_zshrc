@@ -29,6 +29,9 @@ if [[ -n "$KITTY_INSTALLATION_DIR" || -n "$_KITTY_IS_REMOTE" ]]; then
         if [[ -n "$_KITTY_IS_REMOTE" ]]; then
             _kitty_uservar REMOTE_HOST "$HOST"
             _kitty_uservar REMOTE_CWD "${PWD/#$HOME/~}"
+        else
+            _kitty_uservar REMOTE_HOST ""
+            _kitty_uservar REMOTE_CWD ""
         fi
         print -Pn "\e]0;\a"
     }
