@@ -83,6 +83,9 @@ fi
 
 if command -v kitten >/dev/null 2>&1; then
     alias icat='kitten icat'
+    alias diff='kitten diff'
+    alias kcp='kitten transfer'
+    alias kclip='kitten clipboard'
 fi
 
 if [ -n "$KITTY_INSTALLATION_DIR" ]; then

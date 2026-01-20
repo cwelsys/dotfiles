@@ -69,7 +69,6 @@
     "gopls-lsp@claude-plugins-official": true,
     "clangd-lsp@claude-plugins-official": true,
     "superpowers@superpowers-marketplace": true,
-    "systems-programming@claude-code-workflows": true,
     "hookify@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
@@ -79,8 +78,8 @@
     "commit-commands@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "astral@astral-sh": true,
-    "superpowers@claude-plugins-official": true,
-    "planning-with-files@planning-with-files": true
+    "planning-with-files@planning-with-files": true,
+    "code-simplifier@claude-plugins-official": true
   },
   "theme": "dark",
   "preferredNotifChannel": "notifications_disabled"

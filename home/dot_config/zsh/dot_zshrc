@@ -28,10 +28,9 @@ if [[ -n "$KITTY_INSTALLATION_DIR" || -n "$_KITTY_IS_REMOTE" ]]; then
         _kitty_uservar PROC "${SHELL:t}"
         if [[ -n "$_KITTY_IS_REMOTE" ]]; then
             _kitty_uservar REMOTE_HOST "$HOST"
-        else
-            _kitty_uservar REMOTE_HOST ""
+            _kitty_uservar REMOTE_CWD "${PWD/#$HOME/~}"
         fi
-        print -Pn "\e]0;%~\a"
+        print -Pn "\e]0;\a"
     }
     add-zsh-hook preexec _kitty_preexec
     add-zsh-hook precmd _kitty_precmd
@@ -39,14 +38,6 @@ elif [[ -n "$SSH_CONNECTION" ]]; then
     autoload -Uz add-zsh-hook
     _ssh_precmd() { print -Pn "\e]0;%~\a" }
     add-zsh-hook precmd _ssh_precmd
-fi
-
-if [[ -n "$KMUX_MODE" && -z "$ZMX_SESSION" ]] && command -v zmx &>/dev/null; then
-    if [[ -n "$KMUX_SESSION" ]]; then
-        exec zmx attach "$KMUX_SESSION"
-    elif [[ -n "$KITTY_WINDOW_ID" ]]; then
-        exec zmx attach "kmux-${KITTY_WINDOW_ID}"
-    fi
 fi
 
 HISTFILE="${XDG_STATE_HOME}/zsh/history"
@@ -257,3 +248,4 @@ bindkey '^[w' kill-region
 bindkey '^Y' redo
 
 [ -x "$(command -v zoxide)" ] && eval "$(zoxide init --cmd cd zsh)"
+source <(kmux completion zsh)
