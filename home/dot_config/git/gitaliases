@@ -756,28 +756,7 @@
   churn = "!f() { git log --all --find-copies --find-renames --name-only --format='format:' \"$@\" | awk 'NF{a[$0]++}END{for(i in a){print a[i], i}}' | sort -rn;};f"
 
   # summary: print a helpful summary of some typical metrics
-  summary = "!f() { \
-    printf \"Summary of this branch...\n\"; \
-    printf \"%s\n\" \"$(git current-branch)\"; \
-    printf \"%s first commit timestamp\n\" \"$(git log --date-order --format=%cI | tail -1)\"; \
-    printf \"%s last commit timestamp\n\" \"$(git log -1 --date-order --format=%cI)\"; \
-    printf \"\nSummary of counts...\n\"; \
-    printf \"%d commit count\n\" \"$(git rev-list --count HEAD)\"; \
-    printf \"%d date count\n\" \"$(git log --format=oneline --format=\"%ad\" --date=format:\"%Y-%m-%d\" | awk '{a[$0]=1}END{for(i in a){n++;} print n}')\"; \
-    printf \"%d tag count\n\" \"$(git tag | wc -l)\"; \
-    printf \"%d author count\n\" \"$(git log --format=oneline --format=\"%aE\" | awk '{a[$0]=1}END{for(i in a){n++;} print n}')\"; \
-    printf \"%d committer count\n\" \"$(git log --format=oneline --format=\"%cE\" | awk '{a[$0]=1}END{for(i in a){n++;} print n}')\"; \
-    printf \"%d local branch count\n\" \"$(git branch | grep -vc \" -> \")\"; \
-    printf \"%d remote branch count\n\" \"$(git branch --remotes | grep -vc \" -> \")\"; \
-    printf \"\nSummary of this directory...\n\"; \
-    printf \"%s\n\" \"$(pwd)\"; \
-    printf \"%d file count via git ls-files\n\" \"$(git ls-files | wc -l)\"; \
-    printf \"%d file count via find command\n\" \"$(find . | wc -l)\"; \
-    printf \"%d disk usage\n\" \"$(du -s | awk '{print $1}')\"; \
-    printf \"\nMost-active authors, with commit count and %%...\n\"; git log-of-count-and-email | head -7; \
-    printf \"\nMost-active dates, with commit count and %%...\n\"; git log-of-count-and-day | head -7; \
-    printf \"\nMost-active files, with churn count\n\"; git churn | head -7; \
-  }; f"
+  summary = "!f() { printf \"Summary of this branch...\\n\"; printf \"%s\\n\" \"$(git current-branch)\"; printf \"%s first commit timestamp\\n\" \"$(git log --date-order --format=%cI | tail -1)\"; printf \"%s last commit timestamp\\n\" \"$(git log -1 --date-order --format=%cI)\"; printf \"\\nSummary of counts...\\n\"; printf \"%d commit count\\n\" \"$(git rev-list --count HEAD)\"; printf \"%d date count\\n\" \"$(git log --format=oneline --format=\"%ad\" --date=format:\"%Y-%m-%d\" | awk '{a[$0]=1}END{for(i in a){n++;} print n}')\"; printf \"%d tag count\\n\" \"$(git tag | wc -l)\"; printf \"%d author count\\n\" \"$(git log --format=oneline --format=\"%aE\" | awk '{a[$0]=1}END{for(i in a){n++;} print n}')\"; printf \"%d committer count\\n\" \"$(git log --format=oneline --format=\"%cE\" | awk '{a[$0]=1}END{for(i in a){n++;} print n}')\"; printf \"%d local branch count\\n\" \"$(git branch | grep -vc \" -> \")\"; printf \"%d remote branch count\\n\" \"$(git branch --remotes | grep -vc \" -> \")\"; printf \"\\nSummary of this directory...\\n\"; printf \"%s\\n\" \"$(pwd)\"; printf \"%d file count via git ls-files\\n\" \"$(git ls-files | wc -l)\"; printf \"%d file count via find command\\n\" \"$(find . | wc -l)\"; printf \"%d disk usage\\n\" \"$(du -s | awk '{print $1}')\"; printf \"\\nMost-active authors, with commit count and %%...\\n\"; git log-of-count-and-email | head -7; printf \"\\nMost-active dates, with commit count and %%...\\n\"; git log-of-count-and-day | head -7; printf \"\\nMost-active files, with churn count\\n\"; git churn | head -7; }; f"
 
   ### branch-commit-* aliases to show hashes via sort order ###
 
@@ -1622,22 +1601,7 @@
   # That's fine; it means someone else has already deleted the branch.
   # To synchronize your branch list, use "git fetch --prune".
 
-  topic-end = "!f(){ \
-    new_branch=\"$(git current-branch)\"; \
-    old_branch=\"$(git topic-base-branch)\"; \
-    if [ \"$new_branch\" = \"$old_branch\" ]; then \
-      printf \"You are asking to do git topic-end,\n\"; \
-      printf \"but you are not on a new topic branch;\n\"; \
-      printf \"you are on the base topic branch: %s.\n\" \"$old_branch\"; \
-      printf \"Please checkout the topic branch that you want,\n\"; \
-      printf \"then retry the git topic-end command.\n\"; \
-    else \
-      git push; \
-      git checkout \"$old_branch\"; \
-      git branch --delete \"$new_branch\"; \
-      git push origin \":$new_branch\"; \
-    fi; \
-  };f"
+  topic-end = "!f(){ new_branch=\"$(git current-branch)\"; old_branch=\"$(git topic-base-branch)\"; if [ \"$new_branch\" = \"$old_branch\" ]; then printf \"You are asking to do git topic-end,\\nbut you are not on a new topic branch;\\nyou are on the base topic branch: %s.\\nPlease checkout the topic branch that you want,\\nthen retry the git topic-end command.\\n\" \"$old_branch\"; else git push; git checkout \"$old_branch\"; git branch --delete \"$new_branch\"; git push origin \":$new_branch\"; fi; };f"
 
   topic-end = topic-finish
 
@@ -1658,20 +1622,7 @@
   #
   # Customize this alias as you like for your own workflow.
 
-  topic-sync = "!f(){ \
-    new_branch=\"$(git current-branch)\"; \
-    old_branch=\"$(git topic-base-branch)\"; \
-    if [ \"$new_branch\" = \"$old_branch\" ]; then \
-      printf \"You are asking to do git topic-sync,\n\"; \
-      printf \"but you are not on a new topic branch;\n\"; \
-      printf \"you are on the base topic branch: %s.\n\" \"$old_branch\"; \
-      printf \"Please checkout the topic branch that you want,\n\"; \
-      printf \"then retry the git topic-sync command.\n\"; \
-    else \
-      git pull; \
-      git push; \
-    fi; \
-  };f"
+  topic-sync = "!f(){ new_branch=\"$(git current-branch)\"; old_branch=\"$(git topic-base-branch)\"; if [ \"$new_branch\" = \"$old_branch\" ]; then printf \"You are asking to do git topic-sync,\\nbut you are not on a new topic branch;\\nyou are on the base topic branch: %s.\\nPlease checkout the topic branch that you want,\\nthen retry the git topic-sync command.\\n\" \"$old_branch\"; else git pull; git push; fi; };f"
 
   # Move the current topic branch, a.k.a. rename it.
   #

@@ -58,8 +58,8 @@ node_modules/
 CLAUDE.md
 cache
 .specstory
+**/.claude/**
 
-**/.claude/settings.local.json
 # Linux
 
 kls\*database.db

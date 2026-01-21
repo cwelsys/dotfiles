@@ -271,7 +271,6 @@ pkgs:
         - opencode
         - bc
         - glab
-        - neurosnap/tap/zmx
         - onefetch
         - tmux
         - chafa
@@ -281,8 +280,14 @@ pkgs:
         - ouch
         - cava
         - pstree
-        - rmpc
         - direnv
+        - aubio
+        - circumflex
+        - dive
+        - duf
+        - gping
+        - mpd
+        - zig
       casks:
         - 1password-cli
         - alt-tab
@@ -308,9 +313,7 @@ pkgs:
         - jellyfin-media-player
         - jordanbaird-ice@beta
         - karabiner-elements
-        - knockknock
         - moonlight
-        - neat
         - nextcloud-vfs
         - obsidian
         - openmtp
