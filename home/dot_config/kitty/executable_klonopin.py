@@ -9,6 +9,8 @@ Usage:
     kitten klonopin.py close-window     # Close window (skip if pinned)
     kitten klonopin.py new-tab          # New tab before pinned tabs (inherit cwd)
     kitten klonopin.py new-tab --local  # New tab before pinned tabs (no cwd)
+    kitten klonopin.py move-left        # Move tab left (pinned tabs stay at end)
+    kitten klonopin.py move-right       # Move tab right (can't cross into pinned zone)
 """
 
 from kittens.tui.handler import result_handler
@@ -184,6 +186,59 @@ def do_new_tab(boss, local_mode):
             tm.move_tab(-1)
 
 
+def do_move_left(boss):
+    """Move current tab left, respecting pinned tab boundaries."""
+    tab = boss.active_tab
+    if tab is None:
+        return
+
+    tm = boss.active_tab_manager
+    if tm is None:
+        return
+
+    tabs = list(tm.tabs)
+    current_idx = tabs.index(tab)
+
+    # Can't move left if already at start
+    if current_idx == 0:
+        return
+
+    # Pinned tabs can't move left (they must stay at the end)
+    if is_tab_pinned(tab):
+        first_pinned_idx = find_first_pinned_idx(tm)
+        if first_pinned_idx is not None and current_idx == first_pinned_idx:
+            return  # Already at the left edge of pinned zone
+
+    tm.move_tab(-1)
+
+
+def do_move_right(boss):
+    """Move current tab right, respecting pinned tab boundaries."""
+    tab = boss.active_tab
+    if tab is None:
+        return
+
+    tm = boss.active_tab_manager
+    if tm is None:
+        return
+
+    tabs = list(tm.tabs)
+    current_idx = tabs.index(tab)
+    total_tabs = len(tabs)
+
+    # Can't move right if already at end
+    if current_idx >= total_tabs - 1:
+        return
+
+    # Non-pinned tabs can't cross into pinned zone
+    if not is_tab_pinned(tab):
+        first_pinned_idx = find_first_pinned_idx(tm)
+        if first_pinned_idx is not None and current_idx >= first_pinned_idx - 1:
+            return  # Would cross into pinned zone
+
+    tm.move_tab(1)
+
+
 @result_handler(no_ui=True)
 def handle_result(args, answer, target_window_id, boss):
     if not args or len(args) < 2:
@@ -202,3 +257,7 @@ def handle_result(args, answer, target_window_id, boss):
     elif action == "new-tab":
         local_mode = "--local" in args
         do_new_tab(boss, local_mode)
+    elif action == "move-left":
+        do_move_left(boss)
+    elif action == "move-right":
+        do_move_right(boss)

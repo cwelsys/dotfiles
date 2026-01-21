@@ -302,7 +302,7 @@ class RenderContext:
         config: TabBarConfig for access to all configuration
         tabs: List of TabInfo for all tabs (pills style collects these)
         active_tab_index: Index of the active tab in the tabs list
-        cached_tab_positions: End positions of each tab from previous render
+        cached_tab_positions: End positions keyed by tab_id (survives reorder)
         screen_columns: Total screen width for layout calculations
     """
 
@@ -310,7 +310,7 @@ class RenderContext:
     config: "TabBarConfig"  # Forward reference to avoid circular import
     tabs: list[TabInfo] = field(default_factory=list)
     active_tab_index: int = 0
-    cached_tab_positions: list[int] = field(default_factory=list)
+    cached_tab_positions: dict[int, int] = field(default_factory=dict)  # tab_id -> end_pos
     screen_columns: int = 0
 
 
@@ -763,11 +763,11 @@ def draw_tab_pills(
     global _render_ctx
 
     # Layout phase: return cached positions from previous render if available
+    # Must set cursor.x because kitty uses it for width calculation
     if extra_data.for_layout:
-        if _render_ctx is not None:
-            tab_idx = index - 1
-            if tab_idx < len(_render_ctx.cached_tab_positions):
-                return _render_ctx.cached_tab_positions[tab_idx]
+        if _render_ctx is not None and tab.tab_id in _render_ctx.cached_tab_positions:
+            screen.cursor.x = _render_ctx.cached_tab_positions[tab.tab_id]
+            return screen.cursor.x
         # Fallback: simple estimation
         screen.cursor.x = before + 15
         return screen.cursor.x
@@ -813,13 +813,11 @@ def draw_tab_pills(
     if info.is_active:
         _render_ctx.active_tab_index = len(_render_ctx.tabs) - 1
 
-    current_tab_index = len(_render_ctx.tabs) - 1
-
-    # If not the last tab, return cached position or current cursor
+    # If not the last tab, return cached position or estimate
     if not is_last:
-        if current_tab_index < len(_render_ctx.cached_tab_positions):
-            return _render_ctx.cached_tab_positions[current_tab_index]
-        return screen.cursor.x
+        if info.tab.tab_id in _render_ctx.cached_tab_positions:
+            return _render_ctx.cached_tab_positions[info.tab.tab_id]
+        return before + 15
 
     # === Last tab: draw everything ===
     tabs = _render_ctx.tabs
@@ -988,8 +986,8 @@ def draw_tab_pills(
                 screen, left_icon, cwd_text, icon_bg, text_bg, icon_fg, text_fg, pills
             )
 
-    # Position tracking - indexed by original tab order
-    new_tab_positions: list[int] = [0] * n_tabs
+    # Position tracking - keyed by tab_id (survives reorder)
+    new_tab_positions: dict[int, int] = {}
 
     # === Draw Center Zone (non-pinned tabs) ===
     screen.cursor.x = center_start
@@ -1018,7 +1016,7 @@ def draw_tab_pills(
         text_fg = _color_int(colors.text_fg_active if is_active else colors.text_fg)
 
         _draw_pill(screen, icon_text, text, icon_bg, text_bg, icon_fg, text_fg, pills)
-        new_tab_positions[orig_idx] = screen.cursor.x
+        new_tab_positions[tab_info.tab.tab_id] = screen.cursor.x
 
     # === Draw Right Zone (pinned tabs) ===
     if right_tabs:
@@ -1045,7 +1043,7 @@ def draw_tab_pills(
             _draw_pill(
                 screen, icon_text, text, icon_bg, text_bg, icon_fg, text_fg, pills
             )
-            new_tab_positions[orig_idx] = screen.cursor.x
+            new_tab_positions[tab_info.tab.tab_id] = screen.cursor.x
 
     # Store positions for next render cycle
     _render_ctx.cached_tab_positions = new_tab_positions
