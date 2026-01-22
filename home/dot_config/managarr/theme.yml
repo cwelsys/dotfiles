@@ -1,0 +1,40 @@
+# Catppuccin Mocha theme for Managarr
+# https://github.com/catppuccin/catppuccin
+
+- name: catppuccin-mocha
+  theme:
+    background:
+      enabled: true
+      color: "#1e1e2e"  # Base
+    awaiting_import:
+      color: "#fab387"  # Peach
+    indeterminate:
+      color: "#7f849c"  # Overlay 1
+    default:
+      color: "#cdd6f4"  # Text
+    downloaded:
+      color: "#a6e3a1"  # Green
+    downloading:
+      color: "#cba6f7"  # Mauve
+    failure:
+      color: "#f38ba8"  # Red
+    help:
+      color: "#94e2d5"  # Teal
+    missing:
+      color: "#eba0ac"  # Maroon
+    primary:
+      color: "#89b4fa"  # Blue
+    secondary:
+      color: "#f9e2af"  # Yellow
+    success:
+      color: "#a6e3a1"  # Green
+    system_function:
+      color: "#b4befe"  # Lavender
+    unmonitored:
+      color: "#6c7086"  # Overlay 0
+    unmonitored_missing:
+      color: "#fab387"  # Peach
+    unreleased:
+      color: "#89dceb"  # Sky
+    warning:
+      color: "#f9e2af"  # Yellow

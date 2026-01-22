@@ -165,6 +165,7 @@ if command -v chezmoi >/dev/null 2>&1; then
 fi
 
 cdc() { cd "$HOME/.config" || return 1; }
+cds() { cd "$HOME/src" || return 1; }
 cdcm() { cd "${DOTFILES:-$HOME/.local/share/chezmoi}" || return 1; }
 
 cmra() {

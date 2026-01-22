@@ -1,0 +1,17 @@
+theme: catppuccin-mocha
+radarr:
+  - uri: https://radarr.cwel.casa
+    name: Movie
+    api_token: ${RADARR_API_KEY}
+sonarr:
+  - uri: https://sonarr.cwel.casa
+    name: TV
+    api_token: ${SONARR_API_KEY}
+lidarr:
+  - uri: https://lidarr.cwel.casa
+    name: Music
+    api_token: ${LIDARR_API_KEY}
+prowlarr:
+  - uri: https://prowlarr.cwel.casa
+    api_token: ${PROWLARR_API_KEY}
+

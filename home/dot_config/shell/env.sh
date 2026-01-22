@@ -64,6 +64,8 @@ export INPUTRC="$XDG_CONFIG_HOME/bash/inputrc"
 export SCREENRC="$XDG_CONFIG_HOME/screen/screenrc"
 export WINEPREFIX="$XDG_DATA_HOME"/wine
 export OLLAMA_HOST="https://slop.cwel.casa"
+export MANAGARR_CONFIG_FILE="$XDG_CONFIG_HOME/managarr/config.yml"
+export MANAGARR_THEMES_FILE="$XDG_CONFIG_HOME/managarr/theme.yml"
 
 export DO_NOT_TRACK=1
 export DISABLE_TELEMETRY=1

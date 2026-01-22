@@ -900,8 +900,16 @@ def draw_tab_pills(
         strategy = "collapse_all"
         center_width = center_all_collapsed
 
-    # Calculate positions - center the tabs in available space
-    center_start = (available_for_center - center_width) // 2
+    # Calculate positions - center tabs on screen, adjust if overlapping right zone
+    center_start = (screen.columns - center_width) // 2
+
+    # Ensure tabs don't overlap with right zone
+    if right_tabs:
+        max_center_end = screen.columns - right_width - right_margin
+        if center_start + center_width > max_center_end:
+            center_start = max(0, max_center_end - center_width)
+
+    # Left zone gets space before center tabs
     left_max = center_start - 2 if pills.left_zone.enabled else 0
 
     # === Draw Left Zone (folder + cwd, or mode indicator + cwd) ===
