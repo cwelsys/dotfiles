@@ -641,8 +641,15 @@ def _abbreviate_path(cwd: str, max_len: int) -> str | None:
     if not cwd:
         return None
 
+    # Normalize: strip trailing slash (unless root)
+    if len(cwd) > 1 and cwd.endswith("/"):
+        cwd = cwd.rstrip("/")
+
     if cwd.startswith(_home):
-        cwd = "~" + cwd[len(_home):]
+        remainder = cwd[len(_home):]
+        # Ensure we're at a boundary (exact match or followed by /)
+        if remainder == "" or remainder.startswith("/"):
+            cwd = "~" + remainder
 
     if len(cwd) <= max_len:
         return cwd
