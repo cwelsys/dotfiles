@@ -181,9 +181,8 @@ cmra() {
     fi
     local selected
     selected=$(echo "$files" | fzf --multi --ansi \
-        --header="Select files to re-add (TAB to multi-select)" \
-        --preview="chezmoi diff ~/{}" \
-        --preview-window="right:60%:wrap")
+        --preview="chezmoi diff --pager cat ~/{} 2>/dev/null | delta -s ansi 2>/dev/null" \
+        --preview-window="right,60%,wrap,<80(down,60%,wrap)")
     if [ -n "$selected" ]; then
         echo "$selected" | while IFS= read -r file; do
             chezmoi re-add ~/"$file"

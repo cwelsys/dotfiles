@@ -1,7 +1,28 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/jesseduffield/lazygit/master/schema/config.json
+
+notARepository: skip
+promptToReturnFromSubprocess: false
+disableStartupPopups: true
 gui:
+  expandFocusedSidePanel: true
+  skipRewordInEditorWarning: true
+  showNumstatInFilesView: true
+  filterMode: "fuzzy"
+  # statusPanelView: allBranchesLog
+  showBottomLine: false
+  commandLogSize: 4
+  nerdFontsVersion: '3'
+  showRandomTip: false
+  sidePanelWidth: .22
+  branchColors:
+    "release": "#f9e2af"
+    "hotfix": "#f38ba8"
+    "feature": "#a6e3a1"
+  authorColors:
+    '*': '#b4befe'
   theme:
     activeBorderColor:
-      - '#cba6f7'
+      - '#89b4fa'
       - bold
     inactiveBorderColor:
       - '#a6adc8'
@@ -12,79 +33,20 @@ gui:
     cherryPickedCommitBgColor:
       - '#45475a'
     cherryPickedCommitFgColor:
-      - '#cba6f7'
+      - '#89b4fa'
     unstagedChangesColor:
       - '#f38ba8'
     defaultFgColor:
       - '#cdd6f4'
     searchingActiveBorderColor:
       - '#f9e2af'
-  authorColors:
-    '*': '#b4befe'
-  mouseEvents: true
-  nerdFontsVersion: '3'
-  mainPanelSplitMode: flexible
-  commitLength:
-    show: true
-  splitDiff: auto
-  spinner:
-    frames:
-      - "⣷ "
-      - "⣯ "
-      - "⣟ "
-      - "⡿ "
-      - "⢿ "
-      - "⣻ "
-      - "⣽ "
-      - "⣾ "
-    rate: 100
-  statusPanelView: allBranchesLog
-  commandLogSize: 2
-  showRandomTip: false
+
 git:
   pagers:
-    - colorArg: always
-      pager: delta --dark --paging=never
-      useConfig: false
-  autoFetch: true
-  autoRefresh: true
-  branchLogCmd: git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=medium {{branchName}} --
-  overrideGpg: false
-  disableForcePushing: false
-  parseEmoji: false
-  log:
-    order: topo-order
-    showGraph: always
-    showWholeGraph: false
+    - pager: delta --dark --paging=never --line-numbers --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
+  branchLogCmd: "git log --graph --color=always --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' {{branchName}} --"
   allBranchesLogCmds:
-    - git log --graph --all --color=always --abbrev-commit --decorate --date=relative  --pretty=medium
-update:
-  method: prompt
-  days: 14
-refresher:
-  refreshInterval: 10
-  fetchInterval: 60
-confirmOnQuit: false
-os:
-  editPreset: 'nvim'
-customCommands:
-  - key: 'b'
-    command: 'gh browse'
-    context: 'files'
-  - key: 'b'
-    command: 'gh browse "{{.SelectedLocalCommit.Sha}}"'
-    context: 'commits'
-  - key: 'o'
-    command: 'gh pr view --web'
-    description: "View PR on GitHub"
-    context: 'global'
-  - key: 'o'
-    command: 'gh pr view --web {{.SelectedLocalBranch.Name}}'
-    description: "View PR on GitHub"
-    context: 'localBranches'
-    loadingText: 'Opening GitHub...'
-  - key: 'F'
-    command: 'git push --force-with-lease --no-verify'
-    context: 'localBranches'
-notARepository: skip
-promptToReturnFromSubprocess: true
+    - git log --graph --all --color=always --abbrev-commit  --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
+  parseEmoji: true
+
+

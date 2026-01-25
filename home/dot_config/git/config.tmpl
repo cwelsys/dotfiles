@@ -1,6 +1,5 @@
 [core]
   editor = nvim
-  longpaths = true
   whitespace = trailing-space,space-before-tab
   pager = delta
   excludesFile = ~/.config/git/ignore
@@ -9,48 +8,45 @@
   path = ~/.config/git/gitaliases
 
 [pager]
-  tag = sort -V
-	format-patch = cat
-	diff = delta
-	blame = delta
-	log = emojify | less
-	reflog = emojify | less
-	config = bat -pplproperties
-	remote = bat -ppltsv
-	ls-files = parallel eza --color=always --icons
-	check-ignore = parallel eza --color=always --icons
+  format-patch = cat
+  blame = delta
+  config = bat -pplproperties
+  remote = bat -ppltsv
 
 [user]
   name = Connor Welsh
   email = {{ .email }}
-  signingkey = {{ .sshId  }}
+  signingkey = {{ .sshId }}
 
 [github]
   user = cwelsys
 
+[commit]
+  gpgSign = true
+  verbose = true
+
+[gpg]
+  format = ssh
+
+{{ if eq .chezmoi.os "darwin" -}}
+[gpg "ssh"]
+  program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+{{ else if eq .chezmoi.os "linux" -}}
+[gpg "ssh"]
+  program = "/opt/1Password/op-ssh-sign"
+{{ end }}
 [init]
   defaultBranch = main
 
 [color]
-  ui = always
-  interactive = always
-
-[safe]
-  directory = ~/Projects
-  directory = ~/scoop/*
-
-[gpg]
-	format = ssh
-{{ if eq .chezmoi.os "darwin" }}
-[gpg "ssh"]
-	program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
-{{ end }}
+  ui = auto
+  interactive = auto
 
 [branch]
-	sort = -committerdate
+  sort = -committerdate
 
 [column]
-	ui = auto
+  ui = auto
 
 [diff]
   algorithm = histogram
@@ -62,60 +58,63 @@
   submodule = log
 
 [fetch]
-	all = true
-	fsckobjects = false
-	prune = true
+  all = true
+  fsckobjects = false
+  prune = true
 
 [receive]
-	fsckobjects = true
+  fsckobjects = true
 
 [transfer]
-	fsckobjects = true
+  fsckobjects = true
 
 [grep]
-	lineNumber = true
-	extendedRegexp = true
-
-[trim]
-	bases = master,gh-pages
+  lineNumber = true
+  extendedRegexp = true
 
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+  required = true
 
 [delta]
   features = unobtrusive-line-numbers catppuccin-mocha
-  side-by-side = true
   navigate = true
+  hyperlinks = true
+  relative-paths = true
+  tabs = 4
+  true-color = always
+
+[delta "unobtrusive-line-numbers"]
+  line-numbers = true
+  line-numbers-left-format = "{nm:>3}┊"
+  line-numbers-right-format = "{np:>3}│"
 
 [delta "catppuccin-mocha"]
 	blame-palette = "#1e1e2e #181825 #11111b #313244 #45475a"
-	commit-decoration-style = "box ul"
 	dark = true
-	file-decoration-style = "#cdd6f4"
+	file-decoration-style = "#6c7086"
 	file-style = "#cdd6f4"
-	hunk-header-decoration-style = "box ul"
-	hunk-header-file-style = "bold"
-	hunk-header-line-number-style = "bold #a6adc8"
-	hunk-header-style = "file line-number syntax"
-	line-numbers = true
+	hunk-header-decoration-style = "#6c7086" ul
+	hunk-header-file-style = bold
+	hunk-header-line-number-style = bold "#a6adc8"
+	hunk-header-style = file line-number syntax
 	line-numbers-left-style = "#6c7086"
-	line-numbers-minus-style = "bold #f38ba8"
-	line-numbers-plus-style = "bold #a6e3a1"
+	line-numbers-minus-style = bold "#f38ba8"
+	line-numbers-plus-style = bold "#a6e3a1"
 	line-numbers-right-style = "#6c7086"
 	line-numbers-zero-style = "#6c7086"
-	minus-emph-style = "bold syntax #53394c"
-	minus-style = "syntax #35293b"
-	plus-emph-style = "bold syntax #40504b"
-	plus-style = "syntax #2c333a"
+	minus-emph-style = bold syntax "#53394c"
+	minus-style = syntax "#34293a"
+	plus-emph-style = bold syntax "#404f4a"
+	plus-style = syntax "#2c3239"
 	map-styles = \
 		bold purple => syntax "#494060", \
-		bold blue => syntax "#394361", \
-		bold cyan => syntax "#384d5e", \
+		bold blue => syntax "#384361", \
+		bold cyan => syntax "#384d5d", \
 		bold yellow => syntax "#544f4e"
-	syntax-theme = "Catppuccin Mocha"
+	syntax-theme = Catppuccin Mocha
 
 [interactive]
   diffFilter = delta --color-only
@@ -145,30 +144,19 @@
 
 [merge]
   conflictstyle = zdiff3
-  
+
 [submodule]
   fetchJobs = 8
   recurse = true
 
 [status]
-	submoduleSummary = true
+  submoduleSummary = true
 
 [tag]
-	sort = version:refname
-
-[fetch]
-  all = true
-  fsckobjects = false
-  prune = true
+  sort = version:refname
 
 [remote]
   pushDefault = origin
-
-[filter "lfs"]
-  required = true
-  clean = git-lfs clean -- %f
-  smudge = git-lfs smudge -- %f
-  process = git-lfs filter-process
 
 [url "git@github.com:"]
   insteadOf = "gh:"
@@ -180,18 +168,8 @@
   pushInsteadOf = "gist:"
   pushInsteadOf = "git://gist.github.com/"
 
-{{- $ghPath := lookPath "gh" }}
-{{- if $ghPath }}
-{{- if eq .chezmoi.os "windows" }}
-{{- $ghPathFixed := replace "\\" "/" $ghPath }}
 [credential "https://github.com"]
-    helper = !"{{ $ghPathFixed }}" auth git-credential
+  helper = !gh auth git-credential
+
 [credential "https://gist.github.com"]
-    helper = !"{{ $ghPathFixed }}" auth git-credential
-{{- else }}
-[credential "https://github.com"]
-    helper = !{{ $ghPath }} auth git-credential
-[credential "https://gist.github.com"]
-    helper = !{{ $ghPath }} auth git-credential
-{{- end }}
-{{- end }}
+  helper = !gh auth git-credential
