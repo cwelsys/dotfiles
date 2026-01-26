@@ -106,6 +106,7 @@ fi
 
 if [ -n "$KITTY_INSTALLATION_DIR" ]; then
     alias fonts='kitten choose-fonts'
+    alias ssh="kitten ssh"
 elif [ -n "$GHOSTTY_RESOURCES_DIR" ] || command -v ghostty >/dev/null 2>&1; then
     alias fonts='ghostty +list-fonts'
 fi

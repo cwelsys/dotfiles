@@ -4,14 +4,6 @@ if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
   source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
 fi
 
-if [[ -n "$KITTY_INSTALLATION_DIR" ]]; then
-    export KITTY_SHELL_INTEGRATION="no-title"
-    autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
-    kitty-integration
-    unfunction kitty-integration
-    alias ssh="kitten ssh"
-fi
-
 if [[ -n "$KITTY_INSTALLATION_DIR" || -n "$_KITTY_IS_REMOTE" ]]; then
     autoload -Uz add-zsh-hook
     _kitty_uservar() { printf '\e]1337;SetUserVar=%s=%s\a' "$1" "$(printf '%s' "$2" | base64)" }
