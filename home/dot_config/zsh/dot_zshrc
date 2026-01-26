@@ -4,12 +4,19 @@ if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
   source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
 fi
 
+_ksi_dir=""
 if [[ -n "$KITTY_INSTALLATION_DIR" ]]; then
-    export KITTY_SHELL_INTEGRATION="no-title"
-    autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
+    _ksi_dir="$KITTY_INSTALLATION_DIR/shell-integration/zsh"
+elif [[ -n "$_KSI_REMOTE_DIR" ]]; then
+    _ksi_dir="$_KSI_REMOTE_DIR/zsh"
+fi
+if [[ -n "$_ksi_dir" && -d "$_ksi_dir" ]]; then
+    export KITTY_SHELL_INTEGRATION="${KITTY_SHELL_INTEGRATION:-no-title}"
+    autoload -Uz -- "$_ksi_dir"/kitty-integration
     kitty-integration
     unfunction kitty-integration
 fi
+unset _ksi_dir
 
 if [[ -n "$KITTY_INSTALLATION_DIR" || -n "$_KITTY_IS_REMOTE" ]]; then
     autoload -Uz add-zsh-hook
