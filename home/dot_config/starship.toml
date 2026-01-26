@@ -105,6 +105,7 @@ truncation_length = 2
 use_os_path_sep = false
 
 [hostname]
+disabled = true
 ssh_only = true
 format = "[$hostname]($style)"
 ssh_symbol = "󰥛"
