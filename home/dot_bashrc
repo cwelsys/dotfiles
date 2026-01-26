@@ -4,15 +4,15 @@ case $- in
 esac
 
 if [[ -f "$HOMEBREW_PREFIX/bin/brew" ]]; then
-	eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
+  eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
 fi
 
 shopt -s histappend
 shopt -s cdspell
 shopt -s lithist
-shopt -s lastpipe
+shopt -s lastpipe 2>/dev/null # bash 4.2+
 shopt -s nullglob
-shopt -s globstar
+shopt -s globstar 2>/dev/null # bash 4.0+
 shopt -s checkwinsize
 shopt -s extglob
 shopt -s cmdhist
@@ -23,7 +23,7 @@ for shell_config in "$XDG_CONFIG_HOME"/shell/*.sh; do
 done
 
 if [ -n "${GHOSTTY_RESOURCES_DIR}" ]; then
-    builtin source "${GHOSTTY_RESOURCES_DIR}/shell-integration/bash/ghostty.bash"
+  builtin source "${GHOSTTY_RESOURCES_DIR}/shell-integration/bash/ghostty.bash"
 fi
 
 HISTFILE="$XDG_STATE_HOME/bash/history"
@@ -34,88 +34,91 @@ HISTFILESIZE=10000
 HISTSIZE=$HISTFILESIZE
 
 if [ -f "$HOME/.bash_history" ] && [ ! -f "$HISTFILE" ]; then
-	mv "$HOME/.bash_history" "$HISTFILE"
+  mv "$HOME/.bash_history" "$HISTFILE"
 fi
 
-if [ ! -f "$XDG_DATA_HOME"/blesh/ble.sh ]; then
+if [[ ${BASH_VERSINFO[0]} -ge 4 ]]; then
+  if [ ! -f "$XDG_DATA_HOME"/blesh/ble.sh ]; then
     git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git
     make -C ble.sh install PREFIX=~/.local
     rm -rf ble.sh
+  fi
+
+  [[ -f "$XDG_DATA_HOME"/blesh/ble.sh ]] &&
+    source "$XDG_DATA_HOME"/blesh/ble.sh
 fi
 
-[[ -f "$XDG_DATA_HOME"/blesh/ble.sh ]] \
-    && source "$XDG_DATA_HOME"/blesh/ble.sh
-
-
 if ! shopt -oq posix; then
-	if [[ -s "$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh" ]]; then
-		. "$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh"
-	elif [[ -f /usr/local/share/bash-completion/bash_completion ]]; then
-		. /usr/local/share/bash-completion/bash_completion
-	elif [[ -f /usr/share/bash-completion/bash_completion ]]; then
-		. /usr/share/bash-completion/bash_completion
-	elif [[ -f /etc/bash_completion ]]; then
-		. /etc/bash_completion
-	fi
+  if [[ -s "$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh" ]]; then
+    . "$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh"
+  elif [[ -f /usr/local/share/bash-completion/bash_completion ]]; then
+    . /usr/local/share/bash-completion/bash_completion
+  elif [[ -f /usr/share/bash-completion/bash_completion ]]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [[ -f /etc/bash_completion ]]; then
+    . /etc/bash_completion
+  fi
 fi
 set +h
 
-bleopt input_encoding=UTF-8
-bleopt color_scheme=catppuccin_mocha
-bleopt complete_ambiguous=
-bleopt complete_menu_complete=
-bleopt complete_menu_filter=
-bleopt prompt_eol_mark=''
-bleopt exec_errexit_mark=
-bleopt exec_elapsed_mark=
-bleopt exec_exit_mark=
+if type bleopt &>/dev/null; then
+  bleopt input_encoding=UTF-8
+  bleopt color_scheme=catppuccin_mocha
+  bleopt complete_ambiguous=
+  bleopt complete_menu_complete=
+  bleopt complete_menu_filter=
+  bleopt prompt_eol_mark=''
+  bleopt exec_errexit_mark=
+  bleopt exec_elapsed_mark=
+  bleopt exec_exit_mark=
 
-if [ "$(uname -o)" = 'Msys' ]; then
-	bleopt complete_auto_complete=
-fi
+  if [ "$(uname -o 2>/dev/null)" = 'Msys' ]; then
+    bleopt complete_auto_complete=
+  fi
 
-ble-import -d integration/fzf-completion
-ble-import -d integration/fzf-key-bindings
+  ble-import -d integration/fzf-completion
+  ble-import -d integration/fzf-key-bindings
 
-ble-face argument_error=fg=#f38ba8
-ble-face cmdinfo_cd_cdpath=fg=#89b4fa,italic
-ble-face command_suffix=fg=231
-ble-face command_suffix_new=fg=124
-ble-face filename_block=fg=yellow,underline
-ble-face filename_character=fg=231,underline
-ble-face filename_directory_sticky=fg=#a6e3a1
-ble-face filename_pipe=fg=lime,underline
-ble-face filename_setgid=fg=#f9e2af,underline
-ble-face filename_setuid=fg=#fab387,underline
-ble-face filename_socket=fg=cyan,underline
-ble-face menu_filter_input=fg=#f9e2af
-ble-face overwrite_mode=fg=#89dceb
-ble-face prompt_status_line=fg=#9399b2
-ble-face region=underline
-ble-face region_insert=underline
-ble-face region_match=fg=#f9e2af
-ble-face region_target=fg=#cba6f7
-ble-face syntax_error=fg=#f38ba8
-ble-face varname_unset=fg=#f38ba8
-ble-face vbell_erase=underline
-
-if command -v atuin >/dev/null 2>&1; then
-	eval "$(atuin init bash)"
-fi
-
-if command -v navi >/dev/null 2>&1; then
-	eval "$(navi widget bash)"
-fi
-
-if command -v zoxide >/dev/null 2>&1; then
-	eval "$(zoxide init bash --cmd cd)"
+  ble-face argument_error=fg=#f38ba8
+  ble-face cmdinfo_cd_cdpath=fg=#89b4fa,italic
+  ble-face command_suffix=fg=231
+  ble-face command_suffix_new=fg=124
+  ble-face filename_block=fg=yellow,underline
+  ble-face filename_character=fg=231,underline
+  ble-face filename_directory_sticky=fg=#a6e3a1
+  ble-face filename_pipe=fg=lime,underline
+  ble-face filename_setgid=fg=#f9e2af,underline
+  ble-face filename_setuid=fg=#fab387,underline
+  ble-face filename_socket=fg=cyan,underline
+  ble-face menu_filter_input=fg=#f9e2af
+  ble-face overwrite_mode=fg=#89dceb
+  ble-face prompt_status_line=fg=#9399b2
+  ble-face region=underline
+  ble-face region_insert=underline
+  ble-face region_match=fg=#f9e2af
+  ble-face region_target=fg=#cba6f7
+  ble-face syntax_error=fg=#f38ba8
+  ble-face varname_unset=fg=#f38ba8
+  ble-face vbell_erase=underline
 fi
 
 if command -v starship >/dev/null 2>&1; then
-	eval "$(starship init bash)"
-	bleopt prompt_ps1_final='$(starship module character)'
-elif command -v oh-my-posh >/dev/null 2>&1; then
-	eval "$(oh-my-posh init bash --config "$HOME/.config/posh.toml")"
+  eval "$(starship init bash)"
+  type bleopt &>/dev/null && bleopt prompt_ps1_final='$(starship module character)'
+else
+  PS1='\w \$ '
+fi
+
+if command -v atuin >/dev/null 2>&1; then
+  eval "$(atuin init bash)"
+fi
+
+if command -v navi >/dev/null 2>&1; then
+  eval "$(navi widget bash)"
+fi
+
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init bash --cmd cd)"
 fi
 
 [[ $- == *i* ]] && bind -f ~/.config/bash/inputrc

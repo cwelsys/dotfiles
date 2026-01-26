@@ -111,6 +111,14 @@ elif [ -n "$GHOSTTY_RESOURCES_DIR" ] || command -v ghostty >/dev/null 2>&1; then
     alias fonts='ghostty +list-fonts'
 fi
 
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	command yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ "$cwd" != "$PWD" ] && [ -d "$cwd" ] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
+}
+
 alias adb='HOME="$XDG_DATA_HOME"/android adb'
 
 # if command -v wget >/dev/null 2>&1; then
