@@ -66,6 +66,16 @@ if os.getenv("SSH_TTY") then
       ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
     },
   }
+
+  -- web URL over SSH
+  local original_open = vim.ui.open
+  vim.ui.open = function(path, opts)
+    local browser = os.getenv("BROWSER")
+    if browser then
+      return vim.system({ browser, path }, { text = true, detach = true })
+    end
+    return original_open(path, opts)
+  end
 end
 
 vim.opt.mousescroll = "ver:3,hor:1"

@@ -44,6 +44,10 @@ elif [[ -n "$SSH_CONNECTION" ]]; then
     add-zsh-hook precmd _ssh_precmd
 fi
 
+if [[ -n "$SSH_TTY" && -n "$KITTY_WINDOW_ID" ]]; then
+    export BROWSER="local-open"
+fi
+
 HISTFILE="${XDG_STATE_HOME}/zsh/history"
 HISTSIZE=290000
 SAVEHIST=$HISTSIZE
