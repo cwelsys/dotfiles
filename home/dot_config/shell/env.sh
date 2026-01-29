@@ -1,7 +1,8 @@
 #!/bin/sh
 
 export EDITOR="nvim"
-export VISUAL="code --wait"
+export VISUAL=$EDITOR
+# export VISUAL="code --wait"
 export SUDO_EDITOR=$EDITOR
 export SYSTEMD_EDITOR=$EDITOR
 export MANPAGER="$EDITOR +Man!"

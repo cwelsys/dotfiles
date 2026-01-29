@@ -103,7 +103,6 @@ pkgs:
         - wireless-regdb
         - xdg-ninja
         - xmlstarlet
-        - yazi
         - zoxide
         - zram-generator
         - zsh
@@ -141,6 +140,14 @@ pkgs:
         - nvidia-open
         - unrar
         - nfs-utils
+        - beets
+        - gopls
+        - mpc
+        - mpd
+        - python-mutagen
+        - yazi-nightly-bin
+        - zig
+        - zmx-git
 
     mba:
       brews:
