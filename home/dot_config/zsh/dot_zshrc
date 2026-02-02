@@ -179,9 +179,8 @@ zinit wait lucid light-mode for \
   laggardkernel/zsh-thefuck \
   paulirish/git-open \
   Freed-Wu/fzf-tab-source \
-  atinit'zicompinit; zicdreplay' \
-  atload'eval "$(zmx completions zsh)"; eval "$(kmux completion zsh)"' \
-    zdharma-continuum/fast-syntax-highlighting
+  atinit'zicompinit; zicdreplay; eval "$(zmx completions zsh)"' \
+    zdharma-continuum/fast-syntax-highlighting \
 
 [[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/shell/ctpgum.sh" ]] && source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/ctpgum.sh" mocha blue
 
