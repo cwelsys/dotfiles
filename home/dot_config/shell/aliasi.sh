@@ -341,8 +341,11 @@ if command -v yay >/dev/null 2>&1; then
     alias orphans='yay -Qtdq | grep -v "\-debug$"'
     alias orphans-all='yay -Qtdq'
     alias in='yay -Slq | awk "NR==FNR{inst[\$1]=1;next} {if(\$1 in inst) print \$0\" \033[1;32m[installed]\033[0m\"; else print}" <(yay -Qq) - | fzf --multi --ansi -0 --tiebreak=index --preview="yay --color=always -Si {1}" --preview-window "bottom,noinfo" | awk "{print \$1}" | xargs --no-run-if-empty --open-tty yay -S --cleanafter'
-    alias re='yay -Qq | fzf --multi --ansi --preview="yay --color=always -Qi {1}" --preview-window "bottom,noinfo" | xargs --no-run-if-empty --open-tty yay -Rns'
-
+    alias unin='yay -Qq | fzf --multi --ansi --preview="yay --color=always -Qi {1}" --preview-window "bottom,noinfo" | xargs --no-run-if-empty --open-tty yay -Rns'
+    dorebuild() {
+        local pkgs=$(checkrebuild | awk '$2 !~ /-bin$/ {print $2}')
+        [[ -n "$pkgs" ]] && yay -S --rebuild --noconfirm $pkgs || echo "Nothing to rebuild"
+    }
     function remove {
         if [ -z "$1" ]; then
             echo "Usage: remove <package>        - Remove package"
