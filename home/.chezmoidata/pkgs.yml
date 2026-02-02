@@ -1,5 +1,33 @@
 pkgs:
   hosts:
+    bmac:
+      brews:
+        - atuin
+        - bat
+        - chezmoi
+        - direnv
+        - eza
+        - fastfetch
+        - fd
+        - ffmpeg
+        - fzf
+        - imagemagick
+        - jq
+        - neovim
+        - poppler
+        - resvg
+        - ripgrep
+        - sevenzip
+        - starship
+        - yazi
+        - zoxide
+        - coreutils
+        - git-delta
+        - lazygit
+      casks:
+        - bluebubbles
+        - font-symbols-only-nerd-font
+
     pbox:
       pacman:
         - 1password-cli
