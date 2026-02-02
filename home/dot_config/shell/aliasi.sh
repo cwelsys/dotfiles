@@ -27,8 +27,12 @@ if command -v nvim >/dev/null 2>&1; then
     alias vim='nvim'
 fi
 
-if command -v lazydocker >/dev/null 2>&1; then
-    alias ld='lazydocker'
+# if command -v lazydocker >/dev/null 2>&1; then
+#     alias ld='lazydocker'
+# fi
+
+if command -v ducker >/dev/null 2>&1; then
+    alias ld='ducker'
 fi
 
 if command -v lazygit >/dev/null 2>&1; then

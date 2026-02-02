@@ -79,9 +79,10 @@
     "typescript-lsp@claude-plugins-official": true,
     "astral@astral-sh": true,
     "planning-with-files@planning-with-files": true,
-    "code-simplifier@claude-plugins-official": true
+    "code-simplifier@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true
   },
+  "promptSuggestionEnabled": false,
   "theme": "dark",
-  "preferredNotifChannel": "notifications_disabled",
-  "promptSuggestionEnabled": false
+  "preferredNotifChannel": "notifications_disabled"
 }
