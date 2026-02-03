@@ -1,7 +1,7 @@
 "$schema" = "https://starship.rs/config-schema.json"
 
 add_newline = false
-# command_timeout = 100
+command_timeout = 500
 continuation_prompt = "[❯❯ ](subtext0)"
 palette = "mocha"
 follow_symlinks = false

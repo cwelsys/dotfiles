@@ -107,4 +107,10 @@ filenames:
   ".Trash": { icon: { glyph: "" } }
   Library: { icon: { glyph: "" } }   
   Public: { icon: { glyph: "󱥾" } }
-  Applications: { icon: { glyph: "󰀻" } } 
+  Applications: { icon: { glyph: "󰀻" } }
+  "README.md":
+    filename:
+      foreground: "#F9E2AF"
+      background: null
+    icon:
+      glyph: "󰂺"
