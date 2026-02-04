@@ -135,9 +135,12 @@ zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin"
   '
 zinit light atuinsh/atuin
 
-zinit ice as"program" mv"httpstat.sh -> httpstat" \
-  pick"httpstat" atpull'!git reset --hard'
-zinit light b4b4r07/httpstat
+# zinit ice as"program" mv"httpstat.sh -> httpstat" \
+#   pick"httpstat" atpull'!git reset --hard'
+# zinit light b4b4r07/httpstat
+
+zinit ice as"program" cp"httpstat.sh -> httpstat" pick"httpstat"
+zinit load "b4b4r07/httpstat"
 
 omzLib git.zsh
 omzLib functions.zsh
