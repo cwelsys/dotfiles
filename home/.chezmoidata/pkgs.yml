@@ -176,6 +176,7 @@ pkgs:
         - yazi-nightly-bin
         - zig
         - zmx-git
+        - rust-analyzer-git
 
     mba:
       brews:
