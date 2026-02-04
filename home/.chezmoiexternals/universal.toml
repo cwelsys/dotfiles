@@ -2,10 +2,6 @@
 type = "file"
 url = "https://raw.githubusercontent.com/catppuccin/bat/refs/heads/main/themes/Catppuccin%20Mocha.tmTheme"
 
-[".config/delta/catppuccin.gitconfig"]
-type = "file"
-url = "https://raw.githubusercontent.com/catppuccin/delta/refs/heads/main/catppuccin.gitconfig"
-
 [".config/glow/catppuccin-mocha.json"]
 type = "file"
 url = "https://raw.githubusercontent.com/catppuccin/glamour/refs/heads/main/themes/catppuccin-mocha.json"

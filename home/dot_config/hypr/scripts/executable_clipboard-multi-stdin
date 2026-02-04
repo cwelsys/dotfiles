@@ -1,0 +1,7 @@
+#!/bin/bash
+# Wrapper for clipboard-multi that reads image from stdin
+# Used as satty's copy-command
+
+TMPFILE="/tmp/clipboard-screenshot-$$.png"
+cat > "$TMPFILE"
+/home/cwel/.local/bin/clipboard-multi "$TMPFILE"

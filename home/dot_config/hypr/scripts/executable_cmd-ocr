@@ -1,0 +1,15 @@
+#!/bin/bash
+
+sleep .2  # let launcher close
+
+# Use slurp directly (no wayfreeze = instant capture on release)
+SELECTION=$(slurp -b '#00000066' -c '#ffffffcc' -w 2 2>/dev/null)
+
+[ -z "$SELECTION" ] && exit 0
+
+TEXT=$(grim -g "$SELECTION" - | tesseract - - 2>/dev/null)
+
+[ -z "$TEXT" ] && exit 0
+
+echo -n "$TEXT" | wl-copy
+notify-send "OCR" "Text copied to clipboard"

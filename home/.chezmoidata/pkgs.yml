@@ -406,7 +406,6 @@ pkgs:
         - bun-bin
         - clang
         - cmake
-        - cockpit-docker
         - cowsay
         - cups
         - cups-browsed
@@ -580,7 +579,6 @@ pkgs:
         - waydroid-helper
         - whois
         - xdg-ninja
-        - yazi
         - zsh
         - dmidecode
         - doggo
@@ -661,14 +659,10 @@ pkgs:
         - wf-recorder
         - dualsensectl
         - evtest
-        - linux-zen
-        - linux-zen-headers
         - papirus-icon-theme
         - tk
         - tmux
         - visual-studio-code-bin
-        - flatpak
-        - flatseal
         - waydroidsu
         - bindfs
         - bluebubbles-bin
@@ -719,6 +713,19 @@ pkgs:
         - otf-apple-sf-pro
         - rmpc-git
         - ttf-cascadia-code-nerd
+        - ducker
+        - i2c-tools
+        - keymapper
+        - lib32-glu
+        - lib32-libxi
+        - rebuild-detector
+        - rust-analyzer-git
+        - tesseract
+        - xremap-hypr-bin
+        - yazi-nightly-bin
+        - zig
+        - linux-zen
+        - linux-zen-headers
 
     wini:
       scoop:

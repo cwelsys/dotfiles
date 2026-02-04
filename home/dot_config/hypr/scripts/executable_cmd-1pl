@@ -1,67 +1,40 @@
 #!/bin/bash
 
 LOCKFILE="/tmp/1password-auto-unlock.lock"
-if [ -f "$LOCKFILE" ]; then
-  echo "Script already running, exiting"
-  exit 0
-fi
+[ -f "$LOCKFILE" ] && exit 0
 touch "$LOCKFILE"
 trap "rm -f $LOCKFILE" EXIT
 
+# Wait for 1Password
 MAX_WAIT=30
 WAITED=0
 while ! pgrep -x "1password" >/dev/null 2>&1; do
-  if [ $WAITED -ge $MAX_WAIT ]; then
-    echo "ERROR: 1Password not running after ${MAX_WAIT}s"
-    exit 1
-  fi
+  [ $WAITED -ge $MAX_WAIT ] && exit 1
   sleep 1
   WAITED=$((WAITED + 1))
 done
-echo "1Password detected (waited ${WAITED}s)"
 
+# Get password from keyring
 PASSWORD=$(secret-tool lookup application 1password username master)
+[ -z "$PASSWORD" ] && exit 1
 
-if [ -z "$PASSWORD" ]; then
-  echo "No password found in keyring"
-  exit 1
-fi
-
+# Launch 1Password and wait for lock screen
 1password >/dev/null 2>&1 &
-
-for i in {1..10}; do
-  if hyprctl clients -j | jq -e '.[] | select(.title | contains("Lock Screen")) | select(.class == "1password")' >/dev/null 2>&1; then
-    break
-  fi
+for i in {1..20}; do
+  WINDOW_ADDR=$(hyprctl clients -j | jq -r '.[] | select(.title | contains("Lock Screen")) | select(.class == "1password") | .address' | head -1)
+  [ -n "$WINDOW_ADDR" ] && break
   sleep 0.5
 done
+[ -z "$WINDOW_ADDR" ] && exit 1
 
-WINDOW_ADDR=$(hyprctl clients -j | jq -r '.[] | select(.title | contains("Lock Screen")) | select(.class == "1password") | .address' | head -1)
-
-if [ -z "$WINDOW_ADDR" ]; then
-  echo "ERROR: Could not find 1Password lock screen"
-  exit 1
-fi
-
-CURRENT_WS=$(hyprctl activeworkspace -j | jq -r '.id')
-
-hyprctl dispatch movetoworkspacesilent 99,"address:$WINDOW_ADDR" >/dev/null 2>&1
-sleep 0.2
-
-hyprctl dispatch workspace 99 >/dev/null 2>&1
+# Focus and type - no workspace switch
+hyprctl dispatch focuswindow "address:$WINDOW_ADDR"
 sleep 0.3
+wtype -d 50 "$PASSWORD"
+wtype -k Return
 
-hyprctl dispatch focuswindow "address:$WINDOW_ADDR" >/dev/null 2>&1
-sleep 0.3
-
-ydotool type "$PASSWORD"
-sleep 0.2
-ydotool key 28:1 28:0 # Enter
-
+# Close window after unlock
 sleep 1
-
-hyprctl dispatch closewindow "address:$WINDOW_ADDR" >/dev/null 2>&1
-
-hyprctl dispatch workspace "$CURRENT_WS" >/dev/null 2>&1
+hyprctl dispatch closewindow "address:$WINDOW_ADDR" 2>/dev/null
 
 echo "1Password unlocked"

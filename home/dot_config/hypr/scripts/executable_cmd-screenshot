@@ -1,0 +1,23 @@
+#!/bin/bash
+
+[[ -f ~/.config/user-dirs.dirs ]] && source ~/.config/user-dirs.dirs
+OUTPUT_DIR="${XDG_PICTURES_DIR:-$HOME/Pictures}/screenshot"
+mkdir -p "$OUTPUT_DIR"
+
+TIMESTAMP=$(date +'%Y%m%d-%H%M%S')
+SCREENSHOT_PATH="$OUTPUT_DIR/$TIMESTAMP.png"
+SCRIPT_DIR="$(dirname "$0")"
+
+# Capture using dms screenshot (nice region selection)
+dms screenshot --stdout --no-clipboard --no-notify > "$SCREENSHOT_PATH"
+
+# Check if capture succeeded (file has content)
+[ ! -s "$SCREENSHOT_PATH" ] && rm -f "$SCREENSHOT_PATH" && exit 0
+
+# Copy to clipboard with both image + path
+/home/cwel/.local/bin/clipboard-multi "$SCREENSHOT_PATH"
+
+# Open satty for annotation (uses clipboard-multi for copy)
+satty --filename "$SCREENSHOT_PATH" \
+    --output-filename "$SCREENSHOT_PATH" \
+    --copy-command "$SCRIPT_DIR/clipboard-multi-stdin"
