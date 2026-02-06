@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Exit early if we don't have the tte show
+if ! command -v tte &>/dev/null; then
+  exit 1
+fi
+
+# Exit early if screensave is already running
+pgrep -f "tte.screenie" && exit 0
+
+if [ -n "$NIRI_SOCKET" ]; then
+  focused=$(niri msg -j focused-output | jq -r '.name')
+  monitors=$(niri msg -j outputs | jq -r '.[].name')
+  focus_monitor() { niri msg action focus-monitor "$1"; }
+  spawn() { niri msg action spawn -- "$@"; }
+elif [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
+  focused=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')
+  monitors=$(hyprctl monitors -j | jq -r '.[].name')
+  focus_monitor() { hyprctl dispatch focusmonitor "$1"; }
+  spawn() { hyprctl dispatch exec -- "$@"; }
+else
+  exit 1
+fi
+
+terminal=$(xdg-terminal-exec --print-id)
+
+for m in $monitors; do
+  focus_monitor "$m"
+
+  case $terminal in
+  *Alacritty*)
+    spawn alacritty --class=tte.screenie \
+      --config-file ~/.config/alacritty/screensaver.toml \
+      -e screensaver
+    ;;
+  *ghostty*)
+    spawn ghostty --class=tte.screenie \
+      --font-size=18 \
+      -e screensaver
+    ;;
+  *kitty*)
+    spawn kitty --class=tte.screenie \
+      --override font_size=18 \
+      --override window_padding_width=0 \
+      --override tab_bar_style=hidden \
+      -e screensaver
+    ;;
+  *)
+    notify-send "Screensaver only runs in Alacritty, Ghostty, or Kitty"
+    ;;
+  esac
+done
+
+focus_monitor "$focused"

@@ -22,6 +22,16 @@ if [[ -n "$SSH_CONNECTION" ]]; then
             [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]] && break
         done
     fi
+
+    if command -v niri &>/dev/null && [[ -z "$NIRI_SOCKET" ]]; then
+        for pid in $(pgrep -P $(pgrep -xu "$USER" niri) 2>/dev/null); do
+            [[ -f "/proc/$pid/environ" ]] || continue
+            while IFS='=' read -r -d '' k v; do
+                [[ "$k" =~ ^(NIRI_SOCKET|WAYLAND_DISPLAY|DISPLAY)$ ]] && export "$k=$v"
+            done < "/proc/$pid/environ"
+            [[ -n "$NIRI_SOCKET" ]] && break
+        done
+    fi
 fi
 
 if [[ -n $SSH_KITTEN_KITTY_DIR && -d ~/.terminfo ]]; then

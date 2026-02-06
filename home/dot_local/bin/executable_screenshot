@@ -20,4 +20,4 @@ dms screenshot --stdout --no-clipboard --no-notify > "$SCREENSHOT_PATH"
 # Open satty for annotation (uses clipboard-multi for copy)
 satty --filename "$SCREENSHOT_PATH" \
     --output-filename "$SCREENSHOT_PATH" \
-    --copy-command "$SCRIPT_DIR/clipboard-multi-stdin"
+    --copy-command "$SCRIPT_DIR/clipboard-stdin"

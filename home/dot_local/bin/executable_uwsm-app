@@ -1,0 +1,17 @@
+#!/bin/sh
+# Shim: delegates to real uwsm-app if daemon is running, otherwise execs directly
+
+if [ -p "${XDG_RUNTIME_DIR}/uwsm-app-daemon-in" ]; then
+  exec /usr/bin/uwsm-app "$@"
+fi
+
+# Strip uwsm-app flags, pass through to exec
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --) shift; break ;;
+    -*) shift ;;
+    *) break ;;
+  esac
+done
+
+exec "$@"

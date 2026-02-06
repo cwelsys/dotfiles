@@ -1,3 +1,7 @@
+{{- $mod := "cmd" -}}
+{{- if ne .chezmoi.os "darwin" -}}
+{{- $mod = "alt" -}}
+{{- end }}
 ## https://sw.kovidgoyal.net/kitty/conf/
 
 # colors
@@ -8,7 +12,7 @@ active_tab_background #89b4fa
 selection_foreground none
 selection_background #28344a
 
-# window 
+# window
 window_padding_width 6
 placement_strategy center
 background_opacity 0.8
@@ -34,10 +38,6 @@ bold_font           auto
 italic_font         auto
 bold_italic_font    auto
 symbol_map U+e000-U+e00a,U+ea60-U+ebeb,U+e0a0-U+e0c8,U+e0ca,U+e0cc-U+e0d7,U+e200-U+e2a9,U+e300-U+e3e3,U+e5fa-U+e6b1,U+e700-U+e7c5,U+ed00-U+efc1,U+f000-U+f2ff,U+f000-U+f2e0,U+f300-U+f372,U+f400-U+f533,U+f0001-U+f1af0 Symbols Nerd Font Mono
-# adjust_line_height  110%
-# modify_font underline_position 3
-# undercurl_style thick-sparse
-# text_composition_strategy legacy
 
 # cursor
 cursor_trail 3
@@ -62,8 +62,6 @@ input_delay 2
 detect_urls yes
 editor nvim
 scrollback_lines 10000
-# enable_audio_bell no
-# window_alert_on_bell no
 strip_trailing_spaces smart
 open_url_with default
 url_style curly
@@ -74,12 +72,6 @@ select_by_word_characters @-./_~?&=%+#,|`:"'(){}[]<>
 clear_all_shortcuts yes
 macos_option_as_alt yes
 
-# darwin
-map cmd+q quit
-map cmd+m minimize_macos_window
-map cmd+h no_op
-map cmd+k no_op
-
 # aliases
 action_alias klonopin kitten klonopin.py
 action_alias kmux_split launch --type=background --cwd=current --copy-env kmux split
@@ -88,43 +80,54 @@ action_alias resize kitten relative_resize.py
 action_alias smart_paste kitten smart_paste.py
 
 # leaders
-kitty_mod cmd+shift
+kitty_mod {{ $mod }}+shift
 map --new-mode leader --on-unknown end --on-action end ctrl+space
 map --mode leader esc pop_keyboard_mode
 
 # ansi
 map alt+backspace send_text all \x17
+{{ if eq .chezmoi.os "darwin" -}}
 map super+backspace send_text all \x15
 map super+left send_text all \x01
 map super+right send_text all \x05
+{{ end -}}
 map shift+enter send_text all \x1b[13;2u
 map shift+space send_text all \x1b[32;2u
-map cmd+s send_text all \x13
+map {{ $mod }}+s send_text all \x13
+
+{{ if eq .chezmoi.os "darwin" -}}
+# darwin
+map cmd+q quit
+map cmd+m minimize_macos_window
+map cmd+h no_op
+map cmd+k no_op
+{{ end -}}
 
 # cmd
 map --mode leader shift+; kitty_shell overlay
 
-
 # copy/paste
-map cmd+c copy_or_noop
-map cmd+v paste_from_clipboard
-map cmd+shift+v smart_paste
+map {{ $mod }}+c copy_or_noop
+map {{ $mod }}+v paste_from_clipboard
+map kitty_mod+v smart_paste
 map ctrl+v paste_from_clipboard
 
 # reload cfg
 map kitty_mod+r load_config_file
 
 # search buffer
-map super+f launch --type=overlay --stdin-source=@screen_scrollback fzf --no-sort --no-mouse --exact -i --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8,fg:#cdd6f4,header:#f38ba8,info:#94e2d5,pointer:#f5e0dc,marker:#f5e0dc,fg+:#cdd6f4,prompt:#94e2d5,hl+:#f38ba8,border:#585b70
+map {{ $mod }}+f launch --type=overlay --stdin-source=@screen_scrollback fzf --no-sort --no-mouse --exact -i --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8,fg:#cdd6f4,header:#f38ba8,info:#94e2d5,pointer:#f5e0dc,marker:#f5e0dc,fg+:#cdd6f4,prompt:#94e2d5,hl+:#f38ba8,border:#585b70
 
 # show keys/docs
 map kitty_mod+/ kitten keymap.py
+{{ if eq .chezmoi.os "darwin" -}}
 map shift+alt+cmd+/ open_url https://sw.kovidgoyal.net/kitty/
+{{ end -}}
 
 # font size
-map cmd+equal change_font_size all +0.5
-map cmd+minus change_font_size all -0.5
-map cmd+0 change_font_size all 0
+map {{ $mod }}+equal change_font_size all +0.5
+map {{ $mod }}+minus change_font_size all -0.5
+map {{ $mod }}+0 change_font_size all 0
 
 # pin tabs
 map --mode leader shift+p klonopin pin
@@ -148,22 +151,34 @@ map --mode leader d kmux_bg detach
 map --mode leader p launch --type=overlay --copy-env kmux
 
 # close/create tabs
-map cmd+w klonopin close-tab
+map {{ $mod }}+w klonopin close-tab
 map ctrl+w klonopin close-tab
-map cmd+t klonopin new-tab
-map cmd+shift+t klonopin new-tab --local
+map {{ $mod }}+t klonopin new-tab
+map kitty_mod+t klonopin new-tab --local
 map --mode leader q klonopin close-window
 map --mode leader x klonopin close-window
 
 # rearrange / navigate tabs
+{{ if eq .chezmoi.os "darwin" -}}
 map cmd+, no_op
-map cmd+shift+, klonopin move-left
-map cmd+shift+. klonopin move-right
+{{ end -}}
+map kitty_mod+, klonopin move-left
+map kitty_mod+. klonopin move-right
 map kitty_mod+l next_tab
 map kitty_mod+h previous_tab
-map cmd+. next_tab
-map cmd+, previous_tab
+map {{ $mod }}+. next_tab
+map {{ $mod }}+, previous_tab
 
+# goto tab
+map {{ $mod }}+1 goto_tab 1
+map {{ $mod }}+2 goto_tab 2
+map {{ $mod }}+3 goto_tab 3
+map {{ $mod }}+4 goto_tab 4
+map {{ $mod }}+5 goto_tab 5
+map {{ $mod }}+6 goto_tab 6
+map {{ $mod }}+7 goto_tab 7
+map {{ $mod }}+8 goto_tab 8
+map {{ $mod }}+9 goto_tab 9
 map --mode leader 1 goto_tab 1
 map --mode leader 2 goto_tab 2
 map --mode leader 3 goto_tab 3
@@ -181,8 +196,8 @@ map kitty_mod+\ kmux_split v
 map kitty_mod+minus kmux_split h
 map --mode leader - kmux_split h
 
-# move panes 
-map --mode leader shift+h move_window left 
+# move panes
+map --mode leader shift+h move_window left
 map --mode leader shift+j move_window down
 map --mode leader shift+k move_window up
 map --mode leader shift+l move_window right

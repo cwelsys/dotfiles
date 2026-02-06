@@ -506,7 +506,6 @@ pkgs:
         - swaylock
         - swayosd
         - syncthing
-        - syncthingtray
         - system-config-printer
         - tree-sitter-cli
         - ttf-cascadia-mono-nerd
@@ -595,7 +594,6 @@ pkgs:
         - lxc
         - mesa-utils
         - nftables
-        - nwg-look
         - python-gbinder
         - waydroid-launcher-git
         - glow
@@ -719,7 +717,6 @@ pkgs:
         - keymapper
         - lib32-glu
         - lib32-libxi
-        - rebuild-detector
         - rust-analyzer-git
         - tesseract
         - xremap-hypr-bin
@@ -727,6 +724,17 @@ pkgs:
         - zig
         - linux-zen
         - linux-zen-headers
+        - jackify-bin
+        - mangohud
+        - paru
+        - adw-gtk-theme
+        - niri
+        - qt6ct-kde
+        - xdg-desktop-portal-gnome
+        - xwayland-satellite
+        - syncthingtray-qt6
+        - ttf-dejavu
+        - ttf-jetbrains-mono
 
     wini:
       scoop:
