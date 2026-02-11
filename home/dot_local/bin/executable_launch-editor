@@ -1,8 +1,14 @@
 #!/bin/bash
 
+KITTY_SOCKET=$(find /tmp -maxdepth 1 -name 'mykitty-*' -type s 2>/dev/null | head -1)
+
 case "${EDITOR:-nvim}" in
 nvim | vim | nano | micro | hx | helix)
-  exec setsid uwsm-app -- "$TERMINAL" -e "$EDITOR" "$@"
+  if [[ -n "$KITTY_SOCKET" ]] && kitty @ --to "unix:$KITTY_SOCKET" ls &>/dev/null; then
+    exec kitty @ --to "unix:$KITTY_SOCKET" launch --type=tab "$EDITOR" "$@"
+  else
+    exec setsid uwsm-app -- "$TERMINAL" -e "$EDITOR" "$@"
+  fi
   ;;
 *)
   exec setsid uwsm-app -- "$EDITOR" "$@"

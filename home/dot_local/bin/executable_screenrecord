@@ -66,53 +66,71 @@ start_webcam_overlay() {
 
 start_screenrecording() {
   local filename="$OUTPUT_DIR/screenrecording-$(date +'%Y-%m-%d_%H-%M-%S').mp4"
-  local audio_devices=""
   local audio_args=""
+  local region=""
 
-  [[ "$DESKTOP_AUDIO" == "true" ]] && audio_devices+="default_output"
+  # Select region with slurp
+  region=$(slurp 2>/dev/null) || return 1
+
+  [[ "$DESKTOP_AUDIO" == "true" ]] && audio_args+=" -a"
 
   if [[ "$MICROPHONE_AUDIO" == "true" ]]; then
-    # Merge audio tracks into one - separate tracks only play one at a time in most players
-    [[ -n "$audio_devices" ]] && audio_devices+="|"
-    audio_devices+="default_input"
+    local mic=$(pactl get-default-source 2>/dev/null)
+    [[ -n "$mic" ]] && audio_args+=" --audio-device=$mic"
   fi
 
-  [[ -n "$audio_devices" ]] && audio_args+="-a $audio_devices"
+  wf-recorder -g "$region" -r 60 -f "$filename" $audio_args &
+  local rec_pid=$!
 
-  gpu-screen-recorder -w portal -f 60 -fallback-cpu-encoding yes -o "$filename" $audio_args -ac aac &
-  toggle_screenrecording_indicator
+  # Wait briefly to confirm wf-recorder started
+  sleep 0.3
+  if ! kill -0 "$rec_pid" 2>/dev/null; then
+    notify-send "Screen recording failed to start" -u critical -t 3000
+    return 1
+  fi
+
+  notify-send "Screen recording started" "Press Mod+Shift+Ctrl+S to stop" -t 3000
+  dms ipc call inhibit enable 2>/dev/null
+  dms ipc call inhibit reason "Screen recording" 2>/dev/null
 }
 
 stop_screenrecording() {
-  pkill -SIGINT -f "^gpu-screen-recorder"  # SIGINT required to save video properly
+  pkill -SIGINT -x wf-recorder
 
-  # Wait a maximum of 5 seconds to finish before hard killing
   local count=0
-  while pgrep -f "^gpu-screen-recorder" >/dev/null && [ $count -lt 50 ]; do
+  while pgrep -x wf-recorder >/dev/null && [ $count -lt 50 ]; do
     sleep 0.1
     count=$((count + 1))
   done
 
-  if pgrep -f "^gpu-screen-recorder" >/dev/null; then
-    pkill -9 -f "^gpu-screen-recorder"
+  dms ipc call inhibit disable 2>/dev/null
+
+  if pgrep -x wf-recorder >/dev/null; then
+    pkill -9 -x wf-recorder
     cleanup_webcam
     notify-send "Screen recording error" "Recording process had to be force-killed. Video may be corrupted." -u critical -t 5000
   else
     cleanup_webcam
-    notify-send "Screen recording saved to $OUTPUT_DIR" -t 2000
+    local latest
+    latest=$(ls -t "$OUTPUT_DIR"/screenrecording-*.mp4 2>/dev/null | head -1)
+    if [[ -n "$latest" ]]; then
+      notify-send "Screen recording saved" "$latest" -t 4000
+    else
+      notify-send "Screen recording saved to $OUTPUT_DIR" -t 3000
+    fi
   fi
-  toggle_screenrecording_indicator
 }
 
 screenrecording_active() {
-  pgrep -f "^gpu-screen-recorder" >/dev/null || pgrep -f "WebcamOverlay" >/dev/null
+  pgrep -x wf-recorder >/dev/null || pgrep -f "WebcamOverlay" >/dev/null
 }
 
 if screenrecording_active; then
-  if pgrep -f "WebcamOverlay" >/dev/null && ! pgrep -f "^gpu-screen-recorder" >/dev/null; then
-    cleanup_webcam
-  else
+  if pgrep -x wf-recorder >/dev/null; then
     stop_screenrecording
+  else
+    # Only webcam overlay running, clean it up
+    cleanup_webcam
   fi
 elif [[ "$STOP_RECORDING" == "false" ]]; then
   [[ "$WEBCAM" == "true" ]] && start_webcam_overlay

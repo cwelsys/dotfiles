@@ -126,14 +126,9 @@ zinit light-mode for \
   zdharma-continuum/zinit-annex-patch-dl \
   zdharma-continuum/zinit-annex-rust
 
-zinit ice as"command" from"gh-r" bpick"atuin-*.tar.gz" mv"atuin*/atuin -> atuin" \
-  atclone"./atuin init zsh > init.zsh; ./atuin gen-completions --shell zsh > _atuin" \
-  atpull"%atclone" src"init.zsh" \
-  atload'
-    bindkey "^E" _atuin_search_widget
-    export ATUIN_NOBIND="true"
-  '
-zinit light atuinsh/atuin
+export ATUIN_NOBIND="true"
+eval "$(atuin init zsh)"
+bindkey "^E" _atuin_search_widget
 
 # zinit ice as"program" mv"httpstat.sh -> httpstat" \
 #   pick"httpstat" atpull'!git reset --hard'

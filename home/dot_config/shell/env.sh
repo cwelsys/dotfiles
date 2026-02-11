@@ -25,6 +25,7 @@ export GOPATH="$XDG_DATA_HOME/go"
 export GOBIN="$XDG_DATA_HOME/go/bin"
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
+export ASDF_DATA_DIR="$XDG_DATA_HOME"/asdf
 export DOTNET_CLI_HOME="$XDG_DATA_HOME/dotnet"
 export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
 export NPM_CONFIG_PREFIX="$XDG_DATA_HOME/npm"

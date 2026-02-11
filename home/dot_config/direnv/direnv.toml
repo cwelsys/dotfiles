@@ -1,0 +1,7 @@
+[global]
+hide_env_diff = true
+load_dotenv = true
+log_filter = "^$"
+
+[whitelist]
+prefix = ["~/src/sf"]

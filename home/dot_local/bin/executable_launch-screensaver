@@ -12,7 +12,7 @@ if [ -n "$NIRI_SOCKET" ]; then
   focused=$(niri msg -j focused-output | jq -r '.name')
   monitors=$(niri msg -j outputs | jq -r '.[].name')
   focus_monitor() { niri msg action focus-monitor "$1"; }
-  spawn() { niri msg action spawn -- "$@"; }
+  spawn() { setsid "$@" &>/dev/null & }
 elif [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
   focused=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')
   monitors=$(hyprctl monitors -j | jq -r '.[].name')
@@ -40,9 +40,12 @@ for m in $monitors; do
     ;;
   *kitty*)
     spawn kitty --class=tte.screenie \
+      --config NONE \
       --override font_size=18 \
       --override window_padding_width=0 \
       --override tab_bar_style=hidden \
+      --override background=#000000 \
+      --override confirm_os_window_close=0 \
       -e screensaver
     ;;
   *)
