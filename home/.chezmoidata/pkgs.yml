@@ -601,7 +601,6 @@ pkgs:
         - mkinitcpio-firmware
         - nushell
         - otf-font-awesome
-        - plymouth-theme-catppuccin-mocha-git
         - terminus-font
         - ttf-0xproto-nerd
         - xan
@@ -627,7 +626,6 @@ pkgs:
         - benchmark
         - game-devices-udev
         - gamemode
-        - gamescope-git
         - glm
         - gptfdisk
         - greetd-dms-greeter-git
@@ -639,7 +637,6 @@ pkgs:
         - mtools
         - networkmanager
         - pnpm
-        - protonup-qt
         - qbittorrent
         - qt5-quickcontrols2
         - sbctl
@@ -653,7 +650,6 @@ pkgs:
         - kooha
         - mate-polkit
         - matugen
-        - plymouth-theme-arch-logo-symbol
         - swappy
         - wf-recorder
         - dualsensectl
@@ -726,7 +722,6 @@ pkgs:
         - linux-zen-headers
         - jackify-bin
         - mangohud
-        - paru
         - adw-gtk-theme
         - niri
         - qt6ct-kde
@@ -735,6 +730,29 @@ pkgs:
         - syncthingtray-qt6
         - ttf-dejavu
         - ttf-jetbrains-mono
+        - asdf-vm
+        - atuin
+        - gdb
+        - git-lfs
+        - steamtinkerlaunch-git
+        - sway
+        - unrar
+        - wayland-utils
+        - wev
+        - rusty-path-of-building
+        - awakened-poe-trade-bin
+        - xcompmgr
+        - xorg-xdpyinfo
+        - yarn
+        - beeper-v4-bin
+        - mpdris2-rs
+        - prek-bin
+        - ananicy-cpp
+        - cachyos-ananicy-rules
+        - cups-pk-helper
+        - lib32-mangohud
+        - mangojuice
+        - openrgb-bin
 
     wini:
       scoop:

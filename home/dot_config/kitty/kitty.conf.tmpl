@@ -75,6 +75,7 @@ macos_option_as_alt yes
 # aliases
 action_alias klonopin kitten klonopin.py
 action_alias kmux_split launch --type=background --cwd=current --copy-env kmux split
+action_alias kmux_lsplit launch --type=background --copy-env kmux split --cwd ~
 action_alias kmux_bg launch --type=background --copy-env kmux
 action_alias resize kitten relative_resize.py
 action_alias smart_paste kitten smart_paste.py
@@ -107,10 +108,11 @@ map cmd+k no_op
 map --mode leader shift+; kitty_shell overlay
 
 # copy/paste
-map {{ $mod }}+c copy_or_noop
-map {{ $mod }}+v paste_from_clipboard
-map kitty_mod+v smart_paste
+map ctrl+c copy_or_noop
+map cmd+c copy_or_noop
+map cmd+v paste_from_clipboard
 map ctrl+v paste_from_clipboard
+
 
 # reload cfg
 map kitty_mod+r load_config_file
@@ -191,10 +193,10 @@ map --mode leader 9 goto_tab 9
 map --mode leader 0 goto_tab 10
 
 # splits
-map --mode leader \ kmux_split v
 map kitty_mod+\ kmux_split v
 map kitty_mod+minus kmux_split h
-map --mode leader - kmux_split h
+map --mode leader \ kmux_lsplit v
+map --mode leader - kmux_lsplit h
 
 # move panes
 map --mode leader shift+h move_window left

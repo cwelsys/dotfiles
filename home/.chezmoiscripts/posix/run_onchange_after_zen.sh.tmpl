@@ -9,7 +9,10 @@ case "$(uname -s)" in
         ZEN_DIR="$HOME/Library/Application Support/zen/Profiles"
         ;;
     Linux)
-        ZEN_DIR="$HOME/.zen"
+        ZEN_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/zen"
+        if [[ ! -d "$ZEN_DIR" ]]; then
+            ZEN_DIR="$HOME/.zen"
+        fi
         if [[ ! -d "$ZEN_DIR" ]]; then
             ZEN_DIR="$HOME/.var/app/io.github.nickvision.zen/data/zen"
         fi
@@ -28,7 +31,7 @@ fi
 # Find and update default (release) profile(s)
 while IFS= read -r -d '' profile; do
     if [[ "$profile" == *"(release)"* ]]; then
-        cp "$HOME/.config/zen/user.js" "$profile/user.js"
+        cp "{{ .chezmoi.sourceDir }}/dot_config/zen/user.js" "$profile/user.js"
         echo "Updated user.js in $(basename "$profile")"
     fi
 done < <(find "$ZEN_DIR" -maxdepth 1 -type d -print0)

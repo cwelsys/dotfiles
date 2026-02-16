@@ -158,10 +158,7 @@ window-rule {
     match app-id=r#"org.quickshell$"#
     open-floating true
 }
-// window-rule {
-//     match app-id=r#"^steam_app_"#
-//     open-floating false
-// }
+
 debug {
     honor-xdg-activation-with-invalid-serial
 }
@@ -175,17 +172,30 @@ recent-windows {
     }
 }
 
-
 spawn-at-startup "bash" "-c" "wl-paste --watch cliphist store &"
+spawn-at-startup "xwayland-claim-cm"
 
 include "dms/colors.kdl"
 include "dms/layout.kdl"
+include "local.kdl"
 include "dms/alttab.kdl"
 include "dms/binds.kdl"
 include "dms/outputs.kdl"
 include "dms/cursor.kdl"
 include "dms/windowrules.kdl"
 include "dms/wpblur.kdl"
+
+workspace "main"
+workspace "game"
+
+window-rule {
+  match app-id=r#"\.exe$"#
+  match app-id="gamescope"
+  match app-id=r#"^steam_app_"#
+  opacity 1.0
+  open-maximized-to-edges false
+  open-on-workspace "game"
+}
 
 window-rule {
     match app-id=r#"^tte\.screenie$"#
@@ -205,21 +215,8 @@ window-rule {
     default-window-height { fixed 900; }
 }
 
-workspace "main"
-workspace "game"
-
 window-rule {
-    match app-id=r#"\.exe$"#
-    match app-id="gamescope"
-    match app-id=r#"^steam_app_"#
-    opacity 1.0
-    open-maximized-to-edges false
-    open-on-workspace "game"
+    match app-id="steam_proton"
+    open-floating true
 }
 
-
-// window-rule {
-//     match app-id="gamescope"
-//     open-on-workspace "game"
-//     opacity 0.5
-// }
