@@ -177,6 +177,10 @@ pkgs:
         - zig
         - zmx-git
         - rust-analyzer-git
+        - atuin
+        - libolm
+        - pacman-contrib
+        - unicorn
 
     mba:
       brews:
