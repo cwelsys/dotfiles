@@ -256,7 +256,6 @@ pkgs:
         - nowplaying-cli
         - openjdk
         - openjdk@11
-        - parallel
         - php
         - pinentry-mac
         - pipes-sh
@@ -314,7 +313,6 @@ pkgs:
         - onefetch
         - tmux
         - chafa
-        - emojify
         - pandoc
         - autossh
         - ouch
@@ -328,12 +326,16 @@ pkgs:
         - gping
         - mpd
         - zig
+        - atuin
+        - git-filter-repo
+        - mdcat
+        - samtay/tui/tetris
+        - tig
       casks:
         - 1password-cli
         - alt-tab
         - android-platform-tools
         - betterdisplay
-        - blockblock
         - boring-notch
         - catlight
         - claude
