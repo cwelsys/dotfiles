@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+# Install pre-commit hook in chezmoi source repo
+# Normalizes absolute home paths to ~ in claude/settings.json
+HOOKS_DIR="${CHEZMOI_WORKING_TREE}/.git/hooks"
+mkdir -p "$HOOKS_DIR"
+
+cat > "$HOOKS_DIR/pre-commit" << 'HOOK'
+#!/bin/bash
+set -euo pipefail
+
+SETTINGS="home/dot_config/claude/settings.json"
+
+if git diff --cached --name-only | grep -qF "$SETTINGS"; then
+  if [ -f "$SETTINGS" ]; then
+    USER_NAME=$(id -un)
+    perl -i -pe "s|/Users/$USER_NAME/|~/|g;s|/home/$USER_NAME/|~/|g" "$SETTINGS"
+    git add "$SETTINGS"
+  fi
+fi
+HOOK
+
+chmod +x "$HOOKS_DIR/pre-commit"
+echo "Installed chezmoi pre-commit hook"
