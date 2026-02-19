@@ -198,7 +198,16 @@ cds() { cd "$HOME/src" || return 1; }
 cdcm() { cd "${DOTFILES:-$HOME/.local/share/chezmoi}" || return 1; }
 
 cmra() {
+    _cmra_normalize() {
+        local f="$1"
+        if [[ "$f" == *claude/settings.json ]]; then
+            perl -i -pe "s|/Users/$USER/|~/|g;s|/home/$USER/|~/|g" "$f"
+        fi
+    }
     if [ $# -gt 0 ]; then
+        for arg in "$@"; do
+            _cmra_normalize "$arg"
+        done
         chezmoi re-add "$@"
         return
     fi
@@ -210,10 +219,11 @@ cmra() {
     fi
     local selected
     selected=$(echo "$files" | fzf --multi --ansi \
-        --preview="chezmoi diff --pager cat ~/{} 2>/dev/null | delta -s ansi 2>/dev/null" \
+        --preview="chezmoi diff --reverse --pager cat ~/{} 2>/dev/null | delta --pager=never --width=\${FZF_PREVIEW_COLUMNS:-80}" \
         --preview-window="right,60%,wrap,<80(down,60%,wrap)")
     if [ -n "$selected" ]; then
         echo "$selected" | while IFS= read -r file; do
+            _cmra_normalize ~/"$file"
             chezmoi re-add ~/"$file"
         done
     fi

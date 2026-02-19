@@ -2,12 +2,10 @@
 
 set -eufo pipefail
 
-# Install pre-commit hook in chezmoi source repo
-# Normalizes absolute home paths to ~ in claude/settings.json
 HOOKS_DIR="${CHEZMOI_WORKING_TREE}/.git/hooks"
 mkdir -p "$HOOKS_DIR"
 
-cat > "$HOOKS_DIR/pre-commit" << 'HOOK'
+cat >"$HOOKS_DIR/pre-commit" <<'HOOK'
 #!/bin/bash
 set -euo pipefail
 
