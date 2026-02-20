@@ -23,7 +23,7 @@ Host *
 Host main
 	HostName main
 	User cwel
-	RemoteForward 19998 localhost:19998
+	RemoteForward 19998 localhost:{{ if eq .hostname "main" }}19999{{ else }}19998{{ end }}
 	ExitOnForwardFailure no
 
 {{- end }}
@@ -31,7 +31,7 @@ Host main
 Host mba
 	HostName mba
 	User cwel
-	RemoteForward 19998 localhost:19998
+	RemoteForward 19998 localhost:{{ if eq .hostname "main" }}19999{{ else }}19998{{ end }}
 	ExitOnForwardFailure no
 
 {{- end }}
@@ -39,7 +39,7 @@ Host mba
 Host pbox
 	HostName pbox
 	User cwel
-	RemoteForward 19998 localhost:19998
+	RemoteForward 19998 localhost:{{ if eq .hostname "main" }}19999{{ else }}19998{{ end }}
 	ExitOnForwardFailure no
 
 {{- end }}
@@ -47,7 +47,7 @@ Host pbox
 Host bmac
 	HostName bmac
 	User cwel
-	RemoteForward 19998 localhost:19998
+	RemoteForward 19998 localhost:{{ if eq .hostname "main" }}19999{{ else }}19998{{ end }}
 	ExitOnForwardFailure no
 {{- end }}
 Host lgtv
