@@ -155,6 +155,12 @@ window-rule {
     open-floating true
 }
 window-rule {
+    match app-id="zen"
+    exclude title=r#"Zen Browser$"#
+    open-floating true
+    min-height 230
+}
+window-rule {
     match app-id=r#"org.quickshell$"#
     open-floating true
 }
@@ -174,6 +180,8 @@ recent-windows {
 
 spawn-at-startup "bash" "-c" "wl-paste --watch cliphist store &"
 spawn-at-startup "xwayland-claim-cm"
+spawn-at-startup "xrandr-cmode"
+spawn-at-startup "peon relay --daemon --port=19999"
 
 include "dms/colors.kdl"
 include "dms/layout.kdl"
@@ -192,8 +200,9 @@ window-rule {
   match app-id=r#"\.exe$"#
   match app-id="gamescope"
   match app-id=r#"^steam_app_"#
+  match app-id="cs2"
   opacity 1.0
-  open-maximized-to-edges false
+  // open-maximized-to-edges false
   open-on-workspace "game"
 }
 

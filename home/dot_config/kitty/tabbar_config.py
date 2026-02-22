@@ -29,6 +29,7 @@ class GeneralConfig:
     """General tab bar settings."""
 
     style: str = "pills"
+    extra_shells: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -592,6 +593,8 @@ def _parse_toml(data: dict[str, Any]) -> TabBarConfig:
     if "general" in data:
         gen = data["general"]
         config.general.style = gen.get("style", config.general.style)
+        if "extra_shells" in gen:
+            config.general.extra_shells = gen["extra_shells"]
 
     # Palette section - colors are stored directly under [palette]
     if "palette" in data:

@@ -504,7 +504,6 @@ pkgs:
         - satty
         - slack-desktop-wayland
         - slurp
-        - spotify
         - steam
         - steamcmd
         - sushi
@@ -572,8 +571,6 @@ pkgs:
         - plocate
         - plymouth
         - snapper
-        - spicetify-cli
-        - spicetify-marketplace-bin
         - starship
         - tailscale
         - tldr
@@ -699,7 +696,6 @@ pkgs:
         - otf-commit-mono
         - pandoc-bin
         - sl
-        - spotify-adblock
         - ttf-ibmplex-mono-nerd
         - ttf-twemoji
         - unarc-git
@@ -758,7 +754,8 @@ pkgs:
         - cups-pk-helper
         - lib32-mangohud
         - mangojuice
-        - openrgb-bin
+        - weathr-bin
+        - xorg-xev
 
     wini:
       scoop:

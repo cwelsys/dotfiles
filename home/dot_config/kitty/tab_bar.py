@@ -70,31 +70,51 @@ class TabInfo:
 
 
 _home = os.path.expanduser("~")
-_SHELLS = {"zsh", "bash", "fish", "sh", "nu", "tcsh", "-zsh", "-bash"}
+_SHELLS = {
+    "zsh", "bash", "fish", "sh", "nu", "tcsh", "dash", "ksh", "pwsh",
+    "elvish", "xonsh",
+    "-zsh", "-bash", "-fish", "-sh",  # Login shell variants
+}
+_shells_configured = False
 
 # Git status cache: repo_path -> ((index_mtime, stash_mtime), (branch, counts))
 _git_cache: dict[str, tuple[tuple[float, float], tuple[str, dict[str, int]]]] = {}
 
+# Git dir lookup cache: cwd -> git_dir_path (avoids repeated filesystem walks)
+_git_dir_cache: dict[str, Path | None] = {}
+_GIT_DIR_CACHE_MAX = 100
+
 
 def _find_git_dir(cwd: str) -> Path | None:
-    """Walk up from cwd to find .git directory.
+    """Walk up from cwd to find .git directory (cached by cwd).
 
     Handles both regular repos (.git is a directory) and worktrees
     (.git is a file pointing to the main repo's git dir).
     """
+    if cwd in _git_dir_cache:
+        return _git_dir_cache[cwd]
+
+    if len(_git_dir_cache) >= _GIT_DIR_CACHE_MAX:
+        _git_dir_cache.clear()
+
     try:
         path = Path(cwd)
         for parent in [path, *path.parents]:
             git_path = parent / ".git"
             if git_path.is_dir():
+                _git_dir_cache[cwd] = git_path
                 return git_path
             if git_path.is_file():
                 # Worktree: .git is a file containing "gitdir: /path/to/git"
                 content = git_path.read_text().strip()
                 if content.startswith("gitdir:"):
-                    return Path(content[7:].strip())
+                    result = Path(content[7:].strip())
+                    _git_dir_cache[cwd] = result
+                    return result
+        _git_dir_cache[cwd] = None
         return None
     except Exception:
+        _git_dir_cache[cwd] = None
         return None
 
 
@@ -302,16 +322,18 @@ class RenderContext:
         config: TabBarConfig for access to all configuration
         tabs: List of TabInfo for all tabs (pills style collects these)
         active_tab_index: Index of the active tab in the tabs list
-        cached_tab_positions: End positions keyed by tab_id (survives reorder)
+        cached_tab_positions: (start, end) positions keyed by tab_id for click detection
         screen_columns: Total screen width for layout calculations
+        _tab_info_cache: Cached TabInfo across render cycles keyed by tab_id
     """
 
     colors: UnifiedColorResolver
     config: "TabBarConfig"  # Forward reference to avoid circular import
     tabs: list[TabInfo] = field(default_factory=list)
     active_tab_index: int = 0
-    cached_tab_positions: dict[int, int] = field(default_factory=dict)  # tab_id -> end_pos
+    cached_tab_positions: dict[int, tuple[int, int]] = field(default_factory=dict)  # tab_id -> (start, end)
     screen_columns: int = 0
+    _tab_info_cache: dict[int, tuple[str, TabInfo]] = field(default_factory=dict)  # tab_id -> (cache_key, info)
 
 
 # Global render context (set per render cycle)
@@ -410,14 +432,15 @@ def format_path(cwd: str, index: int, is_active: bool, config) -> str:
     return "/".join(parts)
 
 
-def get_foreground_process(tab_id: int) -> tuple[str, str, str | None]:
-    """Get the foreground process name, cwd, and optional remote host.
+def get_foreground_process(tab_id: int) -> tuple[str, str, str | None, bool]:
+    """Get the foreground process name, cwd, optional remote host, and pin state.
 
-    Uses TabAccessor (kitty's safe API) instead of direct process scanning.
+    Uses TabAccessor (kitty's safe API) for exe/cwd, then a single get_boss()
+    call for user vars (PROC, REMOTE_CWD, REMOTE_HOST, PINNED).
 
     Returns:
-        Tuple of (executable_name, current_working_directory, remote_hostname).
-        Falls back to ("zsh", "", None) on errors.
+        Tuple of (executable_name, cwd, remote_hostname, is_pinned).
+        Falls back to ("zsh", "", None, False) on errors.
     """
     try:
         from kitty.tab_bar import TabAccessor
@@ -428,41 +451,63 @@ def get_foreground_process(tab_id: int) -> tuple[str, str, str | None]:
         exe = ta.active_exe or "zsh"
         cwd = ta.active_wd or ""
 
-        # Check user vars for process, remote cwd, and remote host (shell hooks)
+        # Single boss lookup for all user vars
         remote_host = None
+        is_pinned = False
         try:
             boss = get_boss()
             tab = boss.tab_for_id(tab_id)
             if tab and tab.active_window:
+                user_vars = tab.active_window.user_vars
                 # PROC user var overrides exe (for SSH and shell hooks)
-                proc = tab.active_window.user_vars.get("PROC")
+                proc = user_vars.get("PROC")
                 if proc and proc not in _SHELLS:
                     exe = proc
                 # REMOTE_CWD overrides cwd for SSH sessions
-                remote_cwd = tab.active_window.user_vars.get("REMOTE_CWD")
+                remote_cwd = user_vars.get("REMOTE_CWD")
                 if remote_cwd:
                     cwd = remote_cwd
-                remote_host = tab.active_window.user_vars.get("REMOTE_HOST") or None
+                remote_host = user_vars.get("REMOTE_HOST") or None
+                is_pinned = user_vars.get("PINNED") == "true"
         except Exception as e:
             print(
                 f"[tab_bar] Warning: Failed to get user vars for tab {tab_id}: {e}",
                 file=sys.stderr,
             )
 
-        return (exe, cwd, remote_host)
+        return (exe, cwd, remote_host, is_pinned)
     except Exception as e:
         print(
             f"[tab_bar] Warning: Failed to get foreground process for tab {tab_id}: {e}",
             file=sys.stderr,
         )
-        return ("zsh", "", None)
+        return ("zsh", "", None, False)
 
 
 def get_tab_info(tab: TabBarData, index: int) -> TabInfo:
-    """Create a TabInfo with all relevant data for rendering."""
-    exe, cwd, hostname = get_foreground_process(tab.tab_id)
+    """Create a TabInfo with all relevant data for rendering.
+
+    Uses a per-render-cycle cache keyed by tab_id. Cache is invalidated when
+    the tab's title, active state, or window count changes (indicating the
+    foreground process may have changed).
+    """
+    cache_key = f"{tab.title}:{tab.is_active}:{tab.num_windows}"
+
+    if _render_ctx is not None and tab.tab_id in _render_ctx._tab_info_cache:
+        old_key, old_info = _render_ctx._tab_info_cache[tab.tab_id]
+        if old_key == cache_key:
+            # Update mutable fields that change per render cycle
+            old_info.index = index
+            old_info.is_active = tab.is_active
+            old_info.tab = tab
+            # Reset is_pinned - checked separately in draw_tab_pills
+            # (PINNED user var changes independently of the cache key)
+            old_info.is_pinned = False
+            return old_info
+
+    exe, cwd, hostname, is_pinned = get_foreground_process(tab.tab_id)
     icon = get_icon(exe)
-    return TabInfo(
+    info = TabInfo(
         tab=tab,
         index=index,
         exe=exe,
@@ -470,7 +515,13 @@ def get_tab_info(tab: TabBarData, index: int) -> TabInfo:
         icon=icon,
         hostname=hostname,
         is_active=tab.is_active,
+        is_pinned=is_pinned,
     )
+
+    if _render_ctx is not None:
+        _render_ctx._tab_info_cache[tab.tab_id] = (cache_key, info)
+
+    return info
 
 
 def format_tab_title(
@@ -769,18 +820,26 @@ def draw_tab_pills(
     """
     global _render_ctx
 
-    # Layout phase: return cached positions from previous render if available
-    # Must set cursor.x because kitty uses it for width calculation
+    # Layout phase: return estimated width (kitty resets cursor.x=0 per tab)
     if extra_data.for_layout:
         if _render_ctx is not None and tab.tab_id in _render_ctx.cached_tab_positions:
-            screen.cursor.x = _render_ctx.cached_tab_positions[tab.tab_id]
+            start, end = _render_ctx.cached_tab_positions[tab.tab_id]
+            screen.cursor.x = end - start
             return screen.cursor.x
-        # Fallback: simple estimation
-        screen.cursor.x = before + 15
-        return screen.cursor.x
+        # Fallback: simple width estimation
+        screen.cursor.x = 15
+        return 15
 
     # Initialize or get render context
     config = get_config()
+
+    # Apply configurable extra shells once
+    global _shells_configured
+    if not _shells_configured:
+        if config.general.extra_shells:
+            _SHELLS.update(config.general.extra_shells)
+        _shells_configured = True
+
     if _render_ctx is None:
         # First ever render - create fresh context
         _render_ctx = RenderContext(
@@ -789,22 +848,23 @@ def draw_tab_pills(
             screen_columns=screen.columns,
         )
     elif index == 1:
-        # New render cycle - preserve cached_tab_positions for click tracking
-        old_cached = _render_ctx.cached_tab_positions
+        # New render cycle - preserve caches that survive across cycles
+        old_positions = _render_ctx.cached_tab_positions
+        old_tab_info = _render_ctx._tab_info_cache
         _render_ctx = RenderContext(
             colors=UnifiedColorResolver(config, draw_data),
             config=config,
             screen_columns=screen.columns,
         )
-        _render_ctx.cached_tab_positions = old_cached
+        _render_ctx.cached_tab_positions = old_positions
+        _render_ctx._tab_info_cache = old_tab_info
 
     pills = config.styles.pills
 
-    # Collect tab info
+    # Collect tab info (cached across render cycles for process/cwd)
     info = get_tab_info(tab, index)
-    # Check if tab should be pinned to right zone
+    # Check pinned state fresh each render (not cached - changes independently)
     if pills.right_zone.enabled:
-        # Check PINNED user var first (explicit pinning via kitten)
         try:
             boss = get_boss()
             kitty_tab = boss.tab_for_id(tab.tab_id)
@@ -813,18 +873,22 @@ def draw_tab_pills(
                     info.is_pinned = True
         except Exception:
             pass
-        # Also check process name (auto-detection)
         if not info.is_pinned and info.exe in pills.right_zone.pinned_processes:
             info.is_pinned = True
     _render_ctx.tabs.append(info)
     if info.is_active:
         _render_ctx.active_tab_index = len(_render_ctx.tabs) - 1
 
-    # If not the last tab, return cached position or estimate
+    # If not the last tab, return cached position or estimate.
+    # Setting screen.cursor.x is critical: kitty reads it as `before` for the next
+    # tab, producing non-overlapping CellRanges for correct click detection.
     if not is_last:
         if info.tab.tab_id in _render_ctx.cached_tab_positions:
-            return _render_ctx.cached_tab_positions[info.tab.tab_id]
-        return before + 15
+            _start, _end = _render_ctx.cached_tab_positions[info.tab.tab_id]
+            screen.cursor.x = _end
+            return _end
+        screen.cursor.x = before + 15
+        return screen.cursor.x
 
     # === Last tab: draw everything ===
     tabs = _render_ctx.tabs
@@ -848,45 +912,38 @@ def draw_tab_pills(
             center_active_idx = idx
             break
 
-    # Width calculation helpers
-    def tab_width_expanded(ti: TabInfo, display_index: int | None = 1) -> int:
-        return _pill_width(
-            _format_pill_icon(ti, pills, display_index), _format_pill_text(ti, pills)
-        )
+    # Pre-compute widths once per tab (avoids 2-3x redundant string formatting)
+    center_widths: list[tuple[int, int]] = []  # (expanded, collapsed)
+    for _, t in center_tabs:
+        icon = _format_pill_icon(t, pills, display_index=1)
+        text = _format_pill_text(t, pills)
+        center_widths.append((_pill_width(icon, text), _pill_width(icon, None)))
 
-    def tab_width_collapsed(ti: TabInfo, display_index: int | None = 1) -> int:
-        return _pill_width(_format_pill_icon(ti, pills, display_index), None)
-
-    # Calculate center zone widths (only non-pinned tabs)
     n_center = len(center_tabs)
     center_spacing = (n_center - 1) * pills.spacing if n_center > 1 else 0
-    center_all_expanded = (
-        sum(tab_width_expanded(t) for _, t in center_tabs) + center_spacing
-    )
+    center_all_expanded = sum(w[0] for w in center_widths) + center_spacing
     center_active_expanded = (
         (
             sum(
-                tab_width_expanded(t)
-                if i == center_active_idx
-                else tab_width_collapsed(t)
-                for i, (_, t) in enumerate(center_tabs)
+                center_widths[i][0] if i == center_active_idx else center_widths[i][1]
+                for i in range(n_center)
             )
             + center_spacing
         )
         if center_tabs
         else 0
     )
-    center_all_collapsed = (
-        sum(tab_width_collapsed(t) for _, t in center_tabs) + center_spacing
-    )
+    center_all_collapsed = sum(w[1] for w in center_widths) + center_spacing
 
-    # Calculate right zone width (pinned tabs - always expanded, no index)
+    # Right zone widths (pinned tabs - always expanded, no index)
     n_right = len(right_tabs)
     right_spacing = (n_right - 1) * pills.spacing if n_right > 1 else 0
-    right_width = (
-        sum(tab_width_expanded(t, display_index=None) for _, t in right_tabs)
-        + right_spacing
-    )
+    right_width = 0
+    for _, t in right_tabs:
+        icon = _format_pill_icon(t, pills, display_index=None)
+        text = _format_pill_text(t, pills)
+        right_width += _pill_width(icon, text)
+    right_width += right_spacing
 
     # Reserve space for right zone
     right_margin = 2  # Gap between center and right zones
@@ -920,6 +977,7 @@ def draw_tab_pills(
     left_max = center_start - 2 if pills.left_zone.enabled else 0
 
     # === Draw Left Zone (folder + cwd, or mode indicator + cwd) ===
+    screen.cursor.x = 0  # Reset - non-last tabs may have advanced cursor
     if pills.left_zone.enabled and left_max > 10:
         mode_cfg = config.mode_indicator
         mode = get_keyboard_mode()
@@ -1002,7 +1060,7 @@ def draw_tab_pills(
             )
 
     # Position tracking - keyed by tab_id (survives reorder)
-    new_tab_positions: dict[int, int] = {}
+    new_tab_positions: dict[int, tuple[int, int]] = {}
 
     # === Draw Center Zone (non-pinned tabs) ===
     screen.cursor.x = center_start
@@ -1030,8 +1088,9 @@ def draw_tab_pills(
         icon_fg = _color_int(colors.icon_fg_active if is_active else colors.icon_fg)
         text_fg = _color_int(colors.text_fg_active if is_active else colors.text_fg)
 
+        pill_start = screen.cursor.x
         _draw_pill(screen, icon_text, text, icon_bg, text_bg, icon_fg, text_fg, pills)
-        new_tab_positions[tab_info.tab.tab_id] = screen.cursor.x
+        new_tab_positions[tab_info.tab.tab_id] = (pill_start, screen.cursor.x)
 
     # === Draw Right Zone (pinned tabs) ===
     if right_tabs:
@@ -1055,15 +1114,21 @@ def draw_tab_pills(
             icon_fg = _color_int(colors.icon_fg_active)
             text_fg = _color_int(colors.text_fg_active)
 
+            pill_start = screen.cursor.x
             _draw_pill(
                 screen, icon_text, text, icon_bg, text_bg, icon_fg, text_fg, pills
             )
-            new_tab_positions[tab_info.tab.tab_id] = screen.cursor.x
+            new_tab_positions[tab_info.tab.tab_id] = (pill_start, screen.cursor.x)
 
     # Store positions for next render cycle
     _render_ctx.cached_tab_positions = new_tab_positions
 
-    # Reset tabs for next render cycle (keep cached_tab_positions)
+    # Prune stale TabInfo cache entries (closed tabs)
+    current_tab_ids = {t.tab.tab_id for t in tabs}
+    for stale_id in set(_render_ctx._tab_info_cache.keys()) - current_tab_ids:
+        del _render_ctx._tab_info_cache[stale_id]
+
+    # Reset tabs for next render cycle (keep caches)
     _render_ctx.tabs = []
     _render_ctx.active_tab_index = 0
 
@@ -1123,7 +1188,7 @@ def draw_tab_powerline(
             screen_columns=screen.columns,
         )
 
-    exe, cwd, remote_host = get_foreground_process(tab.tab_id)
+    exe, cwd, remote_host, _is_pinned = get_foreground_process(tab.tab_id)
     formatted = format_tab_title(
         exe, cwd, tab.title, index, tab.is_active, remote_host, config
     )

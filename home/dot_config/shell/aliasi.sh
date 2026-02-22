@@ -73,24 +73,8 @@ if command -v yt-dlp >/dev/null 2>&1; then
 fi
 
 if command -v claude >/dev/null 2>&1; then
-    cc() {
-        if [[ -n "$KITTY_WINDOW_ID" ]]; then
-            kitty @ set-colors "color8=#1e1e2e"
-            command claude "$@"
-            kitty @ set-colors --reset 2>/dev/null
-        else
-            command claude "$@"
-        fi
-    }
-    cr() {
-        if [[ -n "$KITTY_WINDOW_ID" ]]; then
-            kitty @ set-colors "color8=#1e1e2e"
-            command claude --resume "$@"
-            kitty @ set-colors --reset 2>/dev/null
-        else
-            command claude --resume "$@"
-        fi
-    }
+  alias cc='claude'
+  alias cr='claude --resume'
 fi
 
 if command -v opencode >/dev/null 2>&1; then
