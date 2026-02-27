@@ -410,7 +410,6 @@ pkgs:
         - binder_linux-dkms
         - blueberry
         - brightnessctl
-        - bun-bin
         - clang
         - cmake
         - cowsay
@@ -717,7 +716,6 @@ pkgs:
         - lib32-libxi
         - rust-analyzer-git
         - tesseract
-        - xremap-hypr-bin
         - yazi-nightly-bin
         - zig
         - linux-zen
@@ -756,6 +754,8 @@ pkgs:
         - mangojuice
         - weathr-bin
         - xorg-xev
+        - bun
+        - dart
 
     wini:
       scoop:
