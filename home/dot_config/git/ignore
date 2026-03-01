@@ -56,9 +56,11 @@ dist/
 /tmp
 node_modules/
 CLAUDE.md
+AGENTS.md
 cache
 .specstory
 **/.claude/**
+**/.agents/**
 
 # Linux
 

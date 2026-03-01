@@ -745,7 +745,6 @@ pkgs:
         - xorg-xdpyinfo
         - yarn
         - beeper-v4-bin
-        - mpdris2-rs
         - prek-bin
         - ananicy-cpp
         - cachyos-ananicy-rules
@@ -755,7 +754,6 @@ pkgs:
         - weathr-bin
         - xorg-xev
         - bun
-        - dart
 
     wini:
       scoop:

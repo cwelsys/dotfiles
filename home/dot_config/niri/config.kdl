@@ -115,6 +115,7 @@ window-rule {
     draw-border-with-background false
     geometry-corner-radius 12
     clip-to-geometry true
+    open-floating true
 }
 window-rule {
     match app-id=r#"^gnome-control-center$"#

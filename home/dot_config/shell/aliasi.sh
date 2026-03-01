@@ -208,9 +208,7 @@ if command -v python3 >/dev/null 2>&1; then
     alias venv='python3 -m venv'
 fi
 
-if command -v pip3 >/dev/null 2>&1 && ! command -v pip >/dev/null 2>&1; then
-    alias pip='pip3'
-fi
+alias pip='python -m pip'
 
 if command -v npm >/dev/null 2>&1; then
     alias npm-ls='npm list -g'

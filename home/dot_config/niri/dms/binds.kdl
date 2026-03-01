@@ -16,6 +16,10 @@ binds {
         spawn "dms" "ipc" "call" "processlist" "focusOrToggle";
     }
 
+    Mod3+M hotkey-overlay-title="Volume Mixer" {
+        spawn "dms" "ipc" "call" "widget" "toggle" "volumeMixer";
+    } 
+
     Super+X hotkey-overlay-title="Power Menu: Toggle" { spawn "dms" "ipc" "call" "powermenu" "toggle"; }
     Mod+Comma hotkey-overlay-title="Settings" {
         spawn "dms" "ipc" "call" "settings" "focusOrToggle";
