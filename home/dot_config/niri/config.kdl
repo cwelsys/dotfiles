@@ -27,7 +27,7 @@ input {
         accel-speed 0.2
         accel-profile "adaptive"
     }
-    focus-follows-mouse max-scroll-amount="0%"
+    focus-follows-mouse max-scroll-amount="1%"
 }
 
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Layout
@@ -196,15 +196,28 @@ include "dms/wpblur.kdl"
 
 workspace "main"
 workspace "game"
+workspace "chat"
+
+window-rule {
+  match app-id="^vesktop$"
+  open-on-workspace "chat"
+}
 
 window-rule {
   match app-id=r#"\.exe$"#
   match app-id="gamescope"
   match app-id=r#"^steam_app_"#
   match app-id="cs2"
+  match app-id="tf_linux64"
   opacity 1.0
   // open-maximized-to-edges false
   open-on-workspace "game"
+}
+
+window-rule {
+    match app-id="^steam$" title="^Friends List$"
+    open-floating true
+    default-floating-position x=3217 y=298
 }
 
 window-rule {
@@ -216,6 +229,12 @@ window-rule {
     match app-id="^com.nextcloud.desktopclient.nextcloud$"
     open-floating true
     default-floating-position x=0 y=0 relative-to="top-right"
+}
+
+window-rule {
+    match app-id="^com.gabm.satty$"
+    open-floating true
+    default-floating-position x=20 y=20 relative-to="bottom-right"
 }
 
 window-rule {

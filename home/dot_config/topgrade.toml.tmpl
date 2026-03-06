@@ -23,7 +23,6 @@ disable = [
 	"pip3",
 	"pnpm",
 	"yarn",
-	"bun",
 	"uv",
 	"powershell",
 	"yazi",
@@ -31,6 +30,7 @@ disable = [
 	"shell",
   "waydroid",
   "hyprpm",
+  "gcloud"
 {{ if .isVM }}
 	"system",
 {{ end }}
@@ -104,8 +104,8 @@ no_self_update = false
 
 # Custom commands
 [commands]
-"zinit" = "-i zinit self-update"
-"zsh" = "-i setopt NO_HUP; zinit update --parallel 40"
+# "zinit" = "-i zinit self-update"
+# "zsh" = "-i setopt NO_HUP; zinit update --parallel 40"
 # "Python Environment" = "~/dev/.env/bin/pip install -i https://pypi.python.org/simple -U --upgrade-strategy eager jupyter"
 # "Custom command using interactive shell (unix)" = "-i vim_upgrade"
 [python]

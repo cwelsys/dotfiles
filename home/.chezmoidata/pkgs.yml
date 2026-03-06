@@ -405,7 +405,6 @@ pkgs:
         - base-devel
         - bat-extras
         - bibata-cursor-theme-bin
-        - binder_linux-dkms
         - blueberry
         - brightnessctl
         - clang
@@ -469,7 +468,6 @@ pkgs:
         - luarocks
         - mariadb-libs
         - meson
-        - mise
         - mpv
         - nautilus
         - navi
@@ -633,7 +631,6 @@ pkgs:
         - lib32-libcups
         - lib32-libpulse
         - lib32-openal
-        - lutris
         - mtools
         - networkmanager
         - pnpm
@@ -752,6 +749,11 @@ pkgs:
         - weathr-bin
         - xorg-xev
         - bun
+        - faugus-launcher
+        - google-cloud-cli
+        - khal
+        - python-aiohttp-oauthlib
+        - vdirsyncer
 
     wini:
       scoop:

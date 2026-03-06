@@ -325,6 +325,11 @@ class RenderContext:
         cached_tab_positions: (start, end) positions keyed by tab_id for click detection
         screen_columns: Total screen width for layout calculations
         _tab_info_cache: Cached TabInfo across render cycles keyed by tab_id
+        _layout_tab_ids: Tab order collected during the layout phase (current cycle)
+        _layout_tab_widths: Tab widths collected during the layout phase (current cycle)
+        _precomputed_ends: Cumulative end positions pre-computed at end of layout phase;
+                           used by render phase non-last tabs to produce accurate CellRanges
+        _cached_is_pinned: Pinned state per tab from last render; used in pre-computation
     """
 
     colors: UnifiedColorResolver
@@ -334,6 +339,11 @@ class RenderContext:
     cached_tab_positions: dict[int, tuple[int, int]] = field(default_factory=dict)  # tab_id -> (start, end)
     screen_columns: int = 0
     _tab_info_cache: dict[int, tuple[str, TabInfo]] = field(default_factory=dict)  # tab_id -> (cache_key, info)
+    # Layout-phase pre-computation (computed before render phase; eliminates stale-position lag)
+    _layout_tab_ids: list[int] = field(default_factory=list)
+    _layout_tab_widths: dict[int, int] = field(default_factory=dict)
+    _precomputed_ends: dict[int, int] = field(default_factory=dict)  # tab_id -> cumulative end pos
+    _cached_is_pinned: dict[int, bool] = field(default_factory=dict)  # tab_id -> pinned state
 
 
 # Global render context (set per render cycle)
@@ -795,6 +805,60 @@ def _format_pill_text(info: TabInfo, pills) -> str:
     return " ".join(parts)
 
 
+def _precompute_pill_positions(ctx: "RenderContext", screen_cols: int, pills) -> None:
+    """Pre-compute pill end positions from the current layout phase data.
+
+    Called at the end of the layout phase (when is_last=True). Uses current-cycle
+    tab order + cached widths + cached pinned state to produce accurate end positions
+    for the render phase — eliminating the one-render-lag from stale cached positions.
+
+    Results are stored in ctx._precomputed_ends (tab_id -> cumulative end position).
+    """
+    tab_ids = ctx._layout_tab_ids
+    widths = ctx._layout_tab_widths
+    spacing = pills.spacing
+
+    # Split by cached pinned state (from previous render — changes rarely)
+    center_ids = [t for t in tab_ids if not ctx._cached_is_pinned.get(t, False)]
+    right_ids = [t for t in tab_ids if ctx._cached_is_pinned.get(t, False)]
+
+    # Center zone total width
+    n_center = len(center_ids)
+    center_spacing = (n_center - 1) * spacing if n_center > 1 else 0
+    center_total = sum(widths[t] for t in center_ids) + center_spacing
+
+    # Right zone total width
+    n_right = len(right_ids)
+    right_spacing = (n_right - 1) * spacing if n_right > 1 else 0
+    right_total = sum(widths[t] for t in right_ids) + right_spacing
+    right_margin = 2 if right_ids else 0
+
+    # Center the center zone, avoiding overlap with right zone
+    center_start = (screen_cols - center_total) // 2
+    if right_ids:
+        max_end = screen_cols - right_total - right_margin
+        if center_start + center_total > max_end:
+            center_start = max(0, max_end - center_total)
+
+    # Cumulative end positions for center tabs
+    ctx._precomputed_ends = {}
+    pos = center_start
+    for i, tid in enumerate(center_ids):
+        if i > 0:
+            pos += spacing
+        pos += widths[tid]
+        ctx._precomputed_ends[tid] = pos
+
+    # Cumulative end positions for pinned (right zone) tabs
+    if right_ids:
+        pos = screen_cols - right_total
+        for i, tid in enumerate(right_ids):
+            if i > 0:
+                pos += spacing
+            pos += widths[tid]
+            ctx._precomputed_ends[tid] = pos
+
+
 def draw_tab_pills(
     draw_data: DrawData,
     screen: Screen,
@@ -820,15 +884,36 @@ def draw_tab_pills(
     """
     global _render_ctx
 
-    # Layout phase: return estimated width (kitty resets cursor.x=0 per tab)
+    # Layout phase: collect tab order + widths, pre-compute positions on last tab.
+    # This runs BEFORE the render phase, so positions are ready when non-last render
+    # tabs need them — eliminating the one-render stale-position lag.
     if extra_data.for_layout:
-        if _render_ctx is not None and tab.tab_id in _render_ctx.cached_tab_positions:
-            start, end = _render_ctx.cached_tab_positions[tab.tab_id]
-            screen.cursor.x = end - start
-            return screen.cursor.x
-        # Fallback: simple width estimation
-        screen.cursor.x = 15
-        return 15
+        if _render_ctx is None:
+            screen.cursor.x = 15
+            return 15
+
+        # Reset collection on first tab of this layout pass
+        if index == 1:
+            _render_ctx._layout_tab_ids = []
+            _render_ctx._layout_tab_widths = {}
+
+        # Width from previous render's cache, or fallback estimate
+        if tab.tab_id in _render_ctx.cached_tab_positions:
+            _s, _e = _render_ctx.cached_tab_positions[tab.tab_id]
+            width = _e - _s
+        else:
+            width = 15
+
+        _render_ctx._layout_tab_ids.append(tab.tab_id)
+        _render_ctx._layout_tab_widths[tab.tab_id] = width
+
+        # Pre-compute positions on last layout tab (all tab_ids now collected)
+        if is_last:
+            config = get_config()
+            _precompute_pill_positions(_render_ctx, screen.columns, config.styles.pills)
+
+        screen.cursor.x = width
+        return width
 
     # Initialize or get render context
     config = get_config()
@@ -848,9 +933,13 @@ def draw_tab_pills(
             screen_columns=screen.columns,
         )
     elif index == 1:
-        # New render cycle - preserve caches that survive across cycles
+        # New render cycle - preserve caches that survive across cycles.
+        # _precomputed_ends was computed during the layout phase (which runs before
+        # this render phase), so it must be preserved across the context reset.
         old_positions = _render_ctx.cached_tab_positions
         old_tab_info = _render_ctx._tab_info_cache
+        old_precomputed = _render_ctx._precomputed_ends
+        old_is_pinned = _render_ctx._cached_is_pinned
         _render_ctx = RenderContext(
             colors=UnifiedColorResolver(config, draw_data),
             config=config,
@@ -858,6 +947,8 @@ def draw_tab_pills(
         )
         _render_ctx.cached_tab_positions = old_positions
         _render_ctx._tab_info_cache = old_tab_info
+        _render_ctx._precomputed_ends = old_precomputed
+        _render_ctx._cached_is_pinned = old_is_pinned
 
     pills = config.styles.pills
 
@@ -875,14 +966,22 @@ def draw_tab_pills(
             pass
         if not info.is_pinned and info.exe in pills.right_zone.pinned_processes:
             info.is_pinned = True
+    # Cache pinned state for use during next layout phase's pre-computation
+    _render_ctx._cached_is_pinned[tab.tab_id] = info.is_pinned
     _render_ctx.tabs.append(info)
     if info.is_active:
         _render_ctx.active_tab_index = len(_render_ctx.tabs) - 1
 
-    # If not the last tab, return cached position or estimate.
+    # If not the last tab, return position without drawing.
     # Setting screen.cursor.x is critical: kitty reads it as `before` for the next
     # tab, producing non-overlapping CellRanges for correct click detection.
+    # Prefer pre-computed positions (current cycle, from layout phase) over
+    # cached positions (previous cycle, stale if centering shifted).
     if not is_last:
+        if info.tab.tab_id in _render_ctx._precomputed_ends:
+            _end = _render_ctx._precomputed_ends[info.tab.tab_id]
+            screen.cursor.x = _end
+            return _end
         if info.tab.tab_id in _render_ctx.cached_tab_positions:
             _start, _end = _render_ctx.cached_tab_positions[info.tab.tab_id]
             screen.cursor.x = _end
@@ -1123,10 +1222,12 @@ def draw_tab_pills(
     # Store positions for next render cycle
     _render_ctx.cached_tab_positions = new_tab_positions
 
-    # Prune stale TabInfo cache entries (closed tabs)
+    # Prune stale cache entries (closed tabs)
     current_tab_ids = {t.tab.tab_id for t in tabs}
     for stale_id in set(_render_ctx._tab_info_cache.keys()) - current_tab_ids:
         del _render_ctx._tab_info_cache[stale_id]
+    for stale_id in set(_render_ctx._cached_is_pinned.keys()) - current_tab_ids:
+        del _render_ctx._cached_is_pinned[stale_id]
 
     # Reset tabs for next render cycle (keep caches)
     _render_ctx.tabs = []

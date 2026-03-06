@@ -8,16 +8,15 @@ TIMESTAMP=$(date +'%Y%m%d-%H%M%S')
 SCREENSHOT_PATH="$OUTPUT_DIR/$TIMESTAMP.png"
 SCRIPT_DIR="$(dirname "$0")"
 
-# Capture using dms screenshot (nice region selection)
-dms screenshot --stdout --no-clipboard --no-notify > "$SCREENSHOT_PATH"
+dms screenshot --stdout --no-clipboard --no-notify >"$SCREENSHOT_PATH"
 
-# Check if capture succeeded (file has content)
 [ ! -s "$SCREENSHOT_PATH" ] && rm -f "$SCREENSHOT_PATH" && exit 0
 
-# Copy to clipboard with both image + path
-/home/cwel/.local/bin/clipboard-multi "$SCREENSHOT_PATH"
+clipboard-multi "$SCREENSHOT_PATH"
 
-# Open satty for annotation (uses clipboard-multi for copy)
 satty --filename "$SCREENSHOT_PATH" \
-    --output-filename "$SCREENSHOT_PATH" \
-    --copy-command "$SCRIPT_DIR/clipboard-stdin"
+  --output-filename "$SCREENSHOT_PATH" \
+  --copy-command "$SCRIPT_DIR/clipboard-stdin" &
+SATTY_PID=$!
+
+"$SCRIPT_DIR/satty-timeout" "$SATTY_PID" 20 &
