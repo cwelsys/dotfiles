@@ -67,7 +67,7 @@ export WINEPREFIX="$XDG_DATA_HOME"/wine
 export OLLAMA_HOST="https://slop.cwel.casa"
 export MANAGARR_CONFIG_FILE="$XDG_CONFIG_HOME/managarr/config.yml"
 export MANAGARR_THEMES_FILE="$XDG_CONFIG_HOME/managarr/theme.yml"
-
+export MAS_NO_AUTO_INDEX=1
 export DO_NOT_TRACK=1
 export DISABLE_TELEMETRY=1
 export DOTNET_CLI_TELEMETRY_OPTOUT=1

@@ -275,7 +275,6 @@ pkgs:
         - shellcheck
         - sl
         - sniffnet
-        - spicetify-cli
         - starship
         - switchaudio-osx
         - telnet
@@ -331,6 +330,7 @@ pkgs:
         - mdcat
         - samtay/tui/tetris
         - tig
+        - bats-core
       casks:
         - 1password-cli
         - alt-tab
@@ -339,7 +339,6 @@ pkgs:
         - boring-notch
         - catlight
         - claude
-        - discord
         - dolphin
         - font-fira-code
         - font-jetbrains-mono
@@ -366,7 +365,6 @@ pkgs:
         - runelite
         - sf-symbols
         - slack
-        - spotify
         - stats
         - steam
         - syncthing-app
