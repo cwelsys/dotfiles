@@ -182,7 +182,7 @@ recent-windows {
 spawn-at-startup "bash" "-c" "wl-paste --watch cliphist store &"
 spawn-at-startup "xwayland-claim-cm"
 spawn-at-startup "xrandr-cmode"
-spawn-at-startup "peon relay --daemon --port=19999"
+spawn-at-startup "peon" "relay" "--daemon" "--port=19999"
 
 include "dms/colors.kdl"
 include "dms/layout.kdl"
@@ -228,7 +228,7 @@ window-rule {
 window-rule {
     match app-id="^com.nextcloud.desktopclient.nextcloud$"
     open-floating true
-    default-floating-position x=0 y=0 relative-to="top-right"
+    default-floating-position x=8 y=0 relative-to="top-right"
 }
 
 window-rule {

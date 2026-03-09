@@ -595,7 +595,6 @@ pkgs:
         - python-gbinder
         - waydroid-launcher-git
         - glow
-        - keyd
         - mkinitcpio-firmware
         - nushell
         - otf-font-awesome
@@ -721,7 +720,6 @@ pkgs:
         - niri
         - qt6ct-kde
         - xdg-desktop-portal-gnome
-        - xwayland-satellite
         - syncthingtray-qt6
         - ttf-dejavu
         - ttf-jetbrains-mono
@@ -754,6 +752,7 @@ pkgs:
         - khal
         - python-aiohttp-oauthlib
         - vdirsyncer
+        - xwayland-satellite-git
 
     wini:
       scoop:

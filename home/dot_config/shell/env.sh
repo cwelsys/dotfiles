@@ -72,6 +72,9 @@ export DO_NOT_TRACK=1
 export DISABLE_TELEMETRY=1
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export GLOW_STYLE="$XDG_CONFIG_HOME/glow/catppuccin-mocha.json"
+export SF_HOME="$XDG_DATA_HOME/sf"
+export SFDX_HOME="$XDG_DATA_HOME/sfdx"
+export SF_USE_GENERIC_UNIX_KEYCHAIN=true
 
 if command -v tty >/dev/null 2>&1; then
   export GPG_TTY=$(tty)
