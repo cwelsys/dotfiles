@@ -132,7 +132,7 @@ fi
 if [[ -n "${DOTS:-}" ]]; then
     YAML_FILE="$DOTS/.chezmoidata/pkgs.yml"
 else
-    YAML_FILE="$HOME/.local/share/chezmoi/home/.chezmoidata/pkgs.yml"
+    YAML_FILE="$HOME/.local/share/chezmoi/.chezmoidata/pkgs.yml"
 fi
 
 if [[ ! -f "$YAML_FILE" ]]; then

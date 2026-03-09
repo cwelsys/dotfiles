@@ -30,6 +30,7 @@
 
 {{- $isLaptop := eq $hostname "mba" -}}
 
+sourceDir = {{ .chezmoi.sourceDir | quote }}
 encryption = "age"
 mode = "file"
 progress = true

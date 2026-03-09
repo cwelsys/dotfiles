@@ -161,7 +161,7 @@ if (Get-Command chezmoi -ErrorAction SilentlyContinue) {
 
 function cdc { Set-Location "$HOME/.config" }
 function cdcm {
-    $dotfiles = if ($env:DOTFILES) { $env:DOTFILES } else { "$HOME\.local\share\chezmoi\home" }
+    $dotfiles = if ($env:DOTFILES) { $env:DOTFILES } else { "$HOME\.local\share\dots" }
     Set-Location $dotfiles
 }
 
