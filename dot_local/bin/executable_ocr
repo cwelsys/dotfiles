@@ -1,8 +1,7 @@
 #!/bin/bash
 
-sleep .2  # let launcher close
+sleep .2 # let launcher close
 
-# Use slurp directly (no wayfreeze = instant capture on release)
 SELECTION=$(slurp -b '#00000066' -c '#ffffffcc' -w 2 2>/dev/null)
 
 [ -z "$SELECTION" ] && exit 0
