@@ -181,6 +181,7 @@ pkgs:
         - libolm
         - pacman-contrib
         - unicorn
+        - opencode-bin
 
     mba:
       brews:
