@@ -332,6 +332,7 @@ pkgs:
         - samtay/tui/tetris
         - tig
         - bats-core
+        - neurosnap/tap/zmx
       casks:
         - 1password-cli
         - alt-tab

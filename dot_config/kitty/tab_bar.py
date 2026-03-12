@@ -35,6 +35,11 @@ if str(_config_dir) not in sys.path:
 
 from kitty.boss import get_boss
 from kitty.fast_data_types import Screen
+try:
+    from kitty.fast_data_types import wcswidth as _wcswidth
+except ImportError:
+    _wcswidth = None
+
 from kitty.tab_bar import (
     DrawData,
     ExtraData,
@@ -49,6 +54,18 @@ from tabbar_config import (
     get_config,
     get_icon,
 )
+
+
+def _display_width(s: str) -> int:
+    """Return the display width of a string (handles double-width glyphs).
+
+    Uses wcswidth when available (kitty provides it). Falls back to len()
+    which is correct for ASCII/single-width content.
+    """
+    if _wcswidth is not None:
+        w = _wcswidth(s)
+        return w if w >= 0 else len(s)
+    return len(s)
 
 
 @dataclass
@@ -236,7 +253,7 @@ def _format_git_parts(
 
 def _get_git_parts_length(parts: list[tuple[str, str]]) -> int:
     """Get the display length of git parts."""
-    return sum(len(text) for text, _ in parts)
+    return sum(_display_width(text) for text, _ in parts)
 
 
 def _get_git_status_raw(cwd: str) -> tuple[str, dict[str, int]] | None:
@@ -326,7 +343,8 @@ class RenderContext:
         screen_columns: Total screen width for layout calculations
         _tab_info_cache: Cached TabInfo across render cycles keyed by tab_id
         _layout_tab_ids: Tab order collected during the layout phase (current cycle)
-        _layout_tab_widths: Tab widths collected during the layout phase (current cycle)
+        _layout_tab_widths_expanded: Expanded pill widths per tab from layout phase
+        _layout_tab_widths_collapsed: Collapsed pill widths per tab from layout phase
         _precomputed_ends: Cumulative end positions pre-computed at end of layout phase;
                            used by render phase non-last tabs to produce accurate CellRanges
         _cached_is_pinned: Pinned state per tab from last render; used in pre-computation
@@ -341,7 +359,8 @@ class RenderContext:
     _tab_info_cache: dict[int, tuple[str, TabInfo]] = field(default_factory=dict)  # tab_id -> (cache_key, info)
     # Layout-phase pre-computation (computed before render phase; eliminates stale-position lag)
     _layout_tab_ids: list[int] = field(default_factory=list)
-    _layout_tab_widths: dict[int, int] = field(default_factory=dict)
+    _layout_tab_widths_expanded: dict[int, int] = field(default_factory=dict)
+    _layout_tab_widths_collapsed: dict[int, int] = field(default_factory=dict)
     _precomputed_ends: dict[int, int] = field(default_factory=dict)  # tab_id -> cumulative end pos
     _cached_is_pinned: dict[int, bool] = field(default_factory=dict)  # tab_id -> pinned state
 
@@ -635,9 +654,9 @@ def _draw_pill(
 
 def _pill_width(icon: str, text: str | None) -> int:
     """Calculate drawn width of a pill."""
-    width = 2 + len(icon) + 1  # left_border(1) + icon + padding(1) + right_border(1)
+    width = 2 + _display_width(icon) + 1  # left_border(1) + icon + padding(1) + right_border(1)
     if text:
-        width += 1 + 1 + len(text)  # separator(1) + space(1) + text
+        width += 1 + 1 + _display_width(text)  # separator(1) + space(1) + text
     return width
 
 
@@ -712,12 +731,12 @@ def _abbreviate_path(cwd: str, max_len: int) -> str | None:
         if remainder == "" or remainder.startswith("/"):
             cwd = "~" + remainder
 
-    if len(cwd) <= max_len:
+    if _display_width(cwd) <= max_len:
         return cwd
 
     parts = cwd.split("/")
     if len(parts) <= 1:
-        return cwd if len(cwd) <= max_len else None
+        return cwd if _display_width(cwd) <= max_len else None
 
     # Abbreviate all but last segment
     abbreviated = []
@@ -735,11 +754,11 @@ def _abbreviate_path(cwd: str, max_len: int) -> str | None:
     abbreviated.append(parts[-1])
     result = "/".join(abbreviated)
 
-    if len(result) <= max_len:
+    if _display_width(result) <= max_len:
         return result
 
     # Still too long - try just last segment
-    if len(parts[-1]) <= max_len:
+    if _display_width(parts[-1]) <= max_len:
         return parts[-1]
 
     # Truncate last segment
@@ -812,41 +831,85 @@ def _precompute_pill_positions(ctx: "RenderContext", screen_cols: int, pills) ->
     tab order + cached widths + cached pinned state to produce accurate end positions
     for the render phase — eliminating the one-render-lag from stale cached positions.
 
+    Replicates the strategy selection logic from the render phase so that positions
+    are accurate even when the strategy changes (e.g. new tab triggers collapse).
+
     Results are stored in ctx._precomputed_ends (tab_id -> cumulative end position).
     """
     tab_ids = ctx._layout_tab_ids
-    widths = ctx._layout_tab_widths
+    widths_exp = ctx._layout_tab_widths_expanded
+    widths_col = ctx._layout_tab_widths_collapsed
     spacing = pills.spacing
 
     # Split by cached pinned state (from previous render — changes rarely)
     center_ids = [t for t in tab_ids if not ctx._cached_is_pinned.get(t, False)]
     right_ids = [t for t in tab_ids if ctx._cached_is_pinned.get(t, False)]
 
-    # Center zone total width
+    # Find active tab in center zone
+    center_active_idx: int | None = None
+    for i, tid in enumerate(center_ids):
+        cached = ctx._tab_info_cache.get(tid)
+        if cached and cached[1].is_active:
+            center_active_idx = i
+            break
+
+    # Center zone width variants
     n_center = len(center_ids)
     center_spacing = (n_center - 1) * spacing if n_center > 1 else 0
-    center_total = sum(widths[t] for t in center_ids) + center_spacing
+    center_all_expanded = sum(widths_exp.get(t, 15) for t in center_ids) + center_spacing
+    center_active_expanded = (
+        sum(
+            widths_exp.get(t, 15) if i == center_active_idx else widths_col.get(t, 8)
+            for i, t in enumerate(center_ids)
+        ) + center_spacing
+        if center_ids else 0
+    )
+    center_all_collapsed = sum(widths_col.get(t, 8) for t in center_ids) + center_spacing
 
     # Right zone total width
     n_right = len(right_ids)
     right_spacing = (n_right - 1) * spacing if n_right > 1 else 0
-    right_total = sum(widths[t] for t in right_ids) + right_spacing
+    right_total = sum(widths_exp.get(t, 15) for t in right_ids) + right_spacing
     right_margin = 2 if right_ids else 0
 
-    # Center the center zone, avoiding overlap with right zone
-    center_start = (screen_cols - center_total) // 2
+    # Replicate strategy selection (mirrors render phase logic)
+    available_for_center = screen_cols - right_total - right_margin if right_ids else screen_cols
+    max_center = int(available_for_center * 0.6)
+
+    if center_all_expanded <= max_center:
+        strategy = "expand_all"
+        center_width = center_all_expanded
+    elif center_active_expanded <= max_center:
+        strategy = "expand_active"
+        center_width = center_active_expanded
+    else:
+        strategy = "collapse_all"
+        center_width = center_all_collapsed
+
+    center_width = min(center_width, screen_cols)  # clamp to screen
+
+    # Center position with clamping
+    center_start = max(0, (screen_cols - center_width) // 2)
     if right_ids:
         max_end = screen_cols - right_total - right_margin
-        if center_start + center_total > max_end:
-            center_start = max(0, max_end - center_total)
+        if center_start + center_width > max_end:
+            center_start = max(0, max_end - center_width)
 
-    # Cumulative end positions for center tabs
+    # Cumulative end positions for center tabs (using strategy-selected widths)
     ctx._precomputed_ends = {}
     pos = center_start
     for i, tid in enumerate(center_ids):
         if i > 0:
             pos += spacing
-        pos += widths[tid]
+        if strategy == "expand_all":
+            w = widths_exp.get(tid, 15)
+        elif strategy == "expand_active":
+            cached = ctx._tab_info_cache.get(tid)
+            is_active = cached[1].is_active if cached else False
+            w = widths_exp.get(tid, 15) if is_active else widths_col.get(tid, 8)
+        else:  # collapse_all
+            w = widths_col.get(tid, 8)
+        pos += w
         ctx._precomputed_ends[tid] = pos
 
     # Cumulative end positions for pinned (right zone) tabs
@@ -855,7 +918,7 @@ def _precompute_pill_positions(ctx: "RenderContext", screen_cols: int, pills) ->
         for i, tid in enumerate(right_ids):
             if i > 0:
                 pos += spacing
-            pos += widths[tid]
+            pos += widths_exp.get(tid, 15)
             ctx._precomputed_ends[tid] = pos
 
 
@@ -895,25 +958,45 @@ def draw_tab_pills(
         # Reset collection on first tab of this layout pass
         if index == 1:
             _render_ctx._layout_tab_ids = []
-            _render_ctx._layout_tab_widths = {}
+            _render_ctx._layout_tab_widths_expanded = {}
+            _render_ctx._layout_tab_widths_collapsed = {}
 
-        # Width from previous render's cache, or fallback estimate
-        if tab.tab_id in _render_ctx.cached_tab_positions:
+        # Compute both expanded and collapsed widths using cached tab info.
+        # Cached info is from the previous render cycle — good enough for width estimation.
+        layout_config = get_config()
+        pills_cfg = layout_config.styles.pills
+        cached = _render_ctx._tab_info_cache.get(tab.tab_id)
+        if cached:
+            tab_info = cached[1]
+            # Visual index: 1-based position among non-pinned tabs so far
+            n_non_pinned = sum(
+                1 for tid in _render_ctx._layout_tab_ids
+                if not _render_ctx._cached_is_pinned.get(tid, False)
+            )
+            is_pinned = _render_ctx._cached_is_pinned.get(tab.tab_id, False)
+            visual_idx = (n_non_pinned + 1) if not is_pinned else None
+            icon = _format_pill_icon(tab_info, pills_cfg, display_index=visual_idx)
+            text = _format_pill_text(tab_info, pills_cfg)
+            expanded = _pill_width(icon, text)
+            collapsed = _pill_width(icon, None)
+        elif tab.tab_id in _render_ctx.cached_tab_positions:
             _s, _e = _render_ctx.cached_tab_positions[tab.tab_id]
-            width = _e - _s
+            expanded = _e - _s
+            collapsed = max(8, expanded - 10)  # rough estimate for collapsed
         else:
-            width = 15
+            expanded = 15
+            collapsed = 8
 
         _render_ctx._layout_tab_ids.append(tab.tab_id)
-        _render_ctx._layout_tab_widths[tab.tab_id] = width
+        _render_ctx._layout_tab_widths_expanded[tab.tab_id] = expanded
+        _render_ctx._layout_tab_widths_collapsed[tab.tab_id] = collapsed
 
         # Pre-compute positions on last layout tab (all tab_ids now collected)
         if is_last:
-            config = get_config()
-            _precompute_pill_positions(_render_ctx, screen.columns, config.styles.pills)
+            _precompute_pill_positions(_render_ctx, screen.columns, pills_cfg)
 
-        screen.cursor.x = width
-        return width
+        screen.cursor.x = expanded
+        return expanded
 
     # Initialize or get render context
     config = get_config()
@@ -990,6 +1073,11 @@ def draw_tab_pills(
         return screen.cursor.x
 
     # === Last tab: draw everything ===
+
+    # Early exit: window too narrow to render anything meaningful
+    if screen.columns < 6:
+        return screen.columns
+
     tabs = _render_ctx.tabs
     active_idx = _render_ctx.active_tab_index
     active_info = tabs[active_idx] if tabs else info
@@ -1063,8 +1151,10 @@ def draw_tab_pills(
         strategy = "collapse_all"
         center_width = center_all_collapsed
 
+    center_width = min(center_width, screen.columns)  # clamp to screen width
+
     # Calculate positions - center tabs on screen, adjust if overlapping right zone
-    center_start = (screen.columns - center_width) // 2
+    center_start = max(0, (screen.columns - center_width) // 2)
 
     # Ensure tabs don't overlap with right zone
     if right_tabs:
@@ -1073,7 +1163,7 @@ def draw_tab_pills(
             center_start = max(0, max_center_end - center_width)
 
     # Left zone gets space before center tabs
-    left_max = center_start - 2 if pills.left_zone.enabled else 0
+    left_max = max(0, center_start - 2) if pills.left_zone.enabled else 0
 
     # === Draw Left Zone (folder + cwd, or mode indicator + cwd) ===
     screen.cursor.x = 0  # Reset - non-last tabs may have advanced cursor
@@ -1127,7 +1217,7 @@ def draw_tab_pills(
 
             # Try: abbrev_cwd + full_git
             cwd_text = _abbreviate_path(active_info.cwd, max_text_len - git_full_len - 1)
-            if cwd_text and len(cwd_text) + 1 + git_full_len <= max_text_len:
+            if cwd_text and _display_width(cwd_text) + 1 + git_full_len <= max_text_len:
                 display_parts: list[tuple[str, str]] = [(cwd_text + " ", "directory")]
                 display_parts.extend(git_full)
                 _draw_git_pill(
@@ -1165,6 +1255,9 @@ def draw_tab_pills(
     screen.cursor.x = center_start
 
     for draw_idx, (orig_idx, tab_info) in enumerate(center_tabs):
+        if screen.cursor.x >= screen.columns:
+            break
+
         # Spacing between pills
         if draw_idx > 0:
             screen.cursor.bg = 0
