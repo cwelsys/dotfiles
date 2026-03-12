@@ -100,8 +100,10 @@ binds {
     Mod3+Up    { focus-window-up; }
     Mod3+Right { focus-column-right; }
     Mod3+H     { focus-column-left; }
-    Mod3+J     { focus-window-down; }
-    Mod3+K     { focus-window-up; }
+    // Mod3+J     { focus-window-down; }
+    // Mod3+K     { focus-window-up; }
+    Mod3+J     { focus-workspace-down; }
+    Mod3+K     { focus-workspace-up; }
     Mod3+L     { focus-column-right; }
     Mod3+A     { move-column-left; }
     Mod3+S     { move-window-down; }
@@ -125,24 +127,24 @@ binds {
     Mod+Ctrl+End  { move-column-to-last; }
 
     // === Monitor Navigation ===
-    Mod+Ctrl+Left  { focus-monitor-left; }
+    // Mod+Ctrl+Left  { focus-monitor-left; }
     //Mod+Ctrl+Down  { focus-monitor-down; }
     //Mod+Ctrl+Up    { focus-monitor-up; }
-    Mod+Ctrl+Right { focus-monitor-right; }
-    Mod+Ctrl+H     { focus-monitor-left; }
-    Mod+Ctrl+J     { focus-monitor-down; }
-    Mod+Ctrl+K     { focus-monitor-up; }
-    Mod+Ctrl+L     { focus-monitor-right; }
+    // Mod+Ctrl+Right { focus-monitor-right; }
+    // Mod+Ctrl+H     { focus-monitor-left; }
+    // Mod+Ctrl+J     { focus-monitor-down; }
+    // Mod+Ctrl+K     { focus-monitor-up; }
+    // Mod+Ctrl+L     { focus-monitor-right; }
 
     // === Move to Monitor ===
-    Mod+Shift+Ctrl+Left  { move-column-to-monitor-left; }
-    Mod+Shift+Ctrl+Down  { move-column-to-monitor-down; }
-    Mod+Shift+Ctrl+Up    { move-column-to-monitor-up; }
-    Mod+Shift+Ctrl+Right { move-column-to-monitor-right; }
-    Mod+Shift+Ctrl+H     { move-column-to-monitor-left; }
-    Mod+Shift+Ctrl+J     { move-column-to-monitor-down; }
-    Mod+Shift+Ctrl+K     { move-column-to-monitor-up; }
-    Mod+Shift+Ctrl+L     { move-column-to-monitor-right; }
+    // Mod+Shift+Ctrl+Left  { move-column-to-monitor-left; }
+    // Mod+Shift+Ctrl+Down  { move-column-to-monitor-down; }
+    // Mod+Shift+Ctrl+Up    { move-column-to-monitor-up; }
+    // Mod+Shift+Ctrl+Right { move-column-to-monitor-right; }
+    // Mod+Shift+Ctrl+H     { move-column-to-monitor-left; }
+    // Mod+Shift+Ctrl+J     { move-column-to-monitor-down; }
+    // Mod+Shift+Ctrl+K     { move-column-to-monitor-up; }
+    // Mod+Shift+Ctrl+L     { move-column-to-monitor-right; }
 
     // === Workspace Navigation ===
     Mod+Page_Down      { focus-workspace-down; }
@@ -153,6 +155,7 @@ binds {
     Mod+Ctrl+Up   { move-column-to-workspace-up; }
     Mod+Ctrl+U         { move-column-to-workspace-down; }
     Mod+Ctrl+I         { move-column-to-workspace-up; }
+
 
     // === Move Workspaces ===
     Mod+Shift+Page_Down { move-workspace-down; }

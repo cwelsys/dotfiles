@@ -71,7 +71,7 @@ hotkey-overlay {
     skip-at-startup
 }
 prefer-no-csd
-screenshot-path "~/Pictures/screenshot/%Y-%m-%d %H-%M-%S.png"
+screenshot-path "~/Pictures/screenshots/%m.%d_%H.%M.%S.png"
 animations {
     workspace-switch {
         spring damping-ratio=0.80 stiffness=523 epsilon=0.0001
@@ -197,56 +197,3 @@ include "dms/wpblur.kdl"
 workspace "main"
 workspace "game"
 workspace "chat"
-
-window-rule {
-  match app-id="^vesktop$"
-  open-on-workspace "chat"
-}
-
-window-rule {
-  match app-id=r#"\.exe$"#
-  match app-id="gamescope"
-  match app-id=r#"^steam_app_"#
-  match app-id="cs2"
-  match app-id="tf_linux64"
-  match app-id="Slay the Spire 2"
-  opacity 1.0
-  // open-maximized-to-edges false
-  open-on-workspace "game"
-}
-
-window-rule {
-    match app-id="^steam$" title="^Friends List$"
-    open-floating true
-    default-floating-position x=3217 y=298
-}
-
-window-rule {
-    match app-id=r#"^tte\.screenie$"#
-    open-fullscreen true
-}
-
-window-rule {
-    match app-id="^com.nextcloud.desktopclient.nextcloud$"
-    open-floating true
-    default-floating-position x=8 y=0 relative-to="top-right"
-}
-
-window-rule {
-    match app-id="^com.gabm.satty$"
-    open-floating true
-    default-floating-position x=20 y=20 relative-to="bottom-right"
-}
-
-window-rule {
-    match app-id="^bluebubbles$"
-    open-floating true
-    default-column-width { fixed 1600; }
-    default-window-height { fixed 900; }
-}
-
-window-rule {
-    match app-id="steam_proton"
-    open-floating true
-}
-
