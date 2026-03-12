@@ -209,6 +209,7 @@ window-rule {
   match app-id=r#"^steam_app_"#
   match app-id="cs2"
   match app-id="tf_linux64"
+  match app-id="Slay the Spire 2"
   opacity 1.0
   // open-maximized-to-edges false
   open-on-workspace "game"

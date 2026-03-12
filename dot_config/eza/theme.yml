@@ -105,6 +105,7 @@ filenames:
   ".cache": { icon: { glyph: "" } }
   ".local": { icon: { glyph: "󰉌" } }
   ".Trash": { icon: { glyph: "" } }
+  ".steam": { icon: { glyph: ""} }
   Library: { icon: { glyph: "" } }   
   Public: { icon: { glyph: "󱥾" } }
   Applications: { icon: { glyph: "󰀻" } }

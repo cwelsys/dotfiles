@@ -1,10 +1,10 @@
 #!/bin/bash
 
 [[ -f ~/.config/user-dirs.dirs ]] && source ~/.config/user-dirs.dirs
-OUTPUT_DIR="${XDG_PICTURES_DIR:-$HOME/Pictures}/screenshot"
+OUTPUT_DIR="${XDG_PICTURES_DIR:-$HOME/Pictures}/screenshots"
 mkdir -p "$OUTPUT_DIR"
 
-TIMESTAMP=$(date +'%Y%m%d-%H%M%S')
+TIMESTAMP=$(date +'%m.%d_%H.%M.%S')
 SCREENSHOT_PATH="$OUTPUT_DIR/$TIMESTAMP.png"
 SCRIPT_DIR="$(dirname "$0")"
 

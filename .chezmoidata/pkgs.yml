@@ -400,7 +400,6 @@ pkgs:
       pacman:
         - 1password-beta
         - 7zip
-        - alacritty
         - amd-ucode
         - asciiquarium-transparent-git
         - base
@@ -645,7 +644,6 @@ pkgs:
         - chromium
         - cliphist
         - dms-shell-git
-        - kooha
         - mate-polkit
         - matugen
         - swappy
@@ -729,7 +727,6 @@ pkgs:
         - atuin
         - gdb
         - git-lfs
-        - steamtinkerlaunch-git
         - sway
         - unrar
         - wayland-utils
@@ -755,6 +752,8 @@ pkgs:
         - python-aiohttp-oauthlib
         - vdirsyncer
         - xwayland-satellite-git
+        - jellyfin-desktop-git
+        - obsidian-cli-bin
 
     wini:
       scoop:
