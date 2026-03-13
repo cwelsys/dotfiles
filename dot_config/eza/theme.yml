@@ -115,3 +115,15 @@ filenames:
       background: null
     icon:
       glyph: "󰂺"
+  "INSTALL.md":
+    filename:
+      foreground: "#F9E2AF"
+      background: null
+    icon:
+      glyph: "󰂺"
+  "CONTRIBUTING.md":
+    filename:
+      foreground: "#F9E2AF"
+      background: null
+    icon:
+      glyph: "󰂺"

@@ -470,15 +470,15 @@ def format_path(cwd: str, index: int, is_active: bool, config) -> str:
     return "/".join(parts)
 
 
-def get_foreground_process(tab_id: int) -> tuple[str, str, str | None, bool]:
-    """Get the foreground process name, cwd, optional remote host, and pin state.
+def get_foreground_process(tab_id: int) -> tuple[str, str, str | None]:
+    """Get the foreground process name, cwd, and optional remote host.
 
     Uses TabAccessor (kitty's safe API) for exe/cwd, then a single get_boss()
-    call for user vars (PROC, REMOTE_CWD, REMOTE_HOST, PINNED).
+    call for user vars (PROC, REMOTE_CWD, REMOTE_HOST).
 
     Returns:
-        Tuple of (executable_name, cwd, remote_hostname, is_pinned).
-        Falls back to ("zsh", "", None, False) on errors.
+        Tuple of (executable_name, cwd, remote_hostname).
+        Falls back to ("zsh", "", None) on errors.
     """
     try:
         from kitty.tab_bar import TabAccessor
@@ -491,7 +491,6 @@ def get_foreground_process(tab_id: int) -> tuple[str, str, str | None, bool]:
 
         # Single boss lookup for all user vars
         remote_host = None
-        is_pinned = False
         try:
             boss = get_boss()
             tab = boss.tab_for_id(tab_id)
@@ -506,20 +505,19 @@ def get_foreground_process(tab_id: int) -> tuple[str, str, str | None, bool]:
                 if remote_cwd:
                     cwd = remote_cwd
                 remote_host = user_vars.get("REMOTE_HOST") or None
-                is_pinned = user_vars.get("PINNED") == "true"
         except Exception as e:
             print(
                 f"[tab_bar] Warning: Failed to get user vars for tab {tab_id}: {e}",
                 file=sys.stderr,
             )
 
-        return (exe, cwd, remote_host, is_pinned)
+        return (exe, cwd, remote_host)
     except Exception as e:
         print(
             f"[tab_bar] Warning: Failed to get foreground process for tab {tab_id}: {e}",
             file=sys.stderr,
         )
-        return ("zsh", "", None, False)
+        return ("zsh", "", None)
 
 
 def get_tab_info(tab: TabBarData, index: int) -> TabInfo:
@@ -538,12 +536,9 @@ def get_tab_info(tab: TabBarData, index: int) -> TabInfo:
             old_info.index = index
             old_info.is_active = tab.is_active
             old_info.tab = tab
-            # Reset is_pinned - checked separately in draw_tab_pills
-            # (PINNED user var changes independently of the cache key)
-            old_info.is_pinned = False
             return old_info
 
-    exe, cwd, hostname, is_pinned = get_foreground_process(tab.tab_id)
+    exe, cwd, hostname = get_foreground_process(tab.tab_id)
     icon = get_icon(exe)
     info = TabInfo(
         tab=tab,
@@ -553,7 +548,7 @@ def get_tab_info(tab: TabBarData, index: int) -> TabInfo:
         icon=icon,
         hostname=hostname,
         is_active=tab.is_active,
-        is_pinned=is_pinned,
+        is_pinned=False,
     )
 
     if _render_ctx is not None:
@@ -1060,17 +1055,11 @@ def draw_tab_pills(
 
     # Collect tab info (cached across render cycles for process/cwd)
     info = get_tab_info(tab, index)
-    # Check pinned state fresh each render (not cached - changes independently)
+    # Check pinned state from TabBarData (native tab.pinned flag)
     if pills.right_zone.enabled:
-        try:
-            boss = get_boss()
-            kitty_tab = boss.tab_for_id(tab.tab_id)
-            if kitty_tab and kitty_tab.active_window:
-                if kitty_tab.active_window.user_vars.get("PINNED") == "true":
-                    info.is_pinned = True
-        except Exception:
-            pass
-        if not info.is_pinned and info.exe in pills.right_zone.pinned_processes:
+        if tab.pinned:
+            info.is_pinned = True
+        elif info.exe in pills.right_zone.pinned_processes:
             info.is_pinned = True
     # Cache pinned state for use during next layout phase's pre-computation
     _render_ctx._cached_is_pinned[tab.tab_id] = info.is_pinned
@@ -1098,9 +1087,9 @@ def draw_tab_pills(
     #      Without this, tab_id_at() returns 0 → fallback len(tab_ids)-1 → PIN.
     if not is_last:
         if info.is_pinned:
-            # Always suppress — pinned tabs are non-draggable by design
-            compact = before + _render_ctx._layout_tab_widths_expanded.get(info.tab.tab_id, 15)
-            screen.cursor.x = compact  # safe for overflow check
+            # Pinned tabs should always be last (klonopin invariant) but handle
+            # the transient case. Return before without advancing cursor so the
+            # next tab's CellRange starts correctly.
             return before               # empty CellRange (before, before)
         if info.tab.tab_id in _render_ctx._precomputed_ends:
             _end = _render_ctx._precomputed_ends[info.tab.tab_id]
@@ -1455,7 +1444,7 @@ def draw_tab_powerline(
             screen_columns=screen.columns,
         )
 
-    exe, cwd, remote_host, _is_pinned = get_foreground_process(tab.tab_id)
+    exe, cwd, remote_host = get_foreground_process(tab.tab_id)
     formatted = format_tab_title(
         exe, cwd, tab.title, index, tab.is_active, remote_host, config
     )
@@ -1526,10 +1515,16 @@ def draw_tab(
 
         print(f"[tab_bar] Error in draw_tab: {e}", file=sys.stderr)
         traceback.print_exc(file=sys.stderr)
+        with open("/tmp/kitty-tab-bar.log", "a") as _lf:
+            _lf.write(f"draw_tab error: {e}\n")
+            traceback.print_exc(file=_lf)
         try:
             return draw_tab_with_powerline(
                 draw_data, screen, tab, before, max_title_length, index, is_last, extra_data
             )
-        except Exception:
+        except Exception as e2:
+            with open("/tmp/kitty-tab-bar.log", "a") as _lf:
+                _lf.write(f"powerline fallback error: {e2}\n")
+                traceback.print_exc(file=_lf)
             # Screen state may be corrupted from partial draw; don't advance cursor
             return before
