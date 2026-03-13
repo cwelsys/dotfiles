@@ -258,13 +258,19 @@ if command -v docker >/dev/null 2>&1; then
     }
 fi
 
-if command -v nerdctl >/dev/null 2>&1; then
-    alias n='nerdctl'
-fi
+
 
 if command -v nvidia-settings >/dev/null 2>&1; then
     alias nvidia-settings='nvidia-settings --config="$XDG_CONFIG_HOME/nvidia/settings"'
 fi
+
+skills() {
+  if [[ "$1" == "add" ]]; then
+    npx skills add "${@:2}" -a claude-code --copy
+  else
+    npx skills "$@"
+  fi
+}
 
 if command -v systemctl >/dev/null 2>&1; then
     alias sy='systemctl'
