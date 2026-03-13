@@ -682,7 +682,6 @@ pkgs:
         - espeak
         - gpg-tui
         - innoextract
-        - kitty
         - lesspipe
         - onefetch
         - opencode-bin

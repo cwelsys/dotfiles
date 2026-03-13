@@ -92,10 +92,11 @@ _SHELLS = {
     "elvish", "xonsh",
     "-zsh", "-bash", "-fish", "-sh",  # Login shell variants
 }
-_shells_configured = False
+_shells_configured_for: int = 0  # id() of the config that extra_shells was applied from
 
 # Git status cache: repo_path -> ((index_mtime, stash_mtime), (branch, counts))
 _git_cache: dict[str, tuple[tuple[float, float], tuple[str, dict[str, int]]]] = {}
+_GIT_CACHE_MAX = 50
 
 # Git dir lookup cache: cwd -> git_dir_path (avoids repeated filesystem walks)
 _git_dir_cache: dict[str, Path | None] = {}
@@ -320,6 +321,8 @@ def _get_git_status_raw(cwd: str) -> tuple[str, dict[str, int]] | None:
             except Exception:
                 pass  # Stash count is optional
 
+        if len(_git_cache) >= _GIT_CACHE_MAX:
+            _git_cache.clear()
         _git_cache[repo_key] = (combined_mtime, (branch, counts))
         return (branch, counts)
     except Exception:
@@ -348,6 +351,10 @@ class RenderContext:
         _precomputed_ends: Cumulative end positions pre-computed at end of layout phase;
                            used by render phase non-last tabs to produce accurate CellRanges
         _cached_is_pinned: Pinned state per tab from last render; used in pre-computation
+        _last_center_tab_id: Tab ID of the last non-pinned tab; used during drag to extend
+                             its CellRange to screen edge so mouse in right zone returns it
+                             (preventing drag from targeting pinned tabs via fallback)
+        is_drag_active: True when kitty has an active tab_being_dropped (drop preview active)
     """
 
     colors: UnifiedColorResolver
@@ -363,6 +370,8 @@ class RenderContext:
     _layout_tab_widths_collapsed: dict[int, int] = field(default_factory=dict)
     _precomputed_ends: dict[int, int] = field(default_factory=dict)  # tab_id -> cumulative end pos
     _cached_is_pinned: dict[int, bool] = field(default_factory=dict)  # tab_id -> pinned state
+    _last_center_tab_id: int | None = None  # last non-pinned tab ID (from layout phase)
+    is_drag_active: bool = False  # True when tab_being_dropped is set on active tab manager
 
 
 # Global render context (set per render cycle)
@@ -895,6 +904,9 @@ def _precompute_pill_positions(ctx: "RenderContext", screen_cols: int, pills) ->
         if center_start + center_width > max_end:
             center_start = max(0, max_end - center_width)
 
+    # Store last center tab ID for drag-aware CellRange extension
+    ctx._last_center_tab_id = center_ids[-1] if center_ids else None
+
     # Cumulative end positions for center tabs (using strategy-selected widths)
     ctx._precomputed_ends = {}
     pos = center_start
@@ -1001,12 +1013,12 @@ def draw_tab_pills(
     # Initialize or get render context
     config = get_config()
 
-    # Apply configurable extra shells once
-    global _shells_configured
-    if not _shells_configured:
+    # Apply configurable extra shells (re-applies if config reloaded)
+    global _shells_configured_for
+    if _shells_configured_for != id(config):
         if config.general.extra_shells:
             _SHELLS.update(config.general.extra_shells)
-        _shells_configured = True
+        _shells_configured_for = id(config)
 
     if _render_ctx is None:
         # First ever render - create fresh context
@@ -1023,6 +1035,7 @@ def draw_tab_pills(
         old_tab_info = _render_ctx._tab_info_cache
         old_precomputed = _render_ctx._precomputed_ends
         old_is_pinned = _render_ctx._cached_is_pinned
+        old_last_center = _render_ctx._last_center_tab_id
         _render_ctx = RenderContext(
             colors=UnifiedColorResolver(config, draw_data),
             config=config,
@@ -1032,6 +1045,16 @@ def draw_tab_pills(
         _render_ctx._tab_info_cache = old_tab_info
         _render_ctx._precomputed_ends = old_precomputed
         _render_ctx._cached_is_pinned = old_is_pinned
+        _render_ctx._last_center_tab_id = old_last_center
+        # Detect drag state once per render cycle (tab_being_dropped set = drop preview active)
+        try:
+            _boss = get_boss()
+            _tm = _boss.active_tab_manager if _boss else None
+            _render_ctx.is_drag_active = (
+                _tm is not None and getattr(_tm, "tab_being_dropped", None) is not None
+            )
+        except Exception:
+            _render_ctx.is_drag_active = False
 
     pills = config.styles.pills
 
@@ -1058,16 +1081,47 @@ def draw_tab_pills(
     # If not the last tab, return position without drawing.
     # Setting screen.cursor.x is critical: kitty reads it as `before` for the next
     # tab, producing non-overlapping CellRanges for correct click detection.
-    # Prefer pre-computed positions (current cycle, from layout phase) over
-    # cached positions (previous cycle, stale if centering shifted).
+    #
+    # DRAG SAFETY: Pinned (right-zone) tabs must never be drag targets because
+    # klonopin.py enforces that pinned tabs are always last in kitty's ordering.
+    # Drag-to-reorder can temporarily violate this (e.g. [center, pinned, center]),
+    # and if tab_id_at() returns a pinned tab's ID the drag logic swaps the pinned
+    # tab out of last position — corrupting the ordering invariant.
+    #
+    # Two-part fix:
+    #   1. Pinned non-last: always return `before` → empty CellRange (before, before).
+    #      tab_id_at() skips empty ranges; pinned tabs are never drag-swap targets.
+    #      cursor.x advances compactly (before + width) to pass overflow check.
+    #   2. Last center tab during drag: return screen.columns to extend its CellRange
+    #      to the screen edge. Mouse in the right-zone gap or over pinned pills maps
+    #      to the last center tab, which is the correct boundary for the drag.
+    #      Without this, tab_id_at() returns 0 → fallback len(tab_ids)-1 → PIN.
     if not is_last:
+        if info.is_pinned:
+            # Always suppress — pinned tabs are non-draggable by design
+            compact = before + _render_ctx._layout_tab_widths_expanded.get(info.tab.tab_id, 15)
+            screen.cursor.x = compact  # safe for overflow check
+            return before               # empty CellRange (before, before)
         if info.tab.tab_id in _render_ctx._precomputed_ends:
             _end = _render_ctx._precomputed_ends[info.tab.tab_id]
             screen.cursor.x = _end
+            # During drag, extend last center tab's CellRange to cover the right zone.
+            # This makes mouse-hover anywhere past the center zone return this tab's
+            # ID, preventing drag from swapping with pinned tabs via the fallback path.
+            if (
+                _render_ctx.is_drag_active
+                and info.tab.tab_id == _render_ctx._last_center_tab_id
+            ):
+                return screen.columns
             return _end
         if info.tab.tab_id in _render_ctx.cached_tab_positions:
             _start, _end = _render_ctx.cached_tab_positions[info.tab.tab_id]
             screen.cursor.x = _end
+            if (
+                _render_ctx.is_drag_active
+                and info.tab.tab_id == _render_ctx._last_center_tab_id
+            ):
+                return screen.columns
             return _end
         screen.cursor.x = before + 15
         return screen.cursor.x
@@ -1101,8 +1155,9 @@ def draw_tab_pills(
 
     # Pre-compute widths once per tab (avoids 2-3x redundant string formatting)
     center_widths: list[tuple[int, int]] = []  # (expanded, collapsed)
-    for _, t in center_tabs:
-        icon = _format_pill_icon(t, pills, display_index=1)
+    for draw_idx, (_, t) in enumerate(center_tabs):
+        visual_index = draw_idx + 1
+        icon = _format_pill_icon(t, pills, display_index=visual_index)
         text = _format_pill_text(t, pills)
         center_widths.append((_pill_width(icon, text), _pill_width(icon, None)))
 
@@ -1326,6 +1381,24 @@ def draw_tab_pills(
     _render_ctx.tabs = []
     _render_ctx.active_tab_index = 0
 
+    # During drag, adjust return value to prevent pinned tabs from being drag targets:
+    #
+    # - is_last PINNED tab: return `before` → empty (before, before) CellRange.
+    #   tab_id_at() never returns PIN's ID; clicking/dragging into right zone falls
+    #   through to the last center tab's extended CellRange (see non-last handler).
+    #
+    # - is_last CENTER tab: return `screen.columns` → extend CellRange to screen edge.
+    #   This is needed when the last center tab ends up is_last (e.g. tab_ids order
+    #   is [A, PIN, B] during drag — B is both last center and is_last). Without this,
+    #   mouse in the right zone returns tab_id_at()=0 → fallback=len-1 → PIN, which
+    #   causes kitty to swap PIN out of its last position (klonopin invariant violated).
+    #
+    # In normal (non-drag) mode, return screen.cursor.x so clicking pinned pills works.
+    if _render_ctx.is_drag_active and right_tabs:
+        if info.is_pinned:
+            return before  # suppress CellRange — pinned is_last not a drag target
+        else:
+            return screen.columns  # last center tab absorbs all right-zone hover positions
     return screen.cursor.x
 
 
@@ -1449,12 +1522,14 @@ def draw_tab(
                 extra_data,
             )
     except Exception as e:
-        import sys
         import traceback
 
         print(f"[tab_bar] Error in draw_tab: {e}", file=sys.stderr)
         traceback.print_exc(file=sys.stderr)
-        # Fallback to kitty's built-in
-        return draw_tab_with_powerline(
-            draw_data, screen, tab, before, max_title_length, index, is_last, extra_data
-        )
+        try:
+            return draw_tab_with_powerline(
+                draw_data, screen, tab, before, max_title_length, index, is_last, extra_data
+            )
+        except Exception:
+            # Screen state may be corrupted from partial draw; don't advance cursor
+            return before
