@@ -390,7 +390,6 @@ pkgs:
         - font-fantasque-sans-mono-nerd-font
         - font-noto-sans-symbols-2
         - font-twitter-color-emoji
-        - kitty
         - font-noto-color-emoji
         - helium-browser
         - doll
