@@ -665,7 +665,6 @@ pkgs:
         - cava
         - dsearch-bin
         - cemu-bin
-        - claude-code-acp
         - libicns
         - retroarch-steam-launcher
         - rpcs3-bin
@@ -752,6 +751,7 @@ pkgs:
         - xwayland-satellite-git
         - jellyfin-desktop-git
         - obsidian-cli-bin
+        - kimageformats
 
     wini:
       scoop:
