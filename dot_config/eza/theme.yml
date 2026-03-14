@@ -127,3 +127,15 @@ filenames:
       background: null
     icon:
       glyph: "󰂺"
+  "CHANGELOG.md":
+    filename:
+      foreground: "#F9E2AF"
+      background: null
+    icon:
+      glyph: "󰂺"
+  "CODE_OF_CONDUCT.md":
+    filename:
+      foreground: "#F9E2AF"
+      background: null
+    icon:
+      glyph: "󰂺"

@@ -16,7 +16,11 @@ title_format = "{cwd}"
 
 [files]
 excludes = [
-  { urn = ".DS_Store", in = "*" },
+  { urn = [
+    ".DS_Store",
+    ".localized",
+    ".hushlogin",
+  ], in = "*" },
   { urn = [
     "__pycache__",
     "*.pyc",
@@ -46,6 +50,7 @@ excludes = [
     "Thumbs.db",
   ], in = "*" },
   { urn = ".Trash-*", in = "*" },
+  { urn = ".Trash", in = "*" },
 ]
 
 [plugin]

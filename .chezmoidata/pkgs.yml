@@ -296,7 +296,6 @@ pkgs:
         - wrk
         - xdg-ninja
         - xxh
-        - yazi
         - yq
         - zoxide
         - gpg-tui
@@ -394,6 +393,7 @@ pkgs:
         - helium-browser
         - doll
         - font-juliamono
+        - gcloud-cli
 
     main:
       pacman:
