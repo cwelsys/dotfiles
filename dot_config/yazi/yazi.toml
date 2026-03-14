@@ -14,6 +14,40 @@ scrolloff = 5
 mouse_events = ["click", "scroll", "touch", "move", "drag"]
 title_format = "{cwd}"
 
+[files]
+excludes = [
+  { urn = ".DS_Store", in = "*" },
+  { urn = [
+    "__pycache__",
+    "*.pyc",
+    "*.pyo",
+  ], in = "*" },
+  { urn = "node_modules", in = "*" },
+  { urn = [
+    ".venv",
+    "venv",
+  ], in = "*" },
+  { urn = [
+    ".pki",
+    ".steampath",
+    ".steampid",
+  ], in = "*" },
+  { urn = [
+    ".nextcloudsync.log",
+    ".sync_*.db*",
+  ], in = "*" },
+  { urn = [
+    ".stfolder",
+    ".stignore",
+  ], in = "*" },
+  { urn = [
+    "NTUSER*",
+    "ntuser*",
+    "Thumbs.db",
+  ], in = "*" },
+  { urn = ".Trash-*", in = "*" },
+]
+
 [plugin]
 prepend_fetchers = [
   { id = "git", url = "*", run = "git" },

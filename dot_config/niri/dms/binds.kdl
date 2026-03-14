@@ -214,6 +214,7 @@ binds {
     Mod+Shift+R { switch-preset-window-height; }
     Mod+Ctrl+R { reset-window-height; }
     Mod+Ctrl+F { expand-column-to-available-width; }
+    Mod3+C { center-column; }
     Mod+C { center-column; }
     Mod+Ctrl+C { center-visible-columns; }
 
