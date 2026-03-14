@@ -710,7 +710,6 @@ pkgs:
         - zig
         - linux-zen
         - linux-zen-headers
-        - jackify-bin
         - mangohud
         - adw-gtk-theme
         - niri

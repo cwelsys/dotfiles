@@ -20,37 +20,26 @@ excludes = [
     ".DS_Store",
     ".localized",
     ".hushlogin",
-  ], in = "*" },
-  { urn = [
-    "__pycache__",
-    "*.pyc",
-    "*.pyo",
-  ], in = "*" },
-  { urn = "node_modules", in = "*" },
-  { urn = [
-    ".venv",
-    "venv",
-  ], in = "*" },
-  { urn = [
-    ".pki",
-    ".steampath",
-    ".steampid",
-  ], in = "*" },
-  { urn = [
-    ".nextcloudsync.log",
-    ".sync_*.db*",
-  ], in = "*" },
-  { urn = [
-    ".stfolder",
-    ".stignore",
-  ], in = "*" },
-  { urn = [
+    ".cache",
     "NTUSER*",
     "ntuser*",
     "Thumbs.db",
+    ".Trash",
+    ".Trash-*",
+    ".pki",
+    ".steampath",
+    ".steampid",
+    ".nextcloudsync.log",
+    ".sync_*.db*",
+    ".stfolder",
+    ".stignore",
+    "__pycache__",
+    "*.pyc",
+    "*.pyo",
+    "node_modules",
+    ".venv",
+    "venv",
   ], in = "*" },
-  { urn = ".Trash-*", in = "*" },
-  { urn = ".Trash", in = "*" },
 ]
 
 [plugin]
