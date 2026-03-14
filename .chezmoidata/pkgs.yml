@@ -707,7 +707,6 @@ pkgs:
         - lib32-libxi
         - rust-analyzer-git
         - tesseract
-        - yazi-nightly-bin
         - zig
         - linux-zen
         - linux-zen-headers
