@@ -8,13 +8,6 @@ fdz-widget() {
 zle -N fdz-widget
 bindkey '^F' fdz-widget
 
-rgz-widget() {
-	rgz
-	zle reset-prompt
-}
-zle -N rgz-widget
-bindkey '^G' rgz-widget
-
   fzf-atuin-history-widget() {
     local selected num
     setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2>/dev/null
@@ -61,32 +54,19 @@ _fix-omz-plugin() {
 fdz() {
   local file
   file=$(fd --type file --follow --hidden --exclude .git | fzf \
+    --height=90% \
     --prompt="Files> " \
-    --header="CTRL-T: Switch between Files/Directories" \
     --bind="ctrl-t:transform:[[ \$FZF_PROMPT == *Directory* ]] && \
   echo change-prompt\\(Files\\> \\)+reload\\(fd --type file\\) || \
   echo change-prompt\\(Directory\\> \\)+reload\\(fd --type directory\\)" \
+    --bind='load:transform:if (( FZF_COLUMNS < 120 )); then ph=$(( FZF_LINES - FZF_MATCH_COUNT - 8 )); echo change-preview-window\(bottom,$((ph > 10 ? ph : 10)),wrap,noinfo\); fi' \
+    --bind='resize:transform:if (( FZF_COLUMNS < 120 )); then ph=$(( FZF_LINES - FZF_MATCH_COUNT - 8 )); echo change-preview-window\(bottom,$((ph > 10 ? ph : 10)),wrap,noinfo\); fi' \
     --preview="if echo \$FZF_PROMPT | grep -q 'Files> '; then \
       bat --color=always {} --style=plain; \
       else eza -T --colour=always --icons=always {}; fi")
   [ -n "$file" ] && _fzf_open_path "$file"
 }
 
-rgz() {
-  local file
-  RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case"
-  file=$(FZF_DEFAULT_COMMAND="$RG_PREFIX ''" fzf --ansi --disabled \
-    --bind="start:reload:$RG_PREFIX {q}" \
-    --bind="change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
-    --color="hl:-1:underline,hl+:-1:underline:reverse" \
-    --delimiter=":" \
-    --prompt="1. ripgrep> " \
-    --header="CTRL-T: Switch between ripgrep/fzf" \
-    --header-first \
-    --preview="bat --color=always {1} --highlight-line {2} --style=plain" \
-    --preview-window="up,60%,border-bottom,+{2}+3/3")
-  [ -n "$file" ] && _fzf_open_path "$file"
-}
 
 _fzf_open_path() {
   local file="$1"
@@ -108,117 +88,8 @@ _fzf_open_path() {
   esac
 }
 
-clone() {
-  if [[ -z "$1" ]]; then
-    echo "What git repo do you want?" >&2
-    return 1
-  fi
-  local user repo
-  if [[ "$1" = */* ]]; then
-    user=${1%/*}
-    repo=${1##*/}
-  else
-    user=$GITHUB_USERNAME
-    repo=$1
-  fi
-
-  local giturl="github.com"
-  local dest=${XDG_PROJECTS_HOME:-~/Projects}/$user/$repo
-
-  if [[ ! -d $dest ]]; then
-    git clone --recurse-submodules "git@${giturl}:${user}/${repo}.git" "$dest"
-  else
-    echo "No need to clone, that directory already exists."
-    echo "Taking you there."
-  fi
-  cd $dest
-}
-
-# Get Unicode codepoint of a character
 iconcp() {
   local char="${1:-$(cat)}"
   python3 -c "print(''.join(f'U+{ord(c):04X} ' for c in '$char').strip())"
 }
 
-extract() {
-  setopt localoptions noautopushd
-
-  if (( $# == 0 )); then
-    cat >&2 <<'EOF'
-Usage: extract [-option] [file ...]
-Options:
-  -r, --remove    Remove archive after unpacking.
-EOF
-  fi
-
-  local remove_archive=1
-  if [[ "$1" == "-r" ]] || [[ "$1" == "--remove" ]]; then
-    remove_archive=0
-    shift
-  fi
-
-  local pwd="$PWD"
-  while (( $# > 0 )); do
-    if [[ ! -f "$1" ]]; then
-      echo "extract: '$1' is not a valid file" >&2
-      shift
-      continue
-    fi
-
-    local success=0
-    local extract_dir="${1:t:r}"
-    local file="$1" full_path="${1:A}"
-    case "${file:l}" in
-      (*.tar.gz|*.tgz) (( $+commands[pigz] )) && { pigz -dc "$file" | tar xv } || tar zxvf "$file" ;;
-      (*.tar.bz2|*.tbz|*.tbz2) tar xvjf "$file" ;;
-      (*.tar.xz|*.txz)
-        tar --xz --help &> /dev/null \
-        && tar --xz -xvf "$file" \
-        || xzcat "$file" | tar xvf - ;;
-      (*.tar.zma|*.tlz)
-        tar --lzma --help &> /dev/null \
-        && tar --lzma -xvf "$file" \
-        || lzcat "$file" | tar xvf - ;;
-      (*.tar.zst|*.tzst)
-        tar --zstd --help &> /dev/null \
-        && tar --zstd -xvf "$file" \
-        || zstdcat "$file" | tar xvf - ;;
-      (*.tar) tar xvf "$file" ;;
-      (*.tar.lz) (( $+commands[lzip] )) && tar xvf "$file" ;;
-      (*.tar.lz4) lz4 -c -d "$file" | tar xvf - ;;
-      (*.tar.lrz) (( $+commands[lrzuntar] )) && lrzuntar "$file" ;;
-      (*.gz) (( $+commands[pigz] )) && pigz -dk "$file" || gunzip -k "$file" ;;
-      (*.bz2) bunzip2 "$file" ;;
-      (*.xz) unxz "$file" ;;
-      (*.lrz) (( $+commands[lrunzip] )) && lrunzip "$file" ;;
-      (*.lz4) lz4 -d "$file" ;;
-      (*.lzma) unlzma "$file" ;;
-      (*.z) uncompress "$file" ;;
-      (*.zip|*.war|*.jar|*.ear|*.sublime-package|*.ipa|*.ipsw|*.xpi|*.apk|*.aar|*.whl) unzip "$file" -d "$extract_dir" ;;
-      (*.rar) unrar x -ad "$file" ;;
-      (*.rpm)
-        command mkdir -p "$extract_dir" && builtin cd -q "$extract_dir" \
-        && rpm2cpio "$full_path" | cpio --quiet -id ;;
-      (*.7z) 7za x "$file" ;;
-      (*.deb)
-        command mkdir -p "$extract_dir/control" "$extract_dir/data"
-        builtin cd -q "$extract_dir"; ar vx "$full_path" > /dev/null
-        builtin cd -q control; extract ../control.tar.*
-        builtin cd -q ../data; extract ../data.tar.*
-        builtin cd -q ..; command rm *.tar.* debian-binary ;;
-      (*.zst) unzstd "$file" ;;
-      (*.cab) cabextract -d "$extract_dir" "$file" ;;
-      (*.cpio) cpio -idmvF "$file" ;;
-      (*)
-        echo "extract: '$file' cannot be extracted" >&2
-        success=1 ;;
-    esac
-
-    (( success = success > 0 ? success : $? ))
-    (( success == 0 && remove_archive == 0 )) && rm "$full_path"
-    shift
-
-    # Go back to original working directory in case we ran cd previously
-    builtin cd -q "$pwd"
-  done
-}

@@ -2,7 +2,6 @@
 
 export EDITOR="nvim"
 export VISUAL=$EDITOR
-# export VISUAL="code --wait"
 export SUDO_EDITOR=$EDITOR
 export SYSTEMD_EDITOR=$EDITOR
 export MANPAGER="$EDITOR +Man!"
@@ -23,8 +22,6 @@ export CARGO_HOME="$XDG_DATA_HOME/cargo"
 export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 export GOPATH="$XDG_DATA_HOME/go"
 export GOBIN="$XDG_DATA_HOME/go/bin"
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
 export ASDF_DATA_DIR="$XDG_DATA_HOME"/asdf
 export DOTNET_CLI_HOME="$XDG_DATA_HOME/dotnet"
 export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
@@ -45,8 +42,6 @@ export VAGRANT_HOME="$XDG_DATA_HOME/vagrant"
 export ANDROID_HOME="$XDG_DATA_HOME/android"
 export ADB_VENDOR_KEYS="$XDG_DATA_HOME/android"
 export XCOMPOSEFILE="$XDG_CONFIG_HOME/X11/xcompose"
-export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
-export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:${TERMINFO}:/usr/share/terminfo"
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgrep/config"
 export LESSHISTFILE="$XDG_CACHE_HOME/lesshsts"
 export AWS_CONFIG_FILE="$XDG_DATA_HOME/aws/config"
@@ -98,18 +93,19 @@ export vivid_theme="catppuccin-mocha"
 
 if command -v fzf >/dev/null 2>&1; then
   export FZF_COLORS='--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc --color=hl:#f38ba8,fg:#cdd6f4,header:#f38ba8 --color=info:#94e2d5,pointer:#f5e0dc,marker:#f5e0dc --color=fg+:#cdd6f4,prompt:#94e2d5,hl+:#f38ba8 --color=border:#585b70'
-  export FZF_DEFAULT_OPTS="$FZF_COLORS --layout=reverse --cycle --height=70% --min-height=20 --border=rounded --info=right --bind=alt-w:toggle-preview-wrap --bind=ctrl-a:toggle-all --bind=?:toggle-preview"
+  export FZF_DEFAULT_OPTS="$FZF_COLORS --layout=reverse --cycle --height=~100% --border=rounded --info=right --preview-window=bottom,20,wrap,noinfo --bind=alt-w:toggle-preview-wrap --bind=ctrl-a:toggle-all --bind=?:toggle-preview --bind='start:transform:if (( FZF_COLUMNS >= 120 )); then echo change-preview-window\(right,50%,wrap,noinfo\); else echo change-preview-window\(bottom,20,wrap,noinfo\); fi' --bind='resize:transform:if (( FZF_COLUMNS >= 120 )); then echo change-preview-window\(right,50%,wrap,noinfo\); else echo change-preview-window\(bottom,20,wrap,noinfo\); fi'"
   export FZF_DEFAULT_COMMAND="fd --one-file-system --strip-cwd-prefix --follow --hidden --exclude '.git' --exclude 'node_modules' --exclude '.var'"
   export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND --type f --type d"
   export FZF_ALT_C_COMMAND="$FZF_DEFAULT_COMMAND --type d"
-  export FZF_CTRL_R_OPTS="$FZF_DEFAULT_OPTS --preview 'echo {}' --preview-window 'down:3:hidden:wrap'"
-  export FZF_CTRL_T_OPTS="$FZF_DEFAULT_OPTS --preview 'less {}' --preview-window 'right:wrap'"
+  export FZF_CTRL_R_OPTS="--height=70% --min-height=20 --preview 'echo {}' --preview-window 'down:3:hidden:wrap' --bind 'start:transform:if (( FZF_COLUMNS >= 120 )); then echo change-preview-window\(right,3,hidden,wrap\); else echo change-preview-window\(down,3,hidden,wrap\); fi' --bind 'resize:transform:if (( FZF_COLUMNS >= 120 )); then echo change-preview-window\(right,3,hidden,wrap\); else echo change-preview-window\(down,3,hidden,wrap\); fi'"
+  export FZF_CTRL_T_OPTS="--height=70% --min-height=20 --preview 'bat --color=always {}' --preview-window 'right,50%,wrap'"
   export FZF_HISTDIR="$XDG_DATA_HOME/fzf/history"
+  export FZF_TMUX_HEIGHT='90%'
 
   if command -v eza >/dev/null 2>&1; then
     export EZA_CONFIG_DIR="$XDG_CONFIG_HOME/eza"
-    export FZF_ALT_C_OPTS="$FZF_DEFAULT_OPTS --preview 'eza -al --color=always --group-directories-first --icons -I=\"*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\" {}'"
-    export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --preview 'eza -al --color=always --group-directories-first --icons -I=\"*NTUSER.DAT*|*ntuser.dat*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\" {2..}' --preview-window=down:wrap"
+    export FZF_ALT_C_OPTS="--height=70% --min-height=20 --preview 'eza -al $eza_params {}'"
+    export _ZO_FZF_OPTS="--height=70% --min-height=20 --preview 'eza -al $eza_params {2..}' --preview-window=down:wrap"
   fi
 fi
 
@@ -121,7 +117,7 @@ fi
 
 if command -v eza >/dev/null 2>&1; then
   export EZA_COLORS="or=31"
-  export eza_params="--git --hyperlink --color=always --group-directories-first --icons -I \"NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv\""
+  export eza_params="--git --icons --hyperlink --color=always --group-directories-first -I \"NTUSER*|ntuser*|.DS_Store\""
 fi
 
 if command -v brew >/dev/null 2>&1; then
