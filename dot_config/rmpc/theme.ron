@@ -190,8 +190,8 @@
     layout: Split(
         direction: Vertical,
         panes: [
-            (size: "3", pane: Pane(Tabs)),
             (size: "4", borders: "ALL", pane: Component("header")),
+            (size: "1", pane: Pane(Tabs)),
             (size: "100%", borders: "ALL", pane: Pane(TabContent)),
             (size: "1", pane: Component("progress_bar")),
         ]
