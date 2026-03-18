@@ -1,5 +1,3 @@
-[[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/shell/aliasi.sh" ]] && source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/aliasi.sh"
-
 if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
   source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
 fi
@@ -48,17 +46,14 @@ if [[ -n "$SSH_TTY" && -n "$KITTY_WINDOW_ID" ]]; then
     export BROWSER="local-open"
 fi
 
-HISTFILE="${XDG_STATE_HOME}/zsh/history"
+HISTFILE="$XDG_STATE_HOME/zsh/history"
 HISTSIZE=290000
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
 
-[[ ! -d "${XDG_STATE_HOME}/zsh" ]] && mkdir -p "${XDG_STATE_HOME}/zsh"
-if [[ -f "${ZDOTDIR:-$HOME}/.zsh_history" ]]; then
-    mv "${ZDOTDIR:-$HOME}/.zsh_history" "${XDG_STATE_HOME}/zsh/history"
-fi
+[[ ! -d "$XDG_STATE_HOME/zsh" ]] && mkdir -p "$XDG_STATE_HOME/zsh"
 
-if [[ -o interactive ]] && command -v starship &>/dev/null; then
+if (( ${+commands[starship]} )); then
     eval "$(starship init zsh)"
 
     STARSHIP_TRANSIENT_PROMPT="${${PROMPT[@]:2:-1}// prompt / prompt --profile transient }"
@@ -96,13 +91,13 @@ if [[ -o interactive ]] && command -v starship &>/dev/null; then
 fi
 
 typeset -A ZINIT=(
-  BIN_DIR         ${XDG_DATA_HOME:-$HOME/.local/share}/zinit/bin
-  HOME_DIR        ${XDG_DATA_HOME:-$HOME/.local/share}/zinit
-  ZCOMPDUMP_PATH  ${XDG_CACHE_HOME:-$HOME/.cache}/zcompdump-${(%):-%n}
-  COMPINIT_OPTS   -C
+  BIN_DIR         $XDG_DATA_HOME/zinit/bin
+  HOME_DIR        $XDG_DATA_HOME/zinit
+  ZCOMPDUMP_PATH  $XDG_CACHE_HOME/zcompdump-${(%):-%n}
+  COMPINIT_OPTS   -i
 )
 
-ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+ZINIT_HOME="$XDG_DATA_HOME/zinit/zinit.git"
 if [[ ! -d "${ZINIT_HOME}" ]]; then
   mkdir -p "$(dirname "$ZINIT_HOME")"
   git clone https://github.com/zdharma-continuum/zinit.git "${ZINIT_HOME}"
@@ -114,10 +109,8 @@ autoload -Uz _zinit
 
 bindkey -e
 
-for file in utils.zsh local.zsh; do
-  if [[ -r "$ZDOTDIR/$file" ]]; then
-      source "$ZDOTDIR/$file"
-  fi
+for f in "$ZDOTDIR"/conf.d/*.{zsh,sh}(N); do
+  source "$f"
 done
 
 zinit light-mode for \
@@ -130,26 +123,42 @@ export ATUIN_NOBIND="true"
 eval "$(atuin init zsh)"
 bindkey "^E" _atuin_search_widget
 
-omzLib git.zsh
-omzLib functions.zsh
-omzLib clipboard.zsh
+zinit wait'!' lucid for \
+  OMZL::git.zsh \
+  OMZL::functions.zsh \
+  OMZL::clipboard.zsh
 
-omzPlugin git
-omzPlugin sudo
-omzPlugin fancy-ctrl-z
-omzPlugin copypath
-omzPlugin copyfile
-omzPlugin dirhistory
-omzPlugin colored-man-pages
-omzPlugin jsontools
-omzPlugin chezmoi
-omzPlugin gpg-agent
-omzPlugin github
-omzPlugin direnv
+zinit lucid for \
+  OMZP::sudo \
+  OMZP::fancy-ctrl-z \
+  OMZP::copypath \
+  OMZP::copyfile \
+  OMZP::dirhistory \
+  OMZP::colored-man-pages \
+  OMZP::jsontools \
+  OMZP::chezmoi \
+  OMZP::gcloud \
+  OMZP::direnv
+
+vivid_theme="catppuccin-mocha"
+FZF_CTRL_R_COMMAND= source <(fzf --zsh)
+_load_completions() {
+  # fpath additions before compinit scans
+  [[ -d $XDG_CACHE_HOME/sf/autocomplete/functions/zsh ]] && fpath=($XDG_CACHE_HOME/sf/autocomplete/functions/zsh $fpath)
+
+  zicompinit; zicdreplay
+
+  # eval/compdef-based completions register after compinit
+  (( ${+commands[zmx]} )) && eval "$(zmx completions zsh)"
+  [[ -f $XDG_CONFIG_HOME/claude/hooks/peon-ping/completions.bash ]] && source $XDG_CONFIG_HOME/claude/hooks/peon-ping/completions.bash
+  (( ${+commands[op]} )) && eval "$(op completion zsh)" && compdef _op op
+  (( ${+commands[opencode]} )) && eval "$(opencode completion)"
+}
 
 zinit wait lucid light-mode for \
   ryanccn/vivid-zsh \
   Aloxaf/fzf-tab \
+  Freed-Wu/fzf-tab-source \
   djui/alias-tips \
   atload'_zsh_autosuggest_start' \
     zsh-users/zsh-autosuggestions \
@@ -157,77 +166,75 @@ zinit wait lucid light-mode for \
     zsh-users/zsh-completions \
   hlissner/zsh-autopair \
   reegnz/jq-zsh-plugin \
-  denisidoro/navi \
-  laggardkernel/zsh-thefuck \
   paulirish/git-open \
-  Freed-Wu/fzf-tab-source \
   cwelsys/zsh-alias-fzf \
-  atinit'zicompinit; zicdreplay; command -v zmx &>/dev/null && eval "$(zmx completions zsh)"; [[ -f ~/.config/claude/hooks/peon-ping/completions.bash ]] && source ~/.config/claude/hooks/peon-ping/completions.bash' \
+  atinit'_load_completions' \
     zdharma-continuum/fast-syntax-highlighting \
 
-[[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/shell/ctpgum.sh" ]] && source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/ctpgum.sh" mocha blue
+setopt extended_history hist_expire_dups_first hist_ignore_all_dups \
+       hist_reduce_blanks hist_ignore_space inc_append_history share_history \
+       autocd multios globdots extended_glob nobgnice bang_hist nobeep
 
-setopt extended_history
-setopt hist_expire_dups_first
-setopt hist_ignore_all_dups
-setopt hist_reduce_blanks
-setopt hist_ignore_space
-setopt inc_append_history
-setopt share_history
-setopt autocd
-setopt multios
-setopt globdots
-setopt extended_glob
-setopt nobgnice
-setopt bang_hist
-setopt nobeep
-
-zstyle ":completion:*" matcher-list "" "m:{a-z}={A-Z}" "m:{a-zA-Z}={A-Za-z}" "r:|[._-]=* r:|=* l:|=*"
-zstyle ':fzf-tab:*' fzf-min-height 15
-zstyle ':fzf-tab:*' popup-pad 30 0
-zstyle ':fzf-tab:*' prefix ''
-zstyle ':fzf-tab:*' switch-group ',' '.'
-zstyle ':fzf-tab:*' continuous-trigger 'tab'
-zstyle ':fzf-tab:*' use-fzf-default-opts yes
-zstyle ':fzf-tab:*' fzf-flags '--bind=tab:accept' '--preview-window=bottom,20,wrap,noinfo' '--bind=start:transform:echo change-preview-window\(bottom,20,wrap,noinfo\)'
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/zcompcache"
+zstyle ':completion:*' completer _complete _ignored _approximate
+zstyle ':completion:*' max-errors 2
+zstyle ':completion:*' prompt '%e'
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*' rehash true
+zstyle ':completion:*' list-dirs-first true
+zstyle ':completion:*' accept-exact '*(N)'
+zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:matches' group 'yes'
+zstyle ':completion:*:descriptions' format '[%d]'
+zstyle ':completion:*:default' list-prompt '%S%M matches%s'
+zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+zstyle ':completion:*:corrections' format '%F{green}-- %d (errors: %e) --%f'
+zstyle ':completion:*:messages' format '%F{purple}-- %d --%f'
+zstyle ':completion:*:warnings' format '%F{red}-- no matches found --%f'
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' menu no
 zstyle ':completion:*:git-checkout:*' sort false
-zstyle ':completion:*:descriptions' format '[%d]'
-zstyle ':fzf-tab:complete:*:*' fzf-preview 'bat --color=always -- ${(Q)realpath} 2>/dev/null || cat -- ${(Q)realpath} 2>/dev/null'
 
-zstyle ':fzf-tab:complete:*:options' fzf-preview
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompcache"
-zstyle ':fzf-tab:complete:yay:*' fzf-preview 'yay -Si $word'
-zstyle ':fzf-tab:complete:-command-:*' fzf-preview \
-    '(out=$(tldr --color "$word") 2>/dev/null && echo $out) || (out=$(MANWIDTH=$FZF_PREVIEW_COLUMNS man "$word") 2>/dev/null && echo $out) || (out=$(which "$word") && echo $out) || echo "${(P)word}"'
-zstyle ':fzf-tab:complete:tldr:argument-1' fzf-preview 'tldr --color $word'
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
-zstyle ':fzf-tab:*' fzf-bindings 'ctrl-a:toggle-all'
-zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm -w -w"
-zstyle ':fzf-tab:complete:(kill|ps):argument-rest' fzf-preview \
-  '[[ $group == "[process ID]" ]] && ps --pid=$word -o cmd --no-headers -w -w'
-zstyle ':fzf-tab:complete:(kill|ps):argument-rest' fzf-flags --preview-window=down:3:wrap
-zstyle ':fzf-tab:complete:systemctl-*:*' fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word'
-zstyle ':fzf-tab:complete:systemctl:--user:*' fzf-preview 'SYSTEMD_COLORS=1 systemctl --user status $word'
-zstyle ':fzf-tab:complete:(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' \
-	fzf-preview 'echo ${(P)word}'
+zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
+zstyle ':fzf-tab:*' use-fzf-default-opts yes
+zstyle ':fzf-tab:*' switch-group ',' '.'
+zstyle ':fzf-tab:complete:-command-:*' fzf-preview ''
+zstyle ':fzf-tab:complete:-command-:*' fzf-flags '--height=15' '--preview-window=hidden'
+zstyle ':fzf-tab:complete:(-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview ''
+zstyle ':fzf-tab:complete:(builtin|alias|function):*' fzf-preview ''
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons --git $realpath'
+zstyle ':fzf-tab:complete:cd:*' popup-pad 30 0
+zstyle ':fzf-tab:complete:(ls|eza|exa|fd|find|l):*' fzf-preview 'eza -1 --color=always --icons $PWD/${(Q)word}'
+zstyle ':fzf-tab:complete:(rm|mv|cp):*' fzf-preview 'eza -1 --color=always --icons $PWD/${(Q)word}'
+zstyle ':fzf-tab:complete:(nvim|vim|vi|nano|code|v):*' fzf-min-height 90
+zstyle ':fzf-tab:complete:(nvim|vim|vi|nano|code|v):*' fzf-preview 'bat --color=always --style=numbers --line-range=:500 $PWD/${(Q)word}'
+zstyle ':fzf-tab:complete:(bat|cat|less|more):*' fzf-min-height 90
+zstyle ':fzf-tab:complete:(bat|cat|less|more):*' fzf-preview 'bat --color=always --style=numbers --line-range=:500 $PWD/${(Q)word}'
 zstyle ':fzf-tab:complete:git-(add|diff|restore):*' fzf-preview \
-	'git diff $word | delta'
+  'git diff --color=always $PWD/${(Q)word} | delta'
 zstyle ':fzf-tab:complete:git-log:*' fzf-preview \
-	'git log --color=always $word'
+  'git log --color=always --pretty=medium $PWD/${(Q)word}'
+zstyle ':fzf-tab:complete:git-help:*' fzf-preview \
+  'git help ${(Q)word} | bat -l man --color=always'
 zstyle ':fzf-tab:complete:git-show:*' fzf-preview \
-	'case "$group" in
-	"commit tag") git show --color=always $word ;;
-	*) git show --color=always $word | delta ;;
-	esac'
+  'case "$group" in
+    "commit tag") git show --color=always ${(Q)word} ;;
+    *) git show --color=always ${(Q)word} | delta ;;
+  esac'
 zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
-	'case "$group" in
-	"modified file") git diff $word | d ;;
-	"recent commit object name") git show --color=always $word | delta ;;
-	*) git log --color=always $word ;;
-	esac'
+  'case "$group" in
+    "modified file") git diff --color=always $PWD/${(Q)word} | delta ;;
+    "branch") git log --color=always --oneline --graph --decorate ${(Q)word} ;;
+    *) git show --color=always ${(Q)word} | delta ;;
+  esac'
+zstyle ':fzf-tab:complete:man:*' fzf-preview 'man ${(Q)word} | bat -l man --color=always'
+zstyle ':fzf-tab:complete:ssh:*' fzf-preview 'ping -c1 -t1 ${(Q)word}'
+zstyle ':fzf-tab:complete:scp:*' fzf-preview 'ping -c1 -t1 ${(Q)word}'
+zstyle ':fzf-tab:*' prefix ''
+zstyle ':fzf-tab:*' single-group color header
+zstyle ':fzf-tab:*' fzf-pad 4
 
 bindkey ' ' magic-space
 bindkey '^[[3~' delete-char
@@ -237,4 +244,4 @@ bindkey "^N" insert-last-word
 bindkey '^[w' kill-region
 bindkey '^Y' redo
 
-[ -x "$(command -v zoxide)" ] && eval "$(zoxide init --cmd cd zsh)"
+(( ${+commands[zoxide]} )) && eval "$(zoxide init --cmd cd zsh)"

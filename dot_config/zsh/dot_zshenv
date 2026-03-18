@@ -1,5 +1,3 @@
-export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:${TERMINFO}:/usr/share/terminfo"
-
 [[ -n "$_KSI_REMOTE_DIR" ]] && _KITTY_IS_REMOTE=1
 if [[ $(uname) == Darwin ]]; then
   if (( ! $+commands[brew] )); then
@@ -29,14 +27,159 @@ if [[ $(uname) == Darwin ]]; then
   fi
 fi
 
-for shells in "${XDG_CONFIG_HOME:-$HOME/.config}/shell"/{path,env,priv}.sh(N); do
-  [[ -r "$shells" ]] && source "$shells"
-done
+# --- XDG ---
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+export XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
 
+# --- PATH ---
+typeset -U path
+path=(
+  $XDG_BIN_HOME
+  $XDG_DATA_HOME/cargo/bin
+  $XDG_DATA_HOME/go/bin
+  $XDG_DATA_HOME/npm/bin
+  /usr/local/sbin
+  /usr/local/bin
+  /usr/bin
+  $path
+)
+export PATH
+
+# --- editors/pagers ---
+export EDITOR="nvim"
+export VISUAL=$EDITOR
+export SUDO_EDITOR=$EDITOR
+export SYSTEMD_EDITOR=$EDITOR
+export MANPAGER="$EDITOR +Man!"
+export PAGER="bat"
+export GIT_PAGER="delta"
+export LESS="-cgiRF"
+
+# --- XDG overrides ---
+export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:${TERMINFO}:/usr/share/terminfo"
+export DOTS="$XDG_DATA_HOME/dots"
+export DOTFILES="$XDG_DATA_HOME/dots"
+export GITHUB_USERNAME="cwelsys"
+export CARGO_HOME="$XDG_DATA_HOME/cargo"
+export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
+export GOPATH="$XDG_DATA_HOME/go"
+export GOBIN="$XDG_DATA_HOME/go/bin"
+export ASDF_DATA_DIR="$XDG_DATA_HOME/asdf"
+export DOTNET_CLI_HOME="$XDG_DATA_HOME/dotnet"
+export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
+export NPM_CONFIG_PREFIX="$XDG_DATA_HOME/npm"
+export NPM_CONFIG_CACHE="$XDG_CACHE_HOME/npm"
+export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/config"
+export NODE_REPL_HISTORY="$XDG_STATE_HOME/node_repl_history"
+export PNPM_HOME="$XDG_DATA_HOME/pnpm"
+export MAVEN_ARGS="-s $XDG_CONFIG_HOME/maven/settings.xml"
+export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/pythonrc"
+export PYTHON_HISTORY="$XDG_DATA_HOME/python/history"
+export PIPX_HOME="$XDG_DATA_HOME/pipx"
+export PIPX_GLOBAL_HOME="$XDG_DATA_HOME/pipx"
+export GNUPGHOME="$XDG_DATA_HOME/gnupg"
+export PASSWORD_STORE_DIR="$XDG_DATA_HOME/pass"
+export DOCKER_CONFIG="$XDG_CONFIG_HOME/docker"
+export VAGRANT_HOME="$XDG_DATA_HOME/vagrant"
+export ANDROID_HOME="$XDG_DATA_HOME/android"
+export ADB_VENDOR_KEYS="$XDG_DATA_HOME/android"
+export XCOMPOSEFILE="$XDG_CONFIG_HOME/X11/xcompose"
+export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgrep/config"
+export LESSHISTFILE="$XDG_CACHE_HOME/lesshsts"
+export AWS_CONFIG_FILE="$XDG_DATA_HOME/aws/config"
+export AWS_DATA_PATH="$XDG_DATA_HOME/aws"
+export AWS_SHARED_CREDENTIALS_FILE="$XDG_DATA_HOME/aws/credentials"
+export CLAUDE_CONFIG_DIR="$XDG_CONFIG_HOME/claude"
+export PARALLEL_HOME="$XDG_CONFIG_HOME/parallel"
+export WAKATIME_HOME="$XDG_CONFIG_HOME/wakatime"
+export VCPKG_ROOT="$XDG_DATA_HOME/vcpkg"
+export BUNDLE_USER_CONFIG="$XDG_CONFIG_HOME/bundle"
+export BUNDLE_USER_CACHE="$XDG_CACHE_HOME/bundle"
+export BUNDLE_USER_PLUGIN="$XDG_DATA_HOME/bundle"
+export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
+export CUDA_CACHE_PATH="$XDG_CACHE_HOME/nv"
+export INPUTRC="$XDG_CONFIG_HOME/bash/inputrc"
+export SCREENRC="$XDG_CONFIG_HOME/screen/screenrc"
+export WINEPREFIX="$XDG_DATA_HOME/wine"
+export OLLAMA_HOST="https://slop.cwel.casa"
+export MANAGARR_CONFIG_FILE="$XDG_CONFIG_HOME/managarr/config.yml"
+export MANAGARR_THEMES_FILE="$XDG_CONFIG_HOME/managarr/theme.yml"
+export MAS_NO_AUTO_INDEX=1
+export DO_NOT_TRACK=1
+export DISABLE_TELEMETRY=1
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export GLOW_STYLE="$XDG_CONFIG_HOME/glow/catppuccin-mocha.json"
+export SF_HOME="$XDG_DATA_HOME/sf"
+export SFDX_HOME="$XDG_DATA_HOME/sfdx"
+export SF_USE_GENERIC_UNIX_KEYCHAIN=true
+
+export WORDCHARS='~!#$%^&*(){}[]<>?.+;'
+export PROMPT_EOL_MARK=''
+
+[[ -t 0 ]] && export GPG_TTY=$(tty)
+
+if (( ${+commands[java]} )); then
+  export _JAVA_OPTIONS="-Djava.util.prefs.userRoot=\"$XDG_CONFIG_HOME/java\""
+fi
+
+if (( ${+commands[bat]} )); then
+  export BAT_THEME="Catppuccin Mocha"
+  export BATDIFF_USE_DELTA="true"
+fi
+
+export FZF_DEFAULT_OPTS=" \
+  --layout=reverse --info inline --cycle \
+  --bind=?:toggle-preview \
+  --color=bg+:#313244,spinner:#f5e0dc,hl:#f38ba8 \
+  --color=fg:#cdd6f4,header:#f38ba8,info:#89b4fa,pointer:#f5e0dc \
+  --color=marker:#b4befe,fg+:#cdd6f4,prompt:#89b4fa,hl+:#f38ba8 \
+  --color=selected-bg:#45475A \
+  --color=border:#6c7086,label:#cdd6f4"
+
+if (( ${+commands[lesspipe.sh]} )); then
+  export LESSOPEN="| lesspipe.sh %s"
+elif (( ${+commands[lesspipe]} )); then
+  export LESSOPEN="| lesspipe %s"
+fi
+
+if (( ${+commands[eza]} )); then
+  export EZA_CONFIG_DIR="$XDG_CONFIG_HOME/eza"
+  export EZA_COLORS="or=31"
+  export eza_params="--git --icons --hyperlink --color=always --group-directories-first -I \"NTUSER*|ntuser*|.DS_Store\""
+fi
+
+if (( ${+commands[brew]} )); then
+  export HOMEBREW_NO_ENV_HINTS="true"
+  export HOMEBREW_BAT=1
+  export HOMEBREW_COLOR=1
+  export HOMEBREW_CLEANUP_MAX_AGE_DAYS=7
+  export HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS=3
+fi
+
+case $HOST in
+pbox)
+  export RUST="/mnt/media"
+  export FLASH="/mnt/bool"
+  export BRICK="/mnt/backup"
+  ;;
+esac
+
+if [[ -n $WSLENV ]]; then
+  export WIN_HOME="/mnt/c/users/cwel"
+fi
+
+if [[ $OSTYPE == darwin* ]]; then
+  export OP_BIOMETRIC_UNLOCK_ENABLED="true"
+fi
+
+# --- SSH env sniffing ---
 if [[ -n "$SSH_CONNECTION" ]]; then
     [[ -z "$XDG_RUNTIME_DIR" && -d "/run/user/$UID" ]] && export XDG_RUNTIME_DIR="/run/user/$UID"
 
-    if command -v hyprctl &>/dev/null && [[ -z "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
+    if (( ${+commands[hyprctl]} )) && [[ -z $HYPRLAND_INSTANCE_SIGNATURE ]]; then
         for pid in $(pgrep -P $(pgrep -xu "$USER" Hyprland) 2>/dev/null); do
             [[ -f "/proc/$pid/environ" ]] || continue
             while IFS='=' read -r -d '' k v; do
@@ -46,7 +189,7 @@ if [[ -n "$SSH_CONNECTION" ]]; then
         done
     fi
 
-    if command -v niri &>/dev/null && [[ -z "$NIRI_SOCKET" ]]; then
+    if (( ${+commands[niri]} )) && [[ -z $NIRI_SOCKET ]]; then
         for pid in $(pgrep -P $(pgrep -xu "$USER" niri) 2>/dev/null); do
             [[ -f "/proc/$pid/environ" ]] || continue
             while IFS='=' read -r -d '' k v; do
@@ -58,7 +201,7 @@ if [[ -n "$SSH_CONNECTION" ]]; then
 fi
 
 if [[ -n $SSH_KITTEN_KITTY_DIR && -d ~/.terminfo ]]; then
-    t=${XDG_DATA_HOME:-~/.local/share}/terminfo
+    t=$XDG_DATA_HOME/terminfo
     [[ -f $t/x/xterm-kitty ]] || { mkdir -p $t && cp -a ~/.terminfo/. $t/ }
     rm -rf ~/.terminfo
     export TERMINFO=$t

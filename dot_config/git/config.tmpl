@@ -32,10 +32,12 @@
 {{-   if stat "/Applications/1Password.app/Contents/MacOS/op-ssh-sign" }}
 [gpg "ssh"]
   program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+  allowedSignersFile = ~/.config/git/allowed_signers
 {{-   end }}
 {{- else }}
 [gpg "ssh"]
   program = ssh-keygen
+  allowedSignersFile = ~/.config/git/allowed_signers
 {{- end }}
 
 [init]
@@ -151,6 +153,7 @@
 
 [url "git@github.com:"]
   insteadOf = "gh:"
+  insteadOf = "https://github.com/"
   pushInsteadOf = "github:"
   pushInsteadOf = "git://github.com/"
 
