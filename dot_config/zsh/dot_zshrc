@@ -142,6 +142,7 @@ zinit lucid for \
 
 vivid_theme="catppuccin-mocha"
 FZF_CTRL_R_COMMAND= source <(fzf --zsh)
+
 _load_completions() {
   # fpath additions before compinit scans
   for sf_completions in {$XDG_CACHE_HOME,~/Library/Caches}/sf/autocomplete/functions/zsh(N/); do
@@ -159,7 +160,7 @@ _load_completions() {
 }
 
 zinit wait lucid light-mode for \
-  ryanccn/vivid-zsh \
+  cwelsys/vivid-zsh \
   Aloxaf/fzf-tab \
   Freed-Wu/fzf-tab-source \
   djui/alias-tips \
