@@ -144,8 +144,10 @@ vivid_theme="catppuccin-mocha"
 FZF_CTRL_R_COMMAND= source <(fzf --zsh)
 _load_completions() {
   # fpath additions before compinit scans
-  local sf_completions=${SF_AC_ZSH_SETUP_PATH:-${XDG_CACHE_HOME:-~/Library/Caches}/sf/autocomplete/functions/zsh}
-  [[ -d $sf_completions ]] && fpath=($sf_completions $fpath)
+  for sf_completions in {$XDG_CACHE_HOME,~/Library/Caches}/sf/autocomplete/functions/zsh(N/); do
+    fpath=($sf_completions $fpath)
+    break
+  done
 
   zicompinit; zicdreplay
 
