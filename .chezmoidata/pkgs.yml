@@ -173,7 +173,6 @@ pkgs:
         - mpc
         - mpd
         - python-mutagen
-        - yazi-nightly-bin
         - zig
         - zmx-git
         - rust-analyzer-git
@@ -182,6 +181,7 @@ pkgs:
         - pacman-contrib
         - unicorn
         - opencode-bin
+        - aria2
 
     mba:
       brews:

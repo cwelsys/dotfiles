@@ -23,6 +23,7 @@ excludes = [
     "NTUSER*",
     "ntuser*",
     "Thumbs.db",
+    "lost+found",
     ".Trash",
     ".Trash-*",
     ".pki",
