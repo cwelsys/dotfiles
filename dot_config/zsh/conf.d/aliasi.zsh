@@ -91,6 +91,8 @@ fi
 
 (( ${+commands[yt-dlp]} )) && alias yt='yt-dlp'
 
+alias wget='wget --hsts-file="$XDG_DATA_HOME/wget-hsts"'
+
 if (( ${+commands[claude]} )); then
   alias cc='claude'
   alias cr='claude --resume'
