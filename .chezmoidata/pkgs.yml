@@ -686,12 +686,10 @@ pkgs:
         - ttf-twemoji
         - unarc-git
         - vivid
-        - zmx-git
         - ouch
         - ttf-meslo-nerd
         - direnv
         - mpd
-        - mpdscribble
         - nfs-utils
         - otf-apple-sf-pro
         - rmpc-git
@@ -701,7 +699,6 @@ pkgs:
         - keymapper
         - lib32-glu
         - lib32-libxi
-        - rust-analyzer-git
         - tesseract
         - zig
         - linux-zen
@@ -759,6 +756,9 @@ pkgs:
         - vulkan-mesa-implicit-layers
         - vulkan-mesa-layers
         - vulkan-radeon
+        - rust-analyzer
+        - zmx
+        - listenbrainz-mpd
 
     wini:
       scoop:
