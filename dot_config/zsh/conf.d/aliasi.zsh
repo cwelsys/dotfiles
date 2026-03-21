@@ -543,3 +543,8 @@ rl() { exec "$SHELL" -l }
 if [[ -n $WSLENV ]]; then
   cdw() { cd "${WIN_HOME:-/mnt/c/users/$USER}" || return 1 }
 fi
+
+iconcp() {
+  local char="${1:-$(cat)}"
+  python3 -c "print(''.join(f'U+{ord(c):04X} ' for c in '$char').strip())"
+}

@@ -213,6 +213,7 @@ symbol = ' '
 format = '[$symbol$context]($style) '
 
 [dotnet]
+disabled = true
 style = 'blue'
 format = '[$symbol($version )( $tfm )]($style)'
 
