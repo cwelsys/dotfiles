@@ -24,6 +24,7 @@ excludes = [
     "ntuser*",
     "Thumbs.db",
     "lost+found",
+    ".snapshots",
     ".Trash",
     ".Trash-*",
     ".pki",

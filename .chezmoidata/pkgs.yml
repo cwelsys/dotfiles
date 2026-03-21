@@ -174,14 +174,14 @@ pkgs:
         - mpd
         - python-mutagen
         - zig
-        - zmx-git
-        - rust-analyzer-git
         - atuin
         - libolm
         - pacman-contrib
         - unicorn
         - opencode-bin
         - aria2
+        - rust-analyzer
+        - zmx
 
     mba:
       brews:
