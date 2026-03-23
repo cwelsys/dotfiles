@@ -187,7 +187,7 @@ _load_completions() {
   if (( ${+commands[yay]} )); then
     _yi() { service=yay; words=(yay -S "${(@)words[2,-1]}"); ((CURRENT+=1)); _yay }
     _yu() { service=yay; words=(yay -Rn "${(@)words[2,-1]}"); ((CURRENT+=1)); _yay }
-    _yay_query_wrapper() { service=yay; words=(yay -Qs "${(@)words[2,-1]}"); ((CURRENT+=1)); _yay }
+    _yay_query_wrapper() { service=yay; words=(yay -Q "${(@)words[2,-1]}"); ((CURRENT+=1)); _yay }
     _yay_info_wrapper() { service=yay; words=(yay -Si "${(@)words[2,-1]}"); ((CURRENT+=1)); _yay }
     _yay_files_wrapper() { service=yay; words=(yay -Ql "${(@)words[2,-1]}"); ((CURRENT+=1)); _yay }
     compdef _yi yi
