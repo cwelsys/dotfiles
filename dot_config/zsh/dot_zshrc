@@ -171,12 +171,27 @@ _load_completions() {
   [[ -f $XDG_CONFIG_HOME/claude/hooks/peon-ping/completions.bash ]] && source $XDG_CONFIG_HOME/claude/hooks/peon-ping/completions.bash
   (( ${+commands[op]} )) && eval "$(op completion zsh)" && compdef _op op
   (( ${+commands[opencode]} )) && eval "$(opencode completion)"
+
+  if (( ${+commands[brew]} )); then
+    _bi() { words=(brew install "${(@)words[2,-1]}"); ((CURRENT+=1)); _brew }
+    _bu() { words=(brew uninstall "${(@)words[2,-1]}"); ((CURRENT+=1)); _brew }
+    compdef _bi bi
+    compdef _bu bu
+  fi
+
+  if (( ${+commands[yay]} )); then
+    _yi() { words=(yay -S "${(@)words[2,-1]}"); ((CURRENT+=1)); _pacman }
+    _yu() { words=(yay -Rn "${(@)words[2,-1]}"); ((CURRENT+=1)); _pacman }
+    compdef _yi yi
+    compdef _yu yu
+  fi
 }
 
 zinit wait lucid light-mode for \
   cwelsys/vivid-zsh \
   Aloxaf/fzf-tab \
-  Freed-Wu/fzf-tab-source \
+  atload'[[ $OSTYPE == darwin* ]] && zstyle ":fzf-tab:complete:(\\\\|*/|)(pkill:o-argument-rest|killall:argument-1)" fzf-preview "ps aux | grep -i \$word | grep -v grep | head -10"' \
+    Freed-Wu/fzf-tab-source \
   atload'_zsh_autosuggest_start' \
     zsh-users/zsh-autosuggestions \
   blockf atpull'zinit creinstall -q .' \
@@ -193,7 +208,7 @@ setopt extended_history hist_expire_dups_first hist_ignore_all_dups \
        autocd multios globdots extended_glob nobgnice bang_hist nobeep
 
 zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/zcompcache"
+zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/"
 zstyle ':completion:*' completer _complete _ignored _approximate
 zstyle ':completion:*' max-errors 2
 zstyle ':completion:*' prompt '%e'
@@ -202,6 +217,9 @@ zstyle ':completion:*' rehash true
 zstyle ':completion:*' list-dirs-first true
 zstyle ':completion:*' accept-exact '*(N)'
 zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
+zstyle ':completion:*' file-sort modification
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' menu no
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*:matches' group 'yes'
 zstyle ':completion:*:descriptions' format '[%d]'
@@ -210,45 +228,11 @@ zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p
 zstyle ':completion:*:corrections' format '%F{green}-- %d (errors: %e) --%f'
 zstyle ':completion:*:messages' format '%F{purple}-- %d --%f'
 zstyle ':completion:*:warnings' format '%F{red}-- no matches found --%f'
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*' menu no
 zstyle ':completion:*:git-checkout:*' sort false
-
 zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
+zstyle ':fzf-tab:*' fzf-min-height 70
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
-zstyle ':fzf-tab:*' switch-group ',' '.'
-zstyle ':fzf-tab:complete:-command-:*' fzf-preview ''
-zstyle ':fzf-tab:complete:-command-:*' fzf-flags '--height=15' '--preview-window=hidden'
-zstyle ':fzf-tab:complete:(-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview ''
-zstyle ':fzf-tab:complete:(builtin|alias|function):*' fzf-preview ''
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons --git $realpath'
-zstyle ':fzf-tab:complete:cd:*' popup-pad 30 0
-zstyle ':fzf-tab:complete:(ls|eza|exa|fd|find|l):*' fzf-preview 'eza -1 --color=always --icons $PWD/${(Q)word}'
-zstyle ':fzf-tab:complete:(rm|mv|cp):*' fzf-preview 'eza -1 --color=always --icons $PWD/${(Q)word}'
-zstyle ':fzf-tab:complete:(nvim|vim|vi|nano|code|v):*' fzf-min-height 90
-zstyle ':fzf-tab:complete:(nvim|vim|vi|nano|code|v):*' fzf-preview 'bat --color=always --style=numbers --line-range=:500 $PWD/${(Q)word}'
-zstyle ':fzf-tab:complete:(bat|cat|less|more):*' fzf-min-height 90
-zstyle ':fzf-tab:complete:(bat|cat|less|more):*' fzf-preview 'bat --color=always --style=numbers --line-range=:500 $PWD/${(Q)word}'
-zstyle ':fzf-tab:complete:git-(add|diff|restore):*' fzf-preview \
-  'git diff --color=always $PWD/${(Q)word} | delta'
-zstyle ':fzf-tab:complete:git-log:*' fzf-preview \
-  'git log --color=always --pretty=medium $PWD/${(Q)word}'
-zstyle ':fzf-tab:complete:git-help:*' fzf-preview \
-  'git help ${(Q)word} | bat -l man --color=always'
-zstyle ':fzf-tab:complete:git-show:*' fzf-preview \
-  'case "$group" in
-    "commit tag") git show --color=always ${(Q)word} ;;
-    *) git show --color=always ${(Q)word} | delta ;;
-  esac'
-zstyle ':fzf-tab:complete:git-checkout:*' fzf-preview \
-  'case "$group" in
-    "modified file") git diff --color=always $PWD/${(Q)word} | delta ;;
-    "branch") git log --color=always --oneline --graph --decorate ${(Q)word} ;;
-    *) git show --color=always ${(Q)word} | delta ;;
-  esac'
-zstyle ':fzf-tab:complete:man:*' fzf-preview 'man ${(Q)word} | bat -l man --color=always'
-zstyle ':fzf-tab:complete:ssh:*' fzf-preview 'ping -c1 -t1 ${(Q)word}'
-zstyle ':fzf-tab:complete:scp:*' fzf-preview 'ping -c1 -t1 ${(Q)word}'
+zstyle ':fzf-tab:*' switch-group '<' '>'
 zstyle ':fzf-tab:*' prefix ''
 zstyle ':fzf-tab:*' single-group color header
 zstyle ':fzf-tab:*' fzf-pad 4

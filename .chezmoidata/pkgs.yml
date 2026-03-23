@@ -216,7 +216,6 @@ pkgs:
         - fastfetch
         - fd
         - figlet
-        - fisher
         - fortune
         - gawk
         - genact

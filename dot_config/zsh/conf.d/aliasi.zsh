@@ -218,6 +218,7 @@ cmra() {
   fi
   local selected
   selected=$(echo "$files" | fzf --multi --ansi \
+    --preview-window='right:60%:wrap:noinfo:<1(right:60%:wrap:noinfo)' \
     --preview="chezmoi diff --reverse --pager cat ~/{} 2>/dev/null | delta --pager=never")
   if [[ -n $selected ]]; then
     echo "$selected" | while IFS= read -r file; do
@@ -384,8 +385,7 @@ if (( ${+commands[yay]} )); then
         awk 'NR==FNR{inst[$1]=1;next} {if($1 in inst) print $0" \033[1;32m[installed]\033[0m"; else print}' \
           <(yay -Qq) - |
         fzf --multi --ansi -0 --tiebreak=index \
-          --preview="yay --color=always -Si {1}" \
-          --preview-window "bottom,noinfo" |
+          --preview="yay --color=always -Si {1}" |
         awk '{print $1}' |
         xargs --no-run-if-empty --open-tty yay -S
     else
@@ -440,8 +440,7 @@ if (( ${+commands[yay]} )); then
 
     yay -Qq |
       fzf --multi --ansi \
-        --preview="yay --color=always -Qi {1}" \
-        --preview-window "bottom,noinfo" |
+        --preview="yay --color=always -Qi {1}" |
       xargs --no-run-if-empty --open-tty yay -Rns
   }
 
@@ -516,8 +515,7 @@ if [[ $OSTYPE == darwin* ]] && (( ${+commands[brew]} )); then
         awk 'NR==FNR{inst[$1]=1;next} {if($1 in inst) print $0" \033[1;32m[installed]\033[0m"; else print}' \
           <(brew list) - |
         fzf --multi --ansi -0 --tiebreak=index \
-          --preview "brew info {1}" \
-          --preview-window "bottom,noinfo" |
+          --preview "brew info {1}" |
         awk '{print $1}' |
         xargs --no-run-if-empty brew install
     else
@@ -529,13 +527,13 @@ if [[ $OSTYPE == darwin* ]] && (( ${+commands[brew]} )); then
     if (( ! $# )); then
       brew list |
         fzf --multi --ansi \
-          --preview "brew info {1}" \
-          --preview-window "bottom,noinfo" |
+          --preview "brew info {1}" |
         xargs --no-run-if-empty brew uninstall
     else
       brew uninstall "$@"
     fi
   }
+
 fi
 
 rl() { exec "$SHELL" -l }
