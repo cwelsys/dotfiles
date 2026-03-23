@@ -331,6 +331,9 @@ pkgs:
         - tig
         - bats-core
         - neurosnap/tap/zmx
+        - csvkit
+        - exiftool
+        - xsv
       casks:
         - 1password-cli
         - alt-tab

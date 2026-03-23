@@ -175,15 +175,26 @@ _load_completions() {
   if (( ${+commands[brew]} )); then
     _bi() { words=(brew install "${(@)words[2,-1]}"); ((CURRENT+=1)); _brew }
     _bu() { words=(brew uninstall "${(@)words[2,-1]}"); ((CURRENT+=1)); _brew }
+    _brew_list_wrapper() { words=(brew list "${(@)words[2,-1]}"); ((CURRENT+=1)); _brew }
+    _brew_info_wrapper() { words=(brew info "${(@)words[2,-1]}"); ((CURRENT+=1)); _brew }
     compdef _bi bi
     compdef _bu bu
+    compdef _brew_list_wrapper list
+    compdef _brew_list_wrapper files
+    compdef _brew_info_wrapper info
   fi
 
   if (( ${+commands[yay]} )); then
     _yi() { words=(yay -S "${(@)words[2,-1]}"); ((CURRENT+=1)); _pacman }
     _yu() { words=(yay -Rn "${(@)words[2,-1]}"); ((CURRENT+=1)); _pacman }
+    _yay_query_wrapper() { words=(yay -Qs "${(@)words[2,-1]}"); ((CURRENT+=1)); _pacman }
+    _yay_info_wrapper() { words=(yay -Si "${(@)words[2,-1]}"); ((CURRENT+=1)); _pacman }
+    _yay_files_wrapper() { words=(yay -Ql "${(@)words[2,-1]}"); ((CURRENT+=1)); _pacman }
     compdef _yi yi
     compdef _yu yu
+    compdef _yay_query_wrapper list
+    compdef _yay_files_wrapper files
+    compdef _yay_info_wrapper info
   fi
 }
 
