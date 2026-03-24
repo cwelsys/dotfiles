@@ -761,6 +761,9 @@ pkgs:
         - rust-analyzer
         - zmx
         - listenbrainz-mpd
+        - csvkit
+        - perl-image-exiftool
+        - xsv
 
     wini:
       scoop:
