@@ -764,6 +764,11 @@ pkgs:
         - csvkit
         - perl-image-exiftool
         - xsv
+        - chaotic-keyring
+        - chaotic-mirrorlist
+        - kmon
+        - linux-mainline
+        - linux-mainline-headers
 
     wini:
       scoop:
