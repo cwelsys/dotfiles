@@ -451,7 +451,6 @@ pkgs:
         - inetutils
         - iwd
         - jq
-        - kvantum-qt5
         - lazyjournal
         - libpulse
         - libqalculate
@@ -491,7 +490,6 @@ pkgs:
         - python-gobject
         - python-poetry-core
         - python-terminaltexteffects
-        - qt5-wayland
         - resvg
         - ripgrep
         - rust
@@ -634,7 +632,6 @@ pkgs:
         - networkmanager
         - pnpm
         - qbittorrent
-        - qt5-quickcontrols2
         - sbctl
         - vulkan-tools
         - wofi
@@ -708,7 +705,6 @@ pkgs:
         - mangohud
         - adw-gtk-theme
         - niri
-        - qt6ct-kde
         - xdg-desktop-portal-gnome
         - syncthingtray-qt6
         - ttf-dejavu

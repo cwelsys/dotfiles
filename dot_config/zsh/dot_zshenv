@@ -54,9 +54,22 @@ export VISUAL=$EDITOR
 export SUDO_EDITOR=$EDITOR
 export SYSTEMD_EDITOR=$EDITOR
 export MANPAGER="$EDITOR +Man!"
-export PAGER="bat"
+export PAGER="moor"
 export GIT_PAGER="delta"
 export LESS="-cgiRF"
+export MOOR="--statusbar=bold --colors=auto --render-unprintable=highlight --wrap --quit-if-one-screen"
+export SYSTEMD_PAGER="$PAGER"
+export SYSTEMD_PAGERSECURE=0
+export SYSTEMD_COLORS=256
+
+# pager overrides per tool
+if [[ "$PAGER" =~ 'moor' ]]; then
+  export BAT_PAGER="moor $MOOR --no-statusbar"
+  export DELTA_PAGER="moor $MOOR --no-statusbar"
+elif [[ "$PAGER" =~ 'less' ]]; then
+  export BAT_PAGER="less $LESS --line-numbers"
+  export DELTA_PAGER="less $LESS --line-numbers"
+fi
 
 # --- XDG overrides ---
 export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:${TERMINFO}:/usr/share/terminfo"
