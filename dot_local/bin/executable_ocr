@@ -11,4 +11,4 @@ TEXT=$(grim -g "$SELECTION" - | tesseract - - 2>/dev/null)
 [ -z "$TEXT" ] && exit 0
 
 echo -n "$TEXT" | wl-copy
-notify-send "OCR" "Text copied to clipboard"
+# notify-send "OCR" "Text copied to clipboard"

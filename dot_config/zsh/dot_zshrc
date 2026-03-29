@@ -123,6 +123,8 @@ export ATUIN_NOBIND="true"
 eval "$(atuin init zsh)"
 bindkey "^E" _atuin_search_widget
 
+(( ${+commands[mise]} )) && eval "$(mise activate zsh)"
+
 zinit wait'!' lucid for \
   OMZL::git.zsh \
   OMZL::functions.zsh \

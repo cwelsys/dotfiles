@@ -105,6 +105,9 @@ no_self_update = false
 
 # Custom commands
 [commands]
+{{ if eq .hostname "main" }}
+"GE-Proton" = "fetch-eggroll"
+{{ end }}
 # "zinit" = "-i zinit self-update"
 # "zsh" = "-i setopt NO_HUP; zinit update --parallel 40"
 # "Python Environment" = "~/dev/.env/bin/pip install -i https://pypi.python.org/simple -U --upgrade-strategy eager jupyter"

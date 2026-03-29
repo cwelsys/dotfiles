@@ -511,7 +511,6 @@ pkgs:
         - ttf-fantasque-sans-mono
         - ttf-ia-writer
         - ttf-jetbrains-mono-nerd
-        - typora
         - tzupdate
         - ufw
         - ufw-docker
@@ -709,7 +708,6 @@ pkgs:
         - syncthingtray-qt6
         - ttf-dejavu
         - ttf-jetbrains-mono
-        - asdf-vm
         - atuin
         - gdb
         - git-lfs
@@ -722,7 +720,6 @@ pkgs:
         - xcompmgr
         - xorg-xdpyinfo
         - yarn
-        - beeper-v4-bin
         - prek-bin
         - ananicy-cpp
         - cachyos-ananicy-rules
@@ -739,7 +736,6 @@ pkgs:
         - vdirsyncer
         - xwayland-satellite-git
         - jellyfin-desktop-git
-        - obsidian-cli-bin
         - kimageformats
         - clean-chroot-manager
         - devtools
@@ -760,11 +756,9 @@ pkgs:
         - csvkit
         - perl-image-exiftool
         - xsv
-        - chaotic-keyring
-        - chaotic-mirrorlist
         - kmon
-        - linux-mainline
-        - linux-mainline-headers
+        - moor
+        - mise
 
     wini:
       scoop:

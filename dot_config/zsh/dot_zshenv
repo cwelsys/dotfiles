@@ -57,15 +57,15 @@ export MANPAGER="$EDITOR +Man!"
 export PAGER="moor"
 export GIT_PAGER="delta"
 export LESS="-cgiRF"
-export MOOR="--statusbar=bold --colors=auto --render-unprintable=highlight --wrap --quit-if-one-screen"
+export MOOR="-statusbar bold -colors auto -render-unprintable highlight -wrap -quit-if-one-screen -style catppuccin-mocha"
 export SYSTEMD_PAGER="$PAGER"
 export SYSTEMD_PAGERSECURE=0
 export SYSTEMD_COLORS=256
 
 # pager overrides per tool
 if [[ "$PAGER" =~ 'moor' ]]; then
-  export BAT_PAGER="moor $MOOR --no-statusbar"
-  export DELTA_PAGER="moor $MOOR --no-statusbar"
+  export BAT_PAGER="moor $MOOR -no-statusbar"
+  export DELTA_PAGER="moor $MOOR -no-statusbar"
 elif [[ "$PAGER" =~ 'less' ]]; then
   export BAT_PAGER="less $LESS --line-numbers"
   export DELTA_PAGER="less $LESS --line-numbers"
@@ -80,7 +80,7 @@ export CARGO_HOME="$XDG_DATA_HOME/cargo"
 export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 export GOPATH="$XDG_DATA_HOME/go"
 export GOBIN="$XDG_DATA_HOME/go/bin"
-export ASDF_DATA_DIR="$XDG_DATA_HOME/asdf"
+export MISE_DATA_DIR="$XDG_DATA_HOME/mise"
 export DOTNET_CLI_HOME="$XDG_DATA_HOME/dotnet"
 export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
 export NPM_CONFIG_PREFIX="$XDG_DATA_HOME/npm"
@@ -120,6 +120,7 @@ export WINEPREFIX="$XDG_DATA_HOME/wine"
 export OLLAMA_HOST="https://slop.cwel.casa"
 export MANAGARR_CONFIG_FILE="$XDG_CONFIG_HOME/managarr/config.yml"
 export MANAGARR_THEMES_FILE="$XDG_CONFIG_HOME/managarr/theme.yml"
+export MISE_QUIET=1
 export MAS_NO_AUTO_INDEX=1
 export DO_NOT_TRACK=1
 export DISABLE_TELEMETRY=1
