@@ -186,17 +186,17 @@ _load_completions() {
     compdef _brew_info_wrapper info
   fi
 
-  if (( ${+commands[yay]} )); then
-    _yi() { service=yay; words=(yay -S "${(@)words[2,-1]}"); ((CURRENT+=1)); _yay }
-    _yu() { service=yay; words=(yay -Rn "${(@)words[2,-1]}"); ((CURRENT+=1)); _yay }
-    _yay_query_wrapper() { service=yay; words=(yay -Q "${(@)words[2,-1]}"); ((CURRENT+=1)); _yay }
-    _yay_info_wrapper() { service=yay; words=(yay -Si "${(@)words[2,-1]}"); ((CURRENT+=1)); _yay }
-    _yay_files_wrapper() { service=yay; words=(yay -Ql "${(@)words[2,-1]}"); ((CURRENT+=1)); _yay }
-    compdef _yi yi
-    compdef _yu yu
-    compdef _yay_query_wrapper list
-    compdef _yay_files_wrapper files
-    compdef _yay_info_wrapper info
+  if (( ${+commands[paru]} )); then
+    _pi() { service=paru; words=(paru -S "${(@)words[2,-1]}"); ((CURRENT+=1)); _paru }
+    _pu() { service=paru; words=(paru -Rn "${(@)words[2,-1]}"); ((CURRENT+=1)); _paru }
+    _paru_query_wrapper() { service=paru; words=(paru -Q "${(@)words[2,-1]}"); ((CURRENT+=1)); _paru }
+    _paru_info_wrapper() { service=paru; words=(paru -Si "${(@)words[2,-1]}"); ((CURRENT+=1)); _paru }
+    _paru_files_wrapper() { service=paru; words=(paru -Ql "${(@)words[2,-1]}"); ((CURRENT+=1)); _paru }
+    compdef _pi pi
+    compdef _pu pu
+    compdef _paru_query_wrapper list
+    compdef _paru_files_wrapper files
+    compdef _paru_info_wrapper info
   fi
 }
 

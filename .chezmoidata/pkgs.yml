@@ -635,7 +635,6 @@ pkgs:
         - vulkan-tools
         - wofi
         - xdg-terminal-exec
-        - yay
         - chromium
         - cliphist
         - dms-shell-git
@@ -759,6 +758,8 @@ pkgs:
         - kmon
         - moor
         - mise
+        - mingw-w64-gcc
+        - paru
 
     wini:
       scoop:

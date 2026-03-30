@@ -367,33 +367,25 @@ fi
 (( ${+commands[flatpak]} )) && alias fp='flatpak'
 (( ${+commands[pacman]} ))  && alias pacman='sudo pacman'
 
-if (( ${+commands[yay]} )); then
-  alias ys='yay -Ss'
-  yor() {
-    if [[ $1 == -a ]]; then
-      yay -Qtdq
-    else
-      yay -Qtdq | grep -v "\-debug$"
-    fi
-  }
-  yi() {
+if (( ${+commands[paru]} )); then
+  pi() {
     if (( ! $# )); then
       {
-        yay -Slq --repo
-        yay -Slq --aur
+        paru -Slq --repo
+        paru -Slq --aur
       } |
         awk 'NR==FNR{inst[$1]=1;next} {if($1 in inst) print $0" \033[1;32m[installed]\033[0m"; else print}' \
-          <(yay -Qq) - |
+          <(paru -Qq) - |
         fzf --multi --ansi -0 --tiebreak=index \
-          --preview="yay --color=always -Si {1}" |
+          --preview="paru --color=always -Si {1}" |
         awk '{print $1}' |
-        xargs --no-run-if-empty --open-tty yay -S
+        xargs --no-run-if-empty --open-tty paru -S
     else
-      yay -S "$@"
+      paru -S "$@"
     fi
   }
 
-  yu() {
+  pu() {
     local use_pattern=0 use_purge=0 pattern=""
 
     while (( $# )); do
@@ -421,27 +413,27 @@ if (( ${+commands[yay]} )); then
         return 1
       fi
       if (( use_purge )); then
-        yay -Rnsc $(yay -Qq | grep "$pattern")
+        paru -Rnsc $(paru -Qq | grep "$pattern")
       else
-        yay -R $(yay -Qq | grep "$pattern")
+        paru -R $(paru -Qq | grep "$pattern")
       fi
       return
     fi
 
     if (( use_purge )); then
-      yay -Rnsc "$@"
+      paru -Rnsc "$@"
       return
     fi
 
     if (( $# )); then
-      yay -Rn "$@"
+      paru -Rn "$@"
       return
     fi
 
-    yay -Qq |
+    paru -Qq |
       fzf --multi --ansi \
-        --preview="yay --color=always -Qi {1}" |
-      xargs --no-run-if-empty --open-tty yay -Rns
+        --preview="paru --color=always -Qi {1}" |
+      xargs --no-run-if-empty --open-tty paru -Rns
   }
 
   info() {
@@ -449,14 +441,14 @@ if (( ${+commands[yay]} )); then
       echo "Usage: (pkg)info <package_name>"
       return 1
     fi
-    yay -Si "$1" 2>/dev/null || yay -Qi "$1"
+    paru -Si "$1" 2>/dev/null || paru -Qi "$1"
   }
 
   list() {
     if [[ -z $1 ]]; then
-      yay -Qq
+      paru -Qq
     else
-      yay -Qs "$@"
+      paru -Qs "$@"
     fi
   }
 
@@ -465,7 +457,7 @@ if (( ${+commands[yay]} )); then
       echo "Usage: files <package_name>"
       return 1
     fi
-    yay -Ql "$1"
+    paru -Ql "$1"
   }
 fi
 
