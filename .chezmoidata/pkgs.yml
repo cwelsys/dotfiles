@@ -183,6 +183,7 @@ pkgs:
         - zmx
         - mise
         - paru-git
+        - moor-bin
 
     mba:
       brews:
