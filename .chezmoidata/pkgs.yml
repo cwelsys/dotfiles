@@ -549,7 +549,6 @@ pkgs:
         - cpio
         - efibootmgr
         - fastfetch
-        - fish
         - ghostty
         - git
         - git-delta
@@ -581,7 +580,6 @@ pkgs:
         - fwupd
         - reflector
         - cage
-        - catppuccin-gtk-theme-git
         - dnsmasq
         - gtk-engine-murrine
         - libgbinder
@@ -735,7 +733,6 @@ pkgs:
         - python-aiohttp-oauthlib
         - vdirsyncer
         - xwayland-satellite-git
-        - jellyfin-desktop-git
         - kimageformats
         - clean-chroot-manager
         - devtools
@@ -760,7 +757,8 @@ pkgs:
         - moor
         - mise
         - mingw-w64-gcc
-        - paru
+        - paru-git
+        - jellyfin-desktop
 
     wini:
       scoop:

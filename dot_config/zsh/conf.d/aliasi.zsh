@@ -462,10 +462,6 @@ if (( ${+commands[paru]} )); then
 fi
 
 if [[ $OSTYPE == darwin* ]] && (( ${+commands[brew]} )); then
-  alias bs='brew search'
-  alias bsl='brew services list'
-  alias bsr='brew services run'
-  alias bsra='bsr --all'
   alias info='brew info'
   alias tap='brew tap'
   alias untap='brew untap'
@@ -501,7 +497,7 @@ if [[ $OSTYPE == darwin* ]] && (( ${+commands[brew]} )); then
 
   (( ${+commands[m]} )) && alias trash-empty='m trash --clean'
 
-  bi() {
+  pi() {
     if (( ! $# )); then
       (brew formulae && brew casks) |
         awk 'NR==FNR{inst[$1]=1;next} {if($1 in inst) print $0" \033[1;32m[installed]\033[0m"; else print}' \
@@ -515,7 +511,7 @@ if [[ $OSTYPE == darwin* ]] && (( ${+commands[brew]} )); then
     fi
   }
 
-  bu() {
+  pu() {
     if (( ! $# )); then
       brew list |
         fzf --multi --ansi \
