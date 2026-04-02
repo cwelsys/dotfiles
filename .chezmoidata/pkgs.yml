@@ -160,7 +160,6 @@ pkgs:
         - ducker
         - python-annotated-doc
         - sbctl
-        - yay
         - bc
         - direnv
         - hactool
@@ -182,6 +181,8 @@ pkgs:
         - aria2
         - rust-analyzer
         - zmx
+        - mise
+        - paru-git
 
     mba:
       brews:
