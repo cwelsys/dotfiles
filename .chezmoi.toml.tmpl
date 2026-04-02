@@ -14,7 +14,7 @@
 {{-   $osID = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
 {{- end -}}
 
-{{- $shell := (eq .chezmoi.os "windows") | ternary "pwsh" "zsh" -}}
+{{- $shell := "zsh" -}}
 {{- $isWSL := and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
 {{- $isVM := promptBoolOnce . "isVM" "Is this a virtual machine" false -}}
 
@@ -88,7 +88,3 @@ headless = {{ $headless }}
 
 [github]
   refreshPeriod = "6h"
-
-[interpreters.ps1]
-  command = "pwsh"
-  args = ["-NoLogo"]
