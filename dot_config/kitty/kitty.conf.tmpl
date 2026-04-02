@@ -27,7 +27,7 @@ macos_traditional_fullscreen no
 macos_show_window_title_in none
 
 # tabs
-tab_bar_style custom
+tab_bar_style zones
 tab_bar_edge top
 tab_bar_min_tabs 1
 
@@ -91,10 +91,10 @@ map alt+backspace send_text all \x17
 map super+backspace send_text all \x15
 map super+left send_text all \x01
 map super+right send_text all \x05
+map {{ $mod }}+s send_text all \x13
 {{ end -}}
 map shift+enter send_text all \x1b[13;2u
 map shift+space send_text all \x1b[32;2u
-map {{ $mod }}+s send_text all \x13
 
 {{ if eq .chezmoi.os "darwin" -}}
 # darwin

@@ -1,34 +1,21 @@
-"""Custom tab bar renderer for kitty terminal.
+"""Content provider for kitty's zones tab bar style.
 
-This module provides two tab bar styles:
-  - "pills": Three-zone layout (left cwd, center tabs, right status)
-  - "powerline": Same as kitty's built-in but with fluff
+This module is loaded by kitty/tab_bar_zones.py. It provides:
+  - tab_content()        — icon, text, and colors for each tab pill
+  - left_zone_content()  — cwd/git/mode content for the left zone
+  - PILL_* constants     — pill glyph configuration
 
-Files:
-  - tabbar.toml         : User configuration (create from tabbar.toml.example)
-  - tabbar.toml.example : Reference documentation with all options and defaults
-  - tabbar_config.py    : Config parsing, validation, color resolution
-  - tab_bar.py          : Rendering logic (this file)
+All layout, positioning, and drawing are handled by the zones engine.
+This module only provides content.
 
 Configuration is loaded from ~/.config/kitty/tabbar.toml via tabbar_config.py.
-
-Kitty calls draw_tab() for each tab, twice per render:
-  1. for_layout=True  → Return estimated width (don't do expensive work)
-  2. for_layout=False → Actually draw to screen
-
-Color formatting uses kitty's Formatter class:
-  - {fmt.fg.tab}      → Tab's assigned fg color
-  - {fmt.fg._RRGGBB}  → Arbitrary hex (note underscore prefix!)
-  - {fmt.fg.color5}   → Terminal palette color
 """
 
 import os
 import subprocess
 import sys
-from dataclasses import dataclass, field
 from pathlib import Path
 
-# Add config directory to path for local imports
 _config_dir = Path.home() / ".config" / "kitty"
 if str(_config_dir) not in sys.path:
     sys.path.insert(0, str(_config_dir))
@@ -39,82 +26,109 @@ try:
     from kitty.fast_data_types import wcswidth as _wcswidth
 except ImportError:
     _wcswidth = None
-
-from kitty.tab_bar import (
-    DrawData,
-    ExtraData,
-    TabBarData,
-    draw_tab_with_powerline,
-)
+from kitty.tab_bar import DrawData, TabBarData, as_rgb
+from kitty.tab_bar_zones import TabContent, ZoneContent
 
 from tabbar_config import (
     UnifiedColorResolver,
-    get_active_style,
-    get_color_resolver,
     get_config,
     get_icon,
 )
 
 
-def _display_width(s: str) -> int:
-    """Return the display width of a string (handles double-width glyphs).
+# --- Pill glyph constants (read by zones engine) ---
 
-    Uses wcswidth when available (kitty provides it). Falls back to len()
-    which is correct for ASCII/single-width content.
-    """
+_config = get_config()
+_pills = _config.styles.pills
+
+PILL_BORDER_LEFT = _pills.border_left
+PILL_BORDER_RIGHT = _pills.border_right
+PILL_SEPARATOR = _pills.separator
+PILL_SPACING = _pills.spacing
+
+
+# --- Helpers ---
+
+def _display_width(s: str) -> int:
     if _wcswidth is not None:
         w = _wcswidth(s)
         return w if w >= 0 else len(s)
     return len(s)
 
 
-@dataclass
-class TabInfo:
-    """Unified tab information used by all styles."""
-
-    tab: TabBarData
-    index: int
-    exe: str
-    cwd: str
-    icon: str
-    hostname: str | None
-    is_active: bool
-    is_pinned: bool = False
-
-    @property
-    def is_remote(self) -> bool:
-        return bool(self.hostname)
-
-
 _home = os.path.expanduser("~")
 _SHELLS = {
     "zsh", "bash", "fish", "sh", "nu", "tcsh", "dash", "ksh", "pwsh",
     "elvish", "xonsh",
-    "-zsh", "-bash", "-fish", "-sh",  # Login shell variants
+    "-zsh", "-bash", "-fish", "-sh",
 }
-_shells_configured_for: int = 0  # id() of the config that extra_shells was applied from
 
-# Git status cache: repo_path -> ((index_mtime, stash_mtime), (branch, counts))
+# Apply configurable extra shells
+_cfg = get_config()
+if _cfg.general.extra_shells:
+    _SHELLS.update(_cfg.general.extra_shells)
+
+
+# --- Process detection ---
+
+def get_foreground_process(tab_id: int) -> tuple[str, str, str | None]:
+    """Get (exe, cwd, remote_host) for tab's foreground process."""
+    try:
+        from kitty.tab_bar import TabAccessor
+        ta = TabAccessor(tab_id)
+        exe = ta.active_exe or "zsh"
+        cwd = ta.active_wd or ""
+
+        remote_host = None
+        try:
+            boss = get_boss()
+            tab = boss.tab_for_id(tab_id)
+            if tab and tab.active_window:
+                user_vars = tab.active_window.user_vars
+                proc = user_vars.get("PROC")
+                if proc and proc not in _SHELLS:
+                    exe = proc
+                remote_cwd = user_vars.get("REMOTE_CWD")
+                if remote_cwd:
+                    cwd = remote_cwd
+                remote_host = user_vars.get("REMOTE_HOST") or None
+        except Exception:
+            pass
+
+        return (exe, cwd, remote_host)
+    except Exception:
+        return ("zsh", "", None)
+
+
+# Process info cache: tab_id -> (cache_key, (exe, cwd, hostname))
+_proc_cache: dict[int, tuple[str, tuple[str, str, str | None]]] = {}
+
+
+def _get_process_cached(tab: TabBarData) -> tuple[str, str, str | None]:
+    """Get foreground process with caching across render cycles."""
+    cache_key = f"{tab.title}:{tab.is_active}:{tab.num_windows}"
+    if tab.tab_id in _proc_cache:
+        old_key, old_data = _proc_cache[tab.tab_id]
+        if old_key == cache_key:
+            return old_data
+    data = get_foreground_process(tab.tab_id)
+    _proc_cache[tab.tab_id] = (cache_key, data)
+    return data
+
+
+# --- Git status ---
+
 _git_cache: dict[str, tuple[tuple[float, float], tuple[str, dict[str, int]]]] = {}
 _GIT_CACHE_MAX = 50
-
-# Git dir lookup cache: cwd -> git_dir_path (avoids repeated filesystem walks)
 _git_dir_cache: dict[str, Path | None] = {}
 _GIT_DIR_CACHE_MAX = 100
 
 
 def _find_git_dir(cwd: str) -> Path | None:
-    """Walk up from cwd to find .git directory (cached by cwd).
-
-    Handles both regular repos (.git is a directory) and worktrees
-    (.git is a file pointing to the main repo's git dir).
-    """
     if cwd in _git_dir_cache:
         return _git_dir_cache[cwd]
-
     if len(_git_dir_cache) >= _GIT_DIR_CACHE_MAX:
         _git_dir_cache.clear()
-
     try:
         path = Path(cwd)
         for parent in [path, *path.parents]:
@@ -123,7 +137,6 @@ def _find_git_dir(cwd: str) -> Path | None:
                 _git_dir_cache[cwd] = git_path
                 return git_path
             if git_path.is_file():
-                # Worktree: .git is a file containing "gitdir: /path/to/git"
                 content = git_path.read_text().strip()
                 if content.startswith("gitdir:"):
                     result = Path(content[7:].strip())
@@ -137,167 +150,73 @@ def _find_git_dir(cwd: str) -> Path | None:
 
 
 def _parse_git_output(raw: str) -> tuple[str, dict[str, int]]:
-    """Parse git status --porcelain=v2 --branch output.
-
-    Returns:
-        (branch_name, {ahead, behind, staged, modified, deleted, renamed, untracked, conflicted})
-
-    XY codes in porcelain v2:
-        X = staged status, Y = worktree status
-        M = modified, A = added, D = deleted, R = renamed, C = copied
-        . = unchanged, ? = untracked, ! = ignored
-    """
     branch = ""
     counts = {
-        "ahead": 0,
-        "behind": 0,
-        "staged": 0,
-        "modified": 0,
-        "deleted": 0,
-        "renamed": 0,
-        "untracked": 0,
-        "conflicted": 0,
+        "ahead": 0, "behind": 0, "staged": 0, "modified": 0,
+        "deleted": 0, "renamed": 0, "untracked": 0, "conflicted": 0,
     }
-
     for line in raw.splitlines():
         if line.startswith("# branch.head "):
             branch = line.split()[-1]
         elif line.startswith("# branch.ab "):
-            # Format: # branch.ab +N -M
             parts = line.split()
             if len(parts) >= 4:
                 counts["ahead"] = int(parts[2].lstrip("+"))
                 counts["behind"] = abs(int(parts[3]))
         elif line.startswith("2 "):
-            # Renamed/copied entries (type 2)
             counts["renamed"] += 1
         elif line.startswith("1 "):
-            # Changed entries: 1 XY ...
             parts = line.split()
             if len(parts) >= 2:
                 xy = parts[1]
                 if len(xy) >= 2:
-                    # Check staged (X position)
                     if xy[0] == "D":
                         counts["deleted"] += 1
                     elif xy[0] not in (".", "?"):
                         counts["staged"] += 1
-                    # Check worktree (Y position)
                     if xy[1] == "D":
                         counts["deleted"] += 1
                     elif xy[1] not in (".", "?"):
                         counts["modified"] += 1
         elif line.startswith("u "):
-            # Unmerged/conflicted
             counts["conflicted"] += 1
         elif line.startswith("? "):
-            # Untracked
             counts["untracked"] += 1
-
     return branch, counts
 
 
-# Git branch icon (nf-md-source_branch U+E725)
 _GIT_BRANCH_ICON = "\ue725"
 
 
-def _format_git_parts(
-    branch: str, counts: dict[str, int], branch_only: bool = False
-) -> list[tuple[str, str]]:
-    """Format git info into (text, part_type) tuples for colorization.
-
-    Args:
-        branch: Branch name
-        counts: Status counts dict
-        branch_only: If True, only return branch icon + name (no status)
-
-    Returns list compatible with _draw_git_pill's expected format.
-    """
-    parts: list[tuple[str, str]] = []
-
-    # Git branch icon with space
-    parts.append((_GIT_BRANCH_ICON + " ", "git_branch_icon"))
-
-    # Branch name
-    parts.append((branch, "git_branch"))
-
-    if branch_only:
-        return parts
-
-    # Status symbols (order matches starship convention)
-    symbols = [
-        ("stashed", "*"),
-        ("deleted", "✘"),
-        ("staged", "+"),
-        ("modified", "!"),
-        ("renamed", "»"),
-        ("untracked", "?"),
-        ("conflicted", "~"),
-        ("ahead", "⇡"),
-        ("behind", "⇣"),
-    ]
-
-    status_parts = []
-    for key, sym in symbols:
-        if counts.get(key, 0) > 0:
-            status_parts.append((f"{sym}{counts[key]}", f"git_{key}"))
-
-    if status_parts:
-        parts.append((" ", "git_branch"))  # Separator
-        for i, (text, part_type) in enumerate(status_parts):
-            if i > 0:
-                parts.append((" ", "git_branch"))  # Space between status items
-            parts.append((text, part_type))
-
-    return parts
-
-
-def _get_git_parts_length(parts: list[tuple[str, str]]) -> int:
-    """Get the display length of git parts."""
-    return sum(_display_width(text) for text, _ in parts)
-
-
 def _get_git_status_raw(cwd: str) -> tuple[str, dict[str, int]] | None:
-    """Get git status for cwd, mtime-gated.
-
-    Returns (branch, counts) tuple for flexible formatting,
-    or None if not in a git repo or on error.
-    """
     git_dir = _find_git_dir(cwd)
     if not git_dir:
         return None
 
-    # Check index mtime for cache invalidation
     index = git_dir / "index"
     try:
         current_mtime = index.stat().st_mtime if index.exists() else 0
     except Exception:
         current_mtime = 0
 
-    # Also check stash refs mtime (changes when stash is modified)
     stash_ref = git_dir / "refs" / "stash"
     try:
         stash_mtime = stash_ref.stat().st_mtime if stash_ref.exists() else 0
     except Exception:
         stash_mtime = 0
 
-    # Combine mtimes for cache key
     combined_mtime = (current_mtime, stash_mtime)
     repo_key = str(git_dir.parent) if git_dir.name == ".git" else str(git_dir)
 
-    # Check cache
     if repo_key in _git_cache:
         cached_mtime, cached_data = _git_cache[repo_key]
         if cached_mtime == combined_mtime:
             return cached_data
 
-    # Cache miss - run git status
     try:
         result = subprocess.run(
             ["git", "-C", cwd, "status", "--porcelain=v2", "--branch"],
-            capture_output=True,
-            text=True,
-            timeout=0.5,
+            capture_output=True, text=True, timeout=0.5,
         )
         if result.returncode != 0:
             return None
@@ -306,20 +225,17 @@ def _get_git_status_raw(cwd: str) -> tuple[str, dict[str, int]] | None:
         if not branch:
             return None
 
-        # Get stash count (separate command, but only if stash ref exists)
         if stash_ref.exists():
             try:
                 stash_result = subprocess.run(
                     ["git", "-C", cwd, "stash", "list"],
-                    capture_output=True,
-                    text=True,
-                    timeout=0.3,
+                    capture_output=True, text=True, timeout=0.3,
                 )
                 if stash_result.returncode == 0:
                     stash_lines = stash_result.stdout.strip().splitlines()
                     counts["stashed"] = len(stash_lines)
             except Exception:
-                pass  # Stash count is optional
+                pass
 
         if len(_git_cache) >= _GIT_CACHE_MAX:
             _git_cache.clear()
@@ -329,282 +245,40 @@ def _get_git_status_raw(cwd: str) -> tuple[str, dict[str, int]] | None:
         return None
 
 
-@dataclass
-class RenderContext:
-    """Render context holding all state for a single render cycle.
-
-    This replaces multiple global variables with a single context object
-    that's passed through the render pipeline. The context is created at
-    the start of each render cycle and reset at the end.
-
-    Attributes:
-        colors: UnifiedColorResolver for color resolution with live theme support
-        config: TabBarConfig for access to all configuration
-        tabs: List of TabInfo for all tabs (pills style collects these)
-        active_tab_index: Index of the active tab in the tabs list
-        cached_tab_positions: (start, end) positions keyed by tab_id for click detection
-        screen_columns: Total screen width for layout calculations
-        _tab_info_cache: Cached TabInfo across render cycles keyed by tab_id
-        _layout_tab_ids: Tab order collected during the layout phase (current cycle)
-        _layout_tab_widths_expanded: Expanded pill widths per tab from layout phase
-        _layout_tab_widths_collapsed: Collapsed pill widths per tab from layout phase
-        _precomputed_ends: Cumulative end positions pre-computed at end of layout phase;
-                           used by render phase non-last tabs to produce accurate CellRanges
-        _cached_is_pinned: Pinned state per tab from last render; used in pre-computation
-        _last_center_tab_id: Tab ID of the last non-pinned tab; used during drag to extend
-                             its CellRange to screen edge so mouse in right zone returns it
-                             (preventing drag from targeting pinned tabs via fallback)
-        is_drag_active: True when kitty has an active tab_being_dropped (drop preview active)
-    """
-
-    colors: UnifiedColorResolver
-    config: "TabBarConfig"  # Forward reference to avoid circular import
-    tabs: list[TabInfo] = field(default_factory=list)
-    active_tab_index: int = 0
-    cached_tab_positions: dict[int, tuple[int, int]] = field(default_factory=dict)  # tab_id -> (start, end)
-    screen_columns: int = 0
-    _tab_info_cache: dict[int, tuple[str, TabInfo]] = field(default_factory=dict)  # tab_id -> (cache_key, info)
-    # Layout-phase pre-computation (computed before render phase; eliminates stale-position lag)
-    _layout_tab_ids: list[int] = field(default_factory=list)
-    _layout_tab_widths_expanded: dict[int, int] = field(default_factory=dict)
-    _layout_tab_widths_collapsed: dict[int, int] = field(default_factory=dict)
-    _precomputed_ends: dict[int, int] = field(default_factory=dict)  # tab_id -> cumulative end pos
-    _cached_is_pinned: dict[int, bool] = field(default_factory=dict)  # tab_id -> pinned state
-    _last_center_tab_id: int | None = None  # last non-pinned tab ID (from layout phase)
-    is_drag_active: bool = False  # True when tab_being_dropped is set on active tab manager
-
-
-# Global render context (set per render cycle)
-_render_ctx: RenderContext | None = None
-
-
-def _color_int(name: str) -> int:
-    """Convert color name to RGB int for screen.cursor.
-
-    Uses the current render cycle's context for live theme colors.
-    Falls back to static config resolver outside render cycle.
-    """
-    if _render_ctx is not None:
-        return _render_ctx.colors.resolve_to_int(name)
-    return get_color_resolver().as_int(name)
-
-
-def _c(name: str) -> str:
-    """Resolve color name to hex value for formatting strings.
-
-    Returns hex without # prefix for use in {fmt.fg._RRGGBB} patterns.
-    Uses the current render cycle's context for live theme colors.
-    """
-    if _render_ctx is not None:
-        return _render_ctx.colors.resolve_to_hex(name)
-    return get_color_resolver().resolve(name)
-
-
-def get_path_parts(cwd: str, max_segments: int) -> tuple[str, ...]:
-    """Get path as tuple of parts, shortened for display."""
+def _abbreviate_path(cwd: str, max_len: int) -> str | None:
+    if not cwd:
+        return None
+    if len(cwd) > 1 and cwd.endswith("/"):
+        cwd = cwd.rstrip("/")
     if cwd.startswith(_home):
-        cwd = "~" + cwd[len(_home) :]
-
-    parts = cwd.strip("/").split("/")
-    if len(parts) > max_segments:
-        parts = [".."] + parts[-max_segments:]
-
-    return tuple(parts)
-
-
-def colorize_parts(
-    parts: tuple[str, ...],
-    sep: str,
-    tab_index: int,
-    is_active: bool,
-    colors_cfg,
-) -> str:
-    """Colorize segments with rainbow colors."""
-    colored_parts = []
-    num_parts = len(parts)
-
-    for i, part in enumerate(parts):
-        is_last = i == num_parts - 1
-
-        if is_active:
-            color = _c(colors_cfg.path_active_main)
+        remainder = cwd[len(_home):]
+        if remainder == "" or remainder.startswith("/"):
+            cwd = "~" + remainder
+    if _display_width(cwd) <= max_len:
+        return cwd
+    parts = cwd.split("/")
+    if len(parts) <= 1:
+        return cwd if _display_width(cwd) <= max_len else None
+    abbreviated = []
+    for part in parts[:-1]:
+        if part in ("~", ""):
+            abbreviated.append(part)
+        elif part.startswith("."):
+            abbreviated.append(part[:3] if len(part) > 3 else part)
         else:
-            color_idx = (tab_index + i) % len(colors_cfg.rainbow)
-            color = _c(colors_cfg.rainbow[color_idx])
-
-        colored_parts.append(f"{{fmt.fg._{color}}}{part}")
-
-    colored_sep = f"{{fmt.fg.tab}}{sep}"
-    return colored_sep.join(colored_parts) + "{fmt.fg.tab}"
-
-
-TITLE_SEPARATORS = ["/", " - ", ": ", " | "]
-
-
-def colorize_title(text: str, tab_index: int, is_active: bool, config) -> str:
-    """Colorize any title by splitting on common separators."""
-    powerline = config.styles.powerline
-    if not powerline.rainbow_path:
-        return text
-
-    colors_cfg = powerline.colors
-    for sep in TITLE_SEPARATORS:
-        if sep in text:
-            parts = tuple(text.split(sep))
-            return colorize_parts(parts, sep, tab_index, is_active, colors_cfg)
-
-    if is_active:
-        color = _c(colors_cfg.path_active_main)
-    else:
-        color_idx = tab_index % len(colors_cfg.rainbow)
-        color = _c(colors_cfg.rainbow[color_idx])
-    return f"{{fmt.fg._{color}}}{text}{{fmt.fg.tab}}"
-
-
-def format_path(cwd: str, index: int, is_active: bool, config) -> str:
-    """Format path, optionally with rainbow colors."""
-    powerline = config.styles.powerline
-    parts = get_path_parts(cwd, powerline.max_path_segments)
-    if powerline.rainbow_path:
-        return colorize_parts(parts, "/", index, is_active, powerline.colors)
-    return "/".join(parts)
-
-
-def get_foreground_process(tab_id: int) -> tuple[str, str, str | None]:
-    """Get the foreground process name, cwd, and optional remote host.
-
-    Uses TabAccessor (kitty's safe API) for exe/cwd, then a single get_boss()
-    call for user vars (PROC, REMOTE_CWD, REMOTE_HOST).
-
-    Returns:
-        Tuple of (executable_name, cwd, remote_hostname).
-        Falls back to ("zsh", "", None) on errors.
-    """
-    try:
-        from kitty.tab_bar import TabAccessor
-
-        ta = TabAccessor(tab_id)
-
-        # Use TabAccessor's safe methods
-        exe = ta.active_exe or "zsh"
-        cwd = ta.active_wd or ""
-
-        # Single boss lookup for all user vars
-        remote_host = None
-        try:
-            boss = get_boss()
-            tab = boss.tab_for_id(tab_id)
-            if tab and tab.active_window:
-                user_vars = tab.active_window.user_vars
-                # PROC user var overrides exe (for SSH and shell hooks)
-                proc = user_vars.get("PROC")
-                if proc and proc not in _SHELLS:
-                    exe = proc
-                # REMOTE_CWD overrides cwd for SSH sessions
-                remote_cwd = user_vars.get("REMOTE_CWD")
-                if remote_cwd:
-                    cwd = remote_cwd
-                remote_host = user_vars.get("REMOTE_HOST") or None
-        except Exception as e:
-            print(
-                f"[tab_bar] Warning: Failed to get user vars for tab {tab_id}: {e}",
-                file=sys.stderr,
-            )
-
-        return (exe, cwd, remote_host)
-    except Exception as e:
-        print(
-            f"[tab_bar] Warning: Failed to get foreground process for tab {tab_id}: {e}",
-            file=sys.stderr,
-        )
-        return ("zsh", "", None)
-
-
-def get_tab_info(tab: TabBarData, index: int) -> TabInfo:
-    """Create a TabInfo with all relevant data for rendering.
-
-    Uses a per-render-cycle cache keyed by tab_id. Cache is invalidated when
-    the tab's title, active state, or window count changes (indicating the
-    foreground process may have changed).
-    """
-    cache_key = f"{tab.title}:{tab.is_active}:{tab.num_windows}"
-
-    if _render_ctx is not None and tab.tab_id in _render_ctx._tab_info_cache:
-        old_key, old_info = _render_ctx._tab_info_cache[tab.tab_id]
-        if old_key == cache_key:
-            # Update mutable fields that change per render cycle
-            old_info.index = index
-            old_info.is_active = tab.is_active
-            old_info.tab = tab
-            return old_info
-
-    exe, cwd, hostname = get_foreground_process(tab.tab_id)
-    icon = get_icon(exe)
-    info = TabInfo(
-        tab=tab,
-        index=index,
-        exe=exe,
-        cwd=cwd,
-        icon=icon,
-        hostname=hostname,
-        is_active=tab.is_active,
-        is_pinned=False,
-    )
-
-    if _render_ctx is not None:
-        _render_ctx._tab_info_cache[tab.tab_id] = (cache_key, info)
-
-    return info
-
-
-def format_tab_title(
-    exe: str,
-    cwd: str,
-    title: str,
-    index: int,
-    is_active: bool,
-    remote_host: str | None,
-    config,
-) -> str:
-    """Format tab title based on powerline elements config."""
-    powerline = config.styles.powerline
-    colors_cfg = powerline.colors  # Use new canonical location
-
-    parts = []
-    if is_active:
-        icon_color = _c(colors_cfg.icon_active)
-    elif powerline.rainbow_index_icon:
-        icon_color = _c(colors_cfg.rainbow[(index - 1) % len(colors_cfg.rainbow)])
-    else:
-        icon_color = _c(colors_cfg.icon_inactive)
-
-    for element in powerline.elements:
-        if element == "index":
-            parts.append(f"{{fmt.fg._{icon_color}}}{index}{{fmt.fg.tab}}")
-        elif element == "icon":
-            icon = get_icon(exe)
-            parts.append(f"{{fmt.fg._{icon_color}}}{icon}{{fmt.fg.tab}}")
-        elif element == "name":
-            parts.append(exe)
-        elif element == "path":
-            display = title or cwd
-            if display:
-                if display.startswith(("~", "/", ".", "…")):
-                    parts.append(format_path(display, index, is_active, config))
-                else:
-                    parts.append(colorize_title(display, index, is_active, config))
-        elif element == "ssh" and remote_host:
-            parts.append(f"{{fmt.fg._{icon_color}}}{powerline.ssh_icon}{{fmt.fg.tab}}")
-        elif element == "hostname" and remote_host:
-            parts.append(f"{{fmt.fg._{icon_color}}}{remote_host}{{fmt.fg.tab}}")
-
-    content = powerline.element_sep.join(parts)
-    result = f"{powerline.pad_start}{content}{powerline.pad_end}"
-    return result
+            abbreviated.append(part[:2] if len(part) > 2 else part)
+    abbreviated.append(parts[-1])
+    result = "/".join(abbreviated)
+    if _display_width(result) <= max_len:
+        return result
+    if _display_width(parts[-1]) <= max_len:
+        return parts[-1]
+    if max_len > 3:
+        return parts[-1][:max_len - 1] + "\u2026"
+    return None
 
 
 def get_keyboard_mode() -> str:
-    """Get the current keyboard mode name, empty string if normal."""
     try:
         mode = get_boss().mappings.current_keyboard_mode_name
         return mode if mode else ""
@@ -612,866 +286,219 @@ def get_keyboard_mode() -> str:
         return ""
 
 
-def _draw_pill(
-    screen: Screen,
-    icon: str,
-    text: str | None,
-    icon_bg: int,
-    text_bg: int,
-    icon_fg: int,
-    text_fg: int,
-    pills,
-) -> None:
-    """Draw a single pill with icon and optional text."""
-    # Left border
-    screen.cursor.bg = 0
-    screen.cursor.fg = icon_bg
-    screen.draw(pills.border_left)
+# --- Color resolution (per render cycle) ---
 
-    # Icon section (with trailing padding)
-    screen.cursor.bg = icon_bg
-    screen.cursor.fg = icon_fg
-    screen.cursor.bold = True
-    screen.draw(f"{icon} ")
-    screen.cursor.bold = False
-
-    if text:
-        # Separator (transition from icon_bg to text_bg)
-        screen.cursor.bg = text_bg
-        screen.cursor.fg = icon_bg
-        screen.draw(pills.separator)
-
-        # Text section
-        screen.cursor.fg = text_fg
-        screen.draw(f" {text}")
-
-        # Right border
-        screen.cursor.fg = text_bg
-        screen.cursor.bg = 0
-        screen.draw(pills.border_right)
-    else:
-        # No text - close directly after icon
-        screen.cursor.bg = 0
-        screen.cursor.fg = icon_bg
-        screen.draw(pills.border_right)
+_resolver: UnifiedColorResolver | None = None
+_resolver_draw_data_id: int = 0
 
 
-def _pill_width(icon: str, text: str | None) -> int:
-    """Calculate drawn width of a pill."""
-    width = 2 + _display_width(icon) + 1  # left_border(1) + icon + padding(1) + right_border(1)
-    if text:
-        width += 1 + 1 + _display_width(text)  # separator(1) + space(1) + text
-    return width
+def _get_resolver(draw_data: DrawData) -> UnifiedColorResolver:
+    """Get or refresh color resolver for current render cycle."""
+    global _resolver, _resolver_draw_data_id
+    dd_id = id(draw_data)
+    if _resolver is None or _resolver_draw_data_id != dd_id:
+        _resolver = UnifiedColorResolver(get_config(), draw_data)
+        _resolver_draw_data_id = dd_id
+    return _resolver
 
 
-def _draw_git_pill(
-    screen: Screen,
-    icon: str,
-    git_parts: list[tuple[str, str]],
-    icon_bg: int,
-    text_bg: int,
-    icon_fg: int,
-    git_colors,
-    pills,
-) -> None:
-    """Draw a pill with colorized git status text.
-
-    Args:
-        git_parts: List of (text, part_type) from _get_git_status or _format_git_parts
-        git_colors: GitColorsConfig with color names for each part type
-    """
-    # Left border
-    screen.cursor.bg = 0
-    screen.cursor.fg = icon_bg
-    screen.draw(pills.border_left)
-
-    # Icon section
-    screen.cursor.bg = icon_bg
-    screen.cursor.fg = icon_fg
-    screen.cursor.bold = True
-    screen.draw(f"{icon} ")
-    screen.cursor.bold = False
-
-    if git_parts:
-        # Separator
-        screen.cursor.bg = text_bg
-        screen.cursor.fg = icon_bg
-        screen.draw(pills.separator)
-
-        # Draw each part with its color
-        screen.draw(" ")  # Leading space in text section
-        for text, part_type in git_parts:
-            color_name = getattr(git_colors, part_type, "foreground")
-            screen.cursor.fg = _color_int(color_name)
-            screen.draw(text)
-
-        # Right border
-        screen.cursor.fg = text_bg
-        screen.cursor.bg = 0
-        screen.draw(pills.border_right)
-    else:
-        # No text - close directly after icon
-        screen.cursor.bg = 0
-        screen.cursor.fg = icon_bg
-        screen.draw(pills.border_right)
+def _color_int(name: str, draw_data: DrawData) -> int:
+    return _get_resolver(draw_data).resolve_to_int(name)
 
 
-def _abbreviate_path(cwd: str, max_len: int) -> str | None:
-    """Abbreviate path segments: ~/.lo/sh/chezmoi/home style.
+# --- Content provider interface ---
 
-    Shortens intermediate segments to 2 chars (or 3 for dotfiles),
-    keeps last segment full.
-    """
-    if not cwd:
-        return None
+def tab_content(
+    tab: TabBarData,
+    index: int,
+    is_active: bool,
+    is_pinned: bool,
+    draw_data: DrawData,
+) -> TabContent:
+    """Return display content for a single tab pill."""
+    config = get_config()
+    pills = config.styles.pills
+    colors = pills.colors
 
-    # Normalize: strip trailing slash (unless root)
-    if len(cwd) > 1 and cwd.endswith("/"):
-        cwd = cwd.rstrip("/")
+    exe, cwd, hostname = _get_process_cached(tab)
+    icon_str = get_icon(exe)
 
-    if cwd.startswith(_home):
-        remainder = cwd[len(_home):]
-        # Ensure we're at a boundary (exact match or followed by /)
-        if remainder == "" or remainder.startswith("/"):
-            cwd = "~" + remainder
-
-    if _display_width(cwd) <= max_len:
-        return cwd
-
-    parts = cwd.split("/")
-    if len(parts) <= 1:
-        return cwd if _display_width(cwd) <= max_len else None
-
-    # Abbreviate all but last segment
-    abbreviated = []
-    for i, part in enumerate(parts[:-1]):
-        if part == "~" or part == "":
-            abbreviated.append(part)
-        elif part.startswith("."):
-            # Dotfiles: keep dot + 2 chars (e.g., .config -> .co)
-            abbreviated.append(part[:3] if len(part) > 3 else part)
-        else:
-            # Regular: 2 chars (e.g., share -> sh)
-            abbreviated.append(part[:2] if len(part) > 2 else part)
-
-    # Add last segment full
-    abbreviated.append(parts[-1])
-    result = "/".join(abbreviated)
-
-    if _display_width(result) <= max_len:
-        return result
-
-    # Still too long - try just last segment
-    if _display_width(parts[-1]) <= max_len:
-        return parts[-1]
-
-    # Truncate last segment
-    if max_len > 3:
-        return parts[-1][:max_len - 1] + "…"
-
-    return None
-
-
-def _get_cwd_display(cwd: str, max_len: int, max_segments: int) -> str | None:
-    """Get cwd formatted for display, respecting max length.
-
-    Uses abbreviated style: ~/.lo/sh/repo/subdir
-    """
-    if not cwd or max_len <= 0:
-        return None
-
-    return _abbreviate_path(cwd, max_len)
-
-
-def _format_pill_icon(info: TabInfo, pills, display_index: int | None = None) -> str:
-    """Format the icon section content for a pill.
-
-    Args:
-        info: Tab information
-        pills: Pills config
-        display_index: Index to display (None = omit index, for pinned tabs)
-    """
-    parts = []
+    # Build icon section
+    icon_parts = []
     for element in pills.icon_elements:
-        if element == "index" and display_index is not None:
-            parts.append(str(display_index))
+        if element == "index" and not is_pinned:
+            icon_parts.append(str(index))
         elif element == "icon":
-            parts.append(info.icon)
-    return (
-        " ".join(parts)
-        if parts
-        else (str(display_index) if display_index is not None else info.icon)
-    )
+            icon_parts.append(icon_str)
+    icon = " ".join(icon_parts) if icon_parts else (str(index) if not is_pinned else icon_str)
 
-
-def _format_pill_text(info: TabInfo, pills) -> str:
-    """Format the text section content for a pill."""
-    parts = []
+    # Build text section
+    text_parts = []
     for element in pills.text_elements:
         if element == "name":
-            parts.append(info.exe)
-        elif element == "title":
-            if info.tab.title:
-                parts.append(info.tab.title)
-        elif element == "path":
-            display = info.tab.title or info.cwd
-            if display:
-                # Use pills-specific max_path_segments from left_zone config
-                path_parts = (
-                    get_path_parts(display, pills.left_zone.max_path_segments)
-                    if display.startswith(("~", "/", ".", "…"))
-                    else (display,)
-                )
-                parts.append("/".join(path_parts))
-        elif element == "hostname" and info.hostname:
-            parts.append(info.hostname)
-    return " ".join(parts)
+            text_parts.append(exe)
+        elif element == "title" and tab.title:
+            text_parts.append(tab.title)
+        elif element == "hostname" and hostname:
+            text_parts.append(hostname)
+    text = " ".join(text_parts) if text_parts else None
 
+    # Colors
+    icon_bg = _color_int(colors.icon_bg_active if is_active else colors.icon_bg, draw_data)
+    icon_fg = _color_int(colors.icon_fg_active if is_active else colors.icon_fg, draw_data)
+    text_bg = _color_int(colors.text_bg_active if is_active else colors.text_bg, draw_data)
+    text_fg = _color_int(colors.text_fg_active if is_active else colors.text_fg, draw_data)
 
-def _precompute_pill_positions(ctx: "RenderContext", screen_cols: int, pills) -> None:
-    """Pre-compute pill end positions from the current layout phase data.
-
-    Called at the end of the layout phase (when is_last=True). Uses current-cycle
-    tab order + cached widths + cached pinned state to produce accurate end positions
-    for the render phase — eliminating the one-render-lag from stale cached positions.
-
-    Replicates the strategy selection logic from the render phase so that positions
-    are accurate even when the strategy changes (e.g. new tab triggers collapse).
-
-    Results are stored in ctx._precomputed_ends (tab_id -> cumulative end position).
-    """
-    tab_ids = ctx._layout_tab_ids
-    widths_exp = ctx._layout_tab_widths_expanded
-    widths_col = ctx._layout_tab_widths_collapsed
-    spacing = pills.spacing
-
-    # Split by cached pinned state (from previous render — changes rarely)
-    center_ids = [t for t in tab_ids if not ctx._cached_is_pinned.get(t, False)]
-    right_ids = [t for t in tab_ids if ctx._cached_is_pinned.get(t, False)]
-
-    # Find active tab in center zone
-    center_active_idx: int | None = None
-    for i, tid in enumerate(center_ids):
-        cached = ctx._tab_info_cache.get(tid)
-        if cached and cached[1].is_active:
-            center_active_idx = i
-            break
-
-    # Center zone width variants
-    n_center = len(center_ids)
-    center_spacing = (n_center - 1) * spacing if n_center > 1 else 0
-    center_all_expanded = sum(widths_exp.get(t, 15) for t in center_ids) + center_spacing
-    center_active_expanded = (
-        sum(
-            widths_exp.get(t, 15) if i == center_active_idx else widths_col.get(t, 8)
-            for i, t in enumerate(center_ids)
-        ) + center_spacing
-        if center_ids else 0
+    return TabContent(
+        icon=icon,
+        text=text,
+        icon_fg=icon_fg,
+        icon_bg=icon_bg,
+        text_fg=text_fg,
+        text_bg=text_bg,
     )
-    center_all_collapsed = sum(widths_col.get(t, 8) for t in center_ids) + center_spacing
-
-    # Right zone total width
-    n_right = len(right_ids)
-    right_spacing = (n_right - 1) * spacing if n_right > 1 else 0
-    right_total = sum(widths_exp.get(t, 15) for t in right_ids) + right_spacing
-    right_margin = 2 if right_ids else 0
-
-    # Replicate strategy selection (mirrors render phase logic)
-    available_for_center = screen_cols - right_total - right_margin if right_ids else screen_cols
-    max_center = int(available_for_center * 0.6)
-
-    if center_all_expanded <= max_center:
-        strategy = "expand_all"
-        center_width = center_all_expanded
-    elif center_active_expanded <= max_center:
-        strategy = "expand_active"
-        center_width = center_active_expanded
-    else:
-        strategy = "collapse_all"
-        center_width = center_all_collapsed
-
-    center_width = min(center_width, screen_cols)  # clamp to screen
-
-    # Center position with clamping
-    center_start = max(0, (screen_cols - center_width) // 2)
-    if right_ids:
-        max_end = screen_cols - right_total - right_margin
-        if center_start + center_width > max_end:
-            center_start = max(0, max_end - center_width)
-
-    # Store last center tab ID for drag-aware CellRange extension
-    ctx._last_center_tab_id = center_ids[-1] if center_ids else None
-
-    # Cumulative end positions for center tabs (using strategy-selected widths)
-    ctx._precomputed_ends = {}
-    pos = center_start
-    for i, tid in enumerate(center_ids):
-        if i > 0:
-            pos += spacing
-        if strategy == "expand_all":
-            w = widths_exp.get(tid, 15)
-        elif strategy == "expand_active":
-            cached = ctx._tab_info_cache.get(tid)
-            is_active = cached[1].is_active if cached else False
-            w = widths_exp.get(tid, 15) if is_active else widths_col.get(tid, 8)
-        else:  # collapse_all
-            w = widths_col.get(tid, 8)
-        pos += w
-        ctx._precomputed_ends[tid] = pos
-
-    # Cumulative end positions for pinned (right zone) tabs
-    if right_ids:
-        pos = screen_cols - right_total
-        for i, tid in enumerate(right_ids):
-            if i > 0:
-                pos += spacing
-            pos += widths_exp.get(tid, 15)
-            ctx._precomputed_ends[tid] = pos
 
 
-def draw_tab_pills(
+def left_zone_content(
+    active_tab: TabBarData,
     draw_data: DrawData,
-    screen: Screen,
-    tab: TabBarData,
-    before: int,
-    max_title_length: int,
-    index: int,
-    is_last: bool,
-    extra_data: ExtraData,
-) -> int:
-    """Draw tabs using pill/tag style with three-zone layout.
-
-    Layout: [LEFT: cwd pill] [CENTER: tab pills] [RIGHT: mode indicator]
-
-    Kitty calls this function twice per render cycle:
-      1. Layout phase (for_layout=True): Return estimated width quickly.
-         Don't do expensive work - kitty uses this to calculate positions.
-      2. Render phase (for_layout=False): Actually draw to screen.
-         All tabs are collected, then drawn on is_last=True.
-
-    The pills style collects all tab info during render, then draws everything
-    on the last tab to enable centering and responsive layout strategies.
-    """
-    global _render_ctx
-
-    # Layout phase: collect tab order + widths, pre-compute positions on last tab.
-    # This runs BEFORE the render phase, so positions are ready when non-last render
-    # tabs need them — eliminating the one-render stale-position lag.
-    if extra_data.for_layout:
-        if _render_ctx is None:
-            screen.cursor.x = 15
-            return 15
-
-        # Reset collection on first tab of this layout pass
-        if index == 1:
-            _render_ctx._layout_tab_ids = []
-            _render_ctx._layout_tab_widths_expanded = {}
-            _render_ctx._layout_tab_widths_collapsed = {}
-
-        # Compute both expanded and collapsed widths using cached tab info.
-        # Cached info is from the previous render cycle — good enough for width estimation.
-        layout_config = get_config()
-        pills_cfg = layout_config.styles.pills
-        cached = _render_ctx._tab_info_cache.get(tab.tab_id)
-        if cached:
-            tab_info = cached[1]
-            # Visual index: 1-based position among non-pinned tabs so far
-            n_non_pinned = sum(
-                1 for tid in _render_ctx._layout_tab_ids
-                if not _render_ctx._cached_is_pinned.get(tid, False)
-            )
-            is_pinned = _render_ctx._cached_is_pinned.get(tab.tab_id, False)
-            visual_idx = (n_non_pinned + 1) if not is_pinned else None
-            icon = _format_pill_icon(tab_info, pills_cfg, display_index=visual_idx)
-            text = _format_pill_text(tab_info, pills_cfg)
-            expanded = _pill_width(icon, text)
-            collapsed = _pill_width(icon, None)
-        elif tab.tab_id in _render_ctx.cached_tab_positions:
-            _s, _e = _render_ctx.cached_tab_positions[tab.tab_id]
-            expanded = _e - _s
-            collapsed = max(8, expanded - 10)  # rough estimate for collapsed
-        else:
-            expanded = 15
-            collapsed = 8
-
-        _render_ctx._layout_tab_ids.append(tab.tab_id)
-        _render_ctx._layout_tab_widths_expanded[tab.tab_id] = expanded
-        _render_ctx._layout_tab_widths_collapsed[tab.tab_id] = collapsed
-
-        # Pre-compute positions on last layout tab (all tab_ids now collected)
-        if is_last:
-            _precompute_pill_positions(_render_ctx, screen.columns, pills_cfg)
-
-        screen.cursor.x = expanded
-        return expanded
-
-    # Initialize or get render context
+    max_width: int,
+) -> ZoneContent | None:
+    """Return display content for the left zone."""
     config = get_config()
-
-    # Apply configurable extra shells (re-applies if config reloaded)
-    global _shells_configured_for
-    if _shells_configured_for != id(config):
-        if config.general.extra_shells:
-            _SHELLS.update(config.general.extra_shells)
-        _shells_configured_for = id(config)
-
-    if _render_ctx is None:
-        # First ever render - create fresh context
-        _render_ctx = RenderContext(
-            colors=UnifiedColorResolver(config, draw_data),
-            config=config,
-            screen_columns=screen.columns,
-        )
-    elif index == 1:
-        # New render cycle - preserve caches that survive across cycles.
-        # _precomputed_ends was computed during the layout phase (which runs before
-        # this render phase), so it must be preserved across the context reset.
-        old_positions = _render_ctx.cached_tab_positions
-        old_tab_info = _render_ctx._tab_info_cache
-        old_precomputed = _render_ctx._precomputed_ends
-        old_is_pinned = _render_ctx._cached_is_pinned
-        old_last_center = _render_ctx._last_center_tab_id
-        _render_ctx = RenderContext(
-            colors=UnifiedColorResolver(config, draw_data),
-            config=config,
-            screen_columns=screen.columns,
-        )
-        _render_ctx.cached_tab_positions = old_positions
-        _render_ctx._tab_info_cache = old_tab_info
-        _render_ctx._precomputed_ends = old_precomputed
-        _render_ctx._cached_is_pinned = old_is_pinned
-        _render_ctx._last_center_tab_id = old_last_center
-        # Detect drag state once per render cycle (tab_being_dropped set = drop preview active)
-        try:
-            _boss = get_boss()
-            _tm = _boss.active_tab_manager if _boss else None
-            _render_ctx.is_drag_active = (
-                _tm is not None and getattr(_tm, "tab_being_dropped", None) is not None
-            )
-        except Exception:
-            _render_ctx.is_drag_active = False
-
     pills = config.styles.pills
 
-    # Collect tab info (cached across render cycles for process/cwd)
-    info = get_tab_info(tab, index)
-    # Check pinned state from TabBarData (native tab.pinned flag)
-    if pills.right_zone.enabled:
-        if tab.pinned:
-            info.is_pinned = True
-        elif info.exe in pills.right_zone.pinned_processes:
-            info.is_pinned = True
-    # Cache pinned state for use during next layout phase's pre-computation
-    _render_ctx._cached_is_pinned[tab.tab_id] = info.is_pinned
-    _render_ctx.tabs.append(info)
-    if info.is_active:
-        _render_ctx.active_tab_index = len(_render_ctx.tabs) - 1
+    if not pills.left_zone.enabled:
+        return None
 
-    # If not the last tab, return position without drawing.
-    # Setting screen.cursor.x is critical: kitty reads it as `before` for the next
-    # tab, producing non-overlapping CellRanges for correct click detection.
-    #
-    # DRAG SAFETY: Pinned (right-zone) tabs must never be drag targets because
-    # klonopin.py enforces that pinned tabs are always last in kitty's ordering.
-    # Drag-to-reorder can temporarily violate this (e.g. [center, pinned, center]),
-    # and if tab_id_at() returns a pinned tab's ID the drag logic swaps the pinned
-    # tab out of last position — corrupting the ordering invariant.
-    #
-    # Two-part fix:
-    #   1. Pinned non-last: always return `before` → empty CellRange (before, before).
-    #      tab_id_at() skips empty ranges; pinned tabs are never drag-swap targets.
-    #      cursor.x advances compactly (before + width) to pass overflow check.
-    #   2. Last center tab during drag: return screen.columns to extend its CellRange
-    #      to the screen edge. Mouse in the right-zone gap or over pinned pills maps
-    #      to the last center tab, which is the correct boundary for the drag.
-    #      Without this, tab_id_at() returns 0 → fallback len(tab_ids)-1 → PIN.
-    if not is_last:
-        if info.is_pinned:
-            # Pinned tabs should always be last (klonopin invariant) but handle
-            # the transient case. Return before without advancing cursor so the
-            # next tab's CellRange starts correctly.
-            return before               # empty CellRange (before, before)
-        if info.tab.tab_id in _render_ctx._precomputed_ends:
-            _end = _render_ctx._precomputed_ends[info.tab.tab_id]
-            screen.cursor.x = _end
-            # During drag, extend last center tab's CellRange to cover the right zone.
-            # This makes mouse-hover anywhere past the center zone return this tab's
-            # ID, preventing drag from swapping with pinned tabs via the fallback path.
-            if (
-                _render_ctx.is_drag_active
-                and info.tab.tab_id == _render_ctx._last_center_tab_id
-            ):
-                return screen.columns
-            return _end
-        if info.tab.tab_id in _render_ctx.cached_tab_positions:
-            _start, _end = _render_ctx.cached_tab_positions[info.tab.tab_id]
-            screen.cursor.x = _end
-            if (
-                _render_ctx.is_drag_active
-                and info.tab.tab_id == _render_ctx._last_center_tab_id
-            ):
-                return screen.columns
-            return _end
-        screen.cursor.x = before + 15
-        return screen.cursor.x
-
-    # === Last tab: draw everything ===
-
-    # Early exit: window too narrow to render anything meaningful
-    if screen.columns < 6:
-        return screen.columns
-
-    tabs = _render_ctx.tabs
-    active_idx = _render_ctx.active_tab_index
-    active_info = tabs[active_idx] if tabs else info
-    n_tabs = len(tabs)
-
-    # Split tabs into center and right (pinned) zones, preserving original indices
-    center_tabs: list[tuple[int, TabInfo]] = []
-    right_tabs: list[tuple[int, TabInfo]] = []
-    for orig_idx, t in enumerate(tabs):
-        if t.is_pinned:
-            right_tabs.append((orig_idx, t))
-        else:
-            center_tabs.append((orig_idx, t))
-
-    # Find active tab index within center_tabs (for expand_active strategy)
-    center_active_idx: int | None = None
-    for idx, (_, t) in enumerate(center_tabs):
-        if t.is_active:
-            center_active_idx = idx
-            break
-
-    # Pre-compute widths once per tab (avoids 2-3x redundant string formatting)
-    center_widths: list[tuple[int, int]] = []  # (expanded, collapsed)
-    for draw_idx, (_, t) in enumerate(center_tabs):
-        visual_index = draw_idx + 1
-        icon = _format_pill_icon(t, pills, display_index=visual_index)
-        text = _format_pill_text(t, pills)
-        center_widths.append((_pill_width(icon, text), _pill_width(icon, None)))
-
-    n_center = len(center_tabs)
-    center_spacing = (n_center - 1) * pills.spacing if n_center > 1 else 0
-    center_all_expanded = sum(w[0] for w in center_widths) + center_spacing
-    center_active_expanded = (
-        (
-            sum(
-                center_widths[i][0] if i == center_active_idx else center_widths[i][1]
-                for i in range(n_center)
-            )
-            + center_spacing
-        )
-        if center_tabs
-        else 0
-    )
-    center_all_collapsed = sum(w[1] for w in center_widths) + center_spacing
-
-    # Right zone widths (pinned tabs - always expanded, no index)
-    n_right = len(right_tabs)
-    right_spacing = (n_right - 1) * pills.spacing if n_right > 1 else 0
-    right_width = 0
-    for _, t in right_tabs:
-        icon = _format_pill_icon(t, pills, display_index=None)
-        text = _format_pill_text(t, pills)
-        right_width += _pill_width(icon, text)
-    right_width += right_spacing
-
-    # Reserve space for right zone
-    right_margin = 2  # Gap between center and right zones
-    available_for_center = (
-        screen.columns - right_width - right_margin if right_tabs else screen.columns
-    )
-
-    # Determine strategy for center zone
-    max_center = int(available_for_center * 0.6)
-
-    if center_all_expanded <= max_center:
-        strategy = "expand_all"
-        center_width = center_all_expanded
-    elif center_active_expanded <= max_center:
-        strategy = "expand_active"
-        center_width = center_active_expanded
-    else:
-        strategy = "collapse_all"
-        center_width = center_all_collapsed
-
-    center_width = min(center_width, screen.columns)  # clamp to screen width
-
-    # Calculate positions - center tabs on screen, adjust if overlapping right zone
-    center_start = max(0, (screen.columns - center_width) // 2)
-
-    # Ensure tabs don't overlap with right zone
-    if right_tabs:
-        max_center_end = screen.columns - right_width - right_margin
-        if center_start + center_width > max_center_end:
-            center_start = max(0, max_center_end - center_width)
-
-    # Left zone gets space before center tabs
-    left_max = max(0, center_start - 2) if pills.left_zone.enabled else 0
-
-    # === Draw Left Zone (folder + cwd, or mode indicator + cwd) ===
-    screen.cursor.x = 0  # Reset - non-last tabs may have advanced cursor
-    if pills.left_zone.enabled and left_max > 10:
-        mode_cfg = config.mode_indicator
-        mode = get_keyboard_mode()
-
-        # Check if mode indicator should be shown (highest priority)
-        if mode and mode_cfg.enabled:
-            # Mode active: swap icon and colors
-            left_icon = mode_cfg.display_names.get(mode, mode.upper())
-            icon_bg = _color_int(mode_cfg.pills.icon_bg)
-            icon_fg = (
-                _color_int(mode_cfg.pills.icon_fg)
-                if mode_cfg.pills.icon_fg
-                else _color_int(pills.colors.icon_fg_active)
-            )
-        elif active_info.is_remote:
-            # SSH: show remote icon
-            left_icon = pills.left_zone.ssh_icon
-            icon_bg = _color_int(pills.colors.icon_bg_active)
-            icon_fg = _color_int(pills.colors.icon_fg_active)
-        else:
-            # Normal: folder icon
-            left_icon = pills.left_zone.icon
-            icon_bg = _color_int(pills.colors.icon_bg_active)
-            icon_fg = _color_int(pills.colors.icon_fg_active)
-
-        text_bg = _color_int(pills.colors.text_bg_active)
-        text_fg = _color_int(pills.colors.text_fg_active)
-
-        max_text_len = left_max - _pill_width(left_icon, "") - 3
-
-        # Get git status if enabled (mtime-gated)
-        git_data = None
-        if pills.left_zone.use_git and active_info.cwd:
-            git_data = _get_git_status_raw(active_info.cwd)
-
-        if git_data:
-            branch, counts = git_data
-
-            # Progressive collapse levels:
-            # 1. abbrev_cwd + full_git:  ~/.co/ki  main +3 !2 ⇣1
-            # 2. git only (full):         main +3 !2 ⇣1
-            # 3. git branch only:         main
-
-            git_full = _format_git_parts(branch, counts, branch_only=False)
-            git_branch_only = _format_git_parts(branch, counts, branch_only=True)
-            git_full_len = _get_git_parts_length(git_full)
-            git_branch_len = _get_git_parts_length(git_branch_only)
-
-            # Try: abbrev_cwd + full_git
-            cwd_text = _abbreviate_path(active_info.cwd, max_text_len - git_full_len - 1)
-            if cwd_text and _display_width(cwd_text) + 1 + git_full_len <= max_text_len:
-                display_parts: list[tuple[str, str]] = [(cwd_text + " ", "directory")]
-                display_parts.extend(git_full)
-                _draw_git_pill(
-                    screen, left_icon, display_parts, icon_bg, text_bg, icon_fg,
-                    pills.left_zone.git_colors, pills,
-                )
-            # Try: git full only (no cwd)
-            elif git_full_len <= max_text_len:
-                _draw_git_pill(
-                    screen, left_icon, git_full, icon_bg, text_bg, icon_fg,
-                    pills.left_zone.git_colors, pills,
-                )
-            # Try: git branch only
-            elif git_branch_len <= max_text_len:
-                _draw_git_pill(
-                    screen, left_icon, git_branch_only, icon_bg, text_bg, icon_fg,
-                    pills.left_zone.git_colors, pills,
-                )
-            else:
-                # Nothing fits, show icon only
-                _draw_pill(
-                    screen, left_icon, None, icon_bg, text_bg, icon_fg, text_fg, pills
-                )
-        else:
-            # No git, show cwd only (abbreviated)
-            cwd_text = _abbreviate_path(active_info.cwd, max_text_len)
-            _draw_pill(
-                screen, left_icon, cwd_text, icon_bg, text_bg, icon_fg, text_fg, pills
-            )
-
-    # Position tracking - keyed by tab_id (survives reorder)
-    new_tab_positions: dict[int, tuple[int, int]] = {}
-
-    # === Draw Center Zone (non-pinned tabs) ===
-    screen.cursor.x = center_start
-
-    for draw_idx, (orig_idx, tab_info) in enumerate(center_tabs):
-        if screen.cursor.x >= screen.columns:
-            break
-
-        # Spacing between pills
-        if draw_idx > 0:
-            screen.cursor.bg = 0
-            screen.draw(" " * pills.spacing)
-
-        # Determine what to show based on strategy
-        # Use visual index (1-based position in center zone) not real tab index
-        visual_index = draw_idx + 1
-        icon_text = _format_pill_icon(tab_info, pills, display_index=visual_index)
-        show_text = strategy == "expand_all" or (
-            strategy == "expand_active" and tab_info.is_active
-        )
-        text = _format_pill_text(tab_info, pills) if show_text else None
-
-        # Colors - select active or inactive variant
-        colors = pills.colors
-        is_active = tab_info.is_active
-        icon_bg = _color_int(colors.icon_bg_active if is_active else colors.icon_bg)
-        text_bg = _color_int(colors.text_bg_active if is_active else colors.text_bg)
-        icon_fg = _color_int(colors.icon_fg_active if is_active else colors.icon_fg)
-        text_fg = _color_int(colors.text_fg_active if is_active else colors.text_fg)
-
-        pill_start = screen.cursor.x
-        _draw_pill(screen, icon_text, text, icon_bg, text_bg, icon_fg, text_fg, pills)
-        new_tab_positions[tab_info.tab.tab_id] = (pill_start, screen.cursor.x)
-
-    # === Draw Right Zone (pinned tabs) ===
-    if right_tabs:
-        right_start = screen.columns - right_width
-        screen.cursor.x = right_start
-
-        for draw_idx, (orig_idx, tab_info) in enumerate(right_tabs):
-            # Spacing between pills
-            if draw_idx > 0:
-                screen.cursor.bg = 0
-                screen.draw(" " * pills.spacing)
-
-            # Pinned tabs: icon only (no index), always show text (expanded)
-            icon_text = _format_pill_icon(tab_info, pills, display_index=None)
-            text = _format_pill_text(tab_info, pills)
-
-            # Pinned tabs always use active colors (like left zone)
-            colors = pills.colors
-            icon_bg = _color_int(colors.icon_bg_active)
-            text_bg = _color_int(colors.text_bg_active)
-            icon_fg = _color_int(colors.icon_fg_active)
-            text_fg = _color_int(colors.text_fg_active)
-
-            pill_start = screen.cursor.x
-            _draw_pill(
-                screen, icon_text, text, icon_bg, text_bg, icon_fg, text_fg, pills
-            )
-            new_tab_positions[tab_info.tab.tab_id] = (pill_start, screen.cursor.x)
-
-    # Store positions for next render cycle
-    _render_ctx.cached_tab_positions = new_tab_positions
-
-    # Prune stale cache entries (closed tabs)
-    current_tab_ids = {t.tab.tab_id for t in tabs}
-    for stale_id in set(_render_ctx._tab_info_cache.keys()) - current_tab_ids:
-        del _render_ctx._tab_info_cache[stale_id]
-    for stale_id in set(_render_ctx._cached_is_pinned.keys()) - current_tab_ids:
-        del _render_ctx._cached_is_pinned[stale_id]
-
-    # Reset tabs for next render cycle (keep caches)
-    _render_ctx.tabs = []
-    _render_ctx.active_tab_index = 0
-
-    # During drag, adjust return value to prevent pinned tabs from being drag targets:
-    #
-    # - is_last PINNED tab: return `before` → empty (before, before) CellRange.
-    #   tab_id_at() never returns PIN's ID; clicking/dragging into right zone falls
-    #   through to the last center tab's extended CellRange (see non-last handler).
-    #
-    # - is_last CENTER tab: return `screen.columns` → extend CellRange to screen edge.
-    #   This is needed when the last center tab ends up is_last (e.g. tab_ids order
-    #   is [A, PIN, B] during drag — B is both last center and is_last). Without this,
-    #   mouse in the right zone returns tab_id_at()=0 → fallback=len-1 → PIN, which
-    #   causes kitty to swap PIN out of its last position (klonopin invariant violated).
-    #
-    # In normal (non-drag) mode, return screen.cursor.x so clicking pinned pills works.
-    if _render_ctx.is_drag_active and right_tabs:
-        if info.is_pinned:
-            return before  # suppress CellRange — pinned is_last not a drag target
-        else:
-            return screen.columns  # last center tab absorbs all right-zone hover positions
-    return screen.cursor.x
-
-
-def draw_right_status_powerline(screen: Screen, draw_data: DrawData, config) -> None:
-    """Draw right-aligned status for powerline style (keyboard mode indicator)."""
+    exe, cwd, hostname = _get_process_cached(active_tab)
     mode_cfg = config.mode_indicator
-
-    if not mode_cfg.enabled:
-        return
-
     mode = get_keyboard_mode()
-    if not mode:
-        return
 
-    display = mode_cfg.display_names.get(mode, mode.upper())
-    status_text = f" {display} "
-    status_len = len(status_text)
-    right_pos = screen.columns - status_len
+    # Select icon and icon colors
+    if mode and mode_cfg.enabled:
+        left_icon = mode_cfg.display_names.get(mode, mode.upper())
+        icon_bg = _color_int(mode_cfg.pills.icon_bg, draw_data)
+        icon_fg = (
+            _color_int(mode_cfg.pills.icon_fg, draw_data)
+            if mode_cfg.pills.icon_fg
+            else _color_int(pills.colors.icon_fg_active, draw_data)
+        )
+    elif hostname:
+        left_icon = pills.left_zone.ssh_icon
+        icon_bg = _color_int(pills.colors.icon_bg_active, draw_data)
+        icon_fg = _color_int(pills.colors.icon_fg_active, draw_data)
+    else:
+        left_icon = pills.left_zone.icon
+        icon_bg = _color_int(pills.colors.icon_bg_active, draw_data)
+        icon_fg = _color_int(pills.colors.icon_fg_active, draw_data)
 
-    if right_pos <= screen.cursor.x:
-        return
+    text_bg = _color_int(pills.colors.text_bg_active, draw_data)
 
-    gap = right_pos - screen.cursor.x
-    screen.draw(" " * gap)
+    # Estimate icon section width to compute max text space
+    max_text_len = max_width - _display_width(left_icon) - 6
 
-    screen.cursor.fg = _color_int(mode_cfg.powerline.foreground)
-    if mode_cfg.powerline.background:
-        screen.cursor.bg = _color_int(mode_cfg.powerline.background)
-    screen.draw(status_text)
-
-
-def draw_tab_powerline(
-    draw_data: DrawData,
-    screen: Screen,
-    tab: TabBarData,
-    before: int,
-    max_title_length: int,
-    index: int,
-    is_last: bool,
-    extra_data: ExtraData,
-) -> int:
-    """Draw a single tab using powerline style.
-
-    Uses kitty's built-in powerline renderer with a custom title template.
-    The title template is constructed from config.styles.powerline.elements.
-    """
-    global _render_ctx
-
-    config = get_config()
-    if _render_ctx is None or index == 1:
-        _render_ctx = RenderContext(
-            colors=UnifiedColorResolver(config, draw_data),
-            config=config,
-            screen_columns=screen.columns,
+    if max_text_len <= 0:
+        return ZoneContent(
+            icon=left_icon, parts=(), icon_fg=icon_fg, icon_bg=icon_bg, text_bg=text_bg,
         )
 
-    exe, cwd, remote_host = get_foreground_process(tab.tab_id)
-    formatted = format_tab_title(
-        exe, cwd, tab.title, index, tab.is_active, remote_host, config
+    # Git status
+    git_data = None
+    if pills.left_zone.use_git and cwd:
+        git_data = _get_git_status_raw(cwd)
+
+    git_colors = pills.left_zone.git_colors
+
+    if git_data:
+        branch, counts = git_data
+
+        # Format git parts
+        git_full = _format_git_parts(branch, counts, False, git_colors, draw_data)
+        git_branch_only = _format_git_parts(branch, counts, True, git_colors, draw_data)
+        git_full_len = sum(_display_width(t) for t, _ in git_full)
+        git_branch_len = sum(_display_width(t) for t, _ in git_branch_only)
+
+        # Progressive collapse: cwd + full git -> git only -> branch only -> icon only
+        cwd_text = _abbreviate_path(cwd, max_text_len - git_full_len - 1)
+        if cwd_text and _display_width(cwd_text) + 1 + git_full_len <= max_text_len:
+            parts = [(cwd_text + " ", _color_int(git_colors.directory, draw_data))]
+            parts.extend(git_full)
+            return ZoneContent(
+                icon=left_icon, parts=tuple(parts),
+                icon_fg=icon_fg, icon_bg=icon_bg, text_bg=text_bg,
+            )
+        if git_full_len <= max_text_len:
+            return ZoneContent(
+                icon=left_icon, parts=tuple(git_full),
+                icon_fg=icon_fg, icon_bg=icon_bg, text_bg=text_bg,
+            )
+        if git_branch_len <= max_text_len:
+            return ZoneContent(
+                icon=left_icon, parts=tuple(git_branch_only),
+                icon_fg=icon_fg, icon_bg=icon_bg, text_bg=text_bg,
+            )
+        return ZoneContent(
+            icon=left_icon, parts=(), icon_fg=icon_fg, icon_bg=icon_bg, text_bg=text_bg,
+        )
+
+    # No git — show cwd
+    cwd_text = _abbreviate_path(cwd, max_text_len)
+    if cwd_text:
+        text_fg = _color_int(pills.colors.text_fg_active, draw_data)
+        return ZoneContent(
+            icon=left_icon, parts=((cwd_text, text_fg),),
+            icon_fg=icon_fg, icon_bg=icon_bg, text_bg=text_bg,
+        )
+
+    return ZoneContent(
+        icon=left_icon, parts=(), icon_fg=icon_fg, icon_bg=icon_bg, text_bg=text_bg,
     )
 
-    custom_template = (
-        "{fmt.fg.red}{bell_symbol}{activity_symbol}{fmt.fg.tab}" + formatted
-    )
-    new_draw_data = draw_data._replace(
-        title_template=custom_template,
-        active_title_template=custom_template,  # Use same template for active tabs
-    )
 
-    end = draw_tab_with_powerline(
-        new_draw_data,
-        screen,
-        tab,
-        before,
-        max_title_length,
-        index,
-        is_last,
-        extra_data,
-    )
+def _format_git_parts(
+    branch: str,
+    counts: dict[str, int],
+    branch_only: bool,
+    git_colors,
+    draw_data: DrawData,
+) -> list[tuple[str, int]]:
+    """Format git info into (text, color_int) pairs."""
+    parts: list[tuple[str, int]] = []
 
-    if is_last:
-        draw_right_status_powerline(screen, draw_data, config)
+    parts.append((_GIT_BRANCH_ICON + " ", _color_int(git_colors.git_branch_icon, draw_data)))
+    parts.append((branch, _color_int(git_colors.git_branch, draw_data)))
 
-    return end
+    if branch_only:
+        return parts
+
+    symbols = [
+        ("stashed", "*"), ("deleted", "\u2718"), ("staged", "+"),
+        ("modified", "!"), ("renamed", "\u00bb"), ("untracked", "?"),
+        ("conflicted", "~"), ("ahead", "\u21e1"), ("behind", "\u21e3"),
+    ]
+    status_parts = []
+    for key, sym in symbols:
+        if counts.get(key, 0) > 0:
+            color_name = getattr(git_colors, f"git_{key}", "foreground")
+            status_parts.append((f"{sym}{counts[key]}", _color_int(color_name, draw_data)))
+
+    if status_parts:
+        parts.append((" ", _color_int(git_colors.git_branch, draw_data)))
+        for i, (text, color) in enumerate(status_parts):
+            if i > 0:
+                parts.append((" ", _color_int(git_colors.git_branch, draw_data)))
+            parts.append((text, color))
+
+    return parts
+
+
+# --- Powerline style (kept for tab_bar_style=custom fallback) ---
+
+from kitty.tab_bar import (
+    ExtraData,
+    draw_tab_with_powerline,
+)
 
 
 def draw_tab(
@@ -1484,47 +511,100 @@ def draw_tab(
     is_last: bool,
     extra_data: ExtraData,
 ) -> int:
-    """Draw a single tab, dispatching to the configured style."""
-    try:
-        style = get_active_style()
+    """draw_tab entry point — only used when tab_bar_style=custom (powerline mode).
 
-        if style == "pills":
-            return draw_tab_pills(
-                draw_data,
-                screen,
-                tab,
-                before,
-                max_title_length,
-                index,
-                is_last,
-                extra_data,
-            )
-        else:
-            return draw_tab_powerline(
-                draw_data,
-                screen,
-                tab,
-                before,
-                max_title_length,
-                index,
-                is_last,
-                extra_data,
-            )
-    except Exception as e:
-        import traceback
+    When tab_bar_style=zones, kitty calls the zones engine directly and this
+    function is never invoked.
+    """
+    config = get_config()
+    style = config.general.style
 
-        print(f"[tab_bar] Error in draw_tab: {e}", file=sys.stderr)
-        traceback.print_exc(file=sys.stderr)
-        with open("/tmp/kitty-tab-bar.log", "a") as _lf:
-            _lf.write(f"draw_tab error: {e}\n")
-            traceback.print_exc(file=_lf)
-        try:
-            return draw_tab_with_powerline(
-                draw_data, screen, tab, before, max_title_length, index, is_last, extra_data
-            )
-        except Exception as e2:
-            with open("/tmp/kitty-tab-bar.log", "a") as _lf:
-                _lf.write(f"powerline fallback error: {e2}\n")
-                traceback.print_exc(file=_lf)
-            # Screen state may be corrupted from partial draw; don't advance cursor
-            return before
+    if style == "powerline":
+        return _draw_tab_powerline(
+            draw_data, screen, tab, before, max_title_length, index, is_last, extra_data
+        )
+    # If someone sets tab_bar_style=custom with pills style, fall through to powerline
+    return draw_tab_with_powerline(
+        draw_data, screen, tab, before, max_title_length, index, is_last, extra_data
+    )
+
+
+def _draw_tab_powerline(
+    draw_data: DrawData,
+    screen: Screen,
+    tab: TabBarData,
+    before: int,
+    max_title_length: int,
+    index: int,
+    is_last: bool,
+    extra_data: ExtraData,
+) -> int:
+    """Powerline style with custom title formatting."""
+    config = get_config()
+    powerline = config.styles.powerline
+
+    exe, cwd, remote_host = get_foreground_process(tab.tab_id)
+
+    parts = []
+    resolver = _get_resolver(draw_data)
+    colors_cfg = powerline.colors
+
+    if tab.is_active:
+        icon_color = resolver.resolve_to_hex(colors_cfg.icon_active)
+    elif powerline.rainbow_index_icon:
+        icon_color = resolver.resolve_to_hex(
+            colors_cfg.rainbow[(index - 1) % len(colors_cfg.rainbow)]
+        )
+    else:
+        icon_color = resolver.resolve_to_hex(colors_cfg.icon_inactive)
+
+    for element in powerline.elements:
+        if element == "index":
+            parts.append(f"{{fmt.fg._{icon_color}}}{index}{{fmt.fg.tab}}")
+        elif element == "icon":
+            icon = get_icon(exe)
+            parts.append(f"{{fmt.fg._{icon_color}}}{icon}{{fmt.fg.tab}}")
+        elif element == "name":
+            parts.append(exe)
+        elif element == "path":
+            display = tab.title or cwd
+            if display:
+                parts.append(display)
+        elif element == "ssh" and remote_host:
+            parts.append(f"{{fmt.fg._{icon_color}}}{powerline.ssh_icon}{{fmt.fg.tab}}")
+        elif element == "hostname" and remote_host:
+            parts.append(f"{{fmt.fg._{icon_color}}}{remote_host}{{fmt.fg.tab}}")
+
+    content = powerline.element_sep.join(parts)
+    formatted = f"{powerline.pad_start}{content}{powerline.pad_end}"
+
+    custom_template = (
+        "{fmt.fg.red}{bell_symbol}{activity_symbol}{fmt.fg.tab}" + formatted
+    )
+    new_draw_data = draw_data._replace(
+        title_template=custom_template,
+        active_title_template=custom_template,
+    )
+
+    end = draw_tab_with_powerline(
+        new_draw_data, screen, tab, before, max_title_length, index, is_last, extra_data
+    )
+
+    # Right-aligned mode indicator on last tab
+    if is_last:
+        mode_cfg = config.mode_indicator
+        if mode_cfg.enabled:
+            mode = get_keyboard_mode()
+            if mode:
+                display = mode_cfg.display_names.get(mode, mode.upper())
+                status_text = f" {display} "
+                status_len = len(status_text)
+                right_pos = screen.columns - status_len
+                if right_pos > screen.cursor.x:
+                    screen.draw(" " * (right_pos - screen.cursor.x))
+                    screen.cursor.fg = _color_int(mode_cfg.powerline.foreground, draw_data)
+                    if mode_cfg.powerline.background:
+                        screen.cursor.bg = _color_int(mode_cfg.powerline.background, draw_data)
+                    screen.draw(status_text)
+
+    return end
