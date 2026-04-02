@@ -1,4 +1,3 @@
-[[ -n "$_KSI_REMOTE_DIR" ]] && _KITTY_IS_REMOTE=1
 if [[ $(uname) == Darwin ]]; then
   if (( ! $+commands[brew] )); then
     if [[ -n "$BREW_LOCATION" ]]; then
@@ -27,14 +26,12 @@ if [[ $(uname) == Darwin ]]; then
   fi
 fi
 
-# --- XDG ---
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 export XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
 
-# --- PATH ---
 typeset -U path
 path=(
   $XDG_BIN_HOME
@@ -48,7 +45,6 @@ path=(
 )
 export PATH
 
-# --- editors/pagers ---
 export EDITOR="nvim"
 export VISUAL=$EDITOR
 export SUDO_EDITOR=$EDITOR
@@ -62,7 +58,6 @@ export SYSTEMD_PAGER="$PAGER"
 export SYSTEMD_PAGERSECURE=0
 export SYSTEMD_COLORS=256
 
-# pager overrides per tool
 if [[ "$PAGER" =~ 'moor' ]]; then
   export BAT_PAGER="moor $MOOR -no-statusbar"
   export DELTA_PAGER="moor $MOOR -no-statusbar"
@@ -71,7 +66,6 @@ elif [[ "$PAGER" =~ 'less' ]]; then
   export DELTA_PAGER="less $LESS --line-numbers"
 fi
 
-# --- XDG overrides ---
 export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:${TERMINFO}:/usr/share/terminfo"
 export DOTS="$XDG_DATA_HOME/dots"
 export DOTFILES="$XDG_DATA_HOME/dots"
@@ -96,6 +90,7 @@ export PIPX_HOME="$XDG_DATA_HOME/pipx"
 export PIPX_GLOBAL_HOME="$XDG_DATA_HOME/pipx"
 export GNUPGHOME="$XDG_DATA_HOME/gnupg"
 export PASSWORD_STORE_DIR="$XDG_DATA_HOME/pass"
+export ATUIN_NOBIND="true"
 export DOCKER_CONFIG="$XDG_CONFIG_HOME/docker"
 export VAGRANT_HOME="$XDG_DATA_HOME/vagrant"
 export ANDROID_HOME="$XDG_DATA_HOME/android"
@@ -115,12 +110,12 @@ export BUNDLE_USER_CACHE="$XDG_CACHE_HOME/bundle"
 export BUNDLE_USER_PLUGIN="$XDG_DATA_HOME/bundle"
 export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME/nv"
-export INPUTRC="$XDG_CONFIG_HOME/bash/inputrc"
-export SCREENRC="$XDG_CONFIG_HOME/screen/screenrc"
 export WINEPREFIX="$XDG_DATA_HOME/wine"
 export OLLAMA_HOST="https://slop.cwel.casa"
 export MANAGARR_CONFIG_FILE="$XDG_CONFIG_HOME/managarr/config.yml"
 export MANAGARR_THEMES_FILE="$XDG_CONFIG_HOME/managarr/theme.yml"
+export WORDCHARS='~!#$%^&*(){}[]<>?.+;'
+export PROMPT_EOL_MARK=''
 export MISE_QUIET=1
 export MAS_NO_AUTO_INDEX=1
 export DO_NOT_TRACK=1
@@ -130,9 +125,6 @@ export GLOW_STYLE="$XDG_CONFIG_HOME/glow/catppuccin-mocha.json"
 export SF_HOME="$XDG_DATA_HOME/sf"
 export SFDX_HOME="$XDG_DATA_HOME/sfdx"
 export SF_USE_GENERIC_UNIX_KEYCHAIN=true
-
-export WORDCHARS='~!#$%^&*(){}[]<>?.+;'
-export PROMPT_EOL_MARK=''
 
 [[ -t 0 ]] && export GPG_TTY=$(tty)
 
@@ -184,15 +176,10 @@ pbox)
   ;;
 esac
 
-if [[ -n $WSLENV ]]; then
-  export WIN_HOME="/mnt/c/users/cwel"
-fi
-
 if [[ $OSTYPE == darwin* ]]; then
   export OP_BIOMETRIC_UNLOCK_ENABLED="true"
 fi
 
-# --- SSH env sniffing ---
 if [[ -n "$SSH_CONNECTION" ]]; then
     [[ -z "$XDG_RUNTIME_DIR" && -d "/run/user/$UID" ]] && export XDG_RUNTIME_DIR="/run/user/$UID"
 
@@ -215,12 +202,4 @@ if [[ -n "$SSH_CONNECTION" ]]; then
             [[ -n "$NIRI_SOCKET" ]] && break
         done
     fi
-fi
-
-if [[ -n $SSH_KITTEN_KITTY_DIR && -d ~/.terminfo ]]; then
-    t=$XDG_DATA_HOME/terminfo
-    [[ -f $t/x/xterm-kitty ]] || { mkdir -p $t && cp -a ~/.terminfo/. $t/ }
-    rm -rf ~/.terminfo
-    export TERMINFO=$t
-    unset t
 fi

@@ -109,11 +109,9 @@ map --mode leader shift+; kitty_shell overlay
 
 # copy/paste
 map ctrl+c copy_or_noop
-map cmd+c copy_or_noop
+map {{ $mod }}+c copy_selection_or_last_command_output
 map cmd+v paste_from_clipboard
 map ctrl+v paste_from_clipboard
-map ctrl+a copy_selection_or_last_command_output
-
 
 # reload cfg
 map kitty_mod+r load_config_file

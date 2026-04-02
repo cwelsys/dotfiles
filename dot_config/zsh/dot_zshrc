@@ -1,7 +1,3 @@
-if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
-  source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
-fi
-
 _ksi_dir=""
 if [[ -n "$KITTY_INSTALLATION_DIR" ]]; then
     _ksi_dir="$KITTY_INSTALLATION_DIR/shell-integration/zsh"
@@ -9,49 +5,17 @@ elif [[ -n "$_KSI_REMOTE_DIR" ]]; then
     _ksi_dir="$_KSI_REMOTE_DIR/zsh"
 fi
 if [[ -n "$_ksi_dir" && -d "$_ksi_dir" ]]; then
-    export KITTY_SHELL_INTEGRATION="${KITTY_SHELL_INTEGRATION:-no-title}"
+    export KITTY_SHELL_INTEGRATION="${KITTY_SHELL_INTEGRATION:-enabled}"
     autoload -Uz -- "$_ksi_dir"/kitty-integration
     kitty-integration
     unfunction kitty-integration
 fi
 unset _ksi_dir
 
-if [[ -n "$KITTY_INSTALLATION_DIR" || -n "$_KITTY_IS_REMOTE" ]]; then
-    autoload -Uz add-zsh-hook
-    _kitty_uservar() { printf '\e]1337;SetUserVar=%s=%s\a' "$1" "$(printf '%s' "$2" | base64)" }
-    _kitty_preexec() {
-        _kitty_uservar PROC "${3%% *}"
-        print -Pn "\e]0;${3%% *}\a"
-    }
-    _kitty_precmd() {
-        _kitty_uservar PROC "${SHELL:t}"
-        if [[ -n "$_KITTY_IS_REMOTE" ]]; then
-            _kitty_uservar REMOTE_HOST "$HOST"
-            _kitty_uservar REMOTE_CWD "${PWD/#$HOME/~}"
-        else
-            _kitty_uservar REMOTE_HOST ""
-            _kitty_uservar REMOTE_CWD ""
-        fi
-        print -Pn "\e]0;\a"
-    }
-    add-zsh-hook preexec _kitty_preexec
-    add-zsh-hook precmd _kitty_precmd
-elif [[ -n "$SSH_CONNECTION" ]]; then
-    autoload -Uz add-zsh-hook
-    _ssh_precmd() { print -Pn "\e]0;%~\a" }
-    add-zsh-hook precmd _ssh_precmd
-fi
-
-if [[ -n "$SSH_TTY" && -n "$KITTY_WINDOW_ID" ]]; then
-    export BROWSER="local-open"
-fi
-
 HISTFILE="$XDG_STATE_HOME/zsh/history"
 HISTSIZE=290000
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
-
-[[ ! -d "$XDG_STATE_HOME/zsh" ]] && mkdir -p "$XDG_STATE_HOME/zsh"
 
 if (( ${+commands[starship]} )); then
     eval "$(starship init zsh)"
@@ -62,8 +26,6 @@ if (( ${+commands[starship]} )); then
     function starship-transient-prompt-precmd {
         STARSHIP_SAVED_PROMPT="$(eval "${STARSHIP_TRANSIENT_PROMPT}")"
         STARSHIP_SAVED_RPROMPT="$(eval "${STARSHIP_TRANSIENT_RPROMPT}")"
-
-        # Fix ctrl+c behavior
         TRAPINT() { starship-transient-prompt 2>/dev/null; return $(( 128 + $1 )) }
     }
 
@@ -82,7 +44,6 @@ if (( ${+commands[starship]} )); then
     add-zle-hook-widget zle-line-finish starship-transient-prompt
 
     function clear-screen() {
-        # Save transient prompt before clearing screen
         starship-transient-prompt-precmd
         zle .clear-screen
     }
@@ -119,9 +80,26 @@ zinit light-mode for \
   zdharma-continuum/zinit-annex-patch-dl \
   zdharma-continuum/zinit-annex-rust
 
-export ATUIN_NOBIND="true"
-eval "$(atuin init zsh)"
-bindkey "^E" _atuin_search_widget
+if (( ${+commands[atuin]} )); then
+  eval "$(atuin init zsh)"
+  bindkey "^H" _atuin_search_widget
+
+  fzf-atuin-history-widget() {
+    local selected num
+    setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2>/dev/null
+    selected=$(atuin search --cmd-only --limit ${ATUIN_LIMIT:-5000} | tac |
+      FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index --bind=ctrl-r:toggle-sort,ctrl-z:ignore $FZF_CTRL_R_OPTS --query=${LBUFFER} +m" fzf)
+    local ret=$?
+    if [[ -n $selected ]]; then
+      LBUFFER+="${selected}"
+    fi
+    zle reset-prompt
+    return $ret
+  }
+  zle -N fzf-atuin-history-widget
+  bindkey '^R' fzf-atuin-history-widget
+  FZF_CTRL_R_COMMAND=
+fi
 
 (( ${+commands[mise]} )) && eval "$(mise activate zsh)"
 
@@ -143,21 +121,8 @@ zinit lucid for \
   OMZP::direnv
 
 vivid_theme="catppuccin-mocha"
-fzf-atuin-history-widget() {
-  local selected num
-  setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2>/dev/null
-  selected=$(atuin search --cmd-only --limit ${ATUIN_LIMIT:-5000} | tac |
-    FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index --bind=ctrl-r:toggle-sort,ctrl-z:ignore $FZF_CTRL_R_OPTS --query=${LBUFFER} +m" fzf)
-  local ret=$?
-  if [[ -n $selected ]]; then
-    LBUFFER+="${selected}"
-  fi
-  zle reset-prompt
-  return $ret
-}
-zle -N fzf-atuin-history-widget
-bindkey '^R' fzf-atuin-history-widget
-FZF_CTRL_R_COMMAND= source <(fzf --zsh)
+FZF_ALT_C_COMMAND=
+source <(fzf --zsh)
 
 _load_completions() {
   # fpath additions before compinit scans
@@ -175,12 +140,12 @@ _load_completions() {
   (( ${+commands[opencode]} )) && eval "$(opencode completion)"
 
   if (( ${+commands[brew]} )); then
-    _bi() { words=(brew install "${(@)words[2,-1]}"); ((CURRENT+=1)); _brew }
-    _bu() { words=(brew uninstall "${(@)words[2,-1]}"); ((CURRENT+=1)); _brew }
+    _pi() { words=(brew install "${(@)words[2,-1]}"); ((CURRENT+=1)); _brew }
+    _pu() { words=(brew uninstall "${(@)words[2,-1]}"); ((CURRENT+=1)); _brew }
     _brew_list_wrapper() { words=(brew list "${(@)words[2,-1]}"); ((CURRENT+=1)); _brew }
     _brew_info_wrapper() { words=(brew info "${(@)words[2,-1]}"); ((CURRENT+=1)); _brew }
-    compdef _bi bi
-    compdef _bu bu
+    compdef _pi pi
+    compdef _pu pu
     compdef _brew_list_wrapper list
     compdef _brew_list_wrapper files
     compdef _brew_info_wrapper info
@@ -255,10 +220,11 @@ zstyle ':fzf-tab:*' fzf-pad 4
 
 bindkey ' ' magic-space
 bindkey '^[[3~' delete-char
-bindkey '^[[1;5D' beginning-of-line
-bindkey '^[[1;5C' end-of-line
+bindkey "^A" beginning-of-line
+bindkey "^E" end-of-line
+bindkey '^[[1;5C' forward-word
+bindkey '^[[1;5D' backward-word
 bindkey "^N" insert-last-word
-bindkey '^[w' kill-region
 bindkey '^Y' redo
 
 (( ${+commands[zoxide]} )) && eval "$(zoxide init --cmd cd zsh)"

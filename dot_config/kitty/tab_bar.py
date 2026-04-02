@@ -341,7 +341,11 @@ def tab_content(
             text_parts.append(tab.title)
         elif element == "hostname" and hostname:
             text_parts.append(hostname)
-    text = " ".join(text_parts) if text_parts else None
+    # Collapse to icon-only when idle (shell name is the only text)
+    if text_parts == [exe] and exe in _SHELLS:
+        text = None
+    else:
+        text = " ".join(text_parts) if text_parts else None
 
     # Colors
     icon_bg = _color_int(colors.icon_bg_active if is_active else colors.icon_bg, draw_data)
