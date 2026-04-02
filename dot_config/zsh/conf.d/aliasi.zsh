@@ -64,6 +64,8 @@ if (( ${+commands[fastfetch]} )); then
   alias mobo='fastfetch --logo none --structure board'
 fi
 
+(( ${+commands[onefetch]} )) && alias ofet='onefetch'
+
 if (( ${+commands[nvim]} )); then
   alias v='nvim'
   alias vi='nvim'
