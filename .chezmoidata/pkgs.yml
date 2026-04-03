@@ -226,7 +226,6 @@ pkgs:
         - git
         - git-cliff
         - git-delta
-        - git-extras
         - git-flow
         - git-lfs
         - go
@@ -336,6 +335,9 @@ pkgs:
         - csvkit
         - exiftool
         - xsv
+        - moor
+        - mise
+        - git-branchless
       casks:
         - 1password-cli
         - alt-tab
@@ -357,7 +359,6 @@ pkgs:
         - hammerspoon
         - iina
         - jellyfin-media-player
-        - jordanbaird-ice@beta
         - karabiner-elements
         - moonlight
         - nextcloud-vfs
@@ -398,6 +399,7 @@ pkgs:
         - doll
         - font-juliamono
         - gcloud-cli
+        - thaw
 
     main:
       pacman:
