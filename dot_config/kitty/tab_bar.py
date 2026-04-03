@@ -105,15 +105,8 @@ _proc_cache: dict[int, tuple[str, tuple[str, str, str | None]]] = {}
 
 
 def _get_process_cached(tab: TabBarData) -> tuple[str, str, str | None]:
-    """Get foreground process with caching across render cycles."""
-    cache_key = f"{tab.title}:{tab.is_active}:{tab.num_windows}"
-    if tab.tab_id in _proc_cache:
-        old_key, old_data = _proc_cache[tab.tab_id]
-        if old_key == cache_key:
-            return old_data
-    data = get_foreground_process(tab.tab_id)
-    _proc_cache[tab.tab_id] = (cache_key, data)
-    return data
+    """Get foreground process info for tab."""
+    return get_foreground_process(tab.tab_id)
 
 
 # --- Git status ---
@@ -407,9 +400,9 @@ def left_zone_content(
             icon=left_icon, parts=(), icon_fg=icon_fg, icon_bg=icon_bg, text_bg=text_bg,
         )
 
-    # Git status
+    # Git status (skip for remote sessions — can't run git locally against remote paths)
     git_data = None
-    if pills.left_zone.use_git and cwd:
+    if pills.left_zone.use_git and cwd and not hostname:
         git_data = _get_git_status_raw(cwd)
 
     git_colors = pills.left_zone.git_colors
