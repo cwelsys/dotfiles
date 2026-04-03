@@ -16,7 +16,7 @@ clipboard-multi "$SCREENSHOT_PATH"
 
 satty --filename "$SCREENSHOT_PATH" \
   --output-filename "$SCREENSHOT_PATH" \
-  --copy-command "$SCRIPT_DIR/clipboard-stdin" &
+  --copy-command "$SCRIPT_DIR/clipboard-multi -" &
 SATTY_PID=$!
 
 "$SCRIPT_DIR/satty-timeout" "$SATTY_PID" 20 &

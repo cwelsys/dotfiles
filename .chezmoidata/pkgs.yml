@@ -760,6 +760,8 @@ pkgs:
         - paru-git
         - jellyfin-desktop
         - freetype2-qdoled
+        - dolphin-emu
+        - python-pyfiglet
 
 yazi:
   plugins:
