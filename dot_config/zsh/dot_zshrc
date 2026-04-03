@@ -158,9 +158,6 @@ _load_completions() {
   fi
 }
 
-zinit lucid wait'0a' for \
-as"program" pick"$ZPFX/bin/git-*" src"etc/git-extras-completion.zsh" make"PREFIX=$ZPFX" tj/git-extras
-
 zinit wait lucid light-mode for \
   cwelsys/vivid-zsh \
   Aloxaf/fzf-tab \
