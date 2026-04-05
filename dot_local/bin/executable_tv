@@ -2,30 +2,25 @@
 
 set -eo pipefail
 
-SPINNER_LIB="${HOME}/.local/share/spinners/spinner.sh"
-[[ -f "$SPINNER_LIB" ]] && source "$SPINNER_LIB"
-
 HTPC="main"
 HA_URL="http://192.168.4.114:8123"
 HA_TV_ENTITY="media_player.cwel_lgtv"
 
 declare -A INPUT_ALIASES=(
-    [1]="Box"
-    [2]="Console"
-    [3]="PC"
-    [box]="Box"
-    [c]="Console"
-    [console]="Console"
-    [switch]="Console"
-    [ns]="Console"
-    [ps]="Console"
-    [pc]="PC"
-    [yt]="YouTube AdFree"
-    [youtube]="YouTube AdFree"
-    [jellyfin]="Jellyfin"
-    [jf]="Jellyfin"
-    [kodi]="Kodi"
-    [livetv]="Live TV"
+  [1]="Box"
+  [2]="Console"
+  [3]="PC"
+  [box]="Box"
+  [c]="Console"
+  [console]="Console"
+  [switch]="Console"
+  [ns]="Console"
+  [ps]="Console"
+  [pc]="PC"
+  [jellyfin]="Jellyfin"
+  [jf]="Jellyfin"
+  [kodi]="Kodi"
+  [livetv]="Live TV"
 )
 
 RED='\033[0;31m'
@@ -36,250 +31,249 @@ BOLD='\033[1m'
 DIM='\033[2m'
 RESET='\033[0m'
 
-log_info()    { echo -e "${CYAN}→${RESET} $1"; }
+log_info() { echo -e "${CYAN}→${RESET} $1"; }
 log_success() { echo -e "${GREEN}✓${RESET} $1"; }
-log_error()   { echo -e "${RED}✗${RESET} $1" >&2; }
-log_warn()    { echo -e "${YELLOW}!${RESET} $1"; }
+log_error() { echo -e "${RED}✗${RESET} $1" >&2; }
+log_warn() { echo -e "${YELLOW}!${RESET} $1"; }
 
 check_token() {
-    if [[ -z "${HA_TOKEN:-}" ]]; then
-        log_error "HA_TOKEN not set"
-        return 1
-    fi
+  if [[ -z "${HA_TOKEN:-}" ]]; then
+    log_error "HA_TOKEN not set"
+    return 1
+  fi
 }
 
 ha_call() {
-    local endpoint="$1"
-    local method="${2:-GET}"
-    local data="${3:-}"
+  local endpoint="$1"
+  local method="${2:-GET}"
+  local data="${3:-}"
 
-    check_token || return 1
+  check_token || return 1
 
-    if [[ "$method" == "GET" ]]; then
-        curl -sf -H "Authorization: Bearer $HA_TOKEN" "$HA_URL/api/$endpoint"
-    else
-        curl -sf -X POST -H "Authorization: Bearer $HA_TOKEN" \
-            -H "Content-Type: application/json" \
-            "$HA_URL/api/$endpoint" -d "$data"
-    fi
+  if [[ "$method" == "GET" ]]; then
+    curl -sf -H "Authorization: Bearer $HA_TOKEN" "$HA_URL/api/$endpoint"
+  else
+    curl -sf -X POST -H "Authorization: Bearer $HA_TOKEN" \
+      -H "Content-Type: application/json" \
+      "$HA_URL/api/$endpoint" -d "$data"
+  fi
 }
 
 tv_state() {
-    ha_call "states/$HA_TV_ENTITY" | jq -r '.state' 2>/dev/null
+  ha_call "states/$HA_TV_ENTITY" | jq -r '.state' 2>/dev/null
 }
 
 is_tv_on() {
-    local state
-    state=$(tv_state)
-    [[ "$state" == "on" || "$state" == "playing" || "$state" == "paused" ]]
+  local state
+  state=$(tv_state)
+  [[ "$state" == "on" || "$state" == "playing" || "$state" == "paused" ]]
 }
 
 wait_for_tv() {
-    sleep 1
+  sleep 1
 
-    for _ in {1..10}; do
-        is_tv_on && return 0
-        sleep 0.5
-    done
-
-    for _ in {1..20}; do
-        is_tv_on && return 0
-        sleep 0.75
-    done
-
-    sleep 1.5
-
+  for _ in {1..10}; do
     is_tv_on && return 0
+    sleep 0.5
+  done
 
-    return 1
+  for _ in {1..20}; do
+    is_tv_on && return 0
+    sleep 0.75
+  done
+
+  sleep 1.5
+
+  is_tv_on && return 0
+
+  return 1
 }
 
 wake_tv() {
-    is_tv_on && return 0
-    ha_call "services/media_player/turn_on" POST "{\"entity_id\":\"$HA_TV_ENTITY\"}" >/dev/null
-    wait_for_tv
+  is_tv_on && return 0
+  ha_call "services/media_player/turn_on" POST "{\"entity_id\":\"$HA_TV_ENTITY\"}" >/dev/null
+  wait_for_tv
 }
 
 ensure_tv_on() {
-    is_tv_on && return 0
-    cmd_on
+  is_tv_on && return 0
+  cmd_on
 }
 
 resolve_input() {
-    local input="${1,,}"
-    if [[ -n "${INPUT_ALIASES[$input]:-}" ]]; then
-        echo "${INPUT_ALIASES[$input]}"
-    else
-        echo "$1"
-    fi
+  local input="${1,,}"
+  if [[ -n "${INPUT_ALIASES[$input]:-}" ]]; then
+    echo "${INPUT_ALIASES[$input]}"
+  else
+    echo "$1"
+  fi
 }
 
 cmd_on() {
-    if is_tv_on; then
-        log_success "TV already on"
-        return 0
-    fi
-    if type run_with_spinner &>/dev/null; then
-        if run_with_spinner "dots" "Waiting for TV" "cyan" wake_tv; then
-            printf "\r\033[K"
-            log_success "TV is on"
-        else
-            printf "\r\033[K"
-            log_error "TV failed to turn on"
-            return 1
-        fi
-    else
-        log_info "Turning TV on..."
-        if wake_tv; then
-            log_success "TV is on"
-        else
-            log_error "TV failed to turn on"
-            return 1
-        fi
-    fi
+  if is_tv_on; then
+    log_success "TV already on"
+    return 0
+  fi
+  if gum spin --spinner dot --title "Waiting for TV" -- "$0" _wake; then
+    log_success "TV is on"
+  else
+    log_error "TV failed to turn on"
+    return 1
+  fi
 }
 
 cmd_off() {
-    log_info "Turning TV off..."
-    ha_call "services/media_player/turn_off" POST "{\"entity_id\":\"$HA_TV_ENTITY\"}" >/dev/null
-    log_success "TV off"
+  log_info "Turning TV off..."
+  ha_call "services/media_player/turn_off" POST "{\"entity_id\":\"$HA_TV_ENTITY\"}" >/dev/null
+  log_success "TV off"
 }
 
 get_source_list() {
-    ha_call "states/$HA_TV_ENTITY" | jq -r '.attributes.source_list[]' 2>/dev/null
+  ha_call "states/$HA_TV_ENTITY" | jq -r '.attributes.source_list[]' 2>/dev/null
 }
 
 is_valid_input() {
-    local input="$1"
-    local sources
-    sources=$(get_source_list)
-    echo "$sources" | grep -qxF "$input"
+  local input="$1"
+  local sources
+  sources=$(get_source_list)
+  echo "$sources" | grep -qxF "$input"
 }
 
 cmd_input() {
-    local source="${1:-}"
-    if [[ -z "$source" ]]; then
-        ensure_tv_on || return 1
-        local data
-        data=$(ha_call "states/$HA_TV_ENTITY")
-        local sources current
-        sources=$(echo "$data" | jq -r '.attributes.source_list[]' 2>/dev/null)
-        current=$(echo "$data" | jq -r '.attributes.source' 2>/dev/null)
-        echo -e "${BOLD}Available inputs:${RESET}"
-        while IFS= read -r s; do
-            if [[ "$s" == "$current" ]]; then
-                echo -e "  ${GREEN}● $s${RESET} (current)"
-            else
-                echo -e "  ${DIM}○ $s${RESET}"
-            fi
-        done <<< "$sources"
-        echo ""
-        echo -e "${BOLD}Aliases:${RESET} ${DIM}1-3, pc, c/ns/switch/ps, box, yt, jf, kodi${RESET}"
-        return 0
-    fi
-    local resolved
-    resolved=$(resolve_input "$source")
-    if ! is_valid_input "$resolved"; then
-        log_error "Unknown input: $resolved"
-        return 1
-    fi
+  local source="${1:-}"
+  if [[ -z "$source" ]]; then
     ensure_tv_on || return 1
-    log_info "Switching to $resolved..."
-    ha_call "services/media_player/select_source" POST "{\"entity_id\":\"$HA_TV_ENTITY\",\"source\":\"$resolved\"}" >/dev/null
-    log_success "Switched to $resolved"
+    local data
+    data=$(ha_call "states/$HA_TV_ENTITY")
+    local sources current
+    sources=$(echo "$data" | jq -r '.attributes.source_list[]' 2>/dev/null)
+    current=$(echo "$data" | jq -r '.attributes.source' 2>/dev/null)
+    echo -e "${BOLD}Available inputs:${RESET}"
+    while IFS= read -r s; do
+      if [[ "$s" == "$current" ]]; then
+        echo -e "  ${GREEN}● $s${RESET} (current)"
+      else
+        echo -e "  ${DIM}○ $s${RESET}"
+      fi
+    done <<<"$sources"
+    echo ""
+    echo -e "${BOLD}Aliases:${RESET} ${DIM}1-3, pc, c/ns/switch/ps, box, yt, jf, kodi${RESET}"
+    return 0
+  fi
+  local resolved
+  resolved=$(resolve_input "$source")
+  if ! is_valid_input "$resolved"; then
+    log_error "Unknown input: $resolved"
+    return 1
+  fi
+  ensure_tv_on || return 1
+  log_info "Switching to $resolved..."
+  ha_call "services/media_player/select_source" POST "{\"entity_id\":\"$HA_TV_ENTITY\",\"source\":\"$resolved\"}" >/dev/null
+  log_success "Switched to $resolved"
 }
 
 cmd_volume() {
-    local level="${1:-}"
-    if [[ -z "$level" ]]; then
-        local vol pct
-        vol=$(ha_call "states/$HA_TV_ENTITY" | jq -r '.attributes.volume_level // 0' 2>/dev/null)
-        pct=$(awk "BEGIN {printf \"%.0f\", $vol * 100}")
-        echo "Volume: ${pct}%"
-        return 0
-    fi
-    ensure_tv_on || return 1
-    local vol_float
-    vol_float=$(awk "BEGIN {printf \"%.2f\", $level / 100}")
-    log_info "Setting volume to ${level}%..."
-    ha_call "services/media_player/volume_set" POST "{\"entity_id\":\"$HA_TV_ENTITY\",\"volume_level\":$vol_float}" >/dev/null
-    log_success "Volume set to ${level}%"
+  local level="${1:-}"
+  if [[ -z "$level" ]]; then
+    local vol pct
+    vol=$(ha_call "states/$HA_TV_ENTITY" | jq -r '.attributes.volume_level // 0' 2>/dev/null)
+    pct=$(awk "BEGIN {printf \"%.0f\", $vol * 100}")
+    echo "Volume: ${pct}%"
+    return 0
+  fi
+  ensure_tv_on || return 1
+  local vol_float
+  vol_float=$(awk "BEGIN {printf \"%.2f\", $level / 100}")
+  log_info "Setting volume to ${level}%..."
+  ha_call "services/media_player/volume_set" POST "{\"entity_id\":\"$HA_TV_ENTITY\",\"volume_level\":$vol_float}" >/dev/null
+  log_success "Volume set to ${level}%"
 }
 
 cmd_mute() {
-    ensure_tv_on || return 1
-    local muted
-    muted=$(ha_call "states/$HA_TV_ENTITY" | jq -r '.attributes.is_volume_muted // false' 2>/dev/null)
-    if [[ "$muted" == "true" ]]; then
-        log_info "Unmuting..."
-        ha_call "services/media_player/volume_mute" POST "{\"entity_id\":\"$HA_TV_ENTITY\",\"is_volume_muted\":false}" >/dev/null
-        log_success "Unmuted"
-    else
-        log_info "Muting..."
-        ha_call "services/media_player/volume_mute" POST "{\"entity_id\":\"$HA_TV_ENTITY\",\"is_volume_muted\":true}" >/dev/null
-        log_success "Muted"
-    fi
+  ensure_tv_on || return 1
+  local muted
+  muted=$(ha_call "states/$HA_TV_ENTITY" | jq -r '.attributes.is_volume_muted // false' 2>/dev/null)
+  if [[ "$muted" == "true" ]]; then
+    log_info "Unmuting..."
+    ha_call "services/media_player/volume_mute" POST "{\"entity_id\":\"$HA_TV_ENTITY\",\"is_volume_muted\":false}" >/dev/null
+    log_success "Unmuted"
+  else
+    log_info "Muting..."
+    ha_call "services/media_player/volume_mute" POST "{\"entity_id\":\"$HA_TV_ENTITY\",\"is_volume_muted\":true}" >/dev/null
+    log_success "Muted"
+  fi
 }
 
 cmd_status() {
-    check_token || return 1
+  check_token || return 1
 
-    local data
-    data=$(ha_call "states/$HA_TV_ENTITY") || { log_error "Failed to reach Home Assistant"; return 1; }
+  local data
+  data=$(ha_call "states/$HA_TV_ENTITY") || {
+    log_error "Failed to reach Home Assistant"
+    return 1
+  }
 
-    local state source vol pct
-    state=$(echo "$data" | jq -r '.state // "unknown"')
-    source=$(echo "$data" | jq -r '.attributes.source // "unknown"')
-    vol=$(echo "$data" | jq -r '.attributes.volume_level // 0')
-    pct=$(awk "BEGIN {printf \"%.0f\", $vol * 100}")
+  local state source vol pct
+  state=$(echo "$data" | jq -r '.state // "unknown"')
+  source=$(echo "$data" | jq -r '.attributes.source // "unknown"')
+  vol=$(echo "$data" | jq -r '.attributes.volume_level // 0')
+  pct=$(awk "BEGIN {printf \"%.0f\", $vol * 100}")
 
-    if [[ "$state" == "on" || "$state" == "playing" || "$state" == "paused" ]]; then
-        echo -e "  ${GREEN}✓${RESET} Power:   ${GREEN}ON${RESET}"
-        echo -e "  ${CYAN}→${RESET} Input:   $source"
-        echo -e "  ${CYAN}→${RESET} Volume:  ${pct}%"
-    else
-        echo -e "  ${RED}✗${RESET} Power:   ${DIM}OFF${RESET}"
-    fi
+  if [[ "$state" == "on" || "$state" == "playing" || "$state" == "paused" ]]; then
+    echo -e "  ${GREEN}✓${RESET} Power:   ${GREEN}ON${RESET}"
+    echo -e "  ${CYAN}→${RESET} Input:   $source"
+    echo -e "  ${CYAN}→${RESET} Volume:  ${pct}%"
+  else
+    echo -e "  ${RED}✗${RESET} Power:   ${DIM}OFF${RESET}"
+  fi
 }
 
 cmd_game() {
-    local current_host
-    current_host=$(hostname)
+  local current_host
+  current_host=$(hostname)
 
-    if [[ "$current_host" == "$HTPC" ]]; then
-        exec ~/.local/bin/gamer "$@"
-    else
-        exec ssh -t "$HTPC" "~/.local/bin/gamer $*"
-    fi
+  if [[ "$current_host" == "$HTPC" ]]; then
+    exec ~/.local/bin/gamer "$@"
+  else
+    exec ssh -t "$HTPC" "~/.local/bin/gamer $*"
+  fi
 }
 
 show_help() {
-    echo -e "${BOLD}tv${RESET} - TV and gaming session control"
-    echo ""
-    echo -e "${BOLD}TV Commands:${RESET}"
-    echo -e "  ${CYAN}on${RESET}              Turn TV on"
-    echo -e "  ${CYAN}off${RESET}             Turn TV off (standby)"
-    echo -e "  ${CYAN}status${RESET}          Show TV status"
-    echo -e "  ${CYAN}i${RESET}|${CYAN}input${RESET} [NAME]  List inputs or switch to NAME"
-    echo -e "  ${CYAN}v${RESET}|${CYAN}vol${RESET} [0-100]   Show or set volume"
-    echo -e "  ${CYAN}m${RESET}|${CYAN}mute${RESET}          Toggle mute"
-    echo ""
-    echo -e "${BOLD}Input Aliases:${RESET} ${DIM}1-3, pc, c/ns/switch/ps, box, yt, jf, kodi${RESET}"
-    echo ""
-    echo -e "${BOLD}Gaming Commands:${RESET}"
-    echo -e "  ${CYAN}g${RESET}|${CYAN}game${RESET} [CMD]    Control gaming session (runs on $HTPC)"
-    echo -e "                   ${DIM}on, off, kill, switch, status${RESET}"
+  echo -e "${BOLD}tv${RESET} - TV and gaming session control"
+  echo ""
+  echo -e "${BOLD}TV Commands:${RESET}"
+  echo -e "  ${CYAN}on${RESET}              Turn TV on"
+  echo -e "  ${CYAN}off${RESET}             Turn TV off (standby)"
+  echo -e "  ${CYAN}status${RESET}          Show TV status"
+  echo -e "  ${CYAN}i${RESET}|${CYAN}input${RESET} [NAME]  List inputs or switch to NAME"
+  echo -e "  ${CYAN}v${RESET}|${CYAN}vol${RESET} [0-100]   Show or set volume"
+  echo -e "  ${CYAN}m${RESET}|${CYAN}mute${RESET}          Toggle mute"
+  echo ""
+  echo -e "${BOLD}Input Aliases:${RESET} ${DIM}1-3, pc, c/ns/switch/ps, box, yt, jf, kodi${RESET}"
+  echo ""
+  echo -e "${BOLD}Gaming Commands:${RESET}"
+  echo -e "  ${CYAN}g${RESET}|${CYAN}game${RESET} [CMD]    Control gaming session (runs on $HTPC)"
+  echo -e "                   ${DIM}on, off, kill, switch, status${RESET}"
 }
 
 case "${1:-}" in
-    o|on)                     cmd_on ;;
-    q|off)                    cmd_off ;;
-    i|input)                cmd_input "${2:-}" ;;
-    v|vol|volume)           cmd_volume "${2:-}" ;;
-    m|mute)                 cmd_mute ;;
-    s|status)               cmd_status ;;
-    g|game)                 shift; cmd_game "$@" ;;
-    help|-h|--help)         show_help ;;
-    "")                     cmd_status ;;
-    *)                      log_error "Unknown command: $1"; show_help; exit 1 ;;
+o | on) cmd_on ;;
+q | off) cmd_off ;;
+i | input) cmd_input "${2:-}" ;;
+v | vol | volume) cmd_volume "${2:-}" ;;
+m | mute) cmd_mute ;;
+s | status) cmd_status ;;
+g | game)
+  shift
+  cmd_game "$@"
+  ;;
+_wake) wake_tv ;;
+help | -h | --help) show_help ;;
+"") cmd_status ;;
+*)
+  log_error "Unknown command: $1"
+  show_help
+  exit 1
+  ;;
 esac

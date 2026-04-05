@@ -1,8 +1,5 @@
 """Configuration loader for kitty tab bar.
 
-Provides a unified TOML-based configuration system for tab bar styles,
-colors, icons, and behavior. Follows starship.toml conventions.
-
 Color resolution priority:
 1. Hex values (#rrggbb)
 2. TOML [palette] overrides
@@ -63,7 +60,9 @@ class ModeIndicatorConfig:
     display_names: dict[str, str] = field(
         default_factory=lambda: {"leader": "\U000f030c"}  # nf-md-keyboard
     )
-    powerline: ModeIndicatorPowerlineConfig = field(default_factory=ModeIndicatorPowerlineConfig)
+    powerline: ModeIndicatorPowerlineConfig = field(
+        default_factory=ModeIndicatorPowerlineConfig
+    )
     pills: ModeIndicatorPillsConfig = field(default_factory=ModeIndicatorPillsConfig)
 
 
@@ -357,8 +356,14 @@ def _validate_color_names(config: "TabBarConfig") -> list[str]:
     # From ModeIndicatorConfig
     color_refs.extend(
         [
-            ("mode_indicator.powerline.foreground", config.mode_indicator.powerline.foreground),
-            ("mode_indicator.powerline.background", config.mode_indicator.powerline.background),
+            (
+                "mode_indicator.powerline.foreground",
+                config.mode_indicator.powerline.foreground,
+            ),
+            (
+                "mode_indicator.powerline.background",
+                config.mode_indicator.powerline.background,
+            ),
             ("mode_indicator.pills.icon_bg", config.mode_indicator.pills.icon_bg),
             ("mode_indicator.pills.icon_fg", config.mode_indicator.pills.icon_fg),
         ]
@@ -740,9 +745,17 @@ def _parse_toml(data: dict[str, Any]) -> TabBarConfig:
                     gc = lz["git_colors"]
                     colors = config.styles.pills.left_zone.git_colors
                     for color_field in (
-                        "directory", "git_branch_icon", "git_branch",
-                        "git_stashed", "git_deleted", "git_staged", "git_modified",
-                        "git_renamed", "git_untracked", "git_ahead", "git_behind",
+                        "directory",
+                        "git_branch_icon",
+                        "git_branch",
+                        "git_stashed",
+                        "git_deleted",
+                        "git_staged",
+                        "git_modified",
+                        "git_renamed",
+                        "git_untracked",
+                        "git_ahead",
+                        "git_behind",
                         "git_conflicted",
                     ):
                         if color_field in gc:
@@ -786,10 +799,6 @@ def _load_config() -> TabBarConfig:
             with open(config_path, "rb") as f:
                 data = tomllib.load(f)
             config = _parse_toml(data)
-            print(
-                f"[tabbar_config] Loaded config: style={config.general.style}",
-                file=sys.stderr,
-            )
         except Exception as e:
             import traceback
 

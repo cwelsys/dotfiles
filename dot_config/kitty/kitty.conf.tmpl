@@ -78,7 +78,6 @@ action_alias kmux_split launch --type=background --cwd=current --copy-env kmux s
 action_alias kmux_lsplit launch --type=background --copy-env kmux split --cwd ~
 action_alias kmux_bg launch --type=background --copy-env kmux
 action_alias resize kitten relative_resize.py
-action_alias smart_paste kitten smart_paste.py
 
 # leaders
 kitty_mod {{ $mod }}+shift
@@ -145,7 +144,7 @@ map --mode leader z layout_action rotate
 map --mode leader space kitten zoom_toggle.py
 
 # fingers
-map --mode leader f kitten hints --customize-processing custom-hints.py
+map --mode leader f kitten hints --customize-processing fingers.py
 
 # kmux a/d
 map --mode leader d kmux_bg detach

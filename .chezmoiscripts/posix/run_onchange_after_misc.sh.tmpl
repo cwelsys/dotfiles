@@ -1,15 +1,26 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -eufo pipefail
 
 if command -v bat >/dev/null 2>&1; then
-    bat cache --clear
-    bat cache --build
+  bat cache --clear
+  bat cache --build
 fi
 
 if command -v fast-theme >/dev/null 2>&1; then
-    fast-theme XDG:catppuccin-mocha
+  fast-theme XDG:catppuccin-mocha
+fi
+
+if [ -z "${GNUPGHOME:-}" ]; then
+  GNUPGHOME="$HOME/.local/share/gnupg"
+fi
+
+if [ -d "$GNUPGHOME" ]; then
+  chown -R "$(whoami)" "$GNUPGHOME"
+  find "$GNUPGHOME" -type d -exec chmod 700 {} \;
+  find "$GNUPGHOME" -type f -exec chmod 600 {} \;
+else
+  echo "GPG directory $GNUPGHOME does not exist, skipping permission setup"
 fi
 
 git -C "${CHEZMOI_WORKING_TREE}" remote set-url origin git@github.com:cwelsys/dotfiles.git
-

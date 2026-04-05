@@ -1,34 +1,18 @@
-#!/bin/bash
+#!/usr/bin/env bash
 {{ if lookPath "yazi" }}
 set -e
 
-GREEN='\033[0;32m'
-CYAN='\033[0;36m'
-YELLOW='\033[0;33m'
-RED='\033[0;31m'
-NC='\033[0m'
+{{- $plugins := list }}
+{{- if hasKey .pkgs "global" }}
+{{-   if hasKey .pkgs.global "yazi" }}
+{{-     $plugins = .pkgs.global.yazi }}
+{{-   end }}
+{{- end }}
+{{- if and (hasKey .pkgs.hosts .hostname) (hasKey (index .pkgs.hosts .hostname) "yazi") }}
+{{-   $plugins = concat $plugins (index .pkgs.hosts .hostname).yazi }}
+{{- end }}
 
-install_plugin() {
-    local plugin="$1"
-    echo -e "${CYAN}Installing plugin: ${plugin}${NC}"
-
-    # Use || true to prevent script from exiting on plugin install failure
-    if ya pkg add "$plugin" || true; then
-        echo -e "${GREEN}  Success!${NC}"
-    else
-        echo -e "${RED}  Failed to install plugin: $plugin${NC}"
-        # Don't return error to allow other plugins to install
-    fi
-}
-
-echo -e "${YELLOW}=== Installing yazi plugins ===${NC}"
-
-{{ range .yazi.plugins -}}
-install_plugin '{{ . }}'
+{{ range $plugins -}}
+ya pkg add '{{ . }}' 2>/dev/null || true
 {{ end }}
-
-echo -e "${YELLOW}=== Listing installed plugins ===${NC}"
-ya pkg list || true
-
-echo -e "${GREEN}=== Done ===${NC}"
 {{ end }}

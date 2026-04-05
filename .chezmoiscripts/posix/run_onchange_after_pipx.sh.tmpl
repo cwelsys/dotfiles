@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+{{ if lookPath "pipx" }}
+set -e
+
+{{- $pkgs := list }}
+{{- if hasKey .pkgs "global" }}
+{{-   if hasKey .pkgs.global "pipx" }}
+{{-     $pkgs = .pkgs.global.pipx }}
+{{-   end }}
+{{- end }}
+{{- if and (hasKey .pkgs.hosts .hostname) (hasKey (index .pkgs.hosts .hostname) "pipx") }}
+{{-   $pkgs = concat $pkgs (index .pkgs.hosts .hostname).pipx }}
+{{- end }}
+
+{{ range $pkgs -}}
+pipx install -q '{{ . }}' || true
+{{ end }}
+{{ end }}

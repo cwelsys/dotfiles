@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+{{ if lookPath "npm" }}
+set -e
+
+{{- $pkgs := list }}
+{{- if hasKey .pkgs "global" }}
+{{-   if hasKey .pkgs.global "npm" }}
+{{-     $pkgs = .pkgs.global.npm }}
+{{-   end }}
+{{- end }}
+{{- if and (hasKey .pkgs.hosts .hostname) (hasKey (index .pkgs.hosts .hostname) "npm") }}
+{{-   $pkgs = concat $pkgs (index .pkgs.hosts .hostname).npm }}
+{{- end }}
+
+{{ range $pkgs -}}
+npm install -g --fund=false '{{ . }}' || true
+{{ end }}
+{{ end }}

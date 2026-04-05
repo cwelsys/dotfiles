@@ -1,141 +1,88 @@
 #!/bin/bash
 
 [[ -f ~/.config/user-dirs.dirs ]] && source ~/.config/user-dirs.dirs
-OUTPUT_DIR="${XDG_VIDEOS_DIR:-$HOME/Videos}"
+OUTPUT_DIR="${XDG_VIDEOS_DIR:-$HOME/Videos}/recordings"
+mkdir -p "$OUTPUT_DIR"
 
-if [[ ! -d "$OUTPUT_DIR" ]]; then
-  notify-send "Screen recording directory does not exist: $OUTPUT_DIR" -u critical -t 3000
-  exit 1
-fi
+PIDFILE="/tmp/screenrecord.pid"
+OUTFILE="/tmp/screenrecord.out"
+STARTFILE="/tmp/screenrecord.start"
 
-DESKTOP_AUDIO="false"
-MICROPHONE_AUDIO="false"
-WEBCAM="false"
-STOP_RECORDING="false"
-
+MODE="gif"
 for arg in "$@"; do
   case "$arg" in
-    --with-desktop-audio) DESKTOP_AUDIO="true" ;;
-    --with-microphone-audio) MICROPHONE_AUDIO="true" ;;
-    --with-webcam) WEBCAM="true" ;;
-    --stop-recording) STOP_RECORDING="true"
+    --video) MODE="video" ;;
+    --gif) MODE="gif" ;;
   esac
 done
 
-cleanup_webcam() {
-  pkill -f "WebcamOverlay" 2>/dev/null
-}
+stop_recording() {
+  local pid
+  pid=$(<"$PIDFILE")
+  rm -f "$PIDFILE" "$STARTFILE"
 
-start_webcam_overlay() {
-  cleanup_webcam
-
-  # Get monitor scale
-  local scale
-  if [ -n "$NIRI_SOCKET" ]; then
-    scale=$(niri msg -j focused-output | jq -r '.logical.scale')
-  elif [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
-    scale=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .scale')
-  else
-    scale=1
-  fi
-
-  # Target width (base 360px, scaled to monitor)
-  local target_width=$(awk "BEGIN {printf \"%.0f\", 360 * $scale}")
-
-  # Try preferred 16:9 resolutions in order, use first available
-  local preferred_resolutions=("640x360" "1280x720" "1920x1080")
-  local video_size_arg=""
-  local available_formats=$(v4l2-ctl --list-formats-ext -d /dev/video0 2>/dev/null)
-
-  for resolution in "${preferred_resolutions[@]}"; do
-    if echo "$available_formats" | grep -q "$resolution"; then
-      video_size_arg="-video_size $resolution"
-      break
-    fi
-  done
-
-  ffplay -f v4l2 $video_size_arg -framerate 30 /dev/video0 \
-    -vf "scale=${target_width}:-1" \
-    -window_title "WebcamOverlay" \
-    -noborder \
-    -fflags nobuffer -flags low_delay \
-    -probesize 32 -analyzeduration 0 \
-    -loglevel quiet &
-  sleep 1
-}
-
-start_screenrecording() {
-  local filename="$OUTPUT_DIR/screenrecording-$(date +'%Y-%m-%d_%H-%M-%S').mp4"
-  local audio_args=""
-  local region=""
-
-  # Select region with slurp
-  region=$(slurp 2>/dev/null) || return 1
-
-  [[ "$DESKTOP_AUDIO" == "true" ]] && audio_args+=" -a"
-
-  if [[ "$MICROPHONE_AUDIO" == "true" ]]; then
-    local mic=$(pactl get-default-source 2>/dev/null)
-    [[ -n "$mic" ]] && audio_args+=" --audio-device=$mic"
-  fi
-
-  wf-recorder -g "$region" -r 60 -f "$filename" $audio_args &
-  local rec_pid=$!
-
-  # Wait briefly to confirm wf-recorder started
-  sleep 0.3
-  if ! kill -0 "$rec_pid" 2>/dev/null; then
-    notify-send "Screen recording failed to start" -u critical -t 3000
-    return 1
-  fi
-
-  notify-send "Screen recording started" "Press Mod+Shift+Ctrl+S to stop" -t 3000
-  dms ipc call inhibit enable 2>/dev/null
-  dms ipc call inhibit reason "Screen recording" 2>/dev/null
-}
-
-stop_screenrecording() {
-  pkill -SIGINT -x wf-recorder
+  kill -INT "$pid" 2>/dev/null
 
   local count=0
-  while pgrep -x wf-recorder >/dev/null && [ $count -lt 50 ]; do
+  while kill -0 "$pid" 2>/dev/null && [ $count -lt 100 ]; do
     sleep 0.1
     count=$((count + 1))
   done
 
-  dms ipc call inhibit disable 2>/dev/null
+  if kill -0 "$pid" 2>/dev/null; then
+    kill -9 "$pid" 2>/dev/null
+    rm -f "$OUTFILE"
+    return
+  fi
 
-  if pgrep -x wf-recorder >/dev/null; then
-    pkill -9 -x wf-recorder
-    cleanup_webcam
-    notify-send "Screen recording error" "Recording process had to be force-killed. Video may be corrupted." -u critical -t 5000
-  else
-    cleanup_webcam
-    local latest
-    latest=$(ls -t "$OUTPUT_DIR"/screenrecording-*.mp4 2>/dev/null | head -1)
-    if [[ -n "$latest" ]]; then
-      notify-send "Screen recording saved" "$latest" -t 4000
-    else
-      notify-send "Screen recording saved to $OUTPUT_DIR" -t 3000
-    fi
+  local output
+  output=$(<"$OUTFILE")
+  rm -f "$OUTFILE"
+
+  if [[ -n "$output" && -s "$output" ]]; then
+    clipboard-multi "$output"
   fi
 }
 
-screenrecording_active() {
-  pgrep -x wf-recorder >/dev/null || pgrep -f "WebcamOverlay" >/dev/null
+start_recording() {
+  local state_file="${XDG_CACHE_HOME:-$HOME/.cache}/dms/screenshot-state.json"
+
+  dms screenshot --stdout --no-clipboard --no-notify >/dev/null || exit 0
+
+  local geom
+  geom=$(jq -r '.last_region | "\(.width)x\(.height)+\(.x)+\(.y)"' "$state_file") || exit 1
+
+  local timestamp
+  timestamp=$(date +'%m.%d_%H.%M.%S')
+
+  if [[ "$MODE" == "video" ]]; then
+    local output="$OUTPUT_DIR/$timestamp.mp4"
+    echo "$output" > "$OUTFILE"
+
+    gpu-screen-recorder -w region -region "$geom" -f 60 -k h264 -q very_high \
+      -ac opus -a default_output -cursor yes -o "$output" &
+  else
+    local output="$OUTPUT_DIR/$timestamp.gif"
+    echo "$output" > "$OUTFILE"
+
+    wlgif -g "$geom" -d 0 -o "$output" &
+  fi
+
+  local pid=$!
+
+  sleep 0.5
+  if ! kill -0 "$pid" 2>/dev/null; then
+    rm -f "$OUTFILE"
+    exit 1
+  fi
+
+  echo "$pid" > "$PIDFILE"
+  date +%s > "$STARTFILE"
 }
 
-if screenrecording_active; then
-  if pgrep -x wf-recorder >/dev/null; then
-    stop_screenrecording
-  else
-    # Only webcam overlay running, clean it up
-    cleanup_webcam
-  fi
-elif [[ "$STOP_RECORDING" == "false" ]]; then
-  [[ "$WEBCAM" == "true" ]] && start_webcam_overlay
-
-  start_screenrecording || cleanup_webcam
+if [[ -f "$PIDFILE" ]] && kill -0 "$(<"$PIDFILE")" 2>/dev/null; then
+  stop_recording
 else
-  exit 1
+  rm -f "$PIDFILE" "$STARTFILE"
+  start_recording
 fi

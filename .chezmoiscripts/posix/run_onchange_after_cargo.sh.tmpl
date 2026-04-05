@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+{{ if lookPath "cargo" }}
+set -e
+
+{{- $pkgs := list }}
+{{- if hasKey .pkgs "global" }}
+{{-   if hasKey .pkgs.global "cargo" }}
+{{-     $pkgs = .pkgs.global.cargo }}
+{{-   end }}
+{{- end }}
+{{- if and (hasKey .pkgs.hosts .hostname) (hasKey (index .pkgs.hosts .hostname) "cargo") }}
+{{-   $pkgs = concat $pkgs (index .pkgs.hosts .hostname).cargo }}
+{{- end }}
+
+{{ range $pkgs -}}
+cargo install '{{ . }}' 2>/dev/null || true
+{{ end }}
+{{ end }}

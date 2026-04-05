@@ -6,18 +6,6 @@ url = "https://raw.githubusercontent.com/catppuccin/bat/refs/heads/main/themes/C
 type = "file"
 url = "https://raw.githubusercontent.com/catppuccin/glamour/refs/heads/main/themes/catppuccin-mocha.json"
 
-# [".config/eza/theme.yml"]
-# type = "file"
-# url = "https://raw.githubusercontent.com/eza-community/eza-themes/refs/heads/main/themes/catppuccin.yml"
-
 [".config/tmux/plugins/tpm"]
 type = "git-repo"
 url = "https://github.com/tmux-plugins/tpm"
-
-# [".config/alacritty/themes/catppuccin-mocha.toml"]
-# type = "file"
-# url = "https://github.com/catppuccin/alacritty/raw/main/catppuccin-mocha.toml"
-
-# [".config/zed/themes/catppuccin-blue.json"]
-# type = "file"
-# url = "https://github.com/catppuccin/zed/releases/download/v0.2.24/catppuccin-blue.json"

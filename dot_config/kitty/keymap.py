@@ -2,8 +2,6 @@
 """
 kitty keymaps scrollback overlay.
 
-Usage:
-    map ctrl+shift+/ kitten keymap.py
 """
 
 from kittens.tui.handler import result_handler

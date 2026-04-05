@@ -34,7 +34,6 @@ cask {{ . | quote }}
 {{-   end }}
 EOF
 {{- else }}
-echo "⚠️  No package configuration found for hostname: {{ .hostname }}"
-echo "💡 Run 'cmpack --clone <template-host>' to bootstrap this machine"
+echo "No package configuration found for hostname: {{ .hostname }}"
 {{- end }}
 {{- end }}

@@ -3,20 +3,11 @@
 {{ end }}
 
 {{ if not (and (eq .chezmoi.os "linux") (not .headless)) }}
-.config/hypr
 .config/niri
-.config/uwsm
-.config/swappy
 .local/bin/screenshot
 .local/bin/screenrecord
 .local/bin/ocr
 .local/bin/screensaver
-.local/bin/screensaver.txt
-.local/bin/clipboard-stdin
-.local/bin/launch-*
-.local/bin/tui-*
-.local/bin/webapp-*
-.local/bin/uwsm-app
 {{ end }}
 
 {{ if eq .chezmoi.hostname "pbox" }}
@@ -27,7 +18,6 @@
 .chezmoiscripts/darwin/**
 .config/karabiner/
 .local/bin/aid
-.local/bin/darkn
 .local/bin/darwenv
 Library/**
 {{ end }}

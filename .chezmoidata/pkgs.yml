@@ -27,7 +27,6 @@ pkgs:
       casks:
         - bluebubbles
         - font-symbols-only-nerd-font
-
     pbox:
       pacman:
         - 1password-cli
@@ -184,7 +183,6 @@ pkgs:
         - mise
         - paru-git
         - moor-bin
-
     mba:
       brews:
         - age
@@ -400,65 +398,164 @@ pkgs:
         - font-juliamono
         - gcloud-cli
         - thaw
-
     main:
       pacman:
         - 1password-beta
+        - 1password-cli
         - 7zip
+        - adw-gtk-theme
+        - age
         - amd-ucode
+        - ananicy-cpp
+        - aria2
         - asciiquarium-transparent-git
+        - atuin
+        - autossh
+        - awakened-poe-trade-bin
         - base
         - base-devel
+        - bash-completion
+        - bat
         - bat-extras
+        - bc
+        - benchmark
         - bibata-cursor-theme-bin
+        - bindfs
         - blueberry
+        - bluebubbles-bin
+        - bluetui
         - brightnessctl
+        - btop
+        - btrfs-progs
+        - bun
+        - cachyos-ananicy-rules
+        - cage
+        - cava
+        - cbonsai
+        - cemu-bin
+        - chafa
+        - chezmoi
+        - chromium
+        - circumflex-bin
+        - clean-chroot-manager
+        - cliphist
         - cmake
+        - cockpit
+        - cockpit-files
+        - cockpit-machines
+        - cockpit-storaged
         - cowsay
+        - cpio
+        - csvkit
         - cups
         - cups-browsed
         - cups-filters
         - cups-pdf
+        - cups-pk-helper
         - deno
+        - devtools
+        - direnv
+        - dmidecode
+        - dms-shell-git
+        - dnsmasq
         - docker
         - docker-buildx
         - docker-compose
+        - doggo
+        - dolphin-emu
+        - dsearch-bin
+        - dualsensectl
+        - ducker
+        - duf
         - dust
+        - efibootmgr
+        - emojify
+        - espeak
         - evince
+        - evtest
         - eza
+        - fastfetch
+        - faugus-launcher
         - fd
         - ffmpegthumbnailer
         - figlet
         - fontconfig
         - fortune-mod
+        - freetype2-qdoled
+        - fwupd
         - fzf
+        - game-devices-udev
+        - gamemode
+        - gdb
         - genact
+        - ghostty
+        - git
+        - git-absorb
+        - git-branchless
+        - git-delta
+        - git-lfs
         - github-cli
+        - glm
+        - glow
         - gnome-calculator
         - gnome-keyring
         - gnome-themes-extra
         - go
+        - go-yq
+        - google-cloud-cli
         - goreleaser
+        - gpg-tui
+        - gping
+        - gptfdisk
+        - gpu-screen-recorder
+        - greetd-dms-greeter-git
         - gst-plugin-pipewire
         - gti
+        - gtk-engine-murrine
+        - gum
         - gvfs-mtp
+        - gvfs-nfs
         - gvfs-smb
-        - hypridle
-        - hyprland
-        - hyprlock
+        - hdparm
         - hyprpicker
-        - hyprshot
-        - hyprsunset
+        - i2c-tools
         - imagemagick
         - impala
         - imv
         - inetutils
+        - innoextract
         - iwd
+        - jdk11-openjdk
+        - jellyfin-desktop
         - jq
+        - kdenlive
+        - keymapper
+        - khal
+        - kimageformats
+        - kmon
+        - lazydocker
+        - lazygit
         - lazyjournal
+        - less
+        - lesspipe
+        - lib32-glu
+        - lib32-libcups
+        - lib32-libpulse
+        - lib32-libxi
+        - lib32-mangohud
+        - lib32-mesa
+        - lib32-mesa-utils
+        - lib32-openal
+        - lib32-vulkan-mesa-implicit-layers
+        - lib32-vulkan-mesa-layers
+        - lib32-vulkan-radeon
+        - libgbinder
+        - libglibutil
+        - libicns
         - libpulse
         - libqalculate
         - libreoffice-fresh
+        - libva-utils
         - libyaml
         - limine
         - limine-mkinitcpio-hook
@@ -466,330 +563,241 @@ pkgs:
         - linux
         - linux-firmware
         - linux-headers
+        - linux-zen
+        - linux-zen-headers
+        - listenbrainz-mpd
         - localsend-bin
         - lolcat
         - luarocks
+        - lxc
+        - man-db
+        - mangohud
+        - mangojuice
         - mariadb-libs
+        - mate-polkit
+        - matugen
+        - memtest86+-efi
+        - mesa
+        - mesa-utils
         - meson
+        - mingw-w64-gcc
+        - mise
+        - mkinitcpio-firmware
+        - moor
+        - mpd
         - mpv
+        - mtools
+        - nano
         - nautilus
         - navi
+        - nct6687d-dkms-git
+        - neovim
+        - networkmanager
+        - nextcloud-client
+        - nfs-utils
+        - nftables
+        - niri
+        - nirius
+        - nodejs
         - noto-fonts
         - noto-fonts-cjk
         - noto-fonts-emoji
         - noto-fonts-extra
+        - npm
         - nss-mdns
+        - ntfs-3g
+        - nushell
+        - nvtop
         - obs-studio
         - obsidian
+        - onefetch
+        - opencode-bin
+        - otf-apple-sf-pro
+        - otf-commit-mono
+        - otf-font-awesome
+        - ouch
+        - pacman-contrib
         - pamixer
+        - pandoc-bin
+        - papirus-icon-theme
+        - paru-git
+        - perl-image-exiftool
         - pinta
         - pipewire
         - pipewire-alsa
         - pipewire-jack
         - pipewire-pulse
         - playerctl
+        - plocate
+        - plymouth
+        - pnpm
         - polkit-gnome
         - postgresql-libs
         - power-profiles-daemon
+        - prek-bin
+        - protontricks
+        - python-aiohttp-oauthlib
+        - python-gbinder
         - python-gobject
+        - python-hatchling
+        - python-pip
+        - python-pipx
         - python-poetry-core
+        - python-pyfiglet
         - python-terminaltexteffects
+        - qbittorrent
+        - quickshell-git
+        - reflector
         - resvg
+        - retroarch-steam-launcher
         - ripgrep
+        - rmpc-git
+        - rpcs3-bin
+        - runelite
         - rust
+        - rust-analyzer
         - rustdesk-bin
+        - rusty-path-of-building
+        - ryujinx-bin
         - satty
+        - sbctl
+        - sl
         - slack-desktop-wayland
         - slurp
+        - snapper
+        - starship
         - steam
+        - steam-rom-manager-bin
         - steamcmd
+        - sunshine
         - sushi
+        - swappy
+        - sway
         - swaybg
         - swaylock
         - swayosd
         - syncthing
+        - syncthingtray-qt6
         - system-config-printer
+        - tailscale
+        - terminus-font
+        - tesseract
+        - tk
+        - tldr
+        - tmux
+        - topgrade
+        - trash-cli
         - tree-sitter-cli
+        - ttf-0xproto-nerd
+        - ttf-cascadia-code-nerd
         - ttf-cascadia-mono-nerd
+        - ttf-dejavu
         - ttf-fantasque-nerd
         - ttf-fantasque-sans-mono
         - ttf-ia-writer
+        - ttf-ibmplex-mono-nerd
+        - ttf-jetbrains-mono
         - ttf-jetbrains-mono-nerd
+        - ttf-meslo-nerd
+        - ttf-twemoji
         - tzupdate
         - ufw
         - ufw-docker
+        - unarc-git
+        - unrar
+        - unzip
+        - uv
         - uwsm
+        - vdirsyncer
         - vesktop
+        - visual-studio-code-bin
+        - vivid
+        - vulkan-mesa-implicit-layers
+        - vulkan-mesa-layers
+        - vulkan-radeon
+        - vulkan-tools
         - waybar
+        - waydroid
+        - waydroid-helper
+        - waydroid-launcher-git
+        - waydroidsu
+        - wayfreeze-git
+        - wayland-utils
+        - weathr-bin
+        - wev
+        - wf-recorder
         - wget
+        - whois
+        - wine-mono
         - wireless-regdb
         - wiremix
         - wireplumber
         - wl-clip-persist
         - wl-clipboard
         - woff2-font-awesome
+        - wofi
+        - wol
         - wtype
+        - xan
+        - xcompmgr
+        - xdg-desktop-portal-gnome
         - xdg-desktop-portal-gtk
-        - xdg-desktop-portal-hyprland
+        - xdg-ninja
+        - xdg-terminal-exec
         - xmlstarlet
+        - xorg-xdpyinfo
+        - xorg-xev
+        - xorg-xhost
+        - xpadneo-dkms
+        - xsv
+        - xwayland-satellite-git
+        - yarn
         - yaru-icon-theme
+        - ydotool
         - zen-browser-bin
+        - zig
+        - zmx
         - zoxide
         - zram-generator
-        - 1password-cli
-        - age
-        - bash-completion
-        - bat
-        - btop
-        - btrfs-progs
-        - cbonsai
-        - chezmoi
-        - cockpit
-        - cockpit-files
-        - cockpit-machines
-        - cockpit-storaged
-        - cpio
-        - efibootmgr
-        - fastfetch
-        - ghostty
-        - git
-        - git-delta
-        - gum
-        - lazydocker
-        - lazygit
-        - less
-        - man-db
-        - neovim
-        - nextcloud-client
-        - ntfs-3g
-        - plocate
-        - plymouth
-        - snapper
-        - starship
-        - tailscale
-        - tldr
-        - topgrade
-        - trash-cli
-        - unzip
-        - uv
-        - waydroid
-        - waydroid-helper
-        - whois
-        - xdg-ninja
         - zsh
-        - dmidecode
-        - doggo
-        - fwupd
-        - reflector
-        - cage
-        - dnsmasq
-        - gtk-engine-murrine
-        - libgbinder
-        - libglibutil
-        - libva-utils
-        - lxc
-        - mesa-utils
-        - nftables
-        - python-gbinder
-        - waydroid-launcher-git
-        - glow
-        - mkinitcpio-firmware
-        - nushell
-        - otf-font-awesome
-        - terminus-font
-        - ttf-0xproto-nerd
-        - xan
-        - ydotool
-        - gpu-screen-recorder
-        - gvfs-nfs
-        - jdk11-openjdk
-        - nodejs
-        - npm
-        - protontricks
-        - runelite
-        - wayfreeze-git
-        - bluetui
-        - hyprland-guiutils
-        - nvtop
-        - python-pipx
-        - wol
-        - xpadneo-dkms
-        - python-hatchling
-        - pacman-contrib
-        - python-pip
-        - bc
-        - benchmark
-        - game-devices-udev
-        - gamemode
-        - glm
-        - gptfdisk
-        - greetd-dms-greeter-git
-        - hdparm
-        - lib32-libcups
-        - lib32-libpulse
-        - lib32-openal
-        - mtools
-        - networkmanager
-        - pnpm
-        - qbittorrent
-        - sbctl
-        - vulkan-tools
-        - wofi
-        - xdg-terminal-exec
-        - chromium
-        - cliphist
-        - dms-shell-git
-        - mate-polkit
-        - matugen
-        - swappy
-        - wf-recorder
-        - dualsensectl
-        - evtest
-        - papirus-icon-theme
-        - tk
-        - tmux
-        - visual-studio-code-bin
-        - waydroidsu
-        - bindfs
-        - bluebubbles-bin
-        - nano
-        - kdenlive
-        - xorg-xhost
-        - quickshell-git
-        - cava
-        - dsearch-bin
-        - cemu-bin
-        - libicns
-        - retroarch-steam-launcher
-        - rpcs3-bin
-        - ryujinx-bin
-        - steam-rom-manager-bin
-        - sunshine
-        - wine-mono
-        - circumflex-bin
-        - aria2
-        - autossh
-        - chafa
-        - emojify
-        - espeak
-        - gpg-tui
-        - innoextract
-        - lesspipe
-        - onefetch
-        - opencode-bin
-        - otf-commit-mono
-        - pandoc-bin
-        - sl
-        - ttf-ibmplex-mono-nerd
-        - ttf-twemoji
-        - unarc-git
-        - vivid
-        - ouch
-        - ttf-meslo-nerd
-        - direnv
-        - mpd
-        - nfs-utils
-        - otf-apple-sf-pro
-        - rmpc-git
-        - ttf-cascadia-code-nerd
-        - ducker
-        - i2c-tools
-        - keymapper
-        - lib32-glu
-        - lib32-libxi
-        - tesseract
-        - zig
-        - linux-zen
-        - linux-zen-headers
-        - mangohud
-        - adw-gtk-theme
-        - niri
-        - xdg-desktop-portal-gnome
-        - syncthingtray-qt6
-        - ttf-dejavu
-        - ttf-jetbrains-mono
-        - atuin
-        - gdb
-        - git-lfs
-        - sway
-        - unrar
-        - wayland-utils
-        - wev
-        - rusty-path-of-building
-        - awakened-poe-trade-bin
-        - xcompmgr
-        - xorg-xdpyinfo
-        - yarn
-        - prek-bin
-        - ananicy-cpp
-        - cachyos-ananicy-rules
-        - cups-pk-helper
-        - lib32-mangohud
-        - mangojuice
-        - weathr-bin
-        - xorg-xev
-        - bun
-        - faugus-launcher
-        - google-cloud-cli
-        - khal
-        - python-aiohttp-oauthlib
-        - vdirsyncer
-        - xwayland-satellite-git
-        - kimageformats
-        - clean-chroot-manager
-        - devtools
-        - duf
-        - gping
-        - lib32-mesa
-        - lib32-mesa-utils
-        - lib32-vulkan-mesa-implicit-layers
-        - lib32-vulkan-mesa-layers
-        - lib32-vulkan-radeon
-        - mesa
-        - vulkan-mesa-implicit-layers
-        - vulkan-mesa-layers
-        - vulkan-radeon
-        - rust-analyzer
-        - zmx
-        - listenbrainz-mpd
-        - csvkit
-        - perl-image-exiftool
-        - xsv
-        - kmon
-        - moor
-        - mise
-        - mingw-w64-gcc
-        - paru-git
-        - jellyfin-desktop
-        - freetype2-qdoled
-        - dolphin-emu
-        - python-pyfiglet
-
-yazi:
-  plugins:
-    - 'yazi-rs/plugins:chmod'
-    - 'yazi-rs/plugins:diff'
-    - 'yazi-rs/plugins:mount'
-    - 'yazi-rs/plugins:full-border'
-    - 'yazi-rs/plugins:jump-to-char'
-    - 'yazi-rs/plugins:vcs-files'
-    - 'yazi-rs/plugins:mime-ext'
-    - 'yazi-rs/plugins:zoom'
-    - 'yazi-rs/plugins:toggle-pane'
-    - 'yazi-rs/plugins:smart-filter'
-    - 'yazi-rs/plugins:smart-enter'
-    - 'yazi-rs/plugins:piper'
-    - 'yazi-rs/plugins:git'
-    - 'uhs-robert/recycle-bin'
-    - 'KKV9/command'
-    - 'Rolv-Apneseth/starship'
-    - 'KKV9/compress'
-    - 'DreamMaoMao/searchjump'
-    - 'ndtoan96/ouch'
-    - 'Lil-Dank/lazygit'
-    - 'yazi-rs/flavors:catppuccin-mocha'
-
-
-
-
-
+      cargo:
+        - managarr
+        - mpdpopm
+      pipx:
+        - nsz
+  global:
+    yazi:
+      - DreamMaoMao/searchjump
+      - KKV9/command
+      - KKV9/compress
+      - Lil-Dank/lazygit
+      - Rolv-Apneseth/starship
+      - ndtoan96/ouch
+      - uhs-robert/recycle-bin
+      - yazi-rs/flavors:catppuccin-mocha
+      - yazi-rs/plugins:chmod
+      - yazi-rs/plugins:diff
+      - yazi-rs/plugins:full-border
+      - yazi-rs/plugins:git
+      - yazi-rs/plugins:jump-to-char
+      - yazi-rs/plugins:mime-ext
+      - yazi-rs/plugins:mount
+      - yazi-rs/plugins:piper
+      - yazi-rs/plugins:smart-enter
+      - yazi-rs/plugins:smart-filter
+      - yazi-rs/plugins:toggle-pane
+      - yazi-rs/plugins:vcs-files
+      - yazi-rs/plugins:zoom
+    cargo:
+      - cargo-cache
+      - cargo-list
+      - cargo-update
+    npm:
+      - '@antfu/ni'
+      - '@googleworkspace/cli'
+      - commitizen
+      - git-recent
+      - neovim
+      - npm-check-updates
+      - typescript
+      - typescript-language-server

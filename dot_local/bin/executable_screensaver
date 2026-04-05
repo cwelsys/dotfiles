@@ -1,53 +1,37 @@
 #!/bin/bash
 
-screensaver_in_focus() {
-  if [ -n "$NIRI_SOCKET" ]; then
-    niri msg -j focused-window 2>/dev/null | jq -e '.app_id == "tte.screenie"' >/dev/null 2>&1
-  elif [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
-    hyprctl activewindow -j | jq -e '.class == "tte.screenie"' >/dev/null 2>&1
-  fi
-}
+if [[ "$1" == "--run" ]]; then
+  trap 'kill %1 2>/dev/null; exit 0' INT TERM HUP
+  stty -echo 2>/dev/null
+  printf '\e[?1003h'
 
-hide_cursor() {
-  if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
-    hyprctl keyword cursor:invisible "$1" &>/dev/null
-  fi
-}
+  while true; do
+    tte -i ~/Pictures/screensaver.txt \
+      --frame-rate 60 \
+      --canvas-width 0 --canvas-height 0 \
+      --reuse-canvas --anchor-canvas c --anchor-text c \
+      --random-effect --exclude-effects matrix synthgrid sweep \
+      --no-eol --no-restore-cursor &
 
-exit_screensaver() {
-  hide_cursor false
-  pkill -x tte 2>/dev/null
-  pkill -f "tte.screenie" 2>/dev/null
-  exit 0
-}
-
-trap exit_screensaver SIGINT SIGTERM SIGHUP SIGQUIT
-
-printf '\033]11;rgb:00/00/00\007' # Set background color to black
-
-hide_cursor true
-
-# Cursor movement detection (Hyprland only)
-if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
-  initial_cursorpos=$(hyprctl cursorpos 2>/dev/null || echo "0, 0")
+    while kill -0 %1 2>/dev/null; do
+      read -t 0.2 -n 1 -s && kill %1 2>/dev/null && exit 0
+    done
+  done
 fi
 
-while true; do
-  tte -i ~/.local/bin/screensaver.txt \
-    --frame-rate 120 --canvas-width 0 --canvas-height 0 --reuse-canvas --anchor-canvas c --anchor-text c \
-    --random-effect --exclude-effects matrix synthgrid sweep \
-    --no-eol --no-restore-cursor &
+command -v tte &>/dev/null || exit 1
+pgrep -f "app-id=screensaver" >/dev/null && exit 0
 
-  while pgrep -x tte >/dev/null; do
-    if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
-      curr_cursorpos=$(hyprctl cursorpos 2>/dev/null || echo "0, 0")
-      if [[ "$curr_cursorpos" != "$initial_cursorpos" ]]; then
-        exit_screensaver
-      fi
-    fi
-
-    if read -n 1 -t 1 || ! screensaver_in_focus; then
-      exit_screensaver
-    fi
-  done
-done
+exec kitten panel \
+  --edge=center \
+  --layer=overlay \
+  --focus-policy=exclusive \
+  --grab-keyboard \
+  --exclusive-zone=-1 \
+  --app-id=screensaver \
+  -o background=#000000 \
+  -o background_opacity=1 \
+  -o tab_bar_style=hidden \
+  -o cursor_blink_interval=0 \
+  -o enable_audio_bell=no \
+  screensaver --run

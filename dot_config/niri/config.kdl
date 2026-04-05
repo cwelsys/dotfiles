@@ -152,6 +152,7 @@ window-rule {
     open-floating true
 }
 
+
 debug {
     honor-xdg-activation-with-invalid-serial
 }
@@ -167,6 +168,7 @@ recent-windows {
 
 spawn-at-startup "bash" "-c" "wl-paste --watch cliphist store &"
 // spawn-at-startup "xwayland-claim-cm"
+spawn-at-startup "niriusd"
 spawn-at-startup "xrandr-cmode"
 spawn-at-startup "peon" "relay" "--daemon" "--port=19999"
 
