@@ -32,11 +32,17 @@ pkgs:
         - 1password-cli
         - 7zip
         - age
+        - archlinux-appstream-data
+        - aria2
+        - atuin
         - avahi
         - base
         - base-devel
         - bash-completion
         - bat-extras
+        - bc
+        - beets
+        - bind
         - btop
         - btrfs-progs
         - bun-bin
@@ -51,10 +57,14 @@ pkgs:
         - cowsay
         - cpio
         - deno
+        - direnv
+        - dmidecode
         - dnsmasq
         - docker
         - docker-buildx
         - docker-compose
+        - doggo
+        - ducker
         - dust
         - efibootmgr
         - eza
@@ -65,14 +75,20 @@ pkgs:
         - firewalld
         - fish
         - fortune-mod
+        - fwupd
         - genact
         - git
         - git-delta
         - github-cli
         - glances
+        - glow
+        - go-yq
+        - gopls
         - goreleaser
         - gti
         - gum
+        - hactool
+        - hdparm
         - imagemagick
         - inetutils
         - iwd
@@ -80,109 +96,95 @@ pkgs:
         - lazygit
         - lazyjournal
         - lazysql-bin
+        - libolm
         - limine
         - limine-mkinitcpio-hook
         - limine-snapper-sync
         - linux
         - linux-firmware
         - lolcat
+        - lsof
         - luarocks
         - mariadb-libs
         - mergerfs
         - meson
+        - mise
+        - moor-bin
+        - mpc
+        - mpd
         - mpv
         - nano
         - navi
+        - ncdu
         - neovim
         - networkmanager
+        - nfs-utils
+        - nmap
         - nodejs
         - npm
         - nss-mdns
+        - nushell
         - nvidia-container-toolkit
+        - nvidia-open
         - nvidia-utils
+        - opencode-bin
         - openssh
         - packagekit
+        - pacman-contrib
+        - paru-git
         - plocate
         - poppler
         - postgresql-libs
         - power-profiles-daemon
+        - python-annotated-doc
         - python-fastapi
         - python-gobject
         - python-jinja
+        - python-mutagen
         - python-poetry-core
         - qemu-full
+        - reflector
         - resvg
+        - rsync
+        - rust-analyzer
+        - sbctl
+        - smartmontools
         - snapper
         - snapraid
         - starship
         - syncthing
+        - sysstat
         - tailscale
+        - tcpdump
+        - terminus-font
         - tldr
+        - tmux
         - topgrade
         - trash-cli
+        - tree
         - tree-sitter-cli
+        - ttf-fantasque-nerd
         - udisks2
+        - unicorn
+        - unrar
         - unzip
         - uv
         - uvicorn
         - wget
         - whois
         - wireless-regdb
+        - xan
         - xdg-ninja
         - xmlstarlet
+        - yt-dlp
+        - zig
+        - zmx
         - zoxide
         - zram-generator
         - zsh
-        - bind
-        - lsof
-        - ncdu
-        - nmap
-        - rsync
-        - sysstat
-        - tcpdump
-        - tmux
-        - tree
-        - yq
-        - yt-dlp
-        - dmidecode
-        - doggo
-        - fwupd
-        - smartmontools
-        - ttf-fantasque-nerd
-        - hdparm
-        - reflector
-        - glow
-        - nushell
-        - terminus-font
-        - xan
-        - archlinux-appstream-data
-        - ducker
-        - python-annotated-doc
-        - sbctl
-        - bc
-        - direnv
-        - hactool
-        - kitty
-        - nvidia-open
-        - unrar
-        - nfs-utils
-        - beets
-        - gopls
-        - mpc
-        - mpd
-        - python-mutagen
-        - zig
-        - atuin
-        - libolm
-        - pacman-contrib
-        - unicorn
-        - opencode-bin
-        - aria2
-        - rust-analyzer
-        - zmx
-        - mise
-        - paru-git
-        - moor-bin
+      cargo:
+        - blissify
+        - managarr
     mba:
       brews:
         - age
@@ -767,12 +769,20 @@ pkgs:
         - nsz
   global:
     yazi:
+      - AnirudhG07/custom-shell
+      - Ape/open-with-cmd
+      - DreamMaoMao/fg
       - DreamMaoMao/searchjump
       - KKV9/command
       - KKV9/compress
       - Lil-Dank/lazygit
+      - Reledia/glow
       - Rolv-Apneseth/starship
+      - TD-Sky/sudo
+      - imsi32/yatline
+      - imsi32/yatline-githead
       - ndtoan96/ouch
+      - pirafrank/what-size
       - uhs-robert/recycle-bin
       - yazi-rs/flavors:catppuccin-mocha
       - yazi-rs/plugins:chmod
@@ -785,6 +795,7 @@ pkgs:
       - yazi-rs/plugins:piper
       - yazi-rs/plugins:smart-enter
       - yazi-rs/plugins:smart-filter
+      - yazi-rs/plugins:smart-paste
       - yazi-rs/plugins:toggle-pane
       - yazi-rs/plugins:vcs-files
       - yazi-rs/plugins:zoom
