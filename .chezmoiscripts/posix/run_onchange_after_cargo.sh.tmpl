@@ -13,6 +13,7 @@ set -e
 {{- end }}
 
 {{ range $pkgs -}}
-cargo install '{{ . }}' 2>/dev/null || true
+echo "cargo install {{ . }}..."
+cargo install '{{ . }}' || true
 {{ end }}
 {{ end }}

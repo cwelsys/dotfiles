@@ -24,6 +24,8 @@ if [[ $(uname) == Darwin ]]; then
   if [[ -d "$HOMEBREW_PREFIX/share/zsh/site-functions" ]]; then
     fpath+=("$HOMEBREW_PREFIX/share/zsh/site-functions")
   fi
+
+  export XDG_RUNTIME_DIR="$TMPDIR"
 fi
 
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"

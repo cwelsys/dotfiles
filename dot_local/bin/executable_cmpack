@@ -27,22 +27,21 @@ fi
 
 # --- Section registry ---
 
-declare -A SECTION_ICON=(
-  [pacman]="👾" [brews]="🍺" [casks]="🍺" [dnf]="🎩"
-  [cargo]="🦀" [npm]="📦" [go]="🐹" [pipx]="🐍" [yazi]="🦆"
-)
+section_icon() {
+  case "$1" in
+    pacman) echo "👾" ;; brews|casks) echo "🍺" ;; dnf) echo "🎩" ;;
+    cargo) echo "🦀" ;; npm) echo "📦" ;; go) echo "🐹" ;;
+    pipx) echo "🐍" ;; yazi) echo "🦆" ;; *) echo "✓" ;;
+  esac
+}
 
-declare -A SECTION_LABEL=(
-  [pacman]="pacman" [brews]="brew" [casks]="cask" [dnf]="dnf"
-  [cargo]="cargo" [npm]="npm" [go]="go" [pipx]="pipx" [yazi]="yazi"
-)
+section_label() {
+  case "$1" in
+    brews) echo "brew" ;; casks) echo "cask" ;; *) echo "$1" ;;
+  esac
+}
 
-# Sections that default to global scope (shared across all machines)
-declare -A SECTION_GLOBAL=([yazi]=1)
-
-section_icon()  { echo "${SECTION_ICON[$1]:-✓}"; }
-section_label() { echo "${SECTION_LABEL[$1]:-$1}"; }
-is_global()     { [[ -n "${SECTION_GLOBAL[$1]:-}" ]]; }
+is_global() { [[ "$1" == "yazi" ]]; }
 
 # --- Section discovery ---
 
@@ -104,7 +103,7 @@ installed_packages() {
       local gobin="${GOBIN:-$HOME/go/bin}"
       for bin in "$gobin"/*; do
         [[ -x "$bin" ]] || continue
-        go version -m "$bin" 2>/dev/null | grep -P '^\tpath\t' | cut -f3
+        go version -m "$bin" 2>/dev/null | grep $'^\tpath\t' | cut -f3
       done | sort
       ;;
     yazi)   ya pkg list 2>/dev/null | awk '/^\t/{print $1}' | sort ;;
@@ -331,7 +330,7 @@ sync_section() {
   if [[ -n "$new_pkgs" ]]; then
     changed=true
     local count
-    count=$(echo "$new_pkgs" | wc -l)
+    count=$(echo "$new_pkgs" | wc -l | tr -d ' ')
     local scope_tag=""
     [[ "$scope" == "global" ]] && scope_tag=" ${DIM}(global)${RESET}"
     echo -e "${icon} ${count} new ${label} packages${scope_tag}"
@@ -345,7 +344,7 @@ sync_section() {
   if [[ -n "$removed_pkgs" ]]; then
     changed=true
     local count
-    count=$(echo "$removed_pkgs" | wc -l)
+    count=$(echo "$removed_pkgs" | wc -l | tr -d ' ')
     local scope_tag=""
     [[ "$scope" == "global" ]] && scope_tag=" ${DIM}(global)${RESET}"
     echo -e "${icon} ${count} removed ${label} packages${scope_tag}"

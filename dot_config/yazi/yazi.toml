@@ -42,6 +42,7 @@ excludes = [
     "node_modules",
     ".venv",
     "venv",
+    ".obsidian-cli.sock",
   ], in = "*" },
 ]
 

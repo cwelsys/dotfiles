@@ -400,6 +400,25 @@ pkgs:
         - font-juliamono
         - gcloud-cli
         - thaw
+      cargo:
+        - listenbrainz-mpd
+        - managarr
+        - mpdpopm
+        - rmpc
+        - weathr
+      npm:
+        - '@github/copilot'
+        - bun
+        - bunx
+        - ccusage
+        - corepack
+        - eslint
+        - prettier
+        - prettier-plugin-sh
+      pipx:
+        - smassh
+        - terminaltexteffects
+        - termsaver
     main:
       pacman:
         - 1password-beta
@@ -773,17 +792,20 @@ pkgs:
       - Ape/open-with-cmd
       - DreamMaoMao/fg
       - DreamMaoMao/searchjump
+      - GianniBYoung/rsync
       - KKV9/command
       - KKV9/compress
       - Lil-Dank/lazygit
       - Reledia/glow
       - Rolv-Apneseth/starship
       - TD-Sky/sudo
-      - imsi32/yatline
       - imsi32/yatline-githead
+      - llanosrocas/githead
+      - llanosrocas/yaziline
       - ndtoan96/ouch
       - pirafrank/what-size
       - uhs-robert/recycle-bin
+      - uhs-robert/sshfs
       - yazi-rs/flavors:catppuccin-mocha
       - yazi-rs/plugins:chmod
       - yazi-rs/plugins:diff
