@@ -27,6 +27,7 @@ pkgs:
       casks:
         - bluebubbles
         - font-symbols-only-nerd-font
+
     pbox:
       pacman:
         - 1password-cli
@@ -185,6 +186,7 @@ pkgs:
       cargo:
         - blissify
         - managarr
+
     mba:
       brews:
         - age
@@ -415,10 +417,12 @@ pkgs:
         - eslint
         - prettier
         - prettier-plugin-sh
+        - '@googleworkspace/cli'
       pipx:
         - smassh
         - terminaltexteffects
         - termsaver
+
     main:
       pacman:
         - 1password-beta
@@ -786,6 +790,9 @@ pkgs:
         - mpdpopm
       pipx:
         - nsz
+      npm:
+        - '@googleworkspace/cli'
+
   global:
     yazi:
       - AnirudhG07/custom-shell
@@ -827,7 +834,6 @@ pkgs:
       - cargo-update
     npm:
       - '@antfu/ni'
-      - '@googleworkspace/cli'
       - commitizen
       - git-recent
       - neovim
