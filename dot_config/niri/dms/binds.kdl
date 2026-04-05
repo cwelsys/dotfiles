@@ -1,12 +1,29 @@
 binds {
     Mod+D repeat=false { toggle-overview; }
-    Mod+Tab repeat=false { toggle-overview; }
-    Mod+Shift+Slash { show-hotkey-overlay; }
-    Mod+Shift+C hotkey-overlay-title="Color Picker" { spawn "hyprpicker" "-a"; }
-    Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
-    Mod+Shift+P { power-off-monitors; }
 
-    Mod+Return hotkey-overlay-title="Open Terminal" { spawn "nirius" "focus-or-spawn" "--app-id" "kitty" "kitty"; }
+    Mod+Tab repeat=false { toggle-overview; }
+
+    Mod+Shift+O { spawn "dms" "ipc" "call" "window-rules" "toggle"; }
+
+    Mod+Shift+Slash { spawn "dms" "ipc" "call" "keybinds" "toggle" "niri"; }
+
+    Mod+Shift+End { power-off-monitors; }
+
+    Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+
+    Mod+Shift+D  { set-dynamic-cast-window; }
+
+    Mod+Ctrl+Shift+D  { set-dynamic-cast-monitor; }
+
+    Mod+Shift+C hotkey-overlay-title="Color Picker" { spawn "dms" "color" "pick" "-a"; }
+
+    Mod+Shift+S hotkey-overlay-title="Screenshot" { spawn "screenshot"; }
+
+    Mod+Ctrl+S hotkey-overlay-title="Screen Record (gif)" { spawn "screenrecord"; }
+
+    Mod+Shift+Ctrl+S hotkey-overlay-title="Screen Record" { spawn "screenrecord" "--video"; }
+
+    Mod+Return hotkey-overlay-title="Open Terminal" { spawn "nirirun" "kitty"; }
 
     Mod+Space hotkey-overlay-title="Application Launcher" {
         spawn "dms" "ipc" "call" "spotlight" "toggle";
@@ -15,6 +32,7 @@ binds {
     Mod+V hotkey-overlay-title="Clipboard Manager" {
         spawn "dms" "ipc" "call" "clipboard" "toggle";
     }
+
     Mod+M hotkey-overlay-title="Task Manager" {
         spawn "dms" "ipc" "call" "processlist" "focusOrToggle";
     }
@@ -23,23 +41,19 @@ binds {
         spawn "dms" "ipc" "call" "widget" "toggle" "volumeMixer";
     } 
 
-    Super+X hotkey-overlay-title="Power Menu: Toggle" { spawn "dms" "ipc" "call" "powermenu" "toggle"; }
+    Super+X hotkey-overlay-title="Power Menu" { spawn "dms" "ipc" "call" "powermenu" "toggle"; }
 
     Mod+Comma hotkey-overlay-title="Settings" {
         spawn "dms" "ipc" "call" "settings" "focusOrToggle";
-    }
-
-    Mod+Y hotkey-overlay-title="Browse Wallpapers" {
-        spawn "dms" "ipc" "call" "dankdash" "wallpaper";
     }
 
     Mod+N hotkey-overlay-title="Notification Center" { spawn "dms" "ipc" "call" "notifications" "toggle"; }
 
     Mod+Shift+N hotkey-overlay-title="Notepad" { spawn "dms" "ipc" "call" "notepad" "toggle"; }
 
-    Mod+B hotkey-overlay-title="Browser" { spawn "nirius" "focus-or-spawn" "--app-id" "zen" "zen-browser"; }
+    Mod+B hotkey-overlay-title="Browser" { spawn "nirirun" "-c" "zen" "--" "zen-browser"; }
 
-    Mod+E hotkey-overlay-title="File Manager" { spawn "nautilus" "--new-window"; }
+    Mod+E hotkey-overlay-title="File Manager" { spawn "nirirun" "-c" "org.gnome.Nautilus" "--" "nautilus" "--new-window"; }
 
     Mod+F1 hotkey-overlay-title="Toggle Dock" { spawn "dms" "ipc" "call" "dock" "toggleAutoHide"; }
     
@@ -50,7 +64,6 @@ binds {
         spawn "dms" "ipc" "call" "processlist" "focusOrToggle";
     }
 
-    // === Audio  ===
     XF86AudioRaiseVolume allow-when-locked=true {
         spawn "dms" "ipc" "call" "audio" "increment" "3";
     }
@@ -76,7 +89,6 @@ binds {
 		    spawn "dms" "ipc" "call" "mpris" "next";
 		}
 
-    // === Brightness Controls ===
     XF86MonBrightnessUp allow-when-locked=true {
        spawn "dms" "ipc" "call" "brightness" "increment" "5" "";
     }
@@ -198,12 +210,5 @@ binds {
     Mod+Equal { set-column-width "+10%"; }
     Mod+Shift+Minus { set-window-height "-10%"; }
     Mod+Shift+Equal { set-window-height "+10%"; }
-
-    // === Screenshot/Record ===
-    Mod+Shift+S hotkey-overlay-title="Screenshot" { spawn "screenshot"; }
-    Mod+Ctrl+S hotkey-overlay-title="Screen Record (gif)" { spawn "screenrecord"; }
-    Mod+Shift+Ctrl+S hotkey-overlay-title="Screen Record" { spawn "screenrecord" "--video"; }
-    Mod+Shift+D  { set-dynamic-cast-window; }
-    Mod+Ctrl+Shift+D  { set-dynamic-cast-monitor; }
 
 }

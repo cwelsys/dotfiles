@@ -386,54 +386,14 @@ if (( ${+commands[paru]} )); then
   }
 
   pu() {
-    local use_pattern=0 use_purge=0 pattern=""
-
-    while (( $# )); do
-      case $1 in
-      -a|-ap|-pa)
-        use_pattern=1
-        [[ $1 == -ap || $1 == -pa ]] && use_purge=1
-        shift
-        pattern="$1"
-        shift
-        ;;
-      -p)
-        use_purge=1
-        shift
-        ;;
-      *)
-        break
-        ;;
-      esac
-    done
-
-    if (( use_pattern )); then
-      if [[ -z $pattern ]]; then
-        echo "Error: pattern required"
-        return 1
-      fi
-      if (( use_purge )); then
-        paru -Rnsc $(paru -Qq | grep "$pattern")
-      else
-        paru -R $(paru -Qq | grep "$pattern")
-      fi
-      return
-    fi
-
-    if (( use_purge )); then
-      paru -Rnsc "$@"
-      return
-    fi
-
     if (( $# )); then
-      paru -Rn "$@"
-      return
+      paru -Rns "$@"
+    else
+      paru -Qq |
+        fzf --multi --ansi \
+          --preview="paru --color=always -Qi {1}" |
+        xargs --no-run-if-empty --open-tty paru -Rns
     fi
-
-    paru -Qq |
-      fzf --multi --ansi \
-        --preview="paru --color=always -Qi {1}" |
-      xargs --no-run-if-empty --open-tty paru -Rns
   }
 
   info() {

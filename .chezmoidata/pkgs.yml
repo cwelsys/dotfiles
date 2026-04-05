@@ -542,7 +542,6 @@ pkgs:
         - gvfs-nfs
         - gvfs-smb
         - hdparm
-        - hyprpicker
         - i2c-tools
         - imagemagick
         - impala
@@ -622,7 +621,6 @@ pkgs:
         - nfs-utils
         - nftables
         - niri
-        - nirius
         - nodejs
         - noto-fonts
         - noto-fonts-cjk

@@ -8,6 +8,9 @@ gestures {
     }
 }
 
+prefer-no-csd
+screenshot-path "~/Pictures/screenshots/%m.%d_%H.%M.%S.png"
+
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Input
 input {
     keyboard {
@@ -50,14 +53,18 @@ layout {
     struts {
     }
 }
+
 layer-rule {
     match namespace="^quickshell$"
+    match namespace="dms:blurwallpaper"
     place-within-backdrop true
 }
+
 overview {
     workspace-shadow {
         off
     }
+
 }
 
 environment {
@@ -67,11 +74,11 @@ environment {
   QT_QPA_PLATFORMTHEME_QT6 "gtk3"
   ELECTRON_OZONE_PLATFORM_HINT "auto"
 }
+
 hotkey-overlay {
     skip-at-startup
 }
-prefer-no-csd
-screenshot-path "~/Pictures/screenshots/%m.%d_%H.%M.%S.png"
+
 animations {
     workspace-switch {
         spring damping-ratio=0.80 stiffness=523 epsilon=0.0001
@@ -107,51 +114,14 @@ animations {
 
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Window-Rules
 window-rule {
-    match app-id=r#"^org\.gnome\."#
-    draw-border-with-background false
-    geometry-corner-radius 12
-    clip-to-geometry true
+    match is-active=false
+    opacity 0.9
 }
-window-rule {
-  match is-active=false
-  opacity 0.9
-}
+
 window-rule {
     geometry-corner-radius 12
     clip-to-geometry true
 }
-window-rule {
-    match app-id=r#"^org\.wezfurlong\.wezterm$"#
-    match app-id="Alacritty"
-    match app-id="zen"
-    match app-id="com.mitchellh.ghostty"
-    match app-id="kitty"
-    draw-border-with-background false
-}
-
-window-rule {
-    match app-id="steam" title=r#"^notificationtoasts_\d+_desktop$"#
-    default-floating-position x=10 y=10 relative-to="bottom-right"
-}
-
-window-rule {
-    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
-    match app-id="zen" title="^Picture-in-Picture$"
-    match app-id="zoom"
-    open-floating true
-}
-window-rule {
-    match app-id="zen"
-    exclude title=r#"Zen Browser$"#
-    open-floating true
-    min-height 230
-}
-window-rule {
-    match app-id=r#"org.quickshell$"#
-    match app-id=r#"com.danklinux.dms$"#
-    open-floating true
-}
-
 
 debug {
     honor-xdg-activation-with-invalid-serial
@@ -167,21 +137,15 @@ recent-windows {
 }
 
 spawn-at-startup "bash" "-c" "wl-paste --watch cliphist store &"
-// spawn-at-startup "xwayland-claim-cm"
-spawn-at-startup "niriusd"
 spawn-at-startup "xrandr-cmode"
 spawn-at-startup "peon" "relay" "--daemon" "--port=19999"
 
+include "local.kdl"
 include "dms/colors.kdl"
 include "dms/layout.kdl"
-include "local.kdl"
 include "dms/alttab.kdl"
 include "dms/binds.kdl"
 include "dms/outputs.kdl"
 include "dms/cursor.kdl"
 include "dms/windowrules.kdl"
 include "dms/wpblur.kdl"
-
-workspace "main"
-workspace "game"
-workspace "chat"
