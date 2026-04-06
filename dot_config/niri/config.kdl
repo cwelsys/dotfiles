@@ -137,7 +137,6 @@ recent-windows {
 }
 
 spawn-at-startup "bash" "-c" "wl-paste --watch cliphist store &"
-spawn-at-startup "xrandr-cmode"
 spawn-at-startup "peon" "relay" "--daemon" "--port=19999"
 
 include "local.kdl"

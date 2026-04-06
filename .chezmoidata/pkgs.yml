@@ -27,7 +27,6 @@ pkgs:
       casks:
         - bluebubbles
         - font-symbols-only-nerd-font
-
     pbox:
       pacman:
         - 1password-cli
@@ -186,7 +185,6 @@ pkgs:
       cargo:
         - blissify
         - managarr
-
     mba:
       brews:
         - age
@@ -422,7 +420,6 @@ pkgs:
         - smassh
         - terminaltexteffects
         - termsaver
-
     main:
       pacman:
         - 1password-beta
@@ -488,6 +485,7 @@ pkgs:
         - docker-compose
         - doggo
         - dolphin-emu
+        - dos2unix
         - dsearch-bin
         - dualsensectl
         - ducker
@@ -557,6 +555,7 @@ pkgs:
         - khal
         - kimageformats
         - kmon
+        - lact
         - lazydocker
         - lazygit
         - lazyjournal
@@ -767,6 +766,7 @@ pkgs:
         - xdg-desktop-portal-gtk
         - xdg-ninja
         - xdg-terminal-exec
+        - xembed-sni-proxy-standalone-git
         - xmlstarlet
         - xorg-xdpyinfo
         - xorg-xev
@@ -790,7 +790,6 @@ pkgs:
         - nsz
       npm:
         - '@googleworkspace/cli'
-
   global:
     yazi:
       - AnirudhG07/custom-shell

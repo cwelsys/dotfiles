@@ -4,10 +4,11 @@
 
 {{ if not (and (eq .chezmoi.os "linux") (not .headless)) }}
 .config/niri
+.config/keymapper
 .local/bin/screenshot
 .local/bin/screenrecord
-.local/bin/ocr
 .local/bin/screensaver
+.local/bin/ocr
 {{ end }}
 
 {{ if eq .chezmoi.hostname "pbox" }}
