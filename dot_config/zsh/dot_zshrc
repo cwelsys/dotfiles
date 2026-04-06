@@ -5,6 +5,10 @@ if test -n "$KITTY_INSTALLATION_DIR"; then
     unfunction kitty-integration
 fi
 
+if [[ -n "$SSH_TTY" && -n "$KITTY_WINDOW_ID" ]]; then
+    export BROWSER="local-open"
+fi
+
 HISTFILE="$XDG_STATE_HOME/zsh/history"
 HISTSIZE=290000
 SAVEHIST=$HISTSIZE

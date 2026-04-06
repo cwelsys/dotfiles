@@ -1,0 +1,7 @@
+#!/bin/bash
+kitten @ launch --type=background sh -c '
+  case "$(uname)" in
+    Darwin) open "$1" ;;
+    *) xdg-open "$1" ;;
+  esac
+' _ "$@"
