@@ -46,13 +46,27 @@ excludes = [
   ], in = "*" },
 ]
 
+[opener]
+extract = [
+  { run = 'ya pub augmented-extract --list %s', desc = "Extract here (augment-command)" },
+]
+
 [plugin]
 prepend_fetchers = [
-  { id = "git", url = "*", run = "git" },
-  { id = "git", url = "*/", run = "git" },
-  { id = "mime", url = "*", run = "mime.local", prio = "high" },
-
+  { group = "git", url = "*", run = "git" },
+  { group = "git", url = "*/", run = "git" },
+  { group = "mime", url = "*", run = "mime.local", prio = "high" },
 ]
+
+prepend_preloaders = [
+  # Office Documents
+  { mime = "application/openxmlformats-officedocument.*", run = "office" },
+  { mime = "application/oasis.opendocument.*", run = "office" },
+  { mime = "application/ms-*", run = "office" },
+  { mime = "application/msword", run = "office" },
+  { url = "*.docx", run = "office" },
+]
+
 prepend_previewers = [
   # { url = "*.md", run = 'piper -- CLICOLOR_FORCE=1 glow -w=$w -s=$GLOW_STYLE "$1"' },
   # { url = "*.tar*", run = 'piper --format=url -- tar tf "$1"' },
@@ -60,5 +74,10 @@ prepend_previewers = [
   { mime = "text/*", run = 'piper -- bat -p --color=always "$1"' },
   # { url = "*/", run = 'piper -- eza --icons=always --color=always --sort=extension -I "NTUSER*|ntuser*|.DS_Store|.idea|.venv|.vs|__pycache__|cache|debug|.git|node_modules|venv" "$1"' },
   { mime = "application/{*zip,tar,bzip2,7z*,rar,xz,zstd,java-archive}", run = "ouch --archive-icon='🗄️ ' --show-file-icons --list-view" },
+  { mime = "application/openxmlformats-officedocument.*", run = "office" },
+  { mime = "application/oasis.opendocument.*", run = "office" },
+  { mime = "application/ms-*", run = "office" },
+  { mime = "application/msword", run = "office" },
+  { url = "*.docx", run = "office" },
 
 ]

@@ -1,7 +1,9 @@
 [flavor]
+
 dark = "catppuccin-mocha"
 
 [icon]
+
 prepend_dirs = [
   { name = "src", text = "", },
   { name = ".Trash", text = "", },
@@ -21,3 +23,4 @@ prepend_dirs = [
   { name = "Videos", text = "", fg = "#89b4fa" },
   { name = ".steam", text = "", fg = "#89b4fa"},
 ]
+

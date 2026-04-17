@@ -52,12 +52,32 @@ require("searchjump"):setup({
 	match_str_bg = catppuccin_palette.base,
 	first_match_str_fg = catppuccin_palette.lavender,
 	first_match_str_bg = catppuccin_palette.base,
-	lable_fg = catppuccin_palette.lavender,
-	lable_bg = catppuccin_palette.base,
-	only_current = false, -- only search the current window
+	label_fg = catppuccin_palette.lavender,
+	label_bg = catppuccin_palette.base,
+	only_current = false,
 	show_search_in_statusbar = true,
 	auto_exit_when_unmatch = false,
-	enable_capital_lable = true,
+	enable_capital_label = true,
+})
+
+require("fg"):setup({
+	default_action = "nvim", -- jump
+})
+
+require("custom-shell"):setup({
+	history_path = "default",
+	save_history = true,
+})
+
+require("projects"):setup({})
+require("restore"):setup({})
+
+require("augment-command"):setup({
+	prompt = false,
+	smart_enter = true,
+	smart_paste = true,
+	smart_tab_create = true,
+	smart_tab_switch = true,
 })
 
 th.git = th.git or {}

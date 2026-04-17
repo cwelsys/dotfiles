@@ -136,8 +136,9 @@ recent-windows {
     }
 }
 
-spawn-at-startup "bash" "-c" "wl-paste --watch cliphist store &"
+spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
 spawn-at-startup "peon" "relay" "--daemon" "--port=19999"
+spawn-at-startup "auto-wfs"
 
 include "local.kdl"
 include "dms/colors.kdl"

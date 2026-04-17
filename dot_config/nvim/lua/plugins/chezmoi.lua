@@ -19,9 +19,14 @@ return {
         events = {
           on_open = {
             notification = {
-              enable = true,
-              msg = "Opened a chezmoi-managed file",
+              enable = false,
+              opts = {},
             },
+          },
+          on_watch = {
+            enable = true,
+            msg = "This file will be automatically applied",
+            opts = {},
           },
           on_apply = {
             notification = {

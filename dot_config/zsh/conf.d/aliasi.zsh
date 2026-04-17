@@ -1,9 +1,4 @@
 alias z='cd'
-alias ..='cd ..'
-alias …='cd ../..'
-alias ….='cd ../../..'
-alias …..='cd ../../../..'
-
 alias c='clear'
 alias qq='exit'
 alias g='git'

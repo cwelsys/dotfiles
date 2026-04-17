@@ -9,8 +9,8 @@ include current-theme.conf
 tab_bar_background #1e1e2e
 macos_titlebar_color background
 active_tab_background #89b4fa
-selection_foreground none
-selection_background #28344a
+# selection_foreground none
+# selection_background #28344a
 
 # window
 window_padding_width 6
@@ -58,7 +58,6 @@ shell_integration no-rc
 listen_on unix:/tmp/mykitty
 allow_remote_control yes
 clipboard_control write-clipboard write-primary read-clipboard read-primary
-input_delay 2
 detect_urls yes
 editor nvim
 scrollback_lines 10000
@@ -67,6 +66,7 @@ open_url_with default
 url_style curly
 paste_actions quote-urls-at-prompt
 select_by_word_characters @-./_~?&=%+#,|`:"'(){}[]<>
+sync_to_monitor no
 
 # binds
 clear_all_shortcuts yes
@@ -152,7 +152,6 @@ map --mode leader p launch --type=overlay --copy-env kmux
 
 # close/create tabs
 map {{ $mod }}+w klonopin close-tab
-map ctrl+w klonopin close-tab
 map {{ $mod }}+t klonopin new-tab
 map kitty_mod+t klonopin new-tab --local
 map --mode leader q klonopin close-window

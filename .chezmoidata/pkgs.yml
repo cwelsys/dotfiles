@@ -204,6 +204,7 @@ pkgs:
         - chezmoi
         - cmatrix
         - colima
+        - countdown
         - coreutils
         - cowsay
         - docker
@@ -431,7 +432,10 @@ pkgs:
         - ananicy-cpp
         - aria2
         - asciiquarium-transparent-git
+        - ast-grep
         - atuin
+        - aurutils
+        - aurutils-extra-git
         - autossh
         - awakened-poe-trade-bin
         - base
@@ -477,6 +481,7 @@ pkgs:
         - deno
         - devtools
         - direnv
+        - discord
         - dmidecode
         - dms-shell-git
         - dnsmasq
@@ -506,6 +511,7 @@ pkgs:
         - fortune-mod
         - freetype2-qdoled
         - fwupd
+        - fx
         - fzf
         - game-devices-udev
         - gamemode
@@ -554,6 +560,7 @@ pkgs:
         - keymapper
         - khal
         - kimageformats
+        - kitty-terminfo
         - kmon
         - lact
         - lazydocker
@@ -662,17 +669,21 @@ pkgs:
         - python-gbinder
         - python-gobject
         - python-hatchling
+        - python-lz4
         - python-pip
         - python-pipx
         - python-poetry-core
         - python-pyfiglet
         - python-terminaltexteffects
         - qbittorrent
+        - quickbms
         - quickshell-git
+        - realtime-privileges
         - reflector
         - resvg
         - retroarch-steam-launcher
         - ripgrep
+        - ripgrep-all
         - rmpc-git
         - rpcs3-bin
         - runelite
@@ -681,8 +692,10 @@ pkgs:
         - rustdesk-bin
         - rusty-path-of-building
         - ryujinx-bin
+        - sad
         - satty
         - sbctl
+        - shell-color-scripts-git
         - sl
         - slack-desktop-wayland
         - slurp
@@ -692,6 +705,7 @@ pkgs:
         - steam-rom-manager-bin
         - steamcmd
         - sunshine
+        - supertuxkart
         - sushi
         - swappy
         - sway
@@ -702,6 +716,7 @@ pkgs:
         - syncthingtray-qt6
         - system-config-printer
         - tailscale
+        - tectonic
         - terminus-font
         - tesseract
         - tk
@@ -714,6 +729,7 @@ pkgs:
         - ttf-cascadia-code-nerd
         - ttf-cascadia-mono-nerd
         - ttf-dejavu
+        - ttf-droid
         - ttf-fantasque-nerd
         - ttf-fantasque-sans-mono
         - ttf-ia-writer
@@ -721,6 +737,7 @@ pkgs:
         - ttf-jetbrains-mono
         - ttf-jetbrains-mono-nerd
         - ttf-meslo-nerd
+        - ttf-pragmasevka-nerd-font
         - ttf-twemoji
         - tzupdate
         - ufw
@@ -731,7 +748,10 @@ pkgs:
         - uv
         - uwsm
         - vdirsyncer
+        - vencord-hook
+        - vencord-installer
         - vesktop
+        - vgmstream-cli-bin
         - visual-studio-code-bin
         - vivid
         - vulkan-mesa-implicit-layers
@@ -787,41 +807,36 @@ pkgs:
         - managarr
         - mpdpopm
       pipx:
+        - libray
         - nsz
       npm:
         - '@googleworkspace/cli'
   global:
     yazi:
       - AnirudhG07/custom-shell
-      - Ape/open-with-cmd
-      - DreamMaoMao/fg
-      - DreamMaoMao/searchjump
       - GianniBYoung/rsync
       - KKV9/command
-      - KKV9/compress
       - Lil-Dank/lazygit
-      - Reledia/glow
+      - MasouShizuka/projects
       - Rolv-Apneseth/starship
-      - TD-Sky/sudo
-      - imsi32/yatline-githead
-      - llanosrocas/githead
-      - llanosrocas/yaziline
+      - boydaihungst/restore
+      - cwelsys/command
+      - cwelsys/fg
+      - cwelsys/office
+      - cwelsys/rsync
+      - cwelsys/searchjump
+      - hankertrix/augment-command
       - ndtoan96/ouch
-      - pirafrank/what-size
       - uhs-robert/recycle-bin
-      - uhs-robert/sshfs
       - yazi-rs/flavors:catppuccin-mocha
       - yazi-rs/plugins:chmod
       - yazi-rs/plugins:diff
       - yazi-rs/plugins:full-border
       - yazi-rs/plugins:git
-      - yazi-rs/plugins:jump-to-char
       - yazi-rs/plugins:mime-ext
       - yazi-rs/plugins:mount
       - yazi-rs/plugins:piper
-      - yazi-rs/plugins:smart-enter
       - yazi-rs/plugins:smart-filter
-      - yazi-rs/plugins:smart-paste
       - yazi-rs/plugins:toggle-pane
       - yazi-rs/plugins:vcs-files
       - yazi-rs/plugins:zoom
