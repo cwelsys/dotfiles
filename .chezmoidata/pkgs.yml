@@ -92,6 +92,7 @@ pkgs:
         - imagemagick
         - inetutils
         - iwd
+        - kitty-terminfo
         - lazydocker
         - lazygit
         - lazyjournal
@@ -818,8 +819,6 @@ pkgs:
   global:
     yazi:
       - AnirudhG07/custom-shell
-      - GianniBYoung/rsync
-      - KKV9/command
       - Lil-Dank/lazygit
       - MasouShizuka/projects
       - Rolv-Apneseth/starship
