@@ -456,6 +456,7 @@ pkgs:
         - bun
         - cachyos-ananicy-rules
         - cage
+        - calf
         - cava
         - cbonsai
         - cemu-bin
@@ -496,6 +497,7 @@ pkgs:
         - ducker
         - duf
         - dust
+        - easyeffects
         - efibootmgr
         - emojify
         - espeak
@@ -579,6 +581,7 @@ pkgs:
         - lib32-vulkan-mesa-implicit-layers
         - lib32-vulkan-mesa-layers
         - lib32-vulkan-radeon
+        - libdeep_filter_ladspa-bin
         - libgbinder
         - libglibutil
         - libicns
@@ -598,6 +601,7 @@ pkgs:
         - listenbrainz-mpd
         - localsend-bin
         - lolcat
+        - lsp-plugins-lv2
         - luarocks
         - lxc
         - man-db
