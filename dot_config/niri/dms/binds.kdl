@@ -1,5 +1,5 @@
 binds {
-    Mod+D repeat=false { toggle-overview; }
+    // Mod+D repeat=false { toggle-overview; }
 
     Mod+Tab repeat=false { toggle-overview; }
 
@@ -72,6 +72,9 @@ binds {
     }
     XF86AudioMute allow-when-locked=true {
         spawn "dms" "ipc" "call" "audio" "mute";
+    }
+    Mod+D allow-when-locked=true { 
+        spawn "dms" "ipc" "call" "audio" "micmute"; 
     }
     XF86AudioMicMute allow-when-locked=true {
         spawn "dms" "ipc" "call" "audio" "micmute";

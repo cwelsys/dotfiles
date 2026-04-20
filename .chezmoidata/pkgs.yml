@@ -502,6 +502,7 @@ pkgs:
         - efibootmgr
         - emojify
         - espeak
+        - ethtool
         - evince
         - evtest
         - eza
@@ -513,6 +514,7 @@ pkgs:
         - fontconfig
         - fortune-mod
         - freetype2-qdoled
+        - fuse-overlayfs
         - fwupd
         - fx
         - fzf
@@ -565,6 +567,8 @@ pkgs:
         - kimageformats
         - kitty-terminfo
         - kmon
+        - kvantum
+        - kvantum-qt5
         - lact
         - lazydocker
         - lazygit
@@ -645,7 +649,7 @@ pkgs:
         - obs-studio
         - obsidian
         - onefetch
-        - opencode-bin
+        - opencode
         - otf-apple-sf-pro
         - otf-commit-mono
         - otf-font-awesome
@@ -655,6 +659,7 @@ pkgs:
         - pandoc-bin
         - papirus-icon-theme
         - paru-git
+        - pavucontrol
         - perl-image-exiftool
         - pinta
         - pipewire
@@ -700,6 +705,8 @@ pkgs:
         - sad
         - satty
         - sbctl
+        - scx-scheds
+        - scx-tools
         - shell-color-scripts-git
         - sl
         - slack-desktop-wayland
@@ -721,6 +728,7 @@ pkgs:
         - syncthingtray-qt6
         - system-config-printer
         - tailscale
+        - tcpdump
         - tectonic
         - terminus-font
         - tesseract
