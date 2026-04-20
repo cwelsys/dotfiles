@@ -67,6 +67,7 @@ pkgs:
         - ducker
         - dust
         - efibootmgr
+        - ethtool
         - eza
         - fastfetch
         - fd
@@ -128,7 +129,7 @@ pkgs:
         - nvidia-container-toolkit
         - nvidia-open
         - nvidia-utils
-        - opencode-bin
+        - opencode
         - openssh
         - packagekit
         - pacman-contrib
@@ -149,6 +150,8 @@ pkgs:
         - rsync
         - rust-analyzer
         - sbctl
+        - scx-scheds
+        - scx-tools
         - smartmontools
         - snapper
         - snapraid
@@ -160,7 +163,7 @@ pkgs:
         - terminus-font
         - tldr
         - tmux
-        - topgrade
+        - topgrade-git
         - trash-cli
         - tree
         - tree-sitter-cli
