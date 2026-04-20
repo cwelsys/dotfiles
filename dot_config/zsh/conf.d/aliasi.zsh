@@ -232,6 +232,7 @@ alias pip='python -m pip'
 (( ${+commands[npm]} ))  && alias npm-ls='npm list -g'
 (( ${+commands[pnpm]} )) && alias pnpm-ls='pnpm list -g'
 (( ${+commands[bun]} ))  && alias bun-ls='bun pm ls -g'
+(( ${+commands[yarn]} )) && alias yarn='yarn --use-yarnrc $XDG_CONFIG_HOME/yarn/config'
 (( ${+commands[go-global-update]} )) && alias go-ls='go-global-update --dry-runs'
 
 if (( ${+commands[cargo]} )); then

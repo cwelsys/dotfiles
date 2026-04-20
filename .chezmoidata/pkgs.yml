@@ -195,30 +195,44 @@ pkgs:
         - armadillo
         - asciiquarium
         - ast-grep
+        - atuin
+        - aubio
+        - autossh
         - aview
         - bash-completion@2
         - bat
         - bat-extras
+        - bats-core
+        - bc
         - bear
         - blueutil
         - boost
         - btop
         - cargo-binstall
+        - cava
         - cbonsai
+        - chafa
         - chezmoi
+        - circumflex
         - cmatrix
         - colima
         - countdown
         - coreutils
         - cowsay
+        - crystal
+        - csvkit
+        - direnv
+        - dive
         - docker
         - dockutil
         - doggo
         - dooit
         - dua-cli
+        - duf
         - dust
         - duti
         - espeak
+        - exiftool
         - eza
         - fastfetch
         - fd
@@ -229,11 +243,17 @@ pkgs:
         - gh
         - ghostscript
         - git
+        - git-branchless
         - git-cliff
         - git-delta
+        - git-filter-repo
         - git-flow
         - git-lfs
+        - glab
+        - gnu-sed
         - go
+        - gpg-tui
+        - gping
         - gromgit/fuse/sshfs-mac
         - gsl
         - gti
@@ -253,21 +273,35 @@ pkgs:
         - m-cli
         - make
         - mas
+        - mdcat
         - mgba
+        - mise
+        - moghtech/komodo/km
         - moon-buggy
+        - moor
+        - morantron/tmux-fingers/tmux-fingers
+        - mpd
+        - mpv
         - navi
         - neovim
+        - neurosnap/tap/zmx
         - ninvaders
         - nmap
         - nowplaying-cli
+        - nushell
+        - onefetch
+        - opencode
         - openjdk
         - openjdk@11
+        - ouch
+        - pandoc
         - php
         - pinentry-mac
         - pipes-sh
         - pipx
         - pngpaste
         - poppler
+        - pstree
         - pv
         - rclone
         - restic
@@ -276,6 +310,7 @@ pkgs:
         - rig
         - rsync
         - ruff
+        - samtay/tui/tetris
         - sd
         - sevenzip
         - shellcheck
@@ -285,6 +320,8 @@ pkgs:
         - switchaudio-osx
         - telnet
         - thefuck
+        - tig
+        - tmux
         - toilet
         - topgrade
         - tree
@@ -299,72 +336,50 @@ pkgs:
         - watchexec
         - wget
         - wrk
+        - xan
         - xdg-ninja
+        - xsv
         - xxh
         - yq
-        - zoxide
-        - gpg-tui
-        - moghtech/komodo/km
-        - mpv
-        - nushell
-        - xan
-        - crystal
-        - morantron/tmux-fingers/tmux-fingers
-        - gnu-sed
-        - opencode
-        - bc
-        - glab
-        - onefetch
-        - tmux
-        - chafa
-        - pandoc
-        - autossh
-        - ouch
-        - cava
-        - pstree
-        - direnv
-        - aubio
-        - circumflex
-        - dive
-        - duf
-        - gping
-        - mpd
         - zig
-        - atuin
-        - git-filter-repo
-        - mdcat
-        - samtay/tui/tetris
-        - tig
-        - bats-core
-        - neurosnap/tap/zmx
-        - csvkit
-        - exiftool
-        - xsv
-        - moor
-        - mise
-        - git-branchless
+        - zoxide
       casks:
         - 1password-cli
+        - alfred
         - alt-tab
         - android-platform-tools
         - betterdisplay
         - boring-notch
         - catlight
         - claude
+        - doll
         - dolphin
+        - font-fantasque-sans-mono-nerd-font
         - font-fira-code
         - font-jetbrains-mono
+        - font-juliamono
         - font-lato
         - font-maple-mono
+        - font-noto-color-emoji
         - font-noto-sans-symbols
+        - font-noto-sans-symbols-2
+        - font-noto-serif
+        - font-overpass
+        - font-rubik
         - font-sf-pro
         - font-symbols-only-nerd-font
+        - font-twitter-color-emoji
+        - gcloud-cli
         - ghostty@tip
+        - gimp
         - goreleaser
         - hammerspoon
+        - helium-browser
         - iina
         - jellyfin-media-player
         - karabiner-elements
+        - localsend
+        - maccy
         - moonlight
         - nextcloud-vfs
         - obsidian
@@ -378,33 +393,19 @@ pkgs:
         - slack
         - stats
         - steam
+        - steamcmd
+        - supertuxkart
         - syncthing-app
+        - syntax-highlight
         - tailscale-app
         - taskexplorer
+        - thaw
         - tor-browser
         - trackweight
         - vagrant
         - vlc
-        - zoom
-        - gimp
-        - steamcmd
-        - maccy
-        - localsend
         - zen
-        - alfred
-        - font-noto-serif
-        - font-overpass
-        - font-rubik
-        - syntax-highlight
-        - font-fantasque-sans-mono-nerd-font
-        - font-noto-sans-symbols-2
-        - font-twitter-color-emoji
-        - font-noto-color-emoji
-        - helium-browser
-        - doll
-        - font-juliamono
-        - gcloud-cli
-        - thaw
+        - zoom
       cargo:
         - listenbrainz-mpd
         - managarr
