@@ -1,5 +1,6 @@
 return {
   { "fladson/vim-kitty", ft = "kitty" },
+  { "ron-rs/ron.vim" },
   {
     "MeanderingProgrammer/render-markdown.nvim",
     ---@module 'render-markdown'

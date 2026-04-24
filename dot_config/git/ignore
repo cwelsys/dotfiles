@@ -1,5 +1,3 @@
-# General
-
 *.swp
 *.swo
 *.swn
@@ -55,14 +53,8 @@ dist/
 .vscode
 /tmp
 node_modules/
-CLAUDE.md
-AGENTS.md
 cache
-.specstory
-**/.claude/**
-**/.agents/**
 
-# Linux
 
 kls\*database.db
 tags
@@ -72,8 +64,6 @@ tag
 .directory
 .Trash-\*
 .nfs\*
-
-# Darwin
 
 .LSOverride
 .DS\*Store
@@ -96,8 +86,6 @@ Temporary Items
 .apdisk
 \*.icloud
 
-# Windows
-
 *C*
 Thumbs.db
 Thumbs.db:encryptable
@@ -112,3 +100,5 @@ $RECYCLE.BIN/
 \_.msm
 \*.msp
 \*.lnk
+
+**/.claude/settings.local.json

@@ -4,37 +4,37 @@
 - name: catppuccin-mocha
   theme:
     background:
-      enabled: true
-      color: "#1e1e2e"  # Base
+      enabled: false
+      color: "#1e1e2e"
     awaiting_import:
-      color: "#fab387"  # Peach
+      color: "#fab387"
     indeterminate:
-      color: "#7f849c"  # Overlay 1
+      color: "#7f849c"
     default:
-      color: "#cdd6f4"  # Text
+      color: "#cdd6f4"
     downloaded:
-      color: "#a6e3a1"  # Green
+      color: "#89b4fa"
     downloading:
-      color: "#cba6f7"  # Mauve
+      color: "#a6e3a1"
     failure:
-      color: "#f38ba8"  # Red
+      color: "#f38ba8"
     help:
-      color: "#94e2d5"  # Teal
+      color: "#cba6f7"
     missing:
-      color: "#eba0ac"  # Maroon
+      color: "#bac2de"
     primary:
-      color: "#89b4fa"  # Blue
+      color: "#89b4fa"
     secondary:
-      color: "#f9e2af"  # Yellow
+      color: "#89b4fa"
     success:
-      color: "#a6e3a1"  # Green
+      color: "#a6e3a1"
     system_function:
-      color: "#b4befe"  # Lavender
+      color: "#cba6f7"
     unmonitored:
-      color: "#6c7086"  # Overlay 0
+      color: "#6c7086"
     unmonitored_missing:
-      color: "#fab387"  # Peach
+      color: "#6c7086"
     unreleased:
-      color: "#89dceb"  # Sky
+      color: "#f5e0dc"
     warning:
-      color: "#f9e2af"  # Yellow
+      color: "#f9e2af"

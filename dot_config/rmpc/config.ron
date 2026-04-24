@@ -8,6 +8,7 @@
     lyrics_dir: Some("~/Music"),
     theme: "theme",
     on_song_change: ["~/.config/rmpc/scripts/on_song_change"],
+    on_exit: None,
     volume_step: 5,
     max_fps: 60,
     scrolloff: 0,
@@ -15,6 +16,7 @@
     enable_mouse: true,
     scroll_amount: 1,
     enable_config_hot_reload: true,
+    enable_lyrics_hot_reload: false,
     status_update_interval_ms: 1000,
     rewind_to_start_sec: None,
     keep_state_on_song_change: true,
@@ -25,6 +27,8 @@
     directories_sort: SortFormat(group_by_type: true, reverse: false),
     auto_open_downloads: true,
     browser_column_widths: [20, 38, 42],
+    quit_closes_modal: false,
+    queue_disable_current_item_style_timeout_ms: None,
     album_art: (
         method: Auto,
         max_size_px: (width: 0, height: 0),
@@ -61,9 +65,9 @@
             "gT":      PreviousTab,
             "1":       SwitchToTab("Queue"),
             "2":       SwitchToTab("Artists"),
-            "3":       SwitchToTab("Albums"),
+            // "3":       SwitchToTab("Albums"),
             "4":       SwitchToTab("Search"),
-            "5":       SwitchToTab("Playlists"),
+            "3":       SwitchToTab("Playlists"),
             // "6":       SwitchToTab("Directories"),
             // "7":       SwitchToTab("Lyrics"),
             "q":       Quit,
@@ -120,6 +124,7 @@
             "<Space>":    Select,
             "<C-Space>":  InvertSelection,
             "/":          EnterSearch,
+            "f":          EnterSearch,
             "n":          NextResult,
             "N":          PreviousResult,
             "a":          Add,
@@ -149,15 +154,15 @@
     search: (
         case_sensitive: false,
         ignore_diacritics: false,
+        search_button: false,
         mode: Contains,
         tags: [
-            (value: "any",         label: "Any Tag"),
+            (value: "any",         label: "Any"),
             (value: "artist",      label: "Artist"),
             (value: "album",       label: "Album"),
             (value: "title",       label: "Title"),
             (value: "filename",    label: "Filename"),
             (value: "genre",       label: "Genre"),
-            (value: "albumartist", label: "Album Artist"),
         ],
     ),
     artists: (
@@ -186,8 +191,9 @@
                         pane: Split(
                             direction: Vertical,
                             panes: [
+                                (size: "1", pane: Pane(QueueHeader())),
                                 (size: "100%", pane: Pane(Queue)),
-                                (size: "15", borders: "TOP", pane: Pane(Cava)),
+                                (size: "15", pane: Pane(Cava)),
                             ],
                         ),
                     ),
@@ -198,17 +204,17 @@
             name: "Artists",
             pane: Pane(AlbumArtists),
         ),
-        (
-            name: "Albums",
-            pane: Pane(Albums),
-        ),
-        (
-            name: "Search",
-            pane: Pane(Search),
-        ),
+        // (
+        //     name: "Albums",
+        //     pane: Pane(Albums),
+        // ),
         (
             name: "Playlists",
             pane: Pane(Playlists),
         ),
+        // (
+        //     name: "Search",
+        //     pane: Pane(Search),
+        // ),
     ],
 )

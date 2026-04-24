@@ -70,6 +70,7 @@ fi
 (( ${+commands[lazydocker]} )) && alias ld='lazydocker'
 (( ${+commands[lazygit]} ))    && alias lg='lazygit'
 (( ${+commands[lazyjournal]} )) && alias lj='lazyjournal'
+(( ${+commands[managarr]} )) && alias arr='managarr'
 
 if (( ${+commands[doggo]} )); then
   alias dog='doggo'

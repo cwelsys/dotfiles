@@ -547,7 +547,10 @@ pkgs:
         - gptfdisk
         - gpu-screen-recorder
         - greetd-dms-greeter-git
+        - gst-libav
         - gst-plugin-pipewire
+        - gst-plugin-va
+        - gst-plugins-bad
         - gti
         - gtk-engine-murrine
         - gum
@@ -597,6 +600,7 @@ pkgs:
         - libpulse
         - libqalculate
         - libreoffice-fresh
+        - librepods-git
         - libva-utils
         - libyaml
         - limine
@@ -605,6 +609,8 @@ pkgs:
         - linux
         - linux-firmware
         - linux-headers
+        - linux-mainline
+        - linux-mainline-headers
         - linux-zen
         - linux-zen-headers
         - listenbrainz-mpd
@@ -627,6 +633,7 @@ pkgs:
         - mise
         - mkinitcpio-firmware
         - moor
+        - mpc
         - mpd
         - mpv
         - mtools
@@ -739,7 +746,7 @@ pkgs:
         - tk
         - tldr
         - tmux
-        - topgrade
+        - topgrade-git
         - trash-cli
         - tree-sitter-cli
         - ttf-0xproto-nerd
@@ -769,6 +776,7 @@ pkgs:
         - vencord-installer
         - vesktop
         - vgmstream-cli-bin
+        - vim
         - visual-studio-code-bin
         - vivid
         - vulkan-mesa-implicit-layers
