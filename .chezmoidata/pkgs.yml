@@ -600,7 +600,6 @@ pkgs:
         - libpulse
         - libqalculate
         - libreoffice-fresh
-        - librepods-git
         - libva-utils
         - libyaml
         - limine
@@ -697,6 +696,8 @@ pkgs:
         - python-pyfiglet
         - python-terminaltexteffects
         - qbittorrent
+        - qt5-wayland
+        - qt6-wayland
         - quickbms
         - quickshell-git
         - realtime-privileges
@@ -736,7 +737,7 @@ pkgs:
         - swaylock
         - swayosd
         - syncthing
-        - syncthingtray-qt6
+        - syncthingtray
         - system-config-printer
         - tailscale
         - tcpdump
@@ -746,7 +747,7 @@ pkgs:
         - tk
         - tldr
         - tmux
-        - topgrade-git
+        - topgrade-bin
         - trash-cli
         - tree-sitter-cli
         - ttf-0xproto-nerd
