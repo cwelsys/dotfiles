@@ -728,6 +728,7 @@ pkgs:
         - steam
         - steam-rom-manager-bin
         - steamcmd
+        - strace
         - sunshine
         - supertuxkart
         - sushi
