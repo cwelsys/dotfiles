@@ -163,7 +163,7 @@ pkgs:
         - terminus-font
         - tldr
         - tmux
-        - topgrade-git
+        - topgrade-bin
         - trash-cli
         - tree
         - tree-sitter-cli
@@ -189,6 +189,8 @@ pkgs:
       cargo:
         - blissify
         - managarr
+      pipx:
+        - troi
     mba:
       brews:
         - age

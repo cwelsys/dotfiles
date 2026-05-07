@@ -1,19 +1,19 @@
-music_directory         "~/Music"
+music_directory         "nfs://pbox/mnt/media/audio"
 playlist_directory      "~/.local/share/mpd/playlists"
-log_file                "/tmp/mpd.log"
+log_file                "syslog"
 state_file              "~/.local/share/mpd/state"
 sticker_file            "~/.local/share/mpd/sticker.sql"
 
-bind_to_address         "0.0.0.0"
+bind_to_address         "127.0.0.1"
 bind_to_address         "/tmp/mpd_socket"
 port                    "6600"
+restore_paused          "yes"
 
 database {
     plugin              "proxy"
     host                "pbox"
     port                "6600"
 }
-restore_paused          "yes"
 
 playlist_plugin {
     name "cue"
