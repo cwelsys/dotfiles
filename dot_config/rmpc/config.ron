@@ -168,7 +168,7 @@
     artists: (
         album_display_mode: SplitByDate,
         album_sort_by: Date,
-        album_date_tags: [Date],
+        album_date_tags: [Date, OriginalDate],
     ),
     tabs: [
         (
