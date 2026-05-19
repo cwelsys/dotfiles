@@ -27,5 +27,13 @@ if command -v mousecloak >/dev/null 2>&1; then
 fi
 
 if command -v peon >/dev/null 2>&1; then
-  peon relay --daemon
+  ts_ip=""
+  if command -v tailscale >/dev/null 2>&1; then
+    ts_ip="$(tailscale ip -4 2>/dev/null | head -1 || true)"
+  fi
+  if [[ -n "$ts_ip" ]]; then
+    peon relay --daemon --bind="$ts_ip"
+  else
+    peon relay --daemon
+  fi
 fi

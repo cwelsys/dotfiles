@@ -23,32 +23,24 @@ Host *
 Host main
 	HostName main
 	User cwel
-	RemoteForward 19998 localhost:{{ if eq .hostname "main" }}19999{{ else }}19998{{ end }}
-	ExitOnForwardFailure no
 
 {{- end }}
 {{- if ne .hostname "mba" }}
 Host mba
 	HostName mba
 	User cwel
-	RemoteForward 19998 localhost:{{ if eq .hostname "main" }}19999{{ else }}19998{{ end }}
-	ExitOnForwardFailure no
 
 {{- end }}
 {{- if ne .hostname "pbox" }}
 Host pbox
 	HostName pbox
 	User cwel
-	RemoteForward 19998 localhost:{{ if eq .hostname "main" }}19999{{ else }}19998{{ end }}
-	ExitOnForwardFailure no
 
 {{- end }}
 {{- if ne .hostname "bmac" }}
 Host bmac
 	HostName bmac
 	User cwel
-	RemoteForward 19998 localhost:{{ if eq .hostname "main" }}19999{{ else }}19998{{ end }}
-	ExitOnForwardFailure no
 {{- end }}
 Host lgtv
 	HostName 192.168.7.171

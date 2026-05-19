@@ -9,6 +9,10 @@ if [[ -n "$SSH_TTY" && -n "$KITTY_WINDOW_ID" ]]; then
     export BROWSER="local-open"
 fi
 
+if [[ -n "$SSH_CONNECTION" ]]; then
+    export PEON_RELAY_HOST="${SSH_CONNECTION%% *}"
+fi
+
 HISTFILE="$XDG_STATE_HOME/zsh/history"
 HISTSIZE=290000
 SAVEHIST=$HISTSIZE
