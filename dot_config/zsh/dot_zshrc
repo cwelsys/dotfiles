@@ -18,6 +18,15 @@ HISTSIZE=290000
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
 
+() {
+  local key=~/.ssh/cwel
+  [[ -f $key && -S $SSH_AUTH_SOCK ]] || return
+  local sig=$(ssh-keygen -lf "$key" 2>/dev/null | awk '{print $2}')
+  [[ -n $sig ]] || return
+  ssh-add -l 2>/dev/null | grep -qF -- "$sig" && return
+  ssh-add "$key" &>/dev/null
+}
+
 if (( ${+commands[starship]} )); then
     eval "$(starship init zsh)"
 
