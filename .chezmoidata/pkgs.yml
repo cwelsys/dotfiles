@@ -499,6 +499,7 @@ pkgs:
         - doggo
         - dolphin-emu
         - dos2unix
+        - drm-info
         - dsearch-bin
         - dualsensectl
         - ducker
@@ -568,7 +569,8 @@ pkgs:
         - innoextract
         - iwd
         - jdk11-openjdk
-        - jellyfin-desktop
+        - jellyfin-desktop-git
+        - jellyfin-desktop-libmpv-git
         - jq
         - kdenlive
         - keymapper
@@ -610,12 +612,9 @@ pkgs:
         - linux
         - linux-firmware
         - linux-headers
-        - linux-mainline
-        - linux-mainline-headers
         - linux-zen
         - linux-zen-headers
         - listenbrainz-mpd
-        - localsend-bin
         - lolcat
         - lsp-plugins-lv2
         - luarocks
@@ -627,6 +626,7 @@ pkgs:
         - mate-polkit
         - matugen
         - memtest86+-efi
+        - mergerfs
         - mesa
         - mesa-utils
         - meson
@@ -641,6 +641,7 @@ pkgs:
         - nano
         - nautilus
         - navi
+        - ncdu
         - nct6687d-dkms-git
         - neovim
         - networkmanager
@@ -662,6 +663,7 @@ pkgs:
         - obsidian
         - onefetch
         - opencode
+        - opensnitch
         - otf-apple-sf-pro
         - otf-commit-mono
         - otf-font-awesome
@@ -672,6 +674,7 @@ pkgs:
         - papirus-icon-theme
         - paru-git
         - pavucontrol
+        - pcsx2
         - perl-image-exiftool
         - pinta
         - pipewire
@@ -731,6 +734,7 @@ pkgs:
         - steam-rom-manager-bin
         - steamcmd
         - strace
+        - sunsetr-bin
         - sunshine
         - supertuxkart
         - sushi
@@ -751,6 +755,7 @@ pkgs:
         - tldr
         - tmux
         - topgrade-bin
+        - tpm2-tools
         - trash-cli
         - tree-sitter-cli
         - ttf-0xproto-nerd
@@ -765,6 +770,8 @@ pkgs:
         - ttf-jetbrains-mono
         - ttf-jetbrains-mono-nerd
         - ttf-meslo-nerd
+        - ttf-nerd-fonts-symbols-mono
+        - ttf-poppins
         - ttf-pragmasevka-nerd-font
         - ttf-twemoji
         - tzupdate
@@ -776,9 +783,7 @@ pkgs:
         - uv
         - uwsm
         - vdirsyncer
-        - vencord-hook
         - vencord-installer
-        - vesktop
         - vgmstream-cli-bin
         - vim
         - visual-studio-code-bin
@@ -789,8 +794,6 @@ pkgs:
         - vulkan-tools
         - waybar
         - waydroid
-        - waydroid-helper
-        - waydroid-launcher-git
         - waydroidsu
         - wayfreeze-git
         - wayland-utils
