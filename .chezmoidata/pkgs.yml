@@ -617,7 +617,6 @@ pkgs:
         - linux-headers
         - linux-zen
         - linux-zen-headers
-        - listenbrainz-mpd
         - lolcat
         - lsp-plugins-lv2
         - luarocks
