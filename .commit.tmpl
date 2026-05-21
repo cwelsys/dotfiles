@@ -1,56 +1,62 @@
-  {{- range .chezmoi.status.Unmerged }}{{ fail (printf "unmerged: %s" .Path) }}{{ end -}}
-  {{- range .chezmoi.status.Untracked }}{{ fail (printf "untracked: %s" .Path) }}{{ end -}}
+{{- range .chezmoi.status.Unmerged }}{{ fail (printf "unmerged: %s" .Path) }}{{ end -}}
+{{- range .chezmoi.status.Untracked }}{{ fail (printf "untracked: %s" .Path) }}{{ end -}}
 
-  {{- $entries := list -}}
-  {{- range .chezmoi.status.Ordinary -}}
-  {{-   $op := "M" -}}
-  {{-   if eq .X 'A' }}{{ $op = "A" }}{{ end -}}
-  {{-   if eq .X 'D' }}{{ $op = "D" }}{{ end -}}
-  {{-   $path := .Path -}}
-  {{-   if not (hasPrefix "." $path) }}{{ $path = $path | targetRelPath }}{{ end -}}
-  {{-   $entries = append $entries (dict "op" $op "path" $path) -}}
-  {{- end -}}
-  {{- range .chezmoi.status.RenamedOrCopied -}}
-  {{-   $path := .Path -}}
-  {{-   if not (hasPrefix "." $path) }}{{ $path = $path | targetRelPath }}{{ end -}}
-  {{-   $entries = append $entries (dict "op" "M" "path" $path) -}}
-  {{- end -}}
+{{- $entries := list -}}
+{{- range .chezmoi.status.Ordinary -}}
+{{-   $op := "M" -}}
+{{-   if eq .X 'A' }}{{ $op = "A" }}{{ end -}}
+{{-   if eq .X 'D' }}{{ $op = "D" }}{{ end -}}
+{{-   $path := .Path -}}
+{{-   if not (hasPrefix "." $path) }}{{ $path = $path | targetRelPath }}{{ end -}}
+{{-   $entries = append $entries (dict "op" $op "path" $path) -}}
+{{- end -}}
+{{- range .chezmoi.status.RenamedOrCopied -}}
+{{-   $path := .Path -}}
+{{-   if not (hasPrefix "." $path) }}{{ $path = $path | targetRelPath }}{{ end -}}
+{{-   $entries = append $entries (dict "op" "R" "path" $path) -}}
+{{- end -}}
 
-  {{- $ops := list -}}{{- range $entries }}{{ $ops = append $ops .op }}{{ end -}}
-  {{- $uniqOps := $ops | uniq -}}
-  {{- $ctype := "chore" -}}{{- $verb := "update" -}}
-  {{- if and (eq (len $uniqOps) 1) (eq (index $uniqOps 0) "A") }}{{ $ctype = "feat" }}{{ $verb =
-   "add" }}{{ end -}}
-  {{- if and (eq (len $uniqOps) 1) (eq (index $uniqOps 0) "D") }}{{ $verb = "remove" }}{{ end
-  -}}
+{{- $scopes := list -}}
+{{- range $entries -}}
+{{-   $segs := splitList "/" .path -}}
+{{-   $sc := "root" -}}
+{{-   if and (gt (len $segs) 1) (or (eq (index $segs 0) ".config") (eq (index $segs 0) ".local")) -}}
+{{-     $sc = index $segs 1 -}}
+{{-   else if gt (len $segs) 1 -}}
+{{-     $sc = trimPrefix "." (index $segs 0) -}}
+{{-   end -}}
+{{-   $scopes = append $scopes $sc -}}
+{{- end -}}
+{{- $uniqScopes := $scopes | uniq -}}
 
-  {{- $scopes := list -}}
-  {{- range $entries -}}
-  {{-   $segs := splitList "/" .path -}}
-  {{-   $sc := "" -}}
-  {{-   if and (gt (len $segs) 1) (or (eq (index $segs 0) ".config") (eq (index $segs 0)
-  ".local")) -}}
-  {{-     $sc = index $segs 1 -}}
-  {{-   else if gt (len $segs) 1 -}}
-  {{-     $sc = trimPrefix "." (index $segs 0) -}}
-  {{-   end -}}
-  {{-   $scopes = append $scopes $sc -}}
-  {{- end -}}
-  {{- $uniqScopes := $scopes | uniq -}}
-  {{- $scopeStr := "" -}}
-  {{- if and (eq (len $uniqScopes) 1) (ne (index $uniqScopes 0) "") }}{{ $scopeStr = printf
-  "(%s)" (index $uniqScopes 0) }}{{ end -}}
+{{- $ops := list -}}{{- range $entries }}{{ $ops = append $ops .op }}{{ end -}}
+{{- $uniqOps := $ops | uniq -}}
+{{- $singleOp := eq (len $uniqOps) 1 -}}
 
-  {{- $n := len $entries -}}
-  {{- if eq $n 1 -}}
-  {{ $ctype }}{{ $scopeStr }}: {{ $verb }} {{ base (index $entries 0).path }}
-  {{- else if ne $scopeStr "" -}}
-  {{-   $names := list -}}{{- range $entries }}{{ $names = append $names (base .path) }}{{ end
-  -}}
-  {{ $ctype }}{{ $scopeStr }}: {{ $verb }} {{ join ", " $names }}
-  {{- else if le $n 5 -}}
-  {{-   $paths := list -}}{{- range $entries }}{{ $paths = append $paths .path }}{{ end -}}
-  {{ $ctype }}: {{ $verb }} {{ join ", " $paths }}
-  {{- else -}}
-  {{ $ctype }}: {{ $verb }} {{ $n }} files
-  {{- end -}}
+{{- $verb := "change" -}}
+{{- if $singleOp -}}
+{{-   $op := index $uniqOps 0 -}}
+{{-   if eq $op "M" }}{{ $verb = "update" }}{{ end -}}
+{{-   if eq $op "A" }}{{ $verb = "add" }}{{ end -}}
+{{-   if eq $op "D" }}{{ $verb = "delete" }}{{ end -}}
+{{-   if eq $op "R" }}{{ $verb = "rename" }}{{ end -}}
+{{- end -}}
+
+{{- $ctype := "chore" -}}
+{{- if and $singleOp (eq (index $uniqOps 0) "A") }}{{ $ctype = "feat" }}{{ end -}}
+
+{{- $onlyScope := index $uniqScopes 0 -}}
+{{- $singleScope := and (eq (len $uniqScopes) 1) (ne $onlyScope "root") -}}
+{{- $scopeSubj := "" -}}
+{{- if $singleScope }}{{ $scopeSubj = printf "(%s)" $onlyScope }}{{ end -}}
+
+{{- $n := len $entries -}}
+{{- if eq $n 1 -}}
+{{-   $dp := (index $entries 0).path -}}
+{{-   if hasPrefix ".config/" $dp }}{{ $dp = trimPrefix ".config/" $dp }}{{ end -}}
+{{-   if hasPrefix ".local/" $dp }}{{ $dp = trimPrefix ".local/" $dp }}{{ end -}}
+{{-   if $singleScope }}{{ $dp = trimPrefix (printf "%s/" $onlyScope) $dp }}{{ end -}}
+{{ $ctype }}{{ $scopeSubj }}: {{ $verb }} {{ $dp }}
+{{- else -}}
+{{ $ctype }}{{ $scopeSubj }}: {{ $verb }} {{ $n }} files
+{{- end -}}

@@ -209,8 +209,8 @@ cmra() {
   local files
   files=$(chezmoi status 2>/dev/null | awk '$1 ~ /^.M/ {print $2}')
   if [[ -z $files ]]; then
-    echo "No locally modified files to re-add"
-    return 0
+    chezmoi re-add
+    return
   fi
   local selected
   selected=$(echo "$files" | fzf --multi --ansi \
