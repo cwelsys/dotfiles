@@ -6,10 +6,14 @@
   {{-   $op := "M" -}}
   {{-   if eq .X 'A' }}{{ $op = "A" }}{{ end -}}
   {{-   if eq .X 'D' }}{{ $op = "D" }}{{ end -}}
-  {{-   $entries = append $entries (dict "op" $op "path" (.Path | targetRelPath)) -}}
+  {{-   $path := .Path -}}
+  {{-   if not (hasPrefix "." $path) }}{{ $path = $path | targetRelPath }}{{ end -}}
+  {{-   $entries = append $entries (dict "op" $op "path" $path) -}}
   {{- end -}}
   {{- range .chezmoi.status.RenamedOrCopied -}}
-  {{-   $entries = append $entries (dict "op" "M" "path" (.Path | targetRelPath)) -}}
+  {{-   $path := .Path -}}
+  {{-   if not (hasPrefix "." $path) }}{{ $path = $path | targetRelPath }}{{ end -}}
+  {{-   $entries = append $entries (dict "op" "M" "path" $path) -}}
   {{- end -}}
 
   {{- $ops := list -}}{{- range $entries }}{{ $ops = append $ops .op }}{{ end -}}
@@ -45,7 +49,8 @@
   -}}
   {{ $ctype }}{{ $scopeStr }}: {{ $verb }} {{ join ", " $names }}
   {{- else if le $n 5 -}}
-  {{ $ctype }}: {{ $verb }} {{ join ", " (pluck "path" $entries) }}
+  {{-   $paths := list -}}{{- range $entries }}{{ $paths = append $paths .path }}{{ end -}}
+  {{ $ctype }}: {{ $verb }} {{ join ", " $paths }}
   {{- else -}}
   {{ $ctype }}: {{ $verb }} {{ $n }} files
   {{- end -}}
