@@ -5,7 +5,7 @@ state_file              "~/.local/share/mpd/state"
 sticker_file            "~/.local/share/mpd/sticker.sql"
 
 bind_to_address         "127.0.0.1"
-bind_to_address         "/tmp/mpd_socket"
+bind_to_address         "$XDG_RUNTIME_DIR/mpd/socket"
 port                    "6600"
 restore_paused          "yes"
 

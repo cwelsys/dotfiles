@@ -3,35 +3,51 @@
 
 set -eufo pipefail
 
-# Determine profile directory based on OS
 case "$(uname -s)" in
-    Darwin)
-        ZEN_DIR="$HOME/Library/Application Support/zen/Profiles"
-        ;;
-    Linux)
-        ZEN_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/zen"
-        if [[ ! -d "$ZEN_DIR" ]]; then
-            ZEN_DIR="$HOME/.zen"
-        fi
-        if [[ ! -d "$ZEN_DIR" ]]; then
-            ZEN_DIR="$HOME/.var/app/io.github.nickvision.zen/data/zen"
-        fi
-        ;;
-    *)
-        echo "Unsupported OS for this script"
-        exit 0
-        ;;
+Darwin)
+  ZEN_DIR="$HOME/Library/Application Support/zen/Profiles"
+  ;;
+Linux)
+  ZEN_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/zen"
+  if [[ ! -d "$ZEN_DIR" ]]; then
+    ZEN_DIR="$HOME/.zen"
+  fi
+  if [[ ! -d "$ZEN_DIR" ]]; then
+    ZEN_DIR="$HOME/.var/app/app.zen_browser.zen/.zen"
+  fi
+  ;;
+*)
+  echo "[user.js] Unsupported OS"
+  exit 0
+  ;;
 esac
 
 if [[ ! -d "$ZEN_DIR" ]]; then
-    echo "Zen Browser profiles directory not found, skipping"
-    exit 0
+  echo "[user.js] Zen profile dir not found"
+  exit 0
 fi
 
-# Find and update default (release) profile(s)
-while IFS= read -r -d '' profile; do
-    if [[ "$profile" == *"(release)"* ]]; then
-        cp "{{ .chezmoi.sourceDir }}/dot_config/zen/user.js" "$profile/user.js"
-        echo "Updated user.js in $(basename "$profile")"
-    fi
-done < <(find "$ZEN_DIR" -maxdepth 1 -type d -print0)
+src="{{ .chezmoi.sourceDir }}/dot_config/zen/user.js"
+
+write_atomic() {
+  local dst=$1
+  local dir tmp
+  dir=$(dirname "$dst")
+  tmp=$(mktemp "${dir}/.user.js.XXXXXX")
+  cp "$src" "$tmp"
+  mv -f "$tmp" "$dst"
+}
+
+# Resolve install-default profile(s) from installs.ini (Firefox 67+ semantics)
+installs_ini="$ZEN_DIR/installs.ini"
+if [[ ! -f "$installs_ini" ]]; then
+  echo "[user.js] installs.ini not found"
+  exit 0
+fi
+
+while IFS= read -r profile_path; do
+  target="$ZEN_DIR/$profile_path"
+  [[ -e "$target" ]] || continue
+  write_atomic "$target/user.js"
+  echo "Updated user.js in $profile_path"
+done < <(sed -n 's/^Default=//p' "$installs_ini")

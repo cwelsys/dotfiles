@@ -1,71 +1,51 @@
-[general]
-style = "pills"
+ellipsis = "…"
 
-[palette]
-rosewater = "#f5e0dc"
-flamingo = "#f2cdcd"
-pink = "#f5c2e7"
-mauve = "#cba6f7"
-red = "#f38ba8"
-maroon = "#eba0ac"
-peach = "#fab387"
-yellow = "#f9e2af"
-green = "#a6e3a1"
-teal = "#94e2d5"
-sky = "#89dceb"
-sapphire = "#74c7ec"
-blue = "#89b4fa"
-lavender = "#b4befe"
-text = "#cdd6f4"
-subtext1 = "#bac2de"
-subtext0 = "#a6adc8"
-overlay2 = "#9399b2"
-overlay1 = "#7f849c"
-overlay0 = "#6c7086"
-surface2 = "#585b70"
-surface1 = "#45475a"
-surface0 = "#313244"
-base = "#1e1e2e"
-mantle = "#181825"
-crust = "#11111b"
+[bar]
+inactive_bg = "lavender"
+inactive_fg = "crust"
+active_bg = "blue"
+active_fg = "crust"
+border_left = ""
+border_right = ""
+separator = ""
 
-[styles.pills.colors]
-icon_bg = "lavender"
-icon_fg = "crust"
-text_bg = "surface0"
+[left_zone]
+content = "cwd_git"
+show_mode_indicator = true
+icon = ""
+ssh_icon = ""
 
-[styles.powerline]
-# rainbow_path = false
-rainbow_index_icon = false
+[right_zone]
+content = ["tab_label", "title"]
 
-[styles.powerline.colors]
-rainbow = ["peach", "yellow", "green", "teal", "blue", "lavender"]
+[git]
+branch_icon = "overlay2"
+branch = "mauve"
+stashed = "subtext0"
+deleted = "mauve"
+staged = "sapphire"
+modified = "yellow"
+renamed = "peach"
+untracked = "blue"
+ahead = "green"
+behind = "red"
+conflicted = "red"
 
-[styles.pills.left_zone]
-use_git = true
+[git.symbols]
+branch_icon = ""
+stashed = "*"
+deleted = "✘"
+staged = "+"
+modified = "!"
+renamed = "»"
+untracked = "?"
+conflicted = "~"
+ahead = "⇡"
+behind = "⇣"
 
-[styles.pills.left_zone.git_colors]
-# directory = "blue"
-git_branch_icon = "overlay2"
-git_branch = "mauve"
-git_stashed = "subtext0"
-git_deleted = "mauve"
-git_staged = "sapphire"
-git_modified = "yellow"
-git_renamed = "peach"
-git_untracked = "blue"
-git_ahead = "green"
-git_behind = "red"
-git_conflicted = "red"
-
-[styles.pills.right_zone]
-enabled = true
-
-[mode_indicator.powerline]
-foreground = "peach"
-
-[mode_indicator.pills]
-icon_bg = "peach"
+[mode_indicator]
+bg = "peach"
+display_names = { leader = "󰌌" }
 
 [icons]
 fallback = ""
@@ -84,7 +64,6 @@ babel = ""
 bat = "󰭟"
 bazel = ""
 beam = ""
-bitbucket = ""
 brew = ""
 btm = ""
 btop = ""
@@ -167,7 +146,7 @@ maven = ""
 minikube = "󱃾"
 mocha = ""
 mongo = ""
-mpc = "󰽯"
+mpc = ""
 mysql = ""
 nala = ""
 nano = ""
@@ -242,3 +221,31 @@ zig = "↯"
 zip = ""
 zsh = ""
 weathr = "󰖑"
+
+[palette]
+rosewater = "#f5e0dc"
+flamingo = "#f2cdcd"
+pink = "#f5c2e7"
+mauve = "#cba6f7"
+red = "#f38ba8"
+maroon = "#eba0ac"
+peach = "#fab387"
+yellow = "#f9e2af"
+green = "#a6e3a1"
+teal = "#94e2d5"
+sky = "#89dceb"
+sapphire = "#74c7ec"
+blue = "#89b4fa"
+lavender = "#b4befe"
+text = "#cdd6f4"
+subtext1 = "#bac2de"
+subtext0 = "#a6adc8"
+overlay2 = "#9399b2"
+overlay1 = "#7f849c"
+overlay0 = "#6c7086"
+surface2 = "#585b70"
+surface1 = "#45475a"
+surface0 = "#313244"
+base = "#1e1e2e"
+mantle = "#181825"
+crust = "#11111b"

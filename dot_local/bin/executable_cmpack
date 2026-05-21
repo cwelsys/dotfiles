@@ -14,6 +14,10 @@ RESET='\033[0m'
 
 BACKUP_KEEP=10
 
+CHANGED_SECTIONS=()
+ADDED_PARTS=()
+REMOVED_PARTS=()
+
 log_info() { echo -e "${CYAN}→${RESET} $1"; }
 log_success() { echo -e "${GREEN}✓${RESET} $1"; }
 log_error() { echo -e "${RED}✗${RESET} $1" >&2; }
@@ -33,9 +37,9 @@ fi
 
 section_icon() {
   case "$1" in
-  pacman) echo -e "${BLUE}󰮯${RESET}" ;;
+  pacman) echo -e "${YELLOW}󰮯${RESET}" ;;
   brews | casks) echo -e "${YELLOW}${RESET}" ;;
-  dnf) echo -e "${RED}󰮤${RESET}" ;;
+  dnf) echo -e "${BLUE}󰮤${RESET}" ;;
   cargo) echo "🦀" ;;
   npm) echo -e "${RED}${RESET}" ;;
   go) echo -e "${CYAN}${RESET}" ;;
@@ -49,6 +53,10 @@ section_label() {
   case "$1" in
   brews) echo "brew" ;; casks) echo "cask" ;; *) echo "$1" ;;
   esac
+}
+
+section_glyph() {
+  section_icon "$1" | sed $'s/\033\\[[0-9;]*m//g'
 }
 
 is_global() { [[ "$1" == "yazi" ]]; }
@@ -279,6 +287,12 @@ sync_section() {
   new_pkgs=$(comm -23 <(echo "$installed") <(echo "$manifest"))
   removed_pkgs=$(comm -13 <(echo "$installed") <(echo "$manifest"))
 
+  if [[ -n "$new_pkgs" || -n "$removed_pkgs" ]]; then
+    CHANGED_SECTIONS+=("$section")
+    ADDED_PARTS+=("$(echo "$new_pkgs" | paste -sd ',' -)")
+    REMOVED_PARTS+=("$(echo "$removed_pkgs" | paste -sd ',' -)")
+  fi
+
   local changed=false
 
   if [[ -n "$new_pkgs" ]]; then
@@ -316,6 +330,44 @@ sync_section() {
   [[ "$changed" == true ]]
 }
 
+commit_changes() {
+  local src subject body parts=() i section added removed part glyph
+  src=$(chezmoi source-path)
+
+  for i in "${!CHANGED_SECTIONS[@]}"; do
+    section="${CHANGED_SECTIONS[$i]}"
+    added="${ADDED_PARTS[$i]}"
+    removed="${REMOVED_PARTS[$i]}"
+    glyph=$(section_glyph "$section")
+    part="$glyph"
+    [[ -n "$added" ]]   && part+=" +$(echo "$added"   | awk -F, '{print NF}')"
+    [[ -n "$removed" ]] && part+=" -$(echo "$removed" | awk -F, '{print NF}')"
+    parts+=("$part")
+  done
+
+  subject="[pkg]: $(printf '%s, ' "${parts[@]}" | sed 's/, $//')"
+
+  body=""
+  for i in "${!CHANGED_SECTIONS[@]}"; do
+    section="${CHANGED_SECTIONS[$i]}"
+    added="${ADDED_PARTS[$i]}"
+    removed="${REMOVED_PARTS[$i]}"
+    glyph=$(section_glyph "$section")
+    body+="${glyph} ${section}"$'\n'
+    [[ -n "$added" ]]   && body+="$(echo "$added"   | tr ',' '\n' | sed 's/^/  + /')"$'\n'
+    [[ -n "$removed" ]] && body+="$(echo "$removed" | tr ',' '\n' | sed 's/^/  - /')"$'\n'
+    body+=$'\n'
+  done
+  body="${body%$'\n'}"
+
+  git -C "$src" add .chezmoidata/pkgs.yml
+  if git -C "$src" diff --cached --quiet .chezmoidata/pkgs.yml; then
+    log_info "No yml changes to commit"
+    return
+  fi
+  git -C "$src" commit -m "$subject" -m "$body" || log_warn "git commit failed"
+}
+
 cmd_sync() {
   [[ "$(system_sections)" == *brew* ]] && ensure_brew_in_path
 
@@ -342,7 +394,9 @@ cmd_sync() {
     fi
   done
 
-  if [[ "$has_changes" == false ]]; then
+  if [[ "$has_changes" == true ]]; then
+    commit_changes
+  else
     log_success "Up to date"
   fi
 }

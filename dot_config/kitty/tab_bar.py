@@ -1,14 +1,14 @@
 """Content provider for kitty's zones tab bar style.
 
-This module is loaded by kitty/tab_bar_zones.py. It provides:
-  - tab_content()        — icon, text, and colors for each tab pill
-  - left_zone_content()  — cwd/git/mode content for the left zone
-  - PILL_* constants     — pill glyph configuration
+Loaded by kitty/tab_bar_zones.py. Provides:
+  - tab_content()        : icon, text, and colors for each tab pill
+  - left_zone_content()  : configured content kinds for the left zone
+  - right_zone_content() : configured content kinds for the right zone
+  - PILL_* constants     : pill glyph configuration (read from tabbar.toml)
 
-All layout, positioning, and drawing are handled by the zones engine.
-This module only provides content.
-
-Configuration is loaded from ~/.config/kitty/tabbar.toml via tabbar_config.py.
+Layout, positioning, and drawing live in the zones engine; this module
+returns content only. All glyphs, status symbols, and specific color
+picks live in tabbar.toml — Python source contains no glyph literals.
 """
 
 import os
@@ -21,16 +21,17 @@ if str(_config_dir) not in sys.path:
     sys.path.insert(0, str(_config_dir))
 
 from kitty.boss import get_boss
-from kitty.fast_data_types import Screen
+
 try:
     from kitty.fast_data_types import wcswidth as _wcswidth
 except ImportError:
     _wcswidth = None
-from kitty.tab_bar import DrawData, TabBarData, as_rgb
+from kitty.tab_bar import DrawData, TabBarData
 from kitty.tab_bar_zones import TabContent, ZoneContent
 
 from tabbar_config import (
     UnifiedColorResolver,
+    _GIT_STATUS_FIELDS,
     get_config,
     get_icon,
 )
@@ -39,15 +40,16 @@ from tabbar_config import (
 # --- Pill glyph constants (read by zones engine) ---
 
 _config = get_config()
-_pills = _config.styles.pills
+_bar = _config.bar
 
-PILL_BORDER_LEFT = _pills.border_left
-PILL_BORDER_RIGHT = _pills.border_right
-PILL_SEPARATOR = _pills.separator
-PILL_SPACING = _pills.spacing
+PILL_BORDER_LEFT = _bar.border_left
+PILL_BORDER_RIGHT = _bar.border_right
+PILL_SEPARATOR = _bar.separator
+PILL_SPACING = _bar.spacing
 
 
 # --- Helpers ---
+
 
 def _display_width(s: str) -> int:
     if _wcswidth is not None:
@@ -58,23 +60,35 @@ def _display_width(s: str) -> int:
 
 _home = os.path.expanduser("~")
 _SHELLS = {
-    "zsh", "bash", "fish", "sh", "nu", "tcsh", "dash", "ksh", "pwsh",
-    "elvish", "xonsh",
-    "-zsh", "-bash", "-fish", "-sh",
+    "zsh",
+    "bash",
+    "fish",
+    "sh",
+    "nu",
+    "tcsh",
+    "dash",
+    "ksh",
+    "pwsh",
+    "elvish",
+    "xonsh",
+    "-zsh",
+    "-bash",
+    "-fish",
+    "-sh",
 }
 
-# Apply configurable extra shells
-_cfg = get_config()
-if _cfg.general.extra_shells:
-    _SHELLS.update(_cfg.general.extra_shells)
+if _config.extra_shells:
+    _SHELLS.update(_config.extra_shells)
 
 
 # --- Process detection ---
+
 
 def get_foreground_process(tab_id: int) -> tuple[str, str, str | None]:
     """Get (exe, cwd, remote_host) for tab's foreground process."""
     try:
         from kitty.tab_bar import TabAccessor
+
         ta = TabAccessor(tab_id)
         exe = ta.active_exe or "zsh"
         cwd = ta.active_wd or ""
@@ -100,21 +114,14 @@ def get_foreground_process(tab_id: int) -> tuple[str, str, str | None]:
         return ("zsh", "", None)
 
 
-# Process info cache: tab_id -> (cache_key, (exe, cwd, hostname))
-_proc_cache: dict[int, tuple[str, tuple[str, str, str | None]]] = {}
-
-
-def _get_process_cached(tab: TabBarData) -> tuple[str, str, str | None]:
-    """Get foreground process info for tab."""
-    return get_foreground_process(tab.tab_id)
-
-
 # --- Git status ---
 
 _git_cache: dict[str, tuple[tuple[float, float], tuple[str, dict[str, int]]]] = {}
 _GIT_CACHE_MAX = 50
 _git_dir_cache: dict[str, Path | None] = {}
 _GIT_DIR_CACHE_MAX = 100
+_last_titles: dict[int, str] = {}
+_LAST_TITLES_MAX = 50
 
 
 def _find_git_dir(cwd: str) -> Path | None:
@@ -145,8 +152,14 @@ def _find_git_dir(cwd: str) -> Path | None:
 def _parse_git_output(raw: str) -> tuple[str, dict[str, int]]:
     branch = ""
     counts = {
-        "ahead": 0, "behind": 0, "staged": 0, "modified": 0,
-        "deleted": 0, "renamed": 0, "untracked": 0, "conflicted": 0,
+        "ahead": 0,
+        "behind": 0,
+        "staged": 0,
+        "modified": 0,
+        "deleted": 0,
+        "renamed": 0,
+        "untracked": 0,
+        "conflicted": 0,
     }
     for line in raw.splitlines():
         if line.startswith("# branch.head "):
@@ -178,9 +191,6 @@ def _parse_git_output(raw: str) -> tuple[str, dict[str, int]]:
     return branch, counts
 
 
-_GIT_BRANCH_ICON = "\ue725"
-
-
 def _get_git_status_raw(cwd: str) -> tuple[str, dict[str, int]] | None:
     git_dir = _find_git_dir(cwd)
     if not git_dir:
@@ -209,7 +219,9 @@ def _get_git_status_raw(cwd: str) -> tuple[str, dict[str, int]] | None:
     try:
         result = subprocess.run(
             ["git", "-C", cwd, "status", "--porcelain=v2", "--branch"],
-            capture_output=True, text=True, timeout=0.5,
+            capture_output=True,
+            text=True,
+            timeout=0.5,
         )
         if result.returncode != 0:
             return None
@@ -222,7 +234,9 @@ def _get_git_status_raw(cwd: str) -> tuple[str, dict[str, int]] | None:
             try:
                 stash_result = subprocess.run(
                     ["git", "-C", cwd, "stash", "list"],
-                    capture_output=True, text=True, timeout=0.3,
+                    capture_output=True,
+                    text=True,
+                    timeout=0.3,
                 )
                 if stash_result.returncode == 0:
                     stash_lines = stash_result.stdout.strip().splitlines()
@@ -244,7 +258,7 @@ def _abbreviate_path(cwd: str, max_len: int) -> str | None:
     if len(cwd) > 1 and cwd.endswith("/"):
         cwd = cwd.rstrip("/")
     if cwd.startswith(_home):
-        remainder = cwd[len(_home):]
+        remainder = cwd[len(_home) :]
         if remainder == "" or remainder.startswith("/"):
             cwd = "~" + remainder
     if _display_width(cwd) <= max_len:
@@ -266,8 +280,9 @@ def _abbreviate_path(cwd: str, max_len: int) -> str | None:
         return result
     if _display_width(parts[-1]) <= max_len:
         return parts[-1]
-    if max_len > 3:
-        return parts[-1][:max_len - 1] + "\u2026"
+    ellipsis = get_config().ellipsis
+    if max_len > _display_width(ellipsis):
+        return parts[-1][: max_len - _display_width(ellipsis)] + ellipsis
     return None
 
 
@@ -301,6 +316,7 @@ def _color_int(name: str, draw_data: DrawData) -> int:
 
 # --- Content provider interface ---
 
+
 def tab_content(
     tab: TabBarData,
     index: int,
@@ -308,50 +324,312 @@ def tab_content(
     is_pinned: bool,
     draw_data: DrawData,
 ) -> TabContent:
-    """Return display content for a single tab pill."""
-    config = get_config()
-    pills = config.styles.pills
-    colors = pills.colors
+    """Return display content for a single tab pill.
 
-    exe, cwd, hostname = _get_process_cached(tab)
+    Pills are icon+index only (text=None); the active title lives in the
+    right zone.
+    """
+    config = get_config()
+    bar = config.bar
+
+    exe, _cwd, _hostname = get_foreground_process(tab.tab_id)
     icon_str = get_icon(exe)
 
-    # Build icon section
     icon_parts = []
-    for element in pills.icon_elements:
+    for element in bar.icon_elements:
         if element == "index" and not is_pinned:
             icon_parts.append(str(index))
         elif element == "icon":
             icon_parts.append(icon_str)
-    icon = " ".join(icon_parts) if icon_parts else (str(index) if not is_pinned else icon_str)
+    icon = (
+        " ".join(icon_parts)
+        if icon_parts
+        else (str(index) if not is_pinned else icon_str)
+    )
 
-    # Build text section
-    text_parts = []
-    for element in pills.text_elements:
-        if element == "name":
-            text_parts.append(exe)
-        elif element == "title" and tab.title:
-            text_parts.append(tab.title)
-        elif element == "hostname" and hostname:
-            text_parts.append(hostname)
-    # Collapse to icon-only when idle (shell name is the only text)
-    if text_parts == [exe] and exe in _SHELLS:
-        text = None
-    else:
-        text = " ".join(text_parts) if text_parts else None
-
-    # Colors
-    icon_bg = _color_int(colors.icon_bg_active if is_active else colors.icon_bg, draw_data)
-    icon_fg = _color_int(colors.icon_fg_active if is_active else colors.icon_fg, draw_data)
-    text_bg = _color_int(colors.text_bg_active if is_active else colors.text_bg, draw_data)
-    text_fg = _color_int(colors.text_fg_active if is_active else colors.text_fg, draw_data)
+    icon_bg = _color_int(
+        bar.active_bg if is_active else bar.inactive_bg, draw_data
+    )
+    icon_fg = _color_int(
+        bar.active_fg if is_active else bar.inactive_fg, draw_data
+    )
 
     return TabContent(
         icon=icon,
-        text=text,
+        text=None,
         icon_fg=icon_fg,
         icon_bg=icon_bg,
-        text_fg=text_fg,
+        text_fg=0,
+        text_bg=0,
+    )
+
+
+# --- Content kind renderers ---
+#
+# Each renderer returns a tuple of (text, color_int) parts, or None when
+# it has nothing to contribute. The zone dispatcher owns icon resolution,
+# mode-color shift, SSH override, chrome overhead, and composition.
+
+Parts = tuple[tuple[str, int], ...]
+
+
+def _render_cwd(
+    zone_cfg,
+    active_tab: TabBarData,
+    draw_data: DrawData,
+    text_budget: int,
+) -> Parts | None:
+    """Abbreviated working directory."""
+    config = get_config()
+    _exe, cwd, _hostname = get_foreground_process(active_tab.tab_id)
+    if not cwd:
+        return None
+    cwd_text = _abbreviate_path(cwd, text_budget)
+    if not cwd_text:
+        return None
+    return ((cwd_text, _color_int(config.git.directory, draw_data)),)
+
+
+def _render_git(
+    zone_cfg,
+    active_tab: TabBarData,
+    draw_data: DrawData,
+    text_budget: int,
+) -> Parts | None:
+    """Git branch + status indicators. Skipped for remote sessions."""
+    config = get_config()
+    _exe, cwd, hostname = get_foreground_process(active_tab.tab_id)
+    if hostname or not cwd:
+        return None
+    git_data = _get_git_status_raw(cwd)
+    if not git_data:
+        return None
+    branch, counts = git_data
+    full = _format_git_parts(branch, counts, False, config.git, draw_data)
+    full_len = sum(_display_width(t) for t, _ in full)
+    if full_len <= text_budget:
+        return tuple(full)
+    branch_only = _format_git_parts(branch, counts, True, config.git, draw_data)
+    branch_len = sum(_display_width(t) for t, _ in branch_only)
+    if branch_len <= text_budget:
+        return tuple(branch_only)
+    return None
+
+
+def _render_cwd_git(
+    zone_cfg,
+    active_tab: TabBarData,
+    draw_data: DrawData,
+    text_budget: int,
+) -> Parts | None:
+    """Compound cwd + git renderer.
+
+    Progressive collapse on tight budgets:
+        cwd + full_git  ->  full_git only  ->  branch_only  ->  empty
+    """
+    config = get_config()
+    _exe, cwd, hostname = get_foreground_process(active_tab.tab_id)
+
+    git_data = None
+    if cwd and not hostname:
+        git_data = _get_git_status_raw(cwd)
+
+    git_cfg = config.git
+
+    if git_data:
+        branch, counts = git_data
+        full = _format_git_parts(branch, counts, False, git_cfg, draw_data)
+        branch_only = _format_git_parts(branch, counts, True, git_cfg, draw_data)
+        full_len = sum(_display_width(t) for t, _ in full)
+        branch_len = sum(_display_width(t) for t, _ in branch_only)
+
+        cwd_text = _abbreviate_path(cwd, text_budget - full_len - 1)
+        if cwd_text and _display_width(cwd_text) + 1 + full_len <= text_budget:
+            parts: list[tuple[str, int]] = [
+                (cwd_text + " ", _color_int(git_cfg.directory, draw_data))
+            ]
+            parts.extend(full)
+            return tuple(parts)
+        if full_len <= text_budget:
+            return tuple(full)
+        if branch_len <= text_budget:
+            return tuple(branch_only)
+        return None
+
+    cwd_text = _abbreviate_path(cwd, text_budget) if cwd else None
+    if cwd_text:
+        return ((cwd_text, _color_int(git_cfg.directory, draw_data)),)
+    return None
+
+
+def _truncate_title(text: str, budget: int) -> str:
+    """Truncate text to fit budget cells (end-truncation only)."""
+    if budget < 1:
+        return ""
+    ellipsis = get_config().ellipsis
+    ell_w = _display_width(ellipsis)
+    if budget <= ell_w:
+        return text[:budget]
+    return text[: budget - ell_w] + ellipsis
+
+
+def _render_text(
+    zone_cfg,
+    text: str,
+    draw_data: DrawData,
+    text_budget: int,
+) -> Parts | None:
+    """Format a single text string as the zone's text part.
+
+    Returns None for empty input or when text_budget is below the zone's
+    min_text_budget. Truncates overflow with the configured ellipsis.
+    """
+    if not text or text_budget < zone_cfg.min_text_budget:
+        return None
+    if _display_width(text) > text_budget:
+        text = _truncate_title(text, text_budget)
+    return ((text, _color_int(get_config().bar.text_fg, draw_data)),)
+
+
+def _render_title(
+    zone_cfg,
+    active_tab: TabBarData,
+    draw_data: DrawData,
+    text_budget: int,
+) -> Parts | None:
+    """Active tab title with sticky-cache fallback.
+
+    Resolution order: override_title -> program_title -> shell_title ->
+    sticky cache (if config.sticky_last_cmd is true).
+    """
+    config = get_config()
+
+    current_cmd_title = active_tab.program_title or active_tab.shell_title
+    if current_cmd_title:
+        if len(_last_titles) >= _LAST_TITLES_MAX:
+            _last_titles.clear()
+        _last_titles[active_tab.tab_id] = current_cmd_title
+
+    title = (
+        active_tab.override_title
+        or active_tab.program_title
+        or active_tab.shell_title
+    )
+    if not title and config.sticky_last_cmd:
+        title = _last_titles.get(active_tab.tab_id, "")
+
+    return _render_text(zone_cfg, title or "", draw_data, text_budget)
+
+
+def _render_tab_label(
+    zone_cfg,
+    active_tab: TabBarData,
+    draw_data: DrawData,
+    text_budget: int,
+) -> Parts | None:
+    """User-set tab name (`Tab.name`, set by set_tab_title)."""
+    return _render_text(
+        zone_cfg, active_tab.tab_name or "", draw_data, text_budget
+    )
+
+
+_RENDERERS = {
+    "cwd": _render_cwd,
+    "git": _render_git,
+    "cwd_git": _render_cwd_git,
+    "title": _render_title,
+    "tab_label": _render_tab_label,
+}
+
+
+def _dispatch_zone_content(
+    zone_cfg,
+    active_tab: TabBarData,
+    draw_data: DrawData,
+    max_width: int,
+) -> ZoneContent | None:
+    """Render zone content from configured kinds.
+
+    Resolves zone-level chrome once (icon with SSH/mode override, icon
+    colors, text background), then walks `zone_cfg.content` in order,
+    allocating remaining text budget per kind. Renderers return parts
+    only; this function composes them with `config.content_separator`.
+
+    Always-visible empty pill: when the zone is configured but every
+    renderer returns None, emit a zero-width text segment so the engine
+    still draws the pill chrome.
+    """
+    if not zone_cfg.content:
+        return None
+
+    config = get_config()
+    bar = config.bar
+    mode_cfg = config.mode_indicator
+    mode = get_keyboard_mode()
+
+    _exe, _cwd, hostname = get_foreground_process(active_tab.tab_id)
+
+    mode_active = bool(mode) and mode_cfg.enabled
+
+    if mode_active and zone_cfg.show_mode_indicator:
+        icon = mode_cfg.display_names.get(mode, mode.upper())
+    elif hostname and zone_cfg.ssh_icon:
+        icon = zone_cfg.ssh_icon
+    else:
+        icon = zone_cfg.icon
+
+    if mode_active:
+        icon_bg = _color_int(mode_cfg.bg or bar.active_bg, draw_data)
+        icon_fg = _color_int(mode_cfg.fg or bar.active_fg, draw_data)
+    else:
+        icon_bg = _color_int(bar.active_bg, draw_data)
+        icon_fg = _color_int(bar.active_fg, draw_data)
+
+    text_bg = _color_int(bar.text_bg, draw_data)
+    text_fg = _color_int(bar.text_fg, draw_data)
+
+    # Fixed zone overhead: BL + icon-pad + SEP + text-pad + BR = 5 cells (plus icon width).
+    overhead = _display_width(icon) + 5
+    text_budget = max_width - overhead
+    if text_budget < zone_cfg.min_text_budget:
+        return None
+
+    sep = config.content_separator
+    sep_width = _display_width(sep)
+
+    merged_parts: list[tuple[str, int]] = []
+    used_width = 0
+
+    for kind in zone_cfg.content:
+        renderer = _RENDERERS.get(kind)
+        if renderer is None:
+            continue
+        remaining = text_budget - used_width
+        if merged_parts:
+            remaining -= sep_width
+        if remaining <= 0:
+            break
+        kind_parts = renderer(zone_cfg, active_tab, draw_data, remaining)
+        if not kind_parts:
+            continue
+        kind_width = sum(_display_width(t) for t, _ in kind_parts)
+        if kind_width == 0:
+            continue
+        if merged_parts:
+            sep_color = merged_parts[-1][1]
+            merged_parts.append((sep, sep_color))
+            used_width += sep_width
+        merged_parts.extend(kind_parts)
+        used_width += kind_width
+
+    if not merged_parts:
+        merged_parts = [("", text_fg)]
+
+    return ZoneContent(
+        icon=icon,
+        parts=tuple(merged_parts),
+        icon_fg=icon_fg,
+        icon_bg=icon_bg,
         text_bg=text_bg,
     )
 
@@ -361,95 +639,20 @@ def left_zone_content(
     draw_data: DrawData,
     max_width: int,
 ) -> ZoneContent | None:
-    """Return display content for the left zone."""
-    config = get_config()
-    pills = config.styles.pills
+    """Render left zone content."""
+    return _dispatch_zone_content(
+        get_config().left_zone, active_tab, draw_data, max_width
+    )
 
-    if not pills.left_zone.enabled:
-        return None
 
-    exe, cwd, hostname = _get_process_cached(active_tab)
-    mode_cfg = config.mode_indicator
-    mode = get_keyboard_mode()
-
-    # Select icon and icon colors
-    if mode and mode_cfg.enabled:
-        left_icon = mode_cfg.display_names.get(mode, mode.upper())
-        icon_bg = _color_int(mode_cfg.pills.icon_bg, draw_data)
-        icon_fg = (
-            _color_int(mode_cfg.pills.icon_fg, draw_data)
-            if mode_cfg.pills.icon_fg
-            else _color_int(pills.colors.icon_fg_active, draw_data)
-        )
-    elif hostname:
-        left_icon = pills.left_zone.ssh_icon
-        icon_bg = _color_int(pills.colors.icon_bg_active, draw_data)
-        icon_fg = _color_int(pills.colors.icon_fg_active, draw_data)
-    else:
-        left_icon = pills.left_zone.icon
-        icon_bg = _color_int(pills.colors.icon_bg_active, draw_data)
-        icon_fg = _color_int(pills.colors.icon_fg_active, draw_data)
-
-    text_bg = _color_int(pills.colors.text_bg_active, draw_data)
-
-    # Estimate icon section width to compute max text space
-    max_text_len = max_width - _display_width(left_icon) - 6
-
-    if max_text_len <= 0:
-        return ZoneContent(
-            icon=left_icon, parts=(), icon_fg=icon_fg, icon_bg=icon_bg, text_bg=text_bg,
-        )
-
-    # Git status (skip for remote sessions — can't run git locally against remote paths)
-    git_data = None
-    if pills.left_zone.use_git and cwd and not hostname:
-        git_data = _get_git_status_raw(cwd)
-
-    git_colors = pills.left_zone.git_colors
-
-    if git_data:
-        branch, counts = git_data
-
-        # Format git parts
-        git_full = _format_git_parts(branch, counts, False, git_colors, draw_data)
-        git_branch_only = _format_git_parts(branch, counts, True, git_colors, draw_data)
-        git_full_len = sum(_display_width(t) for t, _ in git_full)
-        git_branch_len = sum(_display_width(t) for t, _ in git_branch_only)
-
-        # Progressive collapse: cwd + full git -> git only -> branch only -> icon only
-        cwd_text = _abbreviate_path(cwd, max_text_len - git_full_len - 1)
-        if cwd_text and _display_width(cwd_text) + 1 + git_full_len <= max_text_len:
-            parts = [(cwd_text + " ", _color_int(git_colors.directory, draw_data))]
-            parts.extend(git_full)
-            return ZoneContent(
-                icon=left_icon, parts=tuple(parts),
-                icon_fg=icon_fg, icon_bg=icon_bg, text_bg=text_bg,
-            )
-        if git_full_len <= max_text_len:
-            return ZoneContent(
-                icon=left_icon, parts=tuple(git_full),
-                icon_fg=icon_fg, icon_bg=icon_bg, text_bg=text_bg,
-            )
-        if git_branch_len <= max_text_len:
-            return ZoneContent(
-                icon=left_icon, parts=tuple(git_branch_only),
-                icon_fg=icon_fg, icon_bg=icon_bg, text_bg=text_bg,
-            )
-        return ZoneContent(
-            icon=left_icon, parts=(), icon_fg=icon_fg, icon_bg=icon_bg, text_bg=text_bg,
-        )
-
-    # No git — show cwd
-    cwd_text = _abbreviate_path(cwd, max_text_len)
-    if cwd_text:
-        text_fg = _color_int(pills.colors.text_fg_active, draw_data)
-        return ZoneContent(
-            icon=left_icon, parts=((cwd_text, text_fg),),
-            icon_fg=icon_fg, icon_bg=icon_bg, text_bg=text_bg,
-        )
-
-    return ZoneContent(
-        icon=left_icon, parts=(), icon_fg=icon_fg, icon_bg=icon_bg, text_bg=text_bg,
+def right_zone_content(
+    active_tab: TabBarData,
+    draw_data: DrawData,
+    max_width: int,
+) -> ZoneContent | None:
+    """Render right zone content."""
+    return _dispatch_zone_content(
+        get_config().right_zone, active_tab, draw_data, max_width
     )
 
 
@@ -457,151 +660,41 @@ def _format_git_parts(
     branch: str,
     counts: dict[str, int],
     branch_only: bool,
-    git_colors,
+    git_cfg,
     draw_data: DrawData,
 ) -> list[tuple[str, int]]:
-    """Format git info into (text, color_int) pairs."""
-    parts: list[tuple[str, int]] = []
+    """Format git info into (text, color_int) pairs.
 
-    parts.append((_GIT_BRANCH_ICON + " ", _color_int(git_colors.git_branch_icon, draw_data)))
-    parts.append((branch, _color_int(git_colors.git_branch, draw_data)))
+    Glyphs come from git_cfg.symbols; colors from git_cfg.<field>.
+    """
+    parts: list[tuple[str, int]] = []
+    syms = git_cfg.symbols
+
+    if syms.branch_icon:
+        parts.append(
+            (syms.branch_icon + " ", _color_int(git_cfg.branch_icon, draw_data))
+        )
+    parts.append((branch, _color_int(git_cfg.branch, draw_data)))
 
     if branch_only:
         return parts
 
-    symbols = [
-        ("stashed", "*"), ("deleted", "\u2718"), ("staged", "+"),
-        ("modified", "!"), ("renamed", "\u00bb"), ("untracked", "?"),
-        ("conflicted", "~"), ("ahead", "\u21e1"), ("behind", "\u21e3"),
-    ]
-    status_parts = []
-    for key, sym in symbols:
-        if counts.get(key, 0) > 0:
-            color_name = getattr(git_colors, f"git_{key}", "foreground")
-            status_parts.append((f"{sym}{counts[key]}", _color_int(color_name, draw_data)))
+    status_parts: list[tuple[str, int]] = []
+    for key in _GIT_STATUS_FIELDS:
+        if counts.get(key, 0) <= 0:
+            continue
+        sym = getattr(syms, key, "")
+        if not sym:
+            continue
+        color_name = getattr(git_cfg, key, "foreground")
+        status_parts.append((f"{sym}{counts[key]}", _color_int(color_name, draw_data)))
 
     if status_parts:
-        parts.append((" ", _color_int(git_colors.git_branch, draw_data)))
+        sep_color = _color_int(git_cfg.branch, draw_data)
+        parts.append((" ", sep_color))
         for i, (text, color) in enumerate(status_parts):
             if i > 0:
-                parts.append((" ", _color_int(git_colors.git_branch, draw_data)))
+                parts.append((" ", sep_color))
             parts.append((text, color))
 
     return parts
-
-
-# --- Powerline style (kept for tab_bar_style=custom fallback) ---
-
-from kitty.tab_bar import (
-    ExtraData,
-    draw_tab_with_powerline,
-)
-
-
-def draw_tab(
-    draw_data: DrawData,
-    screen: Screen,
-    tab: TabBarData,
-    before: int,
-    max_title_length: int,
-    index: int,
-    is_last: bool,
-    extra_data: ExtraData,
-) -> int:
-    """draw_tab entry point — only used when tab_bar_style=custom (powerline mode).
-
-    When tab_bar_style=zones, kitty calls the zones engine directly and this
-    function is never invoked.
-    """
-    config = get_config()
-    style = config.general.style
-
-    if style == "powerline":
-        return _draw_tab_powerline(
-            draw_data, screen, tab, before, max_title_length, index, is_last, extra_data
-        )
-    # If someone sets tab_bar_style=custom with pills style, fall through to powerline
-    return draw_tab_with_powerline(
-        draw_data, screen, tab, before, max_title_length, index, is_last, extra_data
-    )
-
-
-def _draw_tab_powerline(
-    draw_data: DrawData,
-    screen: Screen,
-    tab: TabBarData,
-    before: int,
-    max_title_length: int,
-    index: int,
-    is_last: bool,
-    extra_data: ExtraData,
-) -> int:
-    """Powerline style with custom title formatting."""
-    config = get_config()
-    powerline = config.styles.powerline
-
-    exe, cwd, remote_host = get_foreground_process(tab.tab_id)
-
-    parts = []
-    resolver = _get_resolver(draw_data)
-    colors_cfg = powerline.colors
-
-    if tab.is_active:
-        icon_color = resolver.resolve_to_hex(colors_cfg.icon_active)
-    elif powerline.rainbow_index_icon:
-        icon_color = resolver.resolve_to_hex(
-            colors_cfg.rainbow[(index - 1) % len(colors_cfg.rainbow)]
-        )
-    else:
-        icon_color = resolver.resolve_to_hex(colors_cfg.icon_inactive)
-
-    for element in powerline.elements:
-        if element == "index":
-            parts.append(f"{{fmt.fg._{icon_color}}}{index}{{fmt.fg.tab}}")
-        elif element == "icon":
-            icon = get_icon(exe)
-            parts.append(f"{{fmt.fg._{icon_color}}}{icon}{{fmt.fg.tab}}")
-        elif element == "name":
-            parts.append(exe)
-        elif element == "path":
-            display = tab.title or cwd
-            if display:
-                parts.append(display)
-        elif element == "ssh" and remote_host:
-            parts.append(f"{{fmt.fg._{icon_color}}}{powerline.ssh_icon}{{fmt.fg.tab}}")
-        elif element == "hostname" and remote_host:
-            parts.append(f"{{fmt.fg._{icon_color}}}{remote_host}{{fmt.fg.tab}}")
-
-    content = powerline.element_sep.join(parts)
-    formatted = f"{powerline.pad_start}{content}{powerline.pad_end}"
-
-    custom_template = (
-        "{fmt.fg.red}{bell_symbol}{activity_symbol}{fmt.fg.tab}" + formatted
-    )
-    new_draw_data = draw_data._replace(
-        title_template=custom_template,
-        active_title_template=custom_template,
-    )
-
-    end = draw_tab_with_powerline(
-        new_draw_data, screen, tab, before, max_title_length, index, is_last, extra_data
-    )
-
-    # Right-aligned mode indicator on last tab
-    if is_last:
-        mode_cfg = config.mode_indicator
-        if mode_cfg.enabled:
-            mode = get_keyboard_mode()
-            if mode:
-                display = mode_cfg.display_names.get(mode, mode.upper())
-                status_text = f" {display} "
-                status_len = len(status_text)
-                right_pos = screen.columns - status_len
-                if right_pos > screen.cursor.x:
-                    screen.draw(" " * (right_pos - screen.cursor.x))
-                    screen.cursor.fg = _color_int(mode_cfg.powerline.foreground, draw_data)
-                    if mode_cfg.powerline.background:
-                        screen.cursor.bg = _color_int(mode_cfg.powerline.background, draw_data)
-                    screen.draw(status_text)
-
-    return end

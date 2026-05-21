@@ -47,9 +47,6 @@ md:*.{md,mdx}
 # follow symlinks
 --follow
 
-# Exclusions: load the comprehensive list from .rgignore
---ignore-file=/home/cwel/.config/ripgrep/.rgignore
-
-# Don't let one minified line swamp the fzf view
+--ignore-file=$HOME/.config/rg/rgignore
 --max-columns=200
 --max-columns-preview

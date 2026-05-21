@@ -49,7 +49,7 @@ isVM = {{ $isVM }}
 headless = {{ $headless }}
 
 [age]
-  identity = "~/.config/.key"
+  identity = "~/.config/chezmoi/key"
   recipient = {{ $agePubKey | quote }}
 
 [gpg]
@@ -58,8 +58,10 @@ headless = {{ $headless }}
 
 [git]
   autoAdd = true
-  autoCommit = false
+  autoCommit = true
   autoPush = false
+  commitMessageTemplateFile = ".commit.tmpl"
+
 
 [update]
   recurseSubmodules = true
