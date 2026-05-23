@@ -840,7 +840,6 @@ pkgs:
         - zsh
       cargo:
         - managarr
-        - mpdpopm
       pipx:
         - libray
         - nsz
