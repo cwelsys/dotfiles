@@ -44,6 +44,8 @@ excludes = [
     "venv",
     ".obsidian-cli.sock",
   ], in = "*" },
+  { urn = ["Shared"], in = "/Users" },
+  { urn = ["ncdata"], in = "/mnt" },
 ]
 
 [opener]
