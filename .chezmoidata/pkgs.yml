@@ -221,8 +221,8 @@ pkgs:
         - circumflex
         - cmatrix
         - colima
-        - countdown
         - coreutils
+        - countdown
         - cowsay
         - crystal
         - csvkit
@@ -314,6 +314,7 @@ pkgs:
         - rich-cli
         - rig
         - rsync
+        - ruby
         - ruff
         - samtay/tui/tetris
         - sd
@@ -413,7 +414,6 @@ pkgs:
         - zen
         - zoom
       cargo:
-        - listenbrainz-mpd
         - managarr
         - mpdpopm
         - rmpc
