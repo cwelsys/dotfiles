@@ -5,7 +5,7 @@ set -eufo pipefail
 
 case "$(uname -s)" in
 Darwin)
-  ZEN_DIR="$HOME/Library/Application Support/zen/Profiles"
+  ZEN_DIR="$HOME/Library/Application Support/zen"
   ;;
 Linux)
   ZEN_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/zen"

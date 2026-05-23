@@ -4,16 +4,17 @@ notARepository: skip
 promptToReturnFromSubprocess: false
 disableStartupPopups: true
 gui:
-  expandFocusedSidePanel: true
+  expandFocusedSidePanel: false
   skipRewordInEditorWarning: true
   showNumstatInFilesView: true
   filterMode: "fuzzy"
   # statusPanelView: allBranchesLog
   showBottomLine: false
+  portraitModeAutoMaxWidth: 69
   commandLogSize: 4
   nerdFontsVersion: '3'
   showRandomTip: false
-  sidePanelWidth: .22
+  sidePanelWidth: 0.22
   branchColors:
     "release": "#f9e2af"
     "hotfix": "#f38ba8"
@@ -44,10 +45,16 @@ gui:
 git:
   overrideGpg: true
   pagers:
-    - pager: delta --dark --paging=never --line-numbers --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
-  branchLogCmd: "git log --graph --color=always --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' {{branchName}} --"
+    - pager: delta --dark --paging=never --line-numbers --hyperlinks
+        --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
+  branchLogCmd: "git log --graph --color=always --abbrev-commit --decorate
+    --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset)
+    %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
+    {{branchName}} --"
   allBranchesLogCmds:
-    - git log --graph --all --color=always --abbrev-commit  --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
+    - git log --graph --all --color=always --abbrev-commit  --decorate
+      --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset)
+      %C(bold
+      green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset)
+      %C(dim white)- %an%C(reset)'
   parseEmoji: true
-
-
