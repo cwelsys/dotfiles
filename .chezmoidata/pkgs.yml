@@ -362,6 +362,7 @@ pkgs:
         - font-fantasque-sans-mono-nerd-font
         - font-fira-code
         - font-jetbrains-mono
+        - font-jetbrains-mono-nerd-font
         - font-juliamono
         - font-lato
         - font-maple-mono
@@ -381,12 +382,13 @@ pkgs:
         - hammerspoon
         - helium-browser
         - iina
+        - instant-space-switcher
         - jellyfin-media-player
         - karabiner-elements
         - localsend
         - maccy
         - moonlight
-        - nextcloud-vfs
+        - nextcloud
         - obsidian
         - openmtp
         - pearcleaner
