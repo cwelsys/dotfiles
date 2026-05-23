@@ -42,6 +42,7 @@ excludes = [
     "node_modules",
     ".venv",
     "venv",
+    ".swiftpm",
     ".obsidian-cli.sock",
   ], in = "*" },
   { urn = ["Shared"], in = "/Users" },

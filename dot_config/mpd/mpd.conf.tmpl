@@ -5,7 +5,9 @@ state_file              "~/.local/share/mpd/state"
 sticker_file            "~/.local/share/mpd/sticker.sql"
 
 bind_to_address         "127.0.0.1"
+{{- if ne .chezmoi.os "darwin" }}
 bind_to_address         "$XDG_RUNTIME_DIR/mpd/socket"
+{{- end }}
 port                    "6600"
 restore_paused          "yes"
 

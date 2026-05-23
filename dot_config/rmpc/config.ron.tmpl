@@ -2,7 +2,7 @@
 #![enable(unwrap_newtypes)]
 #![enable(unwrap_variant_newtypes)]
 (
-    address: "$XDG_RUNTIME_DIR/mpd/socket",
+    address: {{ if eq .chezmoi.os "darwin" }}"127.0.0.1:6600"{{ else }}"$XDG_RUNTIME_DIR/mpd/socket"{{ end }},
     password: None,
     cache_dir: Some("/tmp/rmpc/cache"),
     lyrics_dir: Some("~/.local/share/mpd/lyrics/"),
