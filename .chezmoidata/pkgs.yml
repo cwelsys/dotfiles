@@ -415,7 +415,6 @@ pkgs:
         - zoom
       cargo:
         - managarr
-        - mpdpopm
         - rmpc
         - weathr
       npm:
