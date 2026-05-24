@@ -1,4 +1,4 @@
--- Disable "[Process exited 0]" message in terminal buffersfor _, autocmd in ipairs(vim.api.nvim_get_autocmds({ group = "nvim.terminal", event = "TermClose" })) do
+-- Disable "[Process exited 0]" message in terminal buffers
 for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ group = "nvim.terminal", event = "TermClose" })) do
   if autocmd.desc and autocmd.desc:find("Process exited") then
     vim.api.nvim_del_autocmd(autocmd.id)

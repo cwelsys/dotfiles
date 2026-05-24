@@ -54,7 +54,7 @@ return {
         { section = "header" },
         { section = "keys", gap = 1, padding = 1 },
         {
-          icon = " ",
+          icon = "",
           desc = "Browse Repo",
           padding = 1,
           key = "b",
@@ -65,24 +65,104 @@ return {
             Snacks.gitbrowse()
           end,
         },
-        {
-          icon = " ",
-          title = "Git Status",
-          section = "terminal",
-          enabled = function()
-            return Snacks.git.get_root() ~= nil
-          end,
-          cmd = "git status --short --branch --renames",
-          height = 10,
-          padding = 1,
-          ttl = 5 * 60,
-          indent = 3,
-        },
+        function(dashboard)
+          local root = Snacks.git.get_root()
+          if not root then
+            return nil
+          end
+          local out = vim.fn.systemlist({ "git", "-C", root, "status", "--short", "--branch", "--renames" })
+          if vim.tbl_isempty(out) then
+            return nil
+          end
+
+          local indent = 3
+          local maxw = (dashboard and dashboard.opts and dashboard.opts.width or 60) - indent
+
+          local function branch_segs(line)
+            local body = line:gsub("^## ", "")
+            if body:match("^No commits yet") then
+              return { { body, hl = "Title" } }
+            end
+            local name, upstream = body:match("^(.-)%.%.%.(%S+)")
+            local rest
+            if name then
+              rest = body:match("%.%.%.%S+%s*(.*)$") or ""
+            else
+              name, rest = body:match("^(%S+)%s*(.*)$")
+            end
+            local segs = { { name or body, hl = "Title" } }
+            local ahead = rest and rest:match("ahead (%d+)")
+            local behind = rest and rest:match("behind (%d+)")
+            if ahead then
+              segs[#segs + 1] = { " ↑" .. ahead, hl = "Added" }
+            end
+            if behind then
+              segs[#segs + 1] = { " ↓" .. behind, hl = "Changed" }
+            end
+            if rest and rest:match("gone") then
+              segs[#segs + 1] = { " (upstream gone)", hl = "Removed" }
+            end
+            -- show the upstream ref only when its short name differs from the local branch
+            if upstream and upstream:match("[^/]+$") ~= name then
+              segs[#segs + 1] = { "  (" .. upstream .. ")", hl = "NonText" }
+            end
+            return segs
+          end
+
+          local function file_segs(line)
+            local x, y = line:sub(1, 1), line:sub(2, 2)
+            local field = (line:sub(1, 2):gsub("^%s+", "") .. "  "):sub(1, 2)
+            local hl = (x == "?" or x == "!" or y ~= " ") and "Removed" or "Added"
+            return {
+              { field, hl = hl },
+              { line:sub(3), hl = "SnacksDashboardFile" },
+            }
+          end
+
+          -- shorten a line's segments to fit maxw, trimming the final (path) segment from the left
+          -- with a leading ellipsis so the filename tail stays visible
+          local function fit(segs)
+            local total = 0
+            for _, s in ipairs(segs) do
+              total = total + vim.api.nvim_strwidth(s[1])
+            end
+            local over = total - maxw
+            if over <= 0 then
+              return
+            end
+            local last = segs[#segs]
+            local cut = math.min(over + 1, vim.fn.strchars(last[1]) - 1)
+            last[1] = "…" .. vim.fn.strcharpart(last[1], cut)
+          end
+
+          local height = dashboard and dashboard._size and dashboard._size.height or 40
+          local reserve = 38
+          local budget = math.max(height - reserve, 6)
+          local rows = { branch_segs(out[1]) }
+          local nfiles = #out - 1
+          local shown = nfiles > budget and budget - 1 or nfiles
+          for i = 2, 1 + shown do
+            rows[#rows + 1] = file_segs(out[i])
+          end
+          if nfiles > shown then
+            rows[#rows + 1] = { { "… " .. (nfiles - shown) .. " more", hl = "NonText" } }
+          end
+
+          local text = {}
+          for i, segs in ipairs(rows) do
+            fit(segs)
+            if i < #rows then
+              segs[#segs][1] = segs[#segs][1] .. "\n"
+            end
+            for _, s in ipairs(segs) do
+              text[#text + 1] = s
+            end
+          end
+          return { indent = indent, padding = 1, text = text }
+        end,
         { section = "startup" },
       }
 
-      -- projects picker: snacks doesn't read $XDG_PROJECTS_DIR, so point its
-      -- `dev` scan dir at it (falls back to ~/src if unset).
       opts.picker = opts.picker or {}
       opts.picker.sources = opts.picker.sources or {}
       opts.picker.sources.projects = vim.tbl_deep_extend("force", opts.picker.sources.projects or {}, {
@@ -115,6 +195,14 @@ return {
           return file ~= "" and src and file:find(src, 1, true) == 1
         end,
       })
+    end,
+  },
+  {
+    "nvim-mini/mini.animate",
+    optional = true,
+    opts = function(_, opts)
+      opts.cursor = opts.cursor or {}
+      opts.cursor.enable = false
     end,
   },
 }

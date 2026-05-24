@@ -1,11 +1,13 @@
 music_directory         "nfs://pbox/mnt/media/audio"
 playlist_directory      "~/.local/share/mpd/playlists"
-log_file                "syslog"
+{{ if eq .chezmoi.os "darwin" }}log_file                "~/Library/Logs/mpd/mpd.log"{{ else }}log_file                "syslog"{{ end }}
 state_file              "~/.local/share/mpd/state"
 sticker_file            "~/.local/share/mpd/sticker.sql"
 
 bind_to_address         "127.0.0.1"
-{{- if ne .chezmoi.os "darwin" }}
+{{- if eq .chezmoi.os "darwin" }}
+bind_to_address         "~/.cache/mpd/socket"
+{{- else }}
 bind_to_address         "$XDG_RUNTIME_DIR/mpd/socket"
 {{- end }}
 port                    "6600"
