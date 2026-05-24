@@ -842,6 +842,7 @@ pkgs:
         - managarr
         - name: rmpcd
           git: https://github.com/mierak/rmpc.git
+        - systemctl-tui
       pipx:
         - libray
         - nsz
