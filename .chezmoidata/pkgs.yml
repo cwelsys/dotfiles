@@ -415,10 +415,11 @@ pkgs:
         - zoom
       cargo:
         - managarr
-        - rmpc
+        - name: rmpc
+          git: https://github.com/mierak/rmpc.git
         - weathr
       npm:
-        - '@github/copilot'
+        - "@github/copilot"
         - bun
         - bunx
         - ccusage
@@ -426,7 +427,7 @@ pkgs:
         - eslint
         - prettier
         - prettier-plugin-sh
-        - '@googleworkspace/cli'
+        - "@googleworkspace/cli"
       pipx:
         - smassh
         - terminaltexteffects
@@ -845,7 +846,7 @@ pkgs:
         - libray
         - nsz
       npm:
-        - '@googleworkspace/cli'
+        - "@googleworkspace/cli"
   global:
     yazi:
       - AnirudhG07/custom-shell
@@ -878,7 +879,7 @@ pkgs:
       - cargo-list
       - cargo-update
     npm:
-      - '@antfu/ni'
+      - "@antfu/ni"
       - commitizen
       - git-recent
       - neovim
