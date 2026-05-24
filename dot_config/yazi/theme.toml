@@ -5,11 +5,11 @@ dark = "catppuccin-mocha"
 [icon]
 
 prepend_dirs = [
-  { name = "src", text = "", },
-  { name = ".Trash", text = "", },
-  { name = ".cache", text = "", },
-  { name = ".ssh", text = "󰢬", },
-  { name = ".local", text = "󰉌", },
+  { name = "src", text = "" },
+  { name = ".Trash", text = "" },
+  { name = ".cache", text = "" },
+  { name = ".ssh", text = "󰢬" },
+  { name = ".local", text = "󰉌" },
   { name = "Applications", text = "󰀻", fg = "#89b4fa" },
   { name = ".config", text = "", fg = "#89b4fa" },
   { name = "Desktop", text = "", fg = "#89b4fa" },
@@ -21,6 +21,5 @@ prepend_dirs = [
   { name = "Pictures", text = "", fg = "#89b4fa" },
   { name = "Public", text = "", fg = "#89b4fa" },
   { name = "Videos", text = "", fg = "#89b4fa" },
-  { name = ".steam", text = "", fg = "#89b4fa"},
+  { name = ".steam", text = "", fg = "#89b4fa" },
 ]
-

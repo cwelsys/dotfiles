@@ -13,7 +13,12 @@ set -e
 {{- end }}
 
 {{ range $pkgs -}}
+{{- if kindIs "string" . }}
 echo "cargo install {{ . }}..."
 cargo install '{{ . }}' || true
+{{- else }}
+echo "cargo install {{ .name }} (git: {{ .git }})..."
+cargo install --git '{{ .git }}' '{{ .name }}' || true
+{{- end }}
 {{ end }}
 {{ end }}

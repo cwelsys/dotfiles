@@ -27,6 +27,23 @@ playlist_plugin {
     enabled "true"
 }
 
+decoder {
+    plugin "wildmidi"
+    enabled "no"
+}
+
+decoder {
+    plugin "mpg123"
+    enabled "no"
+}
+
+input_cache {
+    size "1 GB"
+}
+
+replaygain          "auto"
+replaygain_limit    "yes"
+
 {{- if eq .chezmoi.os "darwin" }}
 audio_output {
     type        "osx"

@@ -840,7 +840,8 @@ pkgs:
         - zsh
       cargo:
         - managarr
-        - rmpcd
+        - name: rmpcd
+          git: https://github.com/mierak/rmpc.git
       pipx:
         - libray
         - nsz

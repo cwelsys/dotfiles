@@ -3,6 +3,7 @@ user_pref("zen.theme.essentials-favicon-bg", false);
 user_pref("zen.theme.accent-color", "#89b4fa");
 user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
 user_pref("layout.css.prefers-color-scheme.content-override", 0);
+user_pref("zen.view.enable-loading-indicator", false);
 
 // Display / Rendering
 user_pref("widget.dmabuf.force-enabled", true);
@@ -64,7 +65,7 @@ user_pref("security.insecure_password.ui.enabled", false);
 // Sessions
 user_pref("browser.sessionhistory.max_total_viewers", 8);
 user_pref("browser.sessionstore.interval", 60000);
-user_pref("browser.firefox-view.feature-tour", "{\"screen\":\"\",\"complete\":true}");
+user_pref("browser.firefox-view.feature-tour", '{"screen":"","complete":true}');
 
 // Cache & memory
 user_pref("browser.cache.disk.enable", false);
@@ -109,7 +110,10 @@ user_pref("browser.download.start_downloads_in_tmp_dir", true);
 user_pref("browser.safebrowsing.downloads.enabled", false);
 user_pref("browser.safebrowsing.downloads.remote.enabled", false);
 user_pref("browser.safebrowsing.downloads.remote.url", "");
-user_pref("browser.safebrowsing.downloads.remote.block_potentially_unwanted", false);
+user_pref(
+  "browser.safebrowsing.downloads.remote.block_potentially_unwanted",
+  false,
+);
 user_pref("browser.safebrowsing.downloads.remote.block_uncommon", false);
 user_pref("browser.safebrowsing.allowOverride", false);
 
@@ -138,8 +142,14 @@ user_pref("browser.shell.checkDefaultBrowser", false);
 user_pref("browser.preferences.moreFromMozilla", false);
 user_pref("browser.aboutConfig.showWarning", false);
 user_pref("browser.aboutwelcome.enabled", false);
-user_pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons", false);
-user_pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features", false);
+user_pref(
+  "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons",
+  false,
+);
+user_pref(
+  "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features",
+  false,
+);
 
 // ML / AI
 user_pref("browser.ml.enable", false);
@@ -170,4 +180,3 @@ user_pref("general.smoothScroll.msdPhysics.slowdownSpringConstant", 250);
 user_pref("general.smoothScroll.currentVelocityWeighting", "1");
 user_pref("general.smoothScroll.stopDecelerationWeighting", "1");
 user_pref("mousewheel.default.delta_multiplier_y", 300);
-
