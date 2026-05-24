@@ -101,9 +101,11 @@ host_exists() {
 
 manifest_packages() {
   local host="$1" section="$2"
+  # `(.name // .)` yields the bare name for both plain-string entries and
+  # source-carrying map entries (e.g. cargo git packages: {name, git}).
   {
-    yq_global ".$section[]" 2>/dev/null
-    yq_host "$host" ".$section[]" 2>/dev/null
+    yq_global ".$section[] | (.name // .)" 2>/dev/null
+    yq_host "$host" ".$section[] | (.name // .)" 2>/dev/null
   } | sort -u
 }
 
@@ -128,6 +130,13 @@ installed_packages() {
     ;;
   yazi) ya pkg list 2>/dev/null | awk '/^\t/{print $1}' | sort ;;
   esac
+}
+
+cargo_git_url() {
+  cargo install --list 2>/dev/null |
+    grep -E "^$1 " |
+    grep -oE '\(https?://[^#) ]+' |
+    head -1 | sed 's/^(//'
 }
 
 # --- Commands ---
@@ -304,9 +313,23 @@ sync_section() {
     echo -e "${icon} ${count} new ${label} packages${scope_tag}"
     while IFS= read -r p; do echo -e "  ${GREEN}+${RESET} $p"; done <<<"$new_pkgs"
 
-    local json_array
-    json_array=$(echo "$new_pkgs" | jq -R . | jq -s .)
-    yq -i "${yq_prefix}.$section += $json_array" "$YAML_FILE"
+    if [[ "$section" == "cargo" ]]; then
+      # Cargo crates may come from git rather than crates.io; record the
+      # source so the apply script can reinstall with `--git`.
+      local url
+      while IFS= read -r p; do
+        url=$(cargo_git_url "$p")
+        if [[ -n "$url" ]]; then
+          yq -i "${yq_prefix}.$section += [{\"name\": \"$p\", \"git\": \"$url\"}]" "$YAML_FILE"
+        else
+          yq -i "${yq_prefix}.$section += [\"$p\"]" "$YAML_FILE"
+        fi
+      done <<<"$new_pkgs"
+    else
+      local json_array
+      json_array=$(echo "$new_pkgs" | jq -R . | jq -s .)
+      yq -i "${yq_prefix}.$section += $json_array" "$YAML_FILE"
+    fi
   fi
 
   if [[ -n "$removed_pkgs" ]]; then
@@ -319,12 +342,12 @@ sync_section() {
     while IFS= read -r p; do echo -e "  ${RED}-${RESET} $p"; done <<<"$removed_pkgs"
 
     while IFS= read -r pkg; do
-      yq -i "del(${yq_prefix}.$section[] | select(. == \"$pkg\"))" "$YAML_FILE"
+      yq -i "del(${yq_prefix}.$section[] | select((.name // .) == \"$pkg\"))" "$YAML_FILE"
     done <<<"$removed_pkgs"
   fi
 
   if [[ "$changed" == true ]]; then
-    yq -i "(${yq_prefix}.$section | select(. != null)) |= sort" "$YAML_FILE"
+    yq -i "(${yq_prefix}.$section | select(. != null)) |= sort_by(.name // .)" "$YAML_FILE"
   fi
 
   [[ "$changed" == true ]]
@@ -340,7 +363,7 @@ commit_changes() {
     removed="${REMOVED_PARTS[$i]}"
     glyph=$(section_glyph "$section")
     part="$glyph"
-    [[ -n "$added" ]]   && part+=" +$(echo "$added"   | awk -F, '{print NF}')"
+    [[ -n "$added" ]] && part+=" +$(echo "$added" | awk -F, '{print NF}')"
     [[ -n "$removed" ]] && part+=" -$(echo "$removed" | awk -F, '{print NF}')"
     parts+=("$part")
   done
@@ -354,7 +377,7 @@ commit_changes() {
     removed="${REMOVED_PARTS[$i]}"
     glyph=$(section_glyph "$section")
     body+="${glyph} ${section}"$'\n'
-    [[ -n "$added" ]]   && body+="$(echo "$added"   | tr ',' '\n' | sed 's/^/  + /')"$'\n'
+    [[ -n "$added" ]] && body+="$(echo "$added" | tr ',' '\n' | sed 's/^/  + /')"$'\n'
     [[ -n "$removed" ]] && body+="$(echo "$removed" | tr ',' '\n' | sed 's/^/  - /')"$'\n'
     body+=$'\n'
   done
