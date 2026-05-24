@@ -191,7 +191,6 @@ pkgs:
         - zram-generator
         - zsh
       cargo:
-        - blissify
         - managarr
       pipx: []
     mba:
