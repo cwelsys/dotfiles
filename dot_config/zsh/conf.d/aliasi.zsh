@@ -71,6 +71,7 @@ fi
 (( ${+commands[lazygit]} ))    && alias lg='lazygit'
 (( ${+commands[lazyjournal]} )) && alias lj='lazyjournal'
 (( ${+commands[managarr]} )) && alias arr='managarr'
+(( ${+commands[systemctl-tui]} )) && alias st='systemctl-tui'
 
 if (( ${+commands[doggo]} )); then
   alias dog='doggo'
