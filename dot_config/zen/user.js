@@ -1,3 +1,4 @@
+// vim: ft=conf
 // Theme / Zen
 user_pref("zen.theme.essentials-favicon-bg", false);
 user_pref("zen.theme.accent-color", "#89b4fa");
@@ -110,10 +111,7 @@ user_pref("browser.download.start_downloads_in_tmp_dir", true);
 user_pref("browser.safebrowsing.downloads.enabled", false);
 user_pref("browser.safebrowsing.downloads.remote.enabled", false);
 user_pref("browser.safebrowsing.downloads.remote.url", "");
-user_pref(
-  "browser.safebrowsing.downloads.remote.block_potentially_unwanted",
-  false,
-);
+user_pref("browser.safebrowsing.downloads.remote.block_potentially_unwanted", false);
 user_pref("browser.safebrowsing.downloads.remote.block_uncommon", false);
 user_pref("browser.safebrowsing.allowOverride", false);
 
@@ -142,14 +140,8 @@ user_pref("browser.shell.checkDefaultBrowser", false);
 user_pref("browser.preferences.moreFromMozilla", false);
 user_pref("browser.aboutConfig.showWarning", false);
 user_pref("browser.aboutwelcome.enabled", false);
-user_pref(
-  "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons",
-  false,
-);
-user_pref(
-  "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features",
-  false,
-);
+user_pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons", false);
+user_pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features", false);
 
 // ML / AI
 user_pref("browser.ml.enable", false);
