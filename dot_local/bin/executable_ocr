@@ -1,14 +1,22 @@
 #!/bin/bash
 
-sleep .2 # let launcher close
-
 SELECTION=$(slurp -b '#00000066' -c '#ffffffcc' -w 2 2>/dev/null)
 
 [ -z "$SELECTION" ] && exit 0
 
-TEXT=$(grim -g "$SELECTION" - | tesseract - - 2>/dev/null)
+WH=${SELECTION##* }
+W=${WH%x*}
+H=${WH#*x}
+PSM=6
+if [[ "$W" =~ ^[0-9]+$ && "$H" =~ ^[0-9]+$ ]] &&
+  { [ "$H" -lt 50 ] || [ "$W" -gt $((H * 10)) ]; }; then
+  PSM=7
+fi
+
+TEXT=$(grim -g "$SELECTION" - |
+  magick - -colorspace Gray -resize 300% -normalize png:- |
+  tesseract - - --psm "$PSM" --oem 1 --dpi 300 2>/dev/null)
 
 [ -z "$TEXT" ] && exit 0
 
 echo -n "$TEXT" | wl-copy
-# notify-send "OCR" "Text copied to clipboard"
