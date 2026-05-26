@@ -41,3 +41,11 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     vim.go.backupext = backup
   end,
 })
+
+-- lvim PR #7171 calls vim.hl.hl_op() behind a truthy `vim.fn.has("nvim-0.13")`, which is nil on Neovim < 0.13)
+vim.api.nvim_create_autocmd("TextYankPost", {
+  group = vim.api.nvim_create_augroup("lazyvim_highlight_yank", { clear = true }),
+  callback = function()
+    (vim.hl or vim.highlight).on_yank()
+  end,
+})
