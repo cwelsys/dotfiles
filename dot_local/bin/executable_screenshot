@@ -16,19 +16,3 @@ clipboard-multi "$SCREENSHOT_PATH"
 satty --filename "$SCREENSHOT_PATH" \
   --output-filename "$SCREENSHOT_PATH" \
   --copy-command "clipboard-multi -" &
-SATTY_PID=$!
-
-# Auto-close satty after 20s unfocused
-(
-  sleep 2
-  unfocused_for=0
-  while kill -0 "$SATTY_PID" 2>/dev/null; do
-    if niri msg focused-window 2>/dev/null | grep -q '"com.gabm.satty"'; then
-      unfocused_for=0
-    else
-      unfocused_for=$((unfocused_for + 1))
-      (( unfocused_for >= 20 )) && kill "$SATTY_PID" 2>/dev/null && exit 0
-    fi
-    sleep 1
-  done
-) &
