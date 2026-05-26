@@ -375,7 +375,8 @@ if (( ${+commands[paru]} )); then
         awk 'NR==FNR{inst[$1]=1;next} {if($1 in inst) print $0" \033[1;32m[installed]\033[0m"; else print}' \
           <(paru -Qq) - |
         fzf --multi --ansi -0 --tiebreak=index \
-          --preview="paru --color=always -Si {1}" |
+          --preview="paru --color=always -Si {1}" \
+          --bind 'ctrl-o:execute-silent(paru -Si {1} | grep -m1 "^URL" | sed "s/.*: //" | xargs -r xdg-open)' |
         awk '{print $1}' |
         xargs --no-run-if-empty --open-tty paru -S
     else
@@ -461,7 +462,8 @@ if [[ $OSTYPE == darwin* ]] && (( ${+commands[brew]} )); then
         awk 'NR==FNR{inst[$1]=1;next} {if($1 in inst) print $0" \033[1;32m[installed]\033[0m"; else print}' \
           <(brew list) - |
         fzf --multi --ansi -0 --tiebreak=index \
-          --preview "brew info {1}" |
+          --preview "brew info {1}" \
+          --bind 'ctrl-o:execute-silent(brew info {1} | grep -m1 -E "^https?://" | xargs -r open)' |
         awk '{print $1}' |
         xargs --no-run-if-empty brew install
     else
