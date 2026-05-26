@@ -710,7 +710,6 @@ pkgs:
         - realtime-privileges
         - reflector
         - resvg
-        - retroarch-steam-launcher
         - ripgrep
         - ripgrep-all
         - rmpc-git
@@ -753,6 +752,7 @@ pkgs:
         - tectonic
         - terminus-font
         - tesseract
+        - tesseract-data-eng
         - tk
         - tldr
         - tmux
@@ -773,8 +773,10 @@ pkgs:
         - ttf-jetbrains-mono-nerd
         - ttf-meslo-nerd
         - ttf-nerd-fonts-symbols-mono
+        - ttf-overpass
         - ttf-poppins
         - ttf-pragmasevka-nerd-font
+        - ttf-rubik-vf
         - ttf-twemoji
         - tzupdate
         - ufw
