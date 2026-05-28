@@ -12,13 +12,19 @@ set -e
 {{-   $pkgs = concat $pkgs (index .pkgs.hosts .hostname).cargo }}
 {{- end }}
 
+installed=$(cargo install --list | awk '/^[^ ]/ { sub(/ v.*/, ""); print }')
+
 {{ range $pkgs -}}
 {{- if kindIs "string" . }}
-echo "cargo install {{ . }}..."
-cargo install '{{ . }}' || true
+if ! grep -qxF '{{ . }}' <<< "$installed"; then
+  echo "cargo install {{ . }}..."
+  cargo install '{{ . }}' || true
+fi
 {{- else }}
-echo "cargo install {{ .name }} (git: {{ .git }})..."
-cargo install --git '{{ .git }}' '{{ .name }}' || true
+if ! grep -qxF '{{ .name }}' <<< "$installed"; then
+  echo "cargo install {{ .name }} (git: {{ .git }})..."
+  cargo install --git '{{ .git }}' '{{ .name }}' || true
+fi
 {{- end }}
 {{ end }}
 {{ end }}
