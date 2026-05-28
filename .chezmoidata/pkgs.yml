@@ -715,9 +715,8 @@ pkgs:
         - rmpc-git
         - rpcs3-bin
         - runelite
-        - rust
-        - rust-analyzer
         - rustdesk-bin
+        - rustup
         - rusty-path-of-building
         - ryujinx-bin
         - sad
@@ -841,8 +840,6 @@ pkgs:
         - zsh
       cargo:
         - managarr
-        - name: rmpcd
-          git: https://github.com/mierak/rmpc.git
         - systemctl-tui
       pipx:
         - libray
