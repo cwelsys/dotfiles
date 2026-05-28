@@ -300,6 +300,7 @@ pkgs:
         - openjdk@11
         - ouch
         - pandoc
+        - pass
         - php
         - pinentry-mac
         - pipes-sh
@@ -330,7 +331,6 @@ pkgs:
         - tmux
         - toilet
         - topgrade
-        - tree
         - tree-sitter-cli
         - tty-clock
         - universal-ctags
@@ -378,6 +378,7 @@ pkgs:
         - gcloud-cli
         - ghostty@tip
         - gimp
+        - gopher64
         - goreleaser
         - hammerspoon
         - helium-browser
@@ -850,6 +851,7 @@ pkgs:
         - "@googleworkspace/cli"
   global:
     yazi:
+      - AnirudhG07/custom-shell
       - AnirudhG07/plugins-yazi:copy-file-contents
       - Lil-Dank/lazygit
       - MasouShizuka/projects
@@ -858,14 +860,17 @@ pkgs:
       - barbanevosa/linemode-plus
       - boydaihungst/restore
       - cwelsys/command
+      - cwelsys/fg
       - cwelsys/office
       - cwelsys/remotes
       - cwelsys/rsync
+      - cwelsys/searchjump
       - goon/omni-trash
       - hankertrix/augment-command
       - larry-oates/open-git-remote
       - ndtoan96/ouch
       - tasnimAlam/croc-send
+      - uhs-robert/recycle-bin
       - yazi-rs/flavors:catppuccin-mocha
       - yazi-rs/plugins:chmod
       - yazi-rs/plugins:diff
