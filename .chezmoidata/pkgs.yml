@@ -152,7 +152,7 @@ pkgs:
         - reflector
         - resvg
         - rsync
-        - rust-analyzer
+        - rustup
         - sbctl
         - scx-scheds
         - scx-tools
@@ -192,6 +192,7 @@ pkgs:
         - zsh
       cargo:
         - managarr
+        - systemctl-tui
       pipx: []
     mba:
       brews:
