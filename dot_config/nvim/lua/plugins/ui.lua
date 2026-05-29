@@ -197,12 +197,4 @@ return {
       })
     end,
   },
-  {
-    "nvim-mini/mini.animate",
-    optional = true,
-    opts = function(_, opts)
-      opts.cursor = opts.cursor or {}
-      opts.cursor.enable = false
-    end,
-  },
 }
