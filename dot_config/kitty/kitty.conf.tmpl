@@ -9,6 +9,9 @@ include current-theme.conf
 tab_bar_background #1e1e2e
 macos_titlebar_color background
 active_tab_background #89b4fa
+active_tab_foreground #11111b
+inactive_tab_background #b4befe
+inactive_tab_foreground #11111b
 # selection_foreground none
 # selection_background #28344a
 
@@ -30,6 +33,7 @@ macos_show_window_title_in none
 tab_bar_style zones
 tab_bar_edge top
 tab_bar_min_tabs 1
+include tabs.conf
 
 # font
 font_size 16
@@ -69,7 +73,6 @@ clear_all_shortcuts yes
 macos_option_as_alt yes
 
 # aliases
-action_alias klonopin kitten klonopin.py
 action_alias kmux_split launch --type=background --cwd=current --copy-env kmux split
 action_alias kmux_lsplit launch --type=background --copy-env kmux split --cwd ~
 action_alias kmux_bg launch --type=background --copy-env kmux
@@ -125,10 +128,6 @@ map {{ $mod }}+equal change_font_size all +0.5
 map {{ $mod }}+minus change_font_size all -0.5
 map {{ $mod }}+0 change_font_size all 0
 
-# pin tabs
-map --mode leader shift+p klonopin pin
-map --mode leader shift+u klonopin unpin
-
 # set title
 map --mode leader r set_tab_title
 
@@ -147,18 +146,18 @@ map --mode leader d kmux_bg detach
 map --mode leader p launch --type=overlay --copy-env kmux
 
 # close/create tabs
-map {{ $mod }}+w klonopin close-tab
-map {{ $mod }}+t klonopin new-tab
-map kitty_mod+t klonopin new-tab --local
-map --mode leader q klonopin close-window
-map --mode leader x klonopin close-window
+map {{ $mod }}+w close_tab
+map {{ $mod }}+t new_tab_with_cwd
+map kitty_mod+t new_tab
+map --mode leader q close_window
+map --mode leader x close_window
 
 # rearrange / navigate tabs
 {{ if eq .chezmoi.os "darwin" -}}
 map cmd+, no_op
 {{ end -}}
-map kitty_mod+, klonopin move-left
-map kitty_mod+. klonopin move-right
+map kitty_mod+, move_tab_backward
+map kitty_mod+. move_tab_forward
 map kitty_mod+l next_tab
 map kitty_mod+h previous_tab
 map {{ $mod }}+. next_tab
