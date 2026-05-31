@@ -134,10 +134,10 @@ animations {
 }
 
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Window-Rules
-window-rule {
-    match is-active=false
-    opacity 0.9
-}
+// window-rule {
+//     match is-active=false
+//     opacity 0.9
+// }
 
 window-rule {
     geometry-corner-radius 12
