@@ -103,8 +103,6 @@ require("starship"):setup({
 	hide_count = true,
 })
 
-require("recycle-bin"):setup()
-
 Status:children_add(function()
 	local h = cx.active.current.hovered
 	if not h or ya.target_family() ~= "unix" then
