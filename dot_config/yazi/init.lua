@@ -38,6 +38,10 @@ require("full-border"):setup({
 	type = ui.Border.ROUNDED,
 })
 
+require("mime-ext.local"):setup({
+	fallback_file1 = true,
+})
+
 require("zoxide"):setup({
 	update_db = false,
 })
@@ -60,16 +64,20 @@ require("searchjump"):setup({
 	enable_capital_label = true,
 })
 
-require("fg"):setup({
-	default_action = "nvim", -- jump
+require("yafg"):setup({
+	editor = "nvim",
+	file_arg_format = "+{row} {file}",
 })
 
-require("custom-shell"):setup({
-	history_path = "default",
-	save_history = true,
+require("projects"):setup({
+	save = { method = "lua" },
+	last = {
+		update_after_save = true,
+		update_after_load = true,
+		update_before_quit = true,
+		load_after_start = false,
+	},
 })
-
-require("projects"):setup({})
 require("restore"):setup({})
 
 require("augment-command"):setup({
