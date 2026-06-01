@@ -860,9 +860,9 @@ pkgs:
       - cwelsys/office
       - cwelsys/rsync
       - cwelsys/searchjump
+      - goon/omni-trash
       - hankertrix/augment-command
       - ndtoan96/ouch
-      - uhs-robert/recycle-bin
       - yazi-rs/flavors:catppuccin-mocha
       - yazi-rs/plugins:chmod
       - yazi-rs/plugins:diff
