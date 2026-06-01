@@ -47,6 +47,6 @@ md:*.{md,mdx}
 # follow symlinks
 --follow
 
---ignore-file=$HOME/.config/fd/ignore
+--ignore-file={{ .chezmoi.homeDir }}/.config/fd/ignore
 --max-columns=200
 --max-columns-preview
