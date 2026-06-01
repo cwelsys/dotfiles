@@ -68,7 +68,13 @@ if (( ${+commands[nvim]} )); then
 fi
 
 (( ${+commands[lazydocker]} )) && alias ld='lazydocker'
-(( ${+commands[lazygit]} ))    && alias lg='lazygit'
+if (( ${+commands[lazygit]} )); then
+  lg() {
+    local newdir="${XDG_STATE_HOME:-$HOME/.local/state}/lazygit/newdir"
+    LAZYGIT_NEW_DIR_FILE="$newdir" command lazygit "$@"
+    [[ -f $newdir ]] && builtin cd -- "$(<"$newdir")" && rm -f -- "$newdir"
+  }
+fi
 (( ${+commands[lazyjournal]} )) && alias lj='lazyjournal'
 (( ${+commands[managarr]} )) && alias arr='managarr'
 (( ${+commands[systemctl-tui]} )) && alias st='systemctl-tui'
