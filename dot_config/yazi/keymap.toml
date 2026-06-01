@@ -5,16 +5,8 @@ prepend_keymap = [
     "l",
   ], run = 'shell "nvim $@ +GitFileHistory" --block', desc = "Git file history" },
   { on = 'E', run = 'shell "sudo -e $@" --block --confirm' },
-  { on = 'R', run = "plugin rsync", desc = "rsync to host" },
-  { on = [
-    "g",
-    "j",
-  ], run = "plugin recycle-bin -- open", desc = "Open trash directory" },
-  { on = [
-    "g",
-    "J",
-  ], run = "plugin recycle-bin", desc = "Trash menu" },
-
+  { on = [ "c", "s", ], run = "plugin rsync", desc = "rsync to host" },
+  { on = 'R', run = "plugin omni-trash", desc = "Trash Menu" },
   { on = "l", run = "plugin augment-command.enter", desc = "Enter directory or open file" },
   { on = "f", run = "plugin searchjump", desc = "Search jump" },
   { on = "<C-f>", run = "filter --smart", desc = "Filter files" },
