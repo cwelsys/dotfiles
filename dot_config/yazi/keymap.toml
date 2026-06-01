@@ -6,7 +6,6 @@ prepend_keymap = [
   ], run = 'shell "nvim $@ +GitFileHistory" --block', desc = "Git file history" },
   { on = 'E', run = 'shell "sudo -e $@" --block --confirm' },
   { on = 'R', run = "plugin rsync", desc = "rsync to host" },
-  { on = "<C-p>", run = "shell -- qlmanage -p %s", desc = "Quick look (Darwin)" },
   { on = [
     "g",
     "j",
@@ -16,16 +15,16 @@ prepend_keymap = [
     "J",
   ], run = "plugin recycle-bin", desc = "Trash menu" },
 
-  { on = "l", run = "plugin augment-command -- enter", desc = "Enter directory or open file" },
-  { on = "f", run = "plugin searchjump", desc = "Search jump (visible pane)" },
-  { on = "/", run = "plugin fg -- rg", desc = "Search file contents (ripgrep)" },
+  { on = "l", run = "plugin augment-command.enter", desc = "Enter directory or open file" },
+  { on = "f", run = "plugin searchjump", desc = "Search jump" },
+  { on = "<C-f>", run = "filter --smart", desc = "Filter files" },
+  { on = "<A-g>", run = "plugin yafg", desc = "Content search" },
   { on = [
-    "s",
+    "c",
     "r",
   ], run = '''shell 'nvim +GrugFar' --block''', desc = "Find & replace (grug-far)" },
   { on = "F", run = "plugin smart-filter", desc = "Smart filter" },
   { on = "M", run = "plugin mount", desc = "Mount manager" },
-  { on = ";", run = "plugin custom-shell -- auto", desc = "Run a shell command" },
   { on = "T", run = "plugin toggle-pane max-preview", desc = "Maximize/restore preview" },
   { on = "+", run = "plugin zoom 1", desc = "Zoom in preview" },
   { on = "-", run = "plugin zoom -1", desc = "Zoom out preview" },
@@ -36,8 +35,8 @@ prepend_keymap = [
   ], run = "plugin lazygit", desc = "run lazygit" },
   { on = [
     "c",
-    "p",
-  ], run = "plugin command", desc = "Yazi command prompt" },
+    "x",
+  ], run = "plugin command", desc = "Command prompt" },
   { on = [
     "c",
     "m",
@@ -45,10 +44,10 @@ prepend_keymap = [
   { on = [
     "c",
     "a",
-  ], run = "plugin augment-command -- archive", desc = "Archive selected files" },
+  ], run = "plugin augment-command.archive", desc = "Archive selected files" },
   { on = [
     "g",
-    "c",
+    "s",
   ], run = "plugin vcs-files", desc = "Show Git file changes" },
   { on = "<A-e>", run = "excluded toggle", desc = "Toggle excluded files visibility" },
 
@@ -56,27 +55,37 @@ prepend_keymap = [
     "g",
     "R",
   ], run = '''shell 'f=$(rga --files-with-matches --no-messages "" 2>/dev/null | fzf --preview "rga --pretty --context 5 {q} {}") && [ -n "$f" ] && ya emit reveal "$f"' --block''', desc = "rga: search inside binaries/archives" },
-
+  { on = [ 
+    "<A-y>", 
+  ], run = "plugin copy-file-contents", desc = "Copy contents of file" },
   { on = [
-    "P",
+    "<C-p>",
     "s",
-  ], run = "plugin projects save", desc = "Project: save" },
+  ], run = "plugin projects save", desc = "Save current project" },
   { on = [
-    "P",
+    "<C-p>",
     "l",
-  ], run = "plugin projects load", desc = "Project: load" },
+  ], run = "plugin projects load", desc = "Load project" },
   { on = [
+    "<C-p>",
     "P",
-    "P",
-  ], run = "plugin projects load_last", desc = "Project: load last" },
+  ], run = "plugin projects load_last", desc = "Load last project" },
   { on = [
-    "P",
+    "<C-p>",
     "d",
-  ], run = "plugin projects delete", desc = "Project: delete" },
+  ], run = "plugin projects delete", desc = "Delete project" },
   { on = [
-    "P",
+    "<C-p>",
     "D",
-  ], run = "plugin projects delete_all", desc = "Project: delete all" },
+  ], run = "plugin projects delete_all", desc = "Delete all projects" },
+  { on = [
+    "<C-p>",
+    "m",
+  ], run = "plugin projects 'merge current'", desc = "Merge current tab to other projects" },
+  { on = [
+    "<C-p>",
+    "M",
+  ], run = "plugin projects 'merge all'", desc = "Merge current project to other projects" },
 
   { on = "u", run = "plugin restore", desc = "Restore last deleted" },
   { on = "U", run = "plugin restore -- --interactive", desc = "Restore (interactive)" },
