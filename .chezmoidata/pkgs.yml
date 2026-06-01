@@ -492,6 +492,7 @@ pkgs:
         - cups-pk-helper
         - deno
         - devtools
+        - difftastic
         - direnv
         - discord
         - dmidecode
@@ -849,13 +850,13 @@ pkgs:
         - "@googleworkspace/cli"
   global:
     yazi:
-      - AnirudhG07/custom-shell
+      - AnirudhG07/plugins-yazi:copy-file-contents
       - Lil-Dank/lazygit
       - MasouShizuka/projects
       - Rolv-Apneseth/starship
+      - XYenon/yafg
       - boydaihungst/restore
       - cwelsys/command
-      - cwelsys/fg
       - cwelsys/office
       - cwelsys/rsync
       - cwelsys/searchjump
