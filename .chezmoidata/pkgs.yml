@@ -855,13 +855,14 @@ pkgs:
       - MasouShizuka/projects
       - Rolv-Apneseth/starship
       - XYenon/yafg
+      - barbanevosa/linemode-plus
       - boydaihungst/restore
       - cwelsys/command
       - cwelsys/office
       - cwelsys/rsync
-      - cwelsys/searchjump
       - goon/omni-trash
       - hankertrix/augment-command
+      - larry-oates/open-git-remote
       - ndtoan96/ouch
       - yazi-rs/flavors:catppuccin-mocha
       - yazi-rs/plugins:chmod
