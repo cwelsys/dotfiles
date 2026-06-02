@@ -5,16 +5,18 @@ prepend_keymap = [
     "l",
   ], run = 'shell "nvim $@ +GitFileHistory" --block', desc = "Git file history" },
   { on = 'E', run = 'shell "sudo -e $@" --block --confirm' },
-  { on = [ "c", "s", ], run = "plugin rsync", desc = "rsync to host" },
+  { on = [
+    "c",
+    "s",
+  ], run = "plugin rsync", desc = "rsync to host" },
   { on = 'R', run = "plugin omni-trash", desc = "Trash Menu" },
   { on = "l", run = "plugin augment-command.enter", desc = "Enter directory or open file" },
   { on = "f", run = "plugin searchjump", desc = "Search jump" },
-  { on = "<C-f>", run = "filter --smart", desc = "Filter files" },
-  { on = "<A-g>", run = "plugin yafg", desc = "Content search" },
+  { on = "<C-f>", run = "plugin yafg", desc = "Content search" },
   { on = [
     "c",
     "r",
-  ], run = '''shell 'nvim +GrugFar' --block''', desc = "Find & replace (grug-far)" },
+  ], run = '''shell 'nvim +GrugFar' --block''', desc = "Find & replace" },
   { on = "F", run = "plugin smart-filter", desc = "Smart filter" },
   { on = "M", run = "plugin mount", desc = "Mount manager" },
   { on = "T", run = "plugin toggle-pane max-preview", desc = "Maximize/restore preview" },
@@ -45,10 +47,10 @@ prepend_keymap = [
 
   { on = [
     "g",
-    "R",
+    "r",
   ], run = '''shell 'f=$(rga --files-with-matches --no-messages "" 2>/dev/null | fzf --preview "rga --pretty --context 5 {q} {}") && [ -n "$f" ] && ya emit reveal "$f"' --block''', desc = "rga: search inside binaries/archives" },
-  { on = [ 
-    "<A-y>", 
+  { on = [
+    "<A-y>",
   ], run = "plugin copy-file-contents", desc = "Copy contents of file" },
   { on = [
     "<C-p>",

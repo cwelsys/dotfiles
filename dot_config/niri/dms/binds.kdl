@@ -206,10 +206,11 @@ binds {
 
     // === Sizing  ===
     Mod+R { switch-preset-column-width; }
+    Mod3+R { switch-preset-column-width; }
     Mod+Ctrl+R { reset-window-height; }
     Mod+Alt+F { expand-column-to-available-width; }
-    Mod3+C { center-column; }
     Mod+C { center-column; }
+    Mod3+Space { center-column; }
     Mod+Ctrl+C { center-visible-columns; }
     Mod+Minus { set-column-width "-10%"; }
     Mod+Equal { set-column-width "+10%"; }
