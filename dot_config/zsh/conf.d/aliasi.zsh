@@ -32,6 +32,23 @@ alias cp='cp -i'
 alias mv='mv -i'
 alias mkdir='mkdir -pv'
 
+y() {
+  local tmp=$(mktemp -t yazi-cwd.XXXXXX) cwd zdir
+  [[ -n $1 && ! -e $1 ]] && zdir=$(zoxide query -- "$1" 2>/dev/null) && set -- "$zdir" "${@:2}"
+  command yazi "$@" --cwd-file="$tmp"
+  IFS= read -r cwd <"$tmp"
+  [[ $cwd != $PWD && -d $cwd ]] && builtin cd -- "$cwd"
+  rm -f -- "$tmp"
+}
+
+if (( ${+commands[lazygit]} )); then
+  lg() {
+    local newdir="${XDG_STATE_HOME:-$HOME/.local/state}/lazygit/newdir"
+    LAZYGIT_NEW_DIR_FILE="$newdir" command lazygit "$@"
+    [[ -f $newdir ]] && { builtin cd -- "$(<"$newdir")"; rm -f -- "$newdir" }
+  }
+fi
+
 psgrep() {
   ps aux | grep "${1:-.}" | grep -v grep
 }
@@ -68,13 +85,6 @@ if (( ${+commands[nvim]} )); then
 fi
 
 (( ${+commands[lazydocker]} )) && alias ld='lazydocker'
-if (( ${+commands[lazygit]} )); then
-  lg() {
-    local newdir="${XDG_STATE_HOME:-$HOME/.local/state}/lazygit/newdir"
-    LAZYGIT_NEW_DIR_FILE="$newdir" command lazygit "$@"
-    [[ -f $newdir ]] && builtin cd -- "$(<"$newdir")" && rm -f -- "$newdir"
-  }
-fi
 (( ${+commands[lazyjournal]} )) && alias lj='lazyjournal'
 (( ${+commands[managarr]} )) && alias arr='managarr'
 (( ${+commands[systemctl-tui]} )) && alias st='systemctl-tui'
@@ -118,14 +128,6 @@ elif [[ -n $GHOSTTY_RESOURCES_DIR ]] || (( ${+commands[ghostty]} )); then
   alias fonts='ghostty +list-fonts'
 fi
 
-y() {
-  local tmp cwd
-  tmp=$(mktemp -t "yazi-cwd.XXXXXX")
-  command yazi "$@" --cwd-file="$tmp"
-  read -r cwd <"$tmp"
-  [[ $cwd != $PWD && -d $cwd ]] && builtin cd -- "$cwd"
-  rm -f -- "$tmp"
-}
 
 alias adb='HOME="$XDG_DATA_HOME"/android adb'
 
