@@ -73,7 +73,7 @@ prepend_preloaders = [
 prepend_previewers = [
   { url = "*.csv", run = 'piper -- xan view "$1"' },
   { mime = "text/*", run = 'piper -- bat -p --color=always "$1"' },
-  # { mime = "application/{*zip,tar,bzip2,7z*,rar,xz,zstd,java-archive}", run = "ouch --archive-icon='🗄️ ' --show-file-icons --list-view" },
+  { mime = "application/{*xml,xml-dtd,ecmascript,javascript,sql,csh,tcl,latex,rtf,pgp-signature,pgp-keys,graphql,*+json}", run = 'piper -- bat -p --color=always "$1"' },
   { mime = "application/openxmlformats-officedocument.*", run = "office" },
   { mime = "application/oasis.opendocument.*", run = "office" },
   { mime = "application/ms-*", run = "office" },
