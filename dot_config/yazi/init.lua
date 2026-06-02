@@ -1,41 +1,15 @@
-local catppuccin_palette = {
-	rosewater = "#f5e0dc",
-	flamingo = "#f2cdcd",
-	pink = "#f5c2e7",
-	mauve = "#cba6f7",
-	red = "#f38ba8",
-	maroon = "#eba0ac",
-	peach = "#fab387",
-	yellow = "#f9e2af",
-	green = "#a6e3a1",
-	teal = "#94e2d5",
-	sky = "#89dceb",
-	sapphire = "#74c7ec",
-	blue = "#89b4fa",
-	lavender = "#b4befe",
-	text = "#cdd6f4",
-	subtext1 = "#bac2de",
-	subtext0 = "#a6adc8",
-	overlay2 = "#9399b2",
-	overlay1 = "#7f849c",
-	overlay0 = "#6c7086",
-	surface2 = "#585b70",
-	surface1 = "#45475a",
-	surface0 = "#313244",
-	base = "#1e1e2e",
-	mantle = "#181825",
-	crust = "#11111b",
-}
-
--- Linemode
-function Linemode:size_only()
-	local size = self._file:size()
-	return string.format("%s", size and ya.readable_size(size) or "")
-end
-
 -- Plugins
 require("full-border"):setup({
 	type = ui.Border.ROUNDED,
+})
+
+require("linemode-plus"):setup({
+	date_mode = "custom",
+	custom = {
+		order = { "month", "day", "year" },
+		separator = "/",
+		year_digits = 2,
+	},
 })
 
 require("mime-ext.local"):setup({
@@ -48,20 +22,6 @@ require("zoxide"):setup({
 
 require("session"):setup({
 	sync_yanked = true,
-})
-
-require("searchjump"):setup({
-	unmatch_fg = catppuccin_palette.overlay0,
-	match_str_fg = catppuccin_palette.green,
-	match_str_bg = catppuccin_palette.base,
-	first_match_str_fg = catppuccin_palette.lavender,
-	first_match_str_bg = catppuccin_palette.base,
-	label_fg = catppuccin_palette.lavender,
-	label_bg = catppuccin_palette.base,
-	only_current = false,
-	show_search_in_statusbar = true,
-	auto_exit_when_unmatch = false,
-	enable_capital_label = true,
 })
 
 require("yafg"):setup({
