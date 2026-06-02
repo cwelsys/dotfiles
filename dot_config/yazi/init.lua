@@ -30,7 +30,7 @@ require("yafg"):setup({
 })
 
 require("projects"):setup({
-	save = { method = "lua" },
+	save = { method = "yazi" },
 	last = {
 		update_after_save = true,
 		update_after_load = true,
