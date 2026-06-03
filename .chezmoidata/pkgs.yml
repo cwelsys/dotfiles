@@ -458,8 +458,8 @@ pkgs:
         - benchmark
         - bibata-cursor-theme-bin
         - bindfs
-        - blueberry
         - bluebubbles-bin
+        - blueman
         - bluetui
         - brightnessctl
         - btop
@@ -484,6 +484,7 @@ pkgs:
         - cockpit-storaged
         - cowsay
         - cpio
+        - croc
         - csvkit
         - cups
         - cups-browsed
@@ -508,9 +509,11 @@ pkgs:
         - dsearch-bin
         - dualsensectl
         - ducker
+        - duckstation-qt-bin
         - duf
         - dust
         - easyeffects
+        - eden-nightly-bin
         - efibootmgr
         - emojify
         - espeak
@@ -523,6 +526,7 @@ pkgs:
         - fd
         - ffmpegthumbnailer
         - figlet
+        - flycast
         - fontconfig
         - fortune-mod
         - freetype2-qdoled
@@ -648,6 +652,7 @@ pkgs:
         - ncdu
         - nct6687d-dkms-git
         - neovim
+        - nestopia
         - networkmanager
         - nextcloud-client
         - nfs-utils
@@ -692,6 +697,7 @@ pkgs:
         - polkit-gnome
         - postgresql-libs
         - power-profiles-daemon
+        - ppsspp
         - prek-bin
         - protontricks
         - python-aiohttp-oauthlib
@@ -864,6 +870,7 @@ pkgs:
       - hankertrix/augment-command
       - larry-oates/open-git-remote
       - ndtoan96/ouch
+      - tasnimAlam/croc-send
       - yazi-rs/flavors:catppuccin-mocha
       - yazi-rs/plugins:chmod
       - yazi-rs/plugins:diff
