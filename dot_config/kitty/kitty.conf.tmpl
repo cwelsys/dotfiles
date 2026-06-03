@@ -37,7 +37,11 @@ include tabs.conf
 
 # font
 font_size 16
+{{ if eq .chezmoi.os "darwin" -}}
 font_family JetBrains Mono
+{{- else -}}
+font_family JetBrainsMono Nerd Font
+{{- end }}
 
 # cursor
 cursor_trail 3
