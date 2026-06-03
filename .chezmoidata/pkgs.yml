@@ -587,8 +587,6 @@ pkgs:
         - kimageformats
         - kitty-terminfo
         - kmon
-        - kvantum
-        - kvantum-qt5
         - lact
         - lazydocker
         - lazygit
