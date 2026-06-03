@@ -437,6 +437,7 @@ pkgs:
         - 1password-beta
         - 1password-cli
         - 7zip
+        - adobe-source-serif-fonts
         - adw-gtk-theme
         - age
         - amd-ucode
@@ -538,7 +539,6 @@ pkgs:
         - gamemode
         - gdb
         - genact
-        - ghostty
         - git
         - git-absorb
         - git-branchless
@@ -767,9 +767,6 @@ pkgs:
         - tpm2-tools
         - trash-cli
         - tree-sitter-cli
-        - ttf-0xproto-nerd
-        - ttf-cascadia-code-nerd
-        - ttf-cascadia-mono-nerd
         - ttf-dejavu
         - ttf-droid
         - ttf-fantasque-nerd
@@ -778,11 +775,9 @@ pkgs:
         - ttf-ibmplex-mono-nerd
         - ttf-jetbrains-mono
         - ttf-jetbrains-mono-nerd
-        - ttf-meslo-nerd
         - ttf-nerd-fonts-symbols-mono
         - ttf-overpass
         - ttf-poppins
-        - ttf-pragmasevka-nerd-font
         - ttf-rubik-vf
         - ttf-twemoji
         - tzupdate
