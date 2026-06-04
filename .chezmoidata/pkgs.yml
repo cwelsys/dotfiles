@@ -439,6 +439,7 @@ pkgs:
         - 7zip
         - adobe-source-serif-fonts
         - adw-gtk-theme
+        - adwaita-qt5
         - age
         - amd-ucode
         - ananicy-cpp
@@ -460,7 +461,6 @@ pkgs:
         - bibata-cursor-theme-bin
         - bindfs
         - bluebubbles-bin
-        - blueman
         - bluetui
         - brightnessctl
         - btop
@@ -750,7 +750,7 @@ pkgs:
         - swaylock
         - swayosd
         - syncthing
-        - syncthingtray
+        - syncthingtray-qt6
         - system-config-printer
         - tailscale
         - tcpdump
