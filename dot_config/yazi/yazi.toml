@@ -7,7 +7,7 @@ sort_dir_first = true
 sort_sensitive = false
 sort_reverse = false
 sort_translit = false
-linemode = "size"
+linemode = "size_only"
 show_hidden = true
 show_symlink = true
 scrolloff = 5
@@ -54,6 +54,11 @@ extract = [
   { run = 'ya pub augmented-extract --list %s', desc = "Extract here (augment-command)" },
 ]
 
+download = [
+      { run = "ya emit download %S",        desc = "Download" },
+      { run = "ya emit download --open %S", desc = "Download and open" },
+]
+
 [plugin]
 prepend_fetchers = [
   { group = "git", url = "*", run = "git" },
@@ -80,3 +85,4 @@ prepend_previewers = [
   { mime = "application/msword", run = "office" },
   { url = "*.docx", run = "office" },
 ]
+
