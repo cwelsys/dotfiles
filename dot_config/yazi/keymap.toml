@@ -27,11 +27,14 @@ prepend_keymap = [
 
   # ── goto dirs (z) ────────────────────────────────────────────────────
   { on = [ "z", "h" ], run = "cd ~", desc = "Home" },
-  { on = [ "z", "c" ], run = "cd ~/.config", desc = "~/.config" },
+  { on = [ "z", "c" ], run = "cd ~/.config", desc = "Config" },
+  { on = [ "z", "s" ], run = "cd ~/.local/share", desc = "Local Share" },
   { on = [ "z", "d" ], run = "cd ~/Downloads", desc = "Downloads" },
-  { on = [ "z", "D" ], run = "cd ~/.local/share/dots", desc = "Dots" },
+  { on = [ "z", "m"], run = "cd /mnt", desc = "Mount" },
+  { on = [ "z", "D" ], run = "cd ~/.local/share/dots", desc = "dots" },
   { on = [ "z", "<Space>" ], run = "cd --interactive", desc = "Jump interactively" },
   { on = [ "z", "f" ], run = "follow", desc = "Follow symlink" },
+  { on = [ "z", "p" ], run = "plugin remotes", desc = "Remote host (vfs)" },
 
   # ── tabs (t) ─────────────────────────────────────────────────────────
   { on = [ "t", "d" ], run = "close", desc = "Close current tab" },
@@ -39,13 +42,14 @@ prepend_keymap = [
   { on = ">", run = "tab_switch 1 --relative",  desc = "Switch to next tab" },
 
   # ── linemode (m) ─────────────────────────────────────────────────────
-  { on = [ "m", "c" ], run = "linemode size_mtime", desc = "Linemode: size + mtime" },
-  { on = [ ",", "M" ], run = "sort mtime --reverse=no",  desc = "Sort by mtime" },
-  { on = [ ",", "m" ], run = "sort mtime --reverse=yes", desc = "Sort by mtime (reverse)" },
-  { on = [ ",", "B" ], run = "sort btime --reverse=no",  desc = "Sort by btime" },
-  { on = [ ",", "b" ], run = "sort btime --reverse=yes", desc = "Sort by btime (reverse)" },
-  { on = [ ",", "S" ], run = "sort size --reverse=no",   desc = "Sort by size" },
-  { on = [ ",", "s" ], run = "sort size --reverse=yes",  desc = "Sort by size (reverse)" },
+  { on = [ "m", "s" ], run = "linemode size_only", desc = "Size" },
+  { on = [ "m", "c" ], run = "linemode size_mtime", desc = "size + mtime" },
+  { on = [ ",", "M" ], run = "sort mtime --reverse=no",  desc = "Modified" },
+  { on = [ ",", "m" ], run = "sort mtime --reverse=yes", desc = "Modified (rev)" },
+  { on = [ ",", "B" ], run = "sort btime --reverse=no",  desc = "Created" },
+  { on = [ ",", "b" ], run = "sort btime --reverse=yes", desc = "Created (rev)" },
+  { on = [ ",", "S" ], run = "sort size --reverse=no",   desc = "Size" },
+  { on = [ ",", "s" ], run = "sort size --reverse=yes",  desc = "Size (rev)" },
 
   # ── projects (b) ─────────────────────────────────────────────────────
   { on = [ "b", "s" ], run = "plugin projects save", desc = "Save current" },
@@ -58,7 +62,8 @@ prepend_keymap = [
 
   # ── singles ──────────────────────────────────────────────────────────
   { on = "l", run = "plugin augment-command.enter", desc = "Enter directory or open file" },
-  { on = "F", run = "plugin smart-filter", desc = "Smart filter" },
+  { on = "f", run = "plugin smart-filter", desc = "Smart Filter" },
+  { on = "F", run = "filter --smart", desc = "Filter files" },
   { on = "R", run = "plugin omni-trash", desc = "Trash menu" },
   { on = "u", run = "plugin restore", desc = "Restore last deleted" },
   { on = "U", run = "plugin restore -- --interactive", desc = "Restore (interactive)" },
