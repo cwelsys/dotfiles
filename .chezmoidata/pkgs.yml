@@ -818,6 +818,7 @@ pkgs:
         - wtype
         - xan
         - xcompmgr
+        - xdelta3
         - xdg-desktop-portal-gnome
         - xdg-desktop-portal-gtk
         - xdg-ninja
@@ -858,6 +859,7 @@ pkgs:
       - boydaihungst/restore
       - cwelsys/command
       - cwelsys/office
+      - cwelsys/remotes
       - cwelsys/rsync
       - goon/omni-trash
       - hankertrix/augment-command
