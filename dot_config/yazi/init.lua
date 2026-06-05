@@ -1,3 +1,9 @@
+-- Linemode size_only
+function Linemode:size_only()
+	local size = self._file:size()
+	return size and ya.readable_size(size) or ""
+end
+
 -- Plugins
 require("full-border"):setup({
 	type = ui.Border.ROUNDED,
