@@ -38,7 +38,10 @@ log_warn() { echo -e "${YELLOW}!${RESET} $1"; }
 
 check_token() {
   if [[ -z "${HA_TOKEN:-}" ]]; then
-    log_error "HA_TOKEN not set"
+    HA_TOKEN=$(pass show tokens/home-assistant 2>/dev/null) || true
+  fi
+  if [[ -z "${HA_TOKEN:-}" ]]; then
+    log_error "HA_TOKEN not in pass"
     return 1
   fi
 }
@@ -51,10 +54,11 @@ ha_call() {
   check_token || return 1
 
   if [[ "$method" == "GET" ]]; then
-    curl -sf -H "Authorization: Bearer $HA_TOKEN" "$HA_URL/api/$endpoint"
+    curl -sf -K <(printf 'header = "Authorization: Bearer %s"\n' "$HA_TOKEN") \
+      "$HA_URL/api/$endpoint"
   else
-    curl -sf -X POST -H "Authorization: Bearer $HA_TOKEN" \
-      -H "Content-Type: application/json" \
+    curl -sf -K <(printf 'header = "Authorization: Bearer %s"\n' "$HA_TOKEN") \
+      -X POST -H "Content-Type: application/json" \
       "$HA_URL/api/$endpoint" -d "$data"
   fi
 }
