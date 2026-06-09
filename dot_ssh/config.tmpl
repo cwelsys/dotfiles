@@ -35,6 +35,9 @@ Host mba
 Host pbox
 	HostName pbox
 	User cwel
+{{- if lookPath "gpgconf" }}
+	RemoteForward /run/user/1000/gnupg/d.iy49ckdngxkgyo5wjr9skorp/S.gpg-agent {{ output "gpgconf" "--list-dirs" "agent-extra-socket" | trim }}
+{{- end }}
 
 {{- end }}
 {{- if ne .hostname "bmac" }}
