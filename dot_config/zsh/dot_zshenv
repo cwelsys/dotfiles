@@ -175,6 +175,7 @@ if (( ${+commands[brew]} )); then
   export HOMEBREW_USE_INTERNAL_API=1
   export HOMEBREW_CLEANUP_MAX_AGE_DAYS=7
   export HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS=3
+  export HOMEBREW_NO_ASK=1
 fi
 
 case $HOST in
