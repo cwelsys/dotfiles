@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 
+STORE="${PASSWORD_STORE_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/pass}"
+if [[ ! -d "$STORE" ]]; then
+  git clone git@github.com:cwelsys/poswd.git "$STORE"
+  tee $STORE/.git/hooks/post-commit >/dev/null <<'EOF'
+#!/bin/sh
+set -x
+git pull --rebase
+git push
+EOF
+  chmod +x "$STORE/.git/hooks/post-commit"
+fi
+
 if ! command -v gpg &>/dev/null; then
   exit
 fi
