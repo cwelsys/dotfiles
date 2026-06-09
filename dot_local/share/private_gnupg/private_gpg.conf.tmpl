@@ -1,3 +1,6 @@
+{{- if .headless }}
+no-autostart
+{{ end -}}
 trusted-key {{ .gpgId }}
 
 default-key {{ .gpgId }}
