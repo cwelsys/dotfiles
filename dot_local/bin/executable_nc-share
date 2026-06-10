@@ -1,0 +1,344 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+nc_load_config() {
+
+  NC_BASE_URL="${NC_SHARE_URL:?nc-share: set NC_SHARE_URL to your Nextcloud base URL}"
+  NC_BASE_URL="${NC_BASE_URL%/}"
+  NC_USER="${NC_SHARE_USER:-admin}"
+  NC_DROP_FOLDER="${NC_SHARE_DROP_FOLDER:-Shared}"
+  NC_DROP_FOLDER="${NC_DROP_FOLDER#/}"
+  NC_DROP_FOLDER="${NC_DROP_FOLDER%/}"
+  NC_EXPIRY_DAYS="${NC_SHARE_EXPIRY_DAYS:-5}"
+
+  local password_cmd="${NC_SHARE_PASS_CMD:?nc-share: set NC_SHARE_PASS_CMD to a command that prints the Nextcloud app password}"
+  NC_PASS="$(eval "$password_cmd")" || {
+    printf 'nc-share: password command failed: %s\n' "$password_cmd" >&2
+    return 1
+  }
+}
+
+nc_compute_expiry_date() {
+  local days="$1"
+  local base="${NC_SHARE_NOW:-now}"
+  if date --version >/dev/null 2>&1; then
+    date -d "${base} +${days} days" +%Y-%m-%d
+  elif [[ "$base" == "now" ]]; then
+    date -v "+${days}d" +%Y-%m-%d
+  else
+    date -j -v "+${days}d" -f "%Y-%m-%d" "$base" +%Y-%m-%d
+  fi
+}
+
+nc_validate_inputs() {
+  local p
+  for p in "$@"; do
+    if [[ ! -e "$p" ]]; then
+      printf 'nc-share: no such file or directory: %s\n' "$p" >&2
+      return 1
+    fi
+  done
+}
+
+# longest common parent directory of the given paths
+nc_common_dir() {
+  local common
+  common="$(dirname -- "$1")"
+  shift
+  local p dir
+  for p in "$@"; do
+    dir="$(dirname -- "$p")"
+    while [[ "$dir/" != "$common/"* ]]; do
+      common="$(dirname -- "$common")"
+      [[ "$common" == "/" ]] && break
+    done
+  done
+  printf '%s' "$common"
+}
+
+nc_all_regular_files() {
+  local p
+  for p in "$@"; do
+    [[ -f "$p" ]] || return 1
+  done
+}
+
+#   single file                   -> file   <basename>
+#   single directory              -> zip    <dirname>.zip
+#   many files                    -> folder <common-parent-basename>
+#   many, including a directory   -> zip    <common-parent-basename>.zip
+nc_plan() {
+  if [[ $# -eq 1 ]]; then
+    if [[ -d "$1" ]]; then
+      printf 'zip\n%s.zip\n' "$(basename -- "$1")"
+    else
+      printf 'file\n%s\n' "$(basename -- "$1")"
+    fi
+    return 0
+  fi
+  local stem
+  stem="$(basename -- "$(nc_common_dir "$@")")"
+  [[ -z "$stem" || "$stem" == "/" ]] && stem="shared"
+  if nc_all_regular_files "$@"; then
+    printf 'folder\n%s\n' "$stem"
+  else
+    printf 'zip\n%s.zip\n' "$stem"
+  fi
+}
+
+nc_suffix_name() {
+  local name="$1" n="$2"
+  if [[ "$n" -le 1 ]]; then
+    printf '%s' "$name"
+  elif [[ "$name" == *.* && -n "${name%.*}" ]]; then
+    printf '%s-%s.%s' "${name%.*}" "$n" "${name##*.}"
+  else
+    printf '%s-%s' "$name" "$n"
+  fi
+}
+
+nc_zip_inputs() {
+  local workdir="$1" zipname="$2"
+  shift 2
+  mkdir -p "$workdir"
+  local zippath="${workdir}/${zipname}"
+  local item
+  for item in "$@"; do
+    (cd "$(dirname -- "$item")" && zip -q -r "$zippath" "$(basename -- "$item")") >&2 || return 1
+  done
+  printf '%s' "$zippath"
+}
+
+# urlencode a single path segment
+nc_urlencode_segment() {
+  local s="$1" out="" c
+  local i
+  for ((i = 0; i < ${#s}; i++)); do
+    c="${s:$i:1}"
+    case "$c" in
+    [a-zA-Z0-9.~_-]) out+="$c" ;;
+    *)
+      printf -v c '%%%02X' "'$c"
+      out+="$c"
+      ;;
+    esac
+  done
+  printf '%s' "$out"
+}
+
+# urlencode each segment of a relative path, preserving literal / separators
+nc_urlencode_path() {
+  local path="$1"
+  local encoded="" seg
+  local -a segments
+  IFS='/' read -ra segments <<<"$path"
+  local first=1
+  for seg in "${segments[@]}"; do
+    [[ "$first" -eq 1 ]] || encoded+="/"
+    encoded+="$(nc_urlencode_segment "$seg")"
+    first=0
+  done
+  printf '%s' "$encoded"
+}
+
+nc_webdav_mkcol() {
+  local remote_dir="$1"
+  local enc
+  enc="$(nc_urlencode_path "$remote_dir")"
+  local url="${NC_BASE_URL}/remote.php/dav/files/${NC_USER}/${NC_DROP_FOLDER}/${enc}"
+  local code
+  code="$(curl -sS -u "${NC_USER}:${NC_PASS}" -X MKCOL \
+    -o /dev/null -w '%{http_code}' "$url")" || return 1
+  case "$code" in
+  201) return 0 ;;
+  405) return 3 ;; # already exists — caller may try the next candidate name
+  *)
+    printf 'nc-share: mkcol failed (HTTP %s)\n' "$code" >&2
+    return 1
+    ;;
+  esac
+}
+
+nc_webdav_upload() {
+  local local_path="$1" remote_relpath="$2"
+  local enc
+  enc="$(nc_urlencode_path "$remote_relpath")"
+  local url="${NC_BASE_URL}/remote.php/dav/files/${NC_USER}/${NC_DROP_FOLDER}/${enc}"
+  local code
+  code="$(curl -sS -u "${NC_USER}:${NC_PASS}" -T "$local_path" \
+    -o /dev/null -w '%{http_code}' "$url")" || return 1
+  case "$code" in
+  2??) return 0 ;;
+  *)
+    printf 'nc-share: upload failed (HTTP %s)\n' "$code" >&2
+    return 1
+    ;;
+  esac
+}
+
+# 0 = uploaded, 3 = already exists, 1 = any other failure.
+nc_webdav_upload_noclobber() {
+  local local_path="$1" remote_relpath="$2"
+  local enc
+  enc="$(nc_urlencode_path "$remote_relpath")"
+  local url="${NC_BASE_URL}/remote.php/dav/files/${NC_USER}/${NC_DROP_FOLDER}/${enc}"
+  local code
+  code="$(curl -sS -u "${NC_USER}:${NC_PASS}" -H "If-None-Match: *" -T "$local_path" \
+    -o /dev/null -w '%{http_code}' "$url")" || return 1
+  case "$code" in
+  2??) return 0 ;;
+  412) return 3 ;;
+  *)
+    printf 'nc-share: upload failed (HTTP %s)\n' "$code" >&2
+    return 1
+    ;;
+  esac
+}
+
+nc_upload_file_unique() {
+  local local_path="$1" base="$2"
+  local n=1 name rc
+  while [[ "$n" -le 99 ]]; do
+    name="$(nc_suffix_name "$base" "$n")"
+    rc=0
+    nc_webdav_upload_noclobber "$local_path" "$name" || rc=$?
+    if [[ $rc -eq 0 ]]; then
+      printf '%s' "$name"
+      return 0
+    fi
+    [[ $rc -eq 3 ]] || return 1
+    n=$((n + 1))
+  done
+  printf 'nc-share: could not find a free name for %s\n' "$base" >&2
+  return 1
+}
+
+nc_make_folder_unique() {
+  local base="$1"
+  local n=1 name rc
+  while [[ "$n" -le 99 ]]; do
+    name="$(nc_suffix_name "$base" "$n")"
+    rc=0
+    nc_webdav_mkcol "$name" || rc=$?
+    if [[ $rc -eq 0 ]]; then
+      printf '%s' "$name"
+      return 0
+    fi
+    [[ $rc -eq 3 ]] || return 1
+    n=$((n + 1))
+  done
+  printf 'nc-share: could not find a free folder name for %s\n' "$base" >&2
+  return 1
+}
+
+nc_parse_field() {
+  jq -r ".ocs.data.${1}"
+}
+
+nc_create_share() {
+  local remote_relpath="$1" expiry="$2"
+  local url="${NC_BASE_URL}/ocs/v2.php/apps/files_sharing/api/v1/shares?format=json"
+  local body
+  body="$(curl -sS -u "${NC_USER}:${NC_PASS}" \
+    -H "OCS-APIRequest: true" \
+    --data-urlencode "path=/${NC_DROP_FOLDER}/${remote_relpath}" \
+    --data-urlencode "shareType=3" \
+    --data-urlencode "permissions=1" \
+    --data-urlencode "expireDate=${expiry}" \
+    "$url")" || return 1
+  if ! printf '%s' "$body" | jq . >/dev/null 2>&1; then
+    printf 'nc-share: server returned non-JSON response\n' >&2
+    return 1
+  fi
+  local status
+  status="$(printf '%s' "$body" | jq -r '.ocs.meta.statuscode')"
+  if [[ "$status" != "200" ]]; then
+    printf 'nc-share: share creation failed (OCS %s)\n' "$status" >&2
+    return 1
+  fi
+  printf '%s' "$body"
+}
+
+nc_copy() {
+  local text="$1"
+  if command -v wl-copy >/dev/null 2>&1; then
+    printf '%s' "$text" | wl-copy
+  elif command -v pbcopy >/dev/null 2>&1; then
+    printf '%s' "$text" | pbcopy
+  elif command -v xclip >/dev/null 2>&1; then
+    printf '%s' "$text" | xclip -selection clipboard
+  elif command -v xsel >/dev/null 2>&1; then
+    printf '%s' "$text" | xsel --clipboard --input
+  else
+    return 1
+  fi
+}
+
+nc_deliver() {
+  local url="$1" expiry="$2"
+  nc_copy "$url" || printf 'nc-share: no clipboard tool found (wl-copy/pbcopy/xclip/xsel); link not copied\n' >&2
+  printf 'nc-share: link copied, expires %s\n' "$expiry" >&2
+  printf '%s\n' "$url"
+}
+
+nc_main() {
+  [[ $# -ge 1 ]] || {
+    printf 'usage: nc-share <path>...\n' >&2
+    return 2
+  }
+  nc_load_config || return 1
+  nc_validate_inputs "$@" || return 1
+
+  local mode name
+  {
+    read -r mode
+    read -r name
+  } < <(nc_plan "$@")
+
+  local expiry relpath item
+  expiry="$(nc_compute_expiry_date "$NC_EXPIRY_DAYS")"
+
+  case "$mode" in
+  file)
+    relpath="$(nc_upload_file_unique "$1" "$name")" || return 1
+    ;;
+  zip)
+    local workdir zippath
+    workdir="$(mktemp -d "${TMPDIR:-/tmp}/nc-share.XXXXXX")"
+    # shellcheck disable=SC2064
+    trap "rm -rf '$workdir'" RETURN
+    zippath="$(nc_zip_inputs "$workdir" "$name" "$@")" || {
+      printf 'nc-share: failed to create archive\n' >&2
+      return 1
+    }
+    relpath="$(nc_upload_file_unique "$zippath" "$name")" || return 1
+    ;;
+  folder)
+    local folder
+    folder="$(nc_make_folder_unique "$name")" || return 1
+    for item in "$@"; do
+      nc_upload_file_unique "$item" "${folder}/$(basename -- "$item")" >/dev/null || return 1
+    done
+    relpath="$folder"
+    ;;
+  *)
+    printf 'nc-share: internal error: unknown mode %s\n' "$mode" >&2
+    return 1
+    ;;
+  esac
+
+  local body url
+  body="$(nc_create_share "$relpath" "$expiry")" || return 1
+  url="$(printf '%s' "$body" | nc_parse_field url)"
+
+  if [[ -z "$url" || "$url" == "null" ]]; then
+    printf 'nc-share: share URL missing in response\n' >&2
+    return 1
+  fi
+
+  nc_deliver "$url" "$expiry"
+}
+
+if [[ "${BASH_SOURCE[0]:-}" == "${0}" ]]; then
+  nc_main "$@"
+fi
