@@ -457,6 +457,7 @@ pkgs:
         - bash-completion
         - bat
         - bat-extras
+        - bats
         - bc
         - benchmark
         - bibata-cursor-theme-bin
@@ -681,6 +682,7 @@ pkgs:
         - pandoc-bin
         - papirus-icon-theme
         - paru-git
+        - pass
         - pavucontrol
         - pcsx2
         - perl-image-exiftool
@@ -765,6 +767,7 @@ pkgs:
         - topgrade-bin
         - tpm2-tools
         - trash-cli
+        - tree
         - tree-sitter-cli
         - ttf-dejavu
         - ttf-droid
@@ -861,6 +864,7 @@ pkgs:
       - boydaihungst/restore
       - cwelsys/command
       - cwelsys/fg
+      - cwelsys/nc-share
       - cwelsys/office
       - cwelsys/remotes
       - cwelsys/rsync
