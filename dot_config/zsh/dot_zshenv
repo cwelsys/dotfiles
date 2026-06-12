@@ -41,6 +41,7 @@ path=(
   $XDG_DATA_HOME/go/bin
   $XDG_DATA_HOME/npm/bin
   $XDG_DATA_HOME/gem/bin
+  $PNPM_HOME/bin
   /usr/local/sbin
   /usr/local/bin
   /usr/bin
