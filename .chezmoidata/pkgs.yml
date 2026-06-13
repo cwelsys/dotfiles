@@ -137,6 +137,7 @@ pkgs:
         - packagekit
         - pacman-contrib
         - paru-git
+        - pass
         - plocate
         - poppler
         - postgresql-libs
