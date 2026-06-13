@@ -147,7 +147,7 @@ nc_webdav_mkcol() {
   enc="$(nc_urlencode_path "$remote_dir")"
   local url="${NC_BASE_URL}/remote.php/dav/files/${NC_USER}/${NC_DROP_FOLDER}/${enc}"
   local code
-  code="$(curl -sS -u "${NC_USER}:${NC_PASS}" -X MKCOL \
+  code="$(curl -sS --globoff -u "${NC_USER}:${NC_PASS}" -X MKCOL \
     -o /dev/null -w '%{http_code}' "$url")" || return 1
   case "$code" in
   201) return 0 ;;
@@ -165,7 +165,7 @@ nc_webdav_upload() {
   enc="$(nc_urlencode_path "$remote_relpath")"
   local url="${NC_BASE_URL}/remote.php/dav/files/${NC_USER}/${NC_DROP_FOLDER}/${enc}"
   local code
-  code="$(curl -sS -u "${NC_USER}:${NC_PASS}" -T "$local_path" \
+  code="$(curl -sS --globoff -u "${NC_USER}:${NC_PASS}" -T "$local_path" \
     -o /dev/null -w '%{http_code}' "$url")" || return 1
   case "$code" in
   2??) return 0 ;;
@@ -183,7 +183,7 @@ nc_webdav_upload_noclobber() {
   enc="$(nc_urlencode_path "$remote_relpath")"
   local url="${NC_BASE_URL}/remote.php/dav/files/${NC_USER}/${NC_DROP_FOLDER}/${enc}"
   local code
-  code="$(curl -sS -u "${NC_USER}:${NC_PASS}" -H "If-None-Match: *" -T "$local_path" \
+  code="$(curl -sS --globoff -u "${NC_USER}:${NC_PASS}" -H "If-None-Match: *" -T "$local_path" \
     -o /dev/null -w '%{http_code}' "$url")" || return 1
   case "$code" in
   2??) return 0 ;;
@@ -239,7 +239,7 @@ nc_create_share() {
   local remote_relpath="$1" expiry="$2"
   local url="${NC_BASE_URL}/ocs/v2.php/apps/files_sharing/api/v1/shares?format=json"
   local body
-  body="$(curl -sS -u "${NC_USER}:${NC_PASS}" \
+  body="$(curl -sS --globoff -u "${NC_USER}:${NC_PASS}" \
     -H "OCS-APIRequest: true" \
     --data-urlencode "path=/${NC_DROP_FOLDER}/${remote_relpath}" \
     --data-urlencode "shareType=3" \
