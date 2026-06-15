@@ -434,6 +434,30 @@ pkgs:
         - smassh
         - terminaltexteffects
         - termsaver
+    liveiso:
+      pacman:
+        - zsh
+        - starship
+        - fzf
+        - zoxide
+        - atuin
+        - direnv
+        - git-delta
+        - neovim
+        - bat
+        - eza
+        - fd
+        - ripgrep
+        - jq
+        - lazygit
+        - fastfetch
+        - chezmoi
+        - less
+        - man-db
+        - limine
+        - sbctl
+        - ntfs-3g
+        - hdparm
     main:
       pacman:
         - 1password-beta
