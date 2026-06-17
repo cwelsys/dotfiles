@@ -469,6 +469,7 @@ pkgs:
         - age
         - amd-ucode
         - ananicy-cpp
+        - archiso
         - aria2
         - asciiquarium-transparent-git
         - ast-grep
@@ -542,9 +543,10 @@ pkgs:
         - dust
         - easyeffects
         - eden-nightly-bin
+        - edk2-ovmf
         - efibootmgr
         - emojify
-        - espeak
+        - espeak-ng
         - ethtool
         - evince
         - evtest
@@ -737,6 +739,7 @@ pkgs:
         - python-pyfiglet
         - python-terminaltexteffects
         - qbittorrent
+        - qemu-base
         - qt5-wayland
         - qt6-wayland
         - quickbms
@@ -819,7 +822,6 @@ pkgs:
         - vencord-installer
         - vgmstream-cli-bin
         - vim
-        - visual-studio-code-bin
         - vivid
         - vulkan-mesa-implicit-layers
         - vulkan-mesa-layers
