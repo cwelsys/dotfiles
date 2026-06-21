@@ -85,6 +85,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 \*.icloud
+out.txt
 
 *C*
 Thumbs.db
