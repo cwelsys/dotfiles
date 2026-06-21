@@ -308,6 +308,7 @@ pkgs:
         - pipx
         - pngpaste
         - poppler
+        - ppsspp
         - pstree
         - pv
         - rclone
@@ -356,10 +357,11 @@ pkgs:
         - android-platform-tools
         - betterdisplay
         - boring-notch
-        - catlight
         - claude
         - doll
         - dolphin
+        - es-de
+        - flycast
         - font-fantasque-sans-mono-nerd-font
         - font-fira-code
         - font-jetbrains-mono
@@ -382,7 +384,6 @@ pkgs:
         - gopher64
         - goreleaser
         - hammerspoon
-        - helium-browser
         - iina
         - instant-space-switcher
         - jellyfin-media-player
@@ -393,6 +394,7 @@ pkgs:
         - nextcloud
         - obsidian
         - openmtp
+        - pcsx2
         - pearcleaner
         - processmonitor
         - protonvpn
@@ -410,7 +412,6 @@ pkgs:
         - taskexplorer
         - thaw
         - tor-browser
-        - trackweight
         - vagrant
         - vlc
         - zen
