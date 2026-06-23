@@ -546,6 +546,7 @@ pkgs:
         - edk2-ovmf
         - efibootmgr
         - emojify
+        - emulationstation-de
         - espeak-ng
         - ethtool
         - evince
@@ -582,6 +583,7 @@ pkgs:
         - go
         - go-yq
         - google-cloud-cli
+        - gopher64-bin
         - goreleaser
         - gpg-tui
         - gping
@@ -607,8 +609,6 @@ pkgs:
         - innoextract
         - iwd
         - jdk11-openjdk
-        - jellyfin-desktop-git
-        - jellyfin-desktop-libmpv-git
         - jq
         - kdenlive
         - keymapper
@@ -664,6 +664,7 @@ pkgs:
         - mergerfs
         - mesa
         - mesa-utils
+        - mesen-ce
         - meson
         - mingw-w64-gcc
         - mise
