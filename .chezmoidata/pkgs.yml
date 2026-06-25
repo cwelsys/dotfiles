@@ -610,6 +610,7 @@ pkgs:
         - iwd
         - jdk11-openjdk
         - jq
+        - just
         - kdenlive
         - keymapper
         - khal
