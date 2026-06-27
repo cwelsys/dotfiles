@@ -1,11 +1,30 @@
 #!/bin/bash
 
-if [[ "$1" == "--run" ]]; then
-  trap 'kill $tte_pid 2>/dev/null; exit 0' INT TERM HUP
-  stty -echo 2>/dev/null
-  printf '\e[?1003h'
+PIDFILE="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/screensaver.pid"
 
-  while true; do
+signal_runner() { # $1 = signal name
+  [[ -r "$PIDFILE" ]] || return 0
+  local pid
+  pid=$(<"$PIDFILE")
+  [[ "$pid" =~ ^[0-9]+$ ]] && kill -"$1" "$pid" 2>/dev/null
+}
+
+case "$1" in
+onRequestMonitorOff)
+  signal_runner USR1
+  exit 0
+  ;;
+onRequestMonitorOn)
+  signal_runner USR2
+  exit 0
+  ;;
+esac
+
+if [[ "$1" == "--run" ]]; then
+  echo $$ >"$PIDFILE"
+  tte_pid= # empty = paused
+
+  start_tte() {
     tte -i ~/Pictures/screensaver.txt \
       --frame-rate 60 \
       --canvas-width 0 --canvas-height 0 \
@@ -13,10 +32,35 @@ if [[ "$1" == "--run" ]]; then
       --random-effect --exclude-effects matrix synthgrid sweep \
       --no-eol --no-restore-cursor &
     tte_pid=$!
+  }
 
-    while kill -0 $tte_pid 2>/dev/null; do
-      read -t 0.2 -n 1 -s && kill $tte_pid 2>/dev/null && exit 0
-    done
+  stop_tte() {
+    [[ -n "$tte_pid" ]] && kill "$tte_pid" 2>/dev/null
+    tte_pid=
+    printf '\e[2J\e[H' # clear to black while paused
+  }
+
+  cleanup() {
+    stop_tte
+    rm -f "$PIDFILE"
+    stty echo 2>/dev/null
+    printf '\e[?1003l' # disable mouse reporting
+    exit 0
+  }
+
+  trap cleanup INT TERM HUP
+  trap '[[ -n "$tte_pid" ]] && stop_tte' USR1  # monitor off -> pause
+  trap '[[ -z "$tte_pid" ]] && start_tte' USR2 # monitor on  -> resume
+
+  stty -echo 2>/dev/null
+  printf '\e[?1003h' # report mouse movement so motion also dismisses
+
+  start_tte
+  while true; do
+    # any keypress or mouse movement dismisses the screensaver
+    read -rt 0.2 -n 1 -s && cleanup
+    # restart with a fresh effect when the current one finishes (while animating)
+    [[ -n "$tte_pid" ]] && ! kill -0 "$tte_pid" 2>/dev/null && start_tte
   done
 fi
 
