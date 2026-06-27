@@ -813,6 +813,7 @@ pkgs:
         - ttf-rubik-vf
         - ttf-twemoji
         - tzupdate
+        - udisks2-btrfs
         - ufw
         - ufw-docker
         - unarc-git
