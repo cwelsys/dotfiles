@@ -675,6 +675,7 @@ pkgs:
         - mpd
         - mpv
         - mtools
+        - mupen64plus
         - nano
         - nautilus
         - navi
