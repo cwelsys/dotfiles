@@ -499,6 +499,7 @@ pkgs:
         - calf
         - cava
         - cbonsai
+        - ccache
         - cemu-bin
         - chafa
         - chezmoi
@@ -647,10 +648,10 @@ pkgs:
         - limine-mkinitcpio-hook
         - limine-snapper-sync
         - linux
+        - linux-cwel
+        - linux-cwel-headers
         - linux-firmware
         - linux-headers
-        - linux-zen
-        - linux-zen-headers
         - lolcat
         - lsp-plugins-lv2
         - luarocks
@@ -670,6 +671,7 @@ pkgs:
         - mingw-w64-gcc
         - mise
         - mkinitcpio-firmware
+        - modprobed-db
         - moor
         - mpc
         - mpd
@@ -702,6 +704,7 @@ pkgs:
         - obsidian
         - onefetch
         - opencode
+        - openra
         - opensnitch
         - otf-apple-sf-pro
         - otf-commit-mono
@@ -716,6 +719,7 @@ pkgs:
         - pavucontrol
         - pcsx2
         - perl-image-exiftool
+        - php
         - pinta
         - pipewire
         - pipewire-alsa
@@ -850,6 +854,7 @@ pkgs:
         - woff2-font-awesome
         - wofi
         - wol
+        - wp-cli
         - wtype
         - xan
         - xcompmgr
@@ -860,6 +865,7 @@ pkgs:
         - xdg-terminal-exec
         - xembed-sni-proxy-standalone-git
         - xmlstarlet
+        - xmlto
         - xorg-xdpyinfo
         - xorg-xev
         - xorg-xhost
@@ -883,6 +889,7 @@ pkgs:
         - nsz
       npm:
         - "@googleworkspace/cli"
+        - wp-studio
   global:
     yazi:
       - AnirudhG07/custom-shell
