@@ -148,8 +148,8 @@ no_self_update = true
 
 # Commands to run before anything
 [pre_commands]
-{{ if eq .hostname "main" }}
-#"Patched" = "~/.local/src/pkgrepo/pkgrepo"
+{{ if lookPath "kernl" }}
+Kernel = "kernl"
 {{ end }}
 # Commands to run after anything
 [post_commands]
