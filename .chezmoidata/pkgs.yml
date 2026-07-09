@@ -106,6 +106,8 @@ pkgs:
         - limine-mkinitcpio-hook
         - limine-snapper-sync
         - linux
+        - linux-cwel
+        - linux-cwel-headers
         - linux-firmware
         - lolcat
         - lsof
@@ -114,6 +116,7 @@ pkgs:
         - mergerfs
         - meson
         - mise
+        - modprobed-db
         - moor-bin
         - mpc
         - mpd
