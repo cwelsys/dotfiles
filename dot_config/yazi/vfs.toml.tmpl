@@ -1,8 +1,7 @@
 {{- $fleet := list "main" "mba" "pbox" "bmac" -}}
 {{- range $fleet }}
 {{- if ne $.hostname . }}
-[services.{{ . }}]
-type = "sftp"
+[sftp.{{ . }}]
 host = "{{ . }}"
 user = "cwel"
 port = 22
