@@ -5,8 +5,9 @@ set -eufo pipefail
 sudo dseditgroup -o edit -a cwel -t user wheel
 
 sudo tee /etc/zshenv > /dev/null << 'EOF'
-if [[ -z "$KITTY_ORIG_ZDOTDIR" ]]; then
-    export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+if [[ -z "$ZDOTDIR" && -z "$KITTY_ORIG_ZDOTDIR" ]]; then
+    export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 fi
 EOF
 

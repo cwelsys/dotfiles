@@ -19,7 +19,7 @@ sudo chmod +x /etc/profile.d/xdg-base-dirs.sh
 # preserves kitty ssh's shell integration injection
 sudo tee /etc/zsh/zshenv >/dev/null <<'EOF'
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-if [[ -z "$KITTY_ORIG_ZDOTDIR" ]]; then
+if [[ -z "$ZDOTDIR" && -z "$KITTY_ORIG_ZDOTDIR" ]]; then
     export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 fi
 EOF
