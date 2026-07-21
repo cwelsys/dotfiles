@@ -49,7 +49,8 @@ fi
 
 {{- if not .isVM }}
 LAUNCH_AGENTS_DIR="$HOME/Library/LaunchAgents"
-PLIST_PATH="$LAUNCH_AGENTS_DIR/com.cwel.darwenv.plist"
+LABEL="com.cwel.darwenv"
+PLIST_PATH="$LAUNCH_AGENTS_DIR/$LABEL.plist"
 DARWENV_PATH="$HOME/.local/bin/darwenv"
 
 if [[ ! -f "$PLIST_PATH" ]]; then
@@ -61,7 +62,7 @@ if [[ ! -f "$PLIST_PATH" ]]; then
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.cwel.darwenv</string>
+    <string>$LABEL</string>
     <key>ProgramArguments</key>
     <array>
         <string>$DARWENV_PATH</string>
@@ -75,10 +76,10 @@ EOF
     echo "LaunchAgent plist created at $PLIST_PATH"
 fi
 
-if ! launchctl list | grep -q "com.cwel.darwenv"; then
+if ! launchctl print "gui/$(id -u)/$LABEL" >/dev/null 2>&1; then
     launchctl bootstrap "gui/$(id -u)" "$PLIST_PATH"
-    echo "LaunchAgent (com.cwel.darwenv) loaded"
+    echo "LaunchAgent ($LABEL) loaded"
 else
-    echo "LaunchAgent (com.cwel.darwenv) already loaded"
+    echo "LaunchAgent ($LABEL) already loaded"
 fi
 {{- end }}
