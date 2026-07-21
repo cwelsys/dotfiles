@@ -423,6 +423,7 @@ pkgs:
         - weathr
       npm:
         - "@github/copilot"
+        - "@googleworkspace/cli"
         - bun
         - bunx
         - ccusage
@@ -430,7 +431,7 @@ pkgs:
         - eslint
         - prettier
         - prettier-plugin-sh
-        - "@googleworkspace/cli"
+        - wp-studio
       pipx:
         - smassh
         - terminaltexteffects
