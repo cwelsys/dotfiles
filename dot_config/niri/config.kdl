@@ -9,7 +9,7 @@ gestures {
 }
 
 prefer-no-csd
-screenshot-path "~/Pictures/screenshots/%m.%d_%H.%M.%S.png"
+screenshot-path "~/Pictures/Screenshots/%m.%d_%H.%M.%S.png"
 
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Input
 input {
