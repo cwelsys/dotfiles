@@ -1,6 +1,14 @@
+{{ if .isLaptop }}
+music_directory         "http://pbox:8080/"
+{{ else }}
 music_directory         "nfs://pbox/mnt/media/audio"
+{{ end }}
 playlist_directory      "~/.local/share/mpd/playlists"
-{{ if eq .chezmoi.os "darwin" }}log_file                "~/Library/Logs/mpd/mpd.log"{{ else }}log_file                "syslog"{{ end }}
+{{ if eq .chezmoi.os "darwin" }}
+log_file                "~/Library/Logs/mpd/mpd.log"
+{{ else }}
+log_file                "syslog"
+{{ end }}
 state_file              "~/.local/share/mpd/state"
 sticker_file            "~/.local/share/mpd/sticker.sql"
 
@@ -56,7 +64,6 @@ audio_output {
     type        "pipewire"
     name        "pipewire"
 }
-{{- end }}
 
 audio_output {
     type                    "fifo"
@@ -64,3 +71,4 @@ audio_output {
     path                    "/tmp/mpd.fifo"
     format                  "44100:16:2"
 }
+{{- end }}
