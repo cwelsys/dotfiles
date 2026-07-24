@@ -326,6 +326,8 @@ pkgs:
         - sl
         - sniffnet
         - starship
+        - swiftformat
+        - swiftlint
         - switchaudio-osx
         - telnet
         - thefuck
@@ -384,10 +386,12 @@ pkgs:
         - gopher64
         - goreleaser
         - hammerspoon
+        - helium-browser
         - iina
         - instant-space-switcher
         - jellyfin-media-player
         - karabiner-elements
+        - linearmouse
         - localsend
         - maccy
         - moonlight
@@ -410,16 +414,12 @@ pkgs:
         - syntax-highlight
         - tailscale-app
         - taskexplorer
-        - thaw
         - tor-browser
         - vagrant
         - vlc
         - zen
-        - zoom
       cargo:
         - managarr
-        - name: rmpc
-          git: https://github.com/mierak/rmpc.git
         - weathr
       npm:
         - "@github/copilot"
