@@ -34,20 +34,8 @@ export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 export XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
 
+
 typeset -U path
-path=(
-  $XDG_BIN_HOME
-  $XDG_DATA_HOME/cargo/bin
-  $XDG_DATA_HOME/go/bin
-  $XDG_DATA_HOME/npm/bin
-  $XDG_DATA_HOME/gem/bin
-  $PNPM_HOME/bin
-  /usr/local/sbin
-  /usr/local/bin
-  /usr/bin
-  $path
-)
-export PATH
 
 export EDITOR="nvim"
 export VISUAL=$EDITOR
@@ -59,8 +47,7 @@ export GIT_PAGER="delta"
 export LESS="-cgiRF"
 export MOOR="-statusbar bold -colors auto -render-unprintable highlight -wrap -quit-if-one-screen -style catppuccin-mocha"
 export SYSTEMD_PAGER="$PAGER"
-export SYSTEMD_PAGERSECURE=0
-export SYSTEMD_COLORS=256
+export SYSTEMD_PAGERSECURE=1
 
 if [[ "$PAGER" =~ 'moor' ]]; then
   export BAT_PAGER="moor $MOOR -no-statusbar"
@@ -86,7 +73,6 @@ export NPM_CONFIG_PREFIX="$XDG_DATA_HOME/npm"
 export NPM_CONFIG_CACHE="$XDG_CACHE_HOME/npm"
 export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/config"
 export NODE_REPL_HISTORY="$XDG_STATE_HOME/node_repl_history"
-export PNPM_HOME="$XDG_DATA_HOME/pnpm"
 export MAVEN_ARGS="-s $XDG_CONFIG_HOME/maven/settings.xml"
 export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/pythonrc"
 export PYTHON_HISTORY="$XDG_DATA_HOME/python/history"
@@ -110,6 +96,7 @@ export CLAUDE_CONFIG_DIR="$XDG_CONFIG_HOME/claude"
 export PARALLEL_HOME="$XDG_CONFIG_HOME/parallel"
 export WAKATIME_HOME="$XDG_CONFIG_HOME/wakatime"
 export VCPKG_ROOT="$XDG_DATA_HOME/vcpkg"
+export PNPM_HOME="$XDG_DATA_HOME/pnpm"
 export BUNDLE_USER_CONFIG="$XDG_CONFIG_HOME/bundle"
 export BUNDLE_USER_CACHE="$XDG_CACHE_HOME/bundle"
 export BUNDLE_USER_PLUGIN="$XDG_DATA_HOME/bundle"
@@ -136,6 +123,20 @@ export GLOW_STYLE="$XDG_CONFIG_HOME/glow/catppuccin-mocha.json"
 export SF_HOME="$XDG_DATA_HOME/sf"
 export SFDX_HOME="$XDG_DATA_HOME/sfdx"
 export SF_USE_GENERIC_UNIX_KEYCHAIN=true
+
+path=(
+  $XDG_BIN_HOME
+  $XDG_DATA_HOME/cargo/bin
+  $XDG_DATA_HOME/go/bin
+  $XDG_DATA_HOME/npm/bin
+  $XDG_DATA_HOME/gem/bin
+  $PNPM_HOME/bin
+  /usr/local/sbin
+  /usr/local/bin
+  /usr/bin
+  $path
+)
+export PATH
 
 [[ -t 0 ]] && export GPG_TTY=$(tty)
 
