@@ -1,26 +1,11 @@
-{{ if .isLaptop }}
-music_directory         "http://pbox:8080/"
-{{ else }}
 music_directory         "nfs://pbox/mnt/media/audio"
-{{ end }}
 playlist_directory      "~/.local/share/mpd/playlists"
-{{ if eq .chezmoi.os "darwin" }}
-log_file                "~/Library/Logs/mpd/mpd.log"
-{{ else }}
-log_file                "syslog"
-{{ end }}
 state_file              "~/.local/share/mpd/state"
 sticker_file            "~/.local/share/mpd/sticker.sql"
-
-bind_to_address         "127.0.0.1"
-{{- if eq .chezmoi.os "darwin" }}
-bind_to_address         "~/.cache/mpd/socket"
-{{- else }}
-bind_to_address         "$XDG_RUNTIME_DIR/mpd/socket"
-{{- end }}
-port                    "6600"
 restore_paused          "yes"
-
+bind_to_address         "127.0.0.1"
+replaygain              "auto"
+replaygain_limit        "yes"
 database {
     plugin              "proxy"
     host                "pbox"
@@ -50,16 +35,20 @@ decoder {
 input_cache {
     size "1 GB"
 }
-
-replaygain          "auto"
-replaygain_limit    "yes"
-
 {{- if eq .chezmoi.os "darwin" }}
+log_file                "~/Library/Logs/mpd/mpd.log"
+bind_to_address         "~/.cache/mpd/socket"
+
 audio_output {
     type        "osx"
     name        "CoreAudio"
+    mixer_type  "software"
+    format      "44100:16:2"
 }
 {{- else }}
+bind_to_address         "$XDG_RUNTIME_DIR/mpd/socket"
+log_file                "syslog"
+
 audio_output {
     type        "pipewire"
     name        "pipewire"

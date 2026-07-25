@@ -223,11 +223,16 @@
                                 ),
                                 (
                                     size: "100%",
+                                    {{- if eq .chezmoi.os "darwin" }}
+                                    borders: "LEFT | RIGHT | BOTTOM",
+                                    {{- else }}
                                     borders: "LEFT | RIGHT",
+                                    {{- end }}
                                     border_symbols: Rounded,
                                     border_style: (fg: "#b4befe"),
                                     pane: Pane(Queue),
                                 ),
+                                {{- if ne .chezmoi.os "darwin" }}
                                 (
                                     size: "15",
                                     borders: "LEFT | RIGHT | BOTTOM",
@@ -235,6 +240,7 @@
                                     border_style: (fg: "#b4befe"),
                                     pane: Pane(Cava),
                                 ),
+                                {{- end }}
                             ],
                         ),
                     ),
