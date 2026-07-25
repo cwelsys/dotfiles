@@ -133,7 +133,7 @@ pkgs:
         - nss-mdns
         - nushell
         - nvidia-container-toolkit
-        - nvidia-open
+        - nvidia-open-dkms
         - nvidia-utils
         - opencode
         - openssh
