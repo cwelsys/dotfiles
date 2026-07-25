@@ -106,7 +106,6 @@ _load_completions() {
   (( ${+commands[zmx]} )) && eval "$(zmx completions zsh)"
   [[ -f $XDG_CONFIG_HOME/claude/hooks/peon-ping/completions.bash ]] && source $XDG_CONFIG_HOME/claude/hooks/peon-ping/completions.bash
   (( ${+commands[op]} )) && eval "$(op completion zsh)" && compdef _op op
-  (( ${+commands[opencode]} )) && eval "$(opencode completion)"
 
   if (( ${+commands[brew]} )); then
     _pi() { words=(brew install "${(@)words[2,-1]}"); ((CURRENT+=1)); _brew }
@@ -141,8 +140,7 @@ zinit light Aloxaf/fzf-tab
 zinit wait'0a' lucid light-mode for \
     blockf atpull'zinit creinstall -q .' \
         zsh-users/zsh-completions \
-    OMZP::gcloud \
-    atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
+    atinit"zicompinit; zicdreplay" \
     atload"!_zsh_autosuggest_start; bindkey '^f' autosuggest-accept" \
         zsh-users/zsh-autosuggestions
 
@@ -209,7 +207,6 @@ zstyle ':completion:*:*:*:*:processes' command 'ps -u $USER -o pid,user,comm -w'
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'
 zstyle ':completion:*:*:kill:*' force-list always
 
-zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
 zstyle ':fzf-tab:*' fzf-min-height 70
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
 zstyle ':fzf-tab:*' switch-group '<' '>'
