@@ -4,11 +4,11 @@
 (
     default_album_art_path: None,
     format_tag_separator: " | ",
+    multiple_tag_resolution_strategy: All, // First | Last | All | Nth(n)
     browser_column_widths: [20, 38, 42],
     modal_backdrop: false,
     background_color: None,
     text_color: "#cdd6f4",
-    header_background_color: None,
     modal_background_color: None,
     preview_label_style: (fg: "#cba6f7"),
     preview_metadata_group_style: (fg: "#89dceb"),
@@ -78,6 +78,7 @@
     ),
     lyrics: (
         timestamp: false,
+        alignment: Center, // Left | Center | Right
     ),
     browser_song_format: [
         (
@@ -87,6 +88,7 @@
             default: (kind: Property(Filename))
         ),
     ],
+    song_table_album_separator: Underline, // None | Underline
     song_table_format: [
         (
             prop: (kind: Property(Artist), style: (fg: "#89b4fa"),
