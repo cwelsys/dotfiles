@@ -190,7 +190,7 @@
                   "key_code": "c",
                   "modifiers": {
                     "mandatory": ["left_control"],
-                    "optional": ["any"]
+                    "optional": ["shift"]
                   }
                 },
                 "to": [
@@ -220,7 +220,7 @@
                   "key_code": "x",
                   "modifiers": {
                     "mandatory": ["left_control"],
-                    "optional": ["any"]
+                    "optional": ["shift"]
                   }
                 },
                 "to": [
@@ -250,7 +250,7 @@
                   "key_code": "v",
                   "modifiers": {
                     "mandatory": ["left_control"],
-                    "optional": ["any"]
+                    "optional": ["shift"]
                   }
                 },
                 "to": [
@@ -280,7 +280,7 @@
                   "key_code": "a",
                   "modifiers": {
                     "mandatory": ["left_control"],
-                    "optional": ["any"]
+                    "optional": ["shift"]
                   }
                 },
                 "to": [
@@ -310,7 +310,7 @@
                   "key_code": "z",
                   "modifiers": {
                     "mandatory": ["left_control"],
-                    "optional": ["any"]
+                    "optional": ["shift"]
                   }
                 },
                 "to": [
@@ -340,7 +340,7 @@
                   "key_code": "s",
                   "modifiers": {
                     "mandatory": ["left_control"],
-                    "optional": ["any"]
+                    "optional": ["shift"]
                   }
                 },
                 "to": [
@@ -370,7 +370,7 @@
                   "key_code": "f",
                   "modifiers": {
                     "mandatory": ["left_control"],
-                    "optional": ["any"]
+                    "optional": ["shift"]
                   }
                 },
                 "to": [
@@ -400,7 +400,7 @@
                   "key_code": "g",
                   "modifiers": {
                     "mandatory": ["left_control"],
-                    "optional": ["any"]
+                    "optional": ["shift"]
                   }
                 },
                 "to": [
