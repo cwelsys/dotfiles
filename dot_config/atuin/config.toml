@@ -62,4 +62,4 @@ dir = "~/.cache/atuin/logs"
 records = true
 
 [theme]
-name = "catppuccin-mocha-teal"
+name = "catppuccin-mocha-blue"
