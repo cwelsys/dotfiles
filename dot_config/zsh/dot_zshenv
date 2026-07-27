@@ -198,23 +198,16 @@ fi
 if [[ -n "$SSH_CONNECTION" ]]; then
     [[ -z "$XDG_RUNTIME_DIR" && -d "/run/user/$UID" ]] && export XDG_RUNTIME_DIR="/run/user/$UID"
 
-    if (( ${+commands[hyprctl]} )) && [[ -z $HYPRLAND_INSTANCE_SIGNATURE ]]; then
-        for pid in $(pgrep -P $(pgrep -xu "$USER" Hyprland) 2>/dev/null); do
-            [[ -f "/proc/$pid/environ" ]] || continue
-            while IFS='=' read -r -d '' k v; do
-                [[ "$k" =~ ^(HYPRLAND_INSTANCE_SIGNATURE|WAYLAND_DISPLAY|DISPLAY)$ ]] && export "$k=$v"
-            done < "/proc/$pid/environ"
-            [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]] && break
-        done
-    fi
-
     if (( ${+commands[niri]} )) && [[ -z $NIRI_SOCKET ]]; then
-        for pid in $(pgrep -P $(pgrep -xu "$USER" niri) 2>/dev/null); do
-            [[ -f "/proc/$pid/environ" ]] || continue
-            while IFS='=' read -r -d '' k v; do
-                [[ "$k" =~ ^(NIRI_SOCKET|WAYLAND_DISPLAY|DISPLAY)$ ]] && export "$k=$v"
-            done < "/proc/$pid/environ"
+        for npid in ${(f)"$(pgrep -xu "$USER" niri)"}; do
+            for pid in $(pgrep -P $npid 2>/dev/null); do
+                [[ -f "/proc/$pid/environ" ]] || continue
+                while IFS='=' read -r -d '' k v; do
+                    [[ "$k" =~ ^(NIRI_SOCKET|WAYLAND_DISPLAY|DISPLAY)$ ]] && export "$k=$v"
+                done < "/proc/$pid/environ"
+            done
             [[ -n "$NIRI_SOCKET" ]] && break
         done
     fi
+    
 fi
