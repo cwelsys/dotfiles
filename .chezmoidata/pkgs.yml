@@ -245,6 +245,7 @@ pkgs:
         - eza
         - fastfetch
         - fd
+        - felixkratz/formulae/borders
         - figlet
         - fortune
         - gawk
@@ -319,6 +320,7 @@ pkgs:
         - resvg
         - rich-cli
         - rig
+        - ripgrep-all
         - rsync
         - ruby
         - ruff
@@ -326,6 +328,7 @@ pkgs:
         - sd
         - sevenzip
         - shellcheck
+        - simde
         - sl
         - sniffnet
         - starship
@@ -348,6 +351,7 @@ pkgs:
         - wakeonlan
         - watchexec
         - wget
+        - witr
         - wrk
         - xan
         - xdg-ninja
@@ -362,7 +366,6 @@ pkgs:
         - android-platform-tools
         - betterdisplay
         - boring-notch
-        - claude
         - doll
         - dolphin
         - es-de
@@ -384,8 +387,6 @@ pkgs:
         - font-symbols-only-nerd-font
         - font-twitter-color-emoji
         - gcloud-cli
-        - ghostty@tip
-        - gimp
         - gopher64
         - goreleaser
         - hammerspoon
@@ -394,6 +395,7 @@ pkgs:
         - instant-space-switcher
         - jellyfin-media-player
         - karabiner-elements
+        - libreoffice
         - linearmouse
         - localsend
         - maccy
@@ -409,7 +411,6 @@ pkgs:
         - runelite
         - sf-symbols
         - slack
-        - stats
         - steam
         - steamcmd
         - supertuxkart
@@ -419,9 +420,9 @@ pkgs:
         - taskexplorer
         - tor-browser
         - vagrant
-        - vlc
         - zen
       cargo:
+        - cargo-sweep
         - managarr
         - weathr
       npm:
@@ -436,6 +437,7 @@ pkgs:
         - prettier-plugin-sh
         - wp-studio
       pipx:
+        - nsz
         - smassh
         - terminaltexteffects
         - termsaver
