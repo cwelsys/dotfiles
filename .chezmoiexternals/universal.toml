@@ -6,6 +6,6 @@ url = "https://raw.githubusercontent.com/catppuccin/bat/refs/heads/main/themes/C
 type = "file"
 url = "https://raw.githubusercontent.com/catppuccin/glamour/refs/heads/main/themes/catppuccin-mocha.json"
 
-[".config/tmux/plugins/tpm"]
-type = "git-repo"
-url = "https://github.com/tmux-plugins/tpm"
+# [".config/tmux/plugins/tpm"]
+# type = "git-repo"
+# url = "https://github.com/tmux-plugins/tpm"
