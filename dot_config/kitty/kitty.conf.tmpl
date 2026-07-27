@@ -164,8 +164,6 @@ map kitty_mod+, move_tab_backward
 map kitty_mod+. move_tab_forward
 map kitty_mod+l next_tab
 map kitty_mod+h previous_tab
-map {{ $mod }}+. next_tab
-map {{ $mod }}+, previous_tab
 
 # goto tab
 map {{ $mod }}+1 goto_tab 1
@@ -206,6 +204,8 @@ map kitty_mod+left neighboring_window left
 map kitty_mod+right neighboring_window right
 map kitty_mod+up neighboring_window up
 map kitty_mod+down neighboring_window down
+map {{ $mod }}+. neighboring_window right
+map {{ $mod }}+, neighboring_window left
 map --when-focus-on var:IS_NVIM ctrl+h
 map --when-focus-on var:IS_NVIM ctrl+j
 map --when-focus-on var:IS_NVIM ctrl+k
