@@ -84,7 +84,12 @@ if (( ${+commands[nvim]} )); then
   alias vim='nvim'
 fi
 
-(( ${+commands[lazydocker]} )) && alias ld='lazydocker'
+if (( ${+commands[tdocker]} )); then
+  alias ld='tdocker'
+elif (( ${+commands[lazydocker]} )); then
+  alias ld='lazydocker'
+fi
+
 (( ${+commands[lazyjournal]} )) && alias lj='lazyjournal'
 (( ${+commands[managarr]} )) && alias arr='managarr'
 (( ${+commands[systemctl-tui]} )) && alias st='systemctl-tui'
