@@ -185,6 +185,7 @@ pkgs:
         - wget
         - whois
         - wireless-regdb
+        - witr
         - xan
         - xdg-ninja
         - xmlstarlet
@@ -195,6 +196,7 @@ pkgs:
         - zram-generator
         - zsh
       cargo:
+        - cargo-sweep
         - managarr
         - systemctl-tui
       pipx: []
