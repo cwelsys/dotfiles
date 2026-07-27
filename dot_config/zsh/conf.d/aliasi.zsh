@@ -471,7 +471,7 @@ if [[ $OSTYPE == darwin* ]] && (( ${+commands[brew]} )); then
           <(brew list) - |
         fzf --multi --ansi -0 --tiebreak=index \
           --preview "brew info {1}" \
-          --bind 'ctrl-o:execute-silent(brew info {1} | grep -m1 -E "^https?://" | xargs -r open)' |
+          --bind 'ctrl-o:execute-silent(HOMEBREW_NO_COLOR=1 brew info {1} | grep -m1 -E "^https?://" | xargs -r open)' |
         awk '{print $1}' |
         xargs --no-run-if-empty brew install
     else
