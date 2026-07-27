@@ -508,6 +508,10 @@ pkgs:
         - btrfs-progs
         - bun
         - cachyos-ananicy-rules
+        - cachyos-keyring
+        - cachyos-mirrorlist
+        - cachyos-v3-mirrorlist
+        - cachyos-v4-mirrorlist
         - cage
         - calf
         - cava
@@ -534,6 +538,7 @@ pkgs:
         - cups-filters
         - cups-pdf
         - cups-pk-helper
+        - dankcalendar-bin
         - deno
         - devtools
         - difftastic
@@ -551,7 +556,6 @@ pkgs:
         - drm-info
         - dsearch-bin
         - dualsensectl
-        - ducker
         - duckstation-qt-bin
         - duf
         - dust
@@ -763,7 +767,7 @@ pkgs:
         - qt5-wayland
         - qt6-wayland
         - quickbms
-        - quickshell-git
+        - quickshell
         - realtime-privileges
         - reflector
         - resvg
@@ -862,6 +866,7 @@ pkgs:
         - wireless-regdb
         - wiremix
         - wireplumber
+        - witr
         - wl-clip-persist
         - wl-clipboard
         - woff2-font-awesome
@@ -895,6 +900,7 @@ pkgs:
         - zram-generator
         - zsh
       cargo:
+        - cargo-sweep
         - managarr
         - systemctl-tui
       pipx:
