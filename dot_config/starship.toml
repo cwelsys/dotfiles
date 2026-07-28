@@ -25,10 +25,10 @@ $hostname\
 $line_break\
 $username$character"""
 
-[env_var.ZMX_SESSION]
-variable = 'ZMX_SESSION'
-format = '[]($style)'
-style = 'mauve'
+# [env_var.ZMX_SESSION]
+# variable = 'ZMX_SESSION'
+# format = '[]($style)'
+# style = 'mauve'
 
 [profiles]
 transient = """
@@ -39,6 +39,26 @@ rtransient = """
 $status\
 $cmd_duration\
 """
+
+claude-code = "$claude_model($git_branch )$claude_context"
+
+[claude_context]
+format = " [$input_tokens]($style) "
+
+[[claude_context.display]]
+threshold = 0
+style = "surface0"
+hidden = false
+
+[[claude_context.display]]
+threshold = 35
+style = "peach"
+hidden = false
+
+[[claude_context.display]]
+threshold = 60
+style = "red"
+hidden = false
 
 [os]
 disabled = true
