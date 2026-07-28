@@ -28,14 +28,16 @@ HISTDUP=erase
 }
 
 if (( ${+commands[starship]} )); then
+    ZLE_RPROMPT_INDENT=0
+
     eval "$(starship init zsh)"
 
-    STARSHIP_TRANSIENT_PROMPT="${${PROMPT[@]:2:-1}// prompt / prompt --profile transient }"
-    STARSHIP_TRANSIENT_RPROMPT="${${PROMPT[@]:2:-1}// prompt / prompt --profile rtransient }"
+    STARSHIP_TRANSIENT_PROMPT="${PROMPT// prompt / prompt --profile transient }"
+    STARSHIP_TRANSIENT_RPROMPT="${PROMPT// prompt / prompt --profile rtransient }"
 
     function starship-transient-prompt-precmd {
-        STARSHIP_SAVED_PROMPT="$(eval "${STARSHIP_TRANSIENT_PROMPT}")"
-        STARSHIP_SAVED_RPROMPT="$(eval "${STARSHIP_TRANSIENT_RPROMPT}")"
+        STARSHIP_SAVED_PROMPT="$(eval "printf '%s' \"${STARSHIP_TRANSIENT_PROMPT}\"")"
+        STARSHIP_SAVED_RPROMPT="$(eval "printf '%s' \"${STARSHIP_TRANSIENT_RPROMPT}\"")"
         TRAPINT() { starship-transient-prompt 2>/dev/null; return $(( 128 + $1 )) }
     }
 
@@ -43,11 +45,7 @@ if (( ${+commands[starship]} )); then
     add-zsh-hook precmd starship-transient-prompt-precmd
 
     function starship-transient-prompt() {
-        if [[ "$PWD" == "$STARSHIP_SAVED_PROMPT_PWD" ]]; then
-            PROMPT="$STARSHIP_SAVED_PROMPT" RPROMPT="$STARSHIP_SAVED_RPROMPT" zle .reset-prompt
-        else
-            STARSHIP_SAVED_PROMPT_PWD="$PWD"
-        fi
+        PROMPT="$STARSHIP_SAVED_PROMPT" RPROMPT="$STARSHIP_SAVED_RPROMPT" zle .reset-prompt
     }
 
     autoload -Uz add-zle-hook-widget
@@ -69,6 +67,7 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
+ZINIT[ZCOMPDUMP_PATH]="$XDG_CACHE_HOME/zsh/zcompdump"
 bindkey -e
 
 if (( ${+commands[atuin]} )); then
@@ -91,7 +90,7 @@ if (( ${+commands[atuin]} )); then
 fi
 
 FZF_ALT_C_COMMAND=
-source <(fzf --zsh)
+(( ${+commands[fzf]} )) && source <(fzf --zsh)
 
 (( ${+commands[zoxide]} )) && eval "$(zoxide init --cmd cd zsh)"
 
@@ -140,7 +139,7 @@ zinit light Aloxaf/fzf-tab
 zinit wait'0a' lucid light-mode for \
     blockf atpull'zinit creinstall -q .' \
         zsh-users/zsh-completions \
-    atinit"zicompinit; zicdreplay" \
+    nocd atinit"zicompinit; zicdreplay" \
     atload"!_zsh_autosuggest_start; bindkey '^f' autosuggest-accept" \
         zsh-users/zsh-autosuggestions
 
@@ -167,11 +166,11 @@ zinit wait'0b' lucid light-mode for \
     paulirish/git-open \
     cwelsys/zsh-alias-fzf \
     cwelsys/vivid-zsh \
-    atload'[[ $OSTYPE == darwin* ]] && zstyle ":fzf-tab:complete:(\\\\|*/|)(pkill:o-argument-rest|killall:argument-1)" fzf-preview "ps aux | grep -i \$word | grep -v grep | head -10"' \
+    nocd atload'[[ $OSTYPE == darwin* ]] && zstyle ":fzf-tab:complete:(\\\\|*/|)(pkill:o-argument-rest|killall:argument-1)" fzf-preview "ps aux | grep -i \$word | grep -v grep | head -10"' \
         Freed-Wu/fzf-tab-source
 
 zinit wait'0c' lucid light-mode for \
-    atinit'_load_completions' \
+    nocd atinit'_load_completions' \
         zdharma-continuum/fast-syntax-highlighting
 
 setopt extended_history hist_expire_dups_first hist_ignore_all_dups \

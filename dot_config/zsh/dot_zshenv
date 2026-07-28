@@ -1,4 +1,6 @@
 if [[ $(uname) == Darwin ]]; then
+  export SHELL_SESSIONS_DISABLE=1
+
   if (( ! $+commands[brew] )); then
     if [[ -n "$BREW_LOCATION" ]]; then
       if [[ ! -x "$BREW_LOCATION" ]]; then
