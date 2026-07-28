@@ -151,6 +151,7 @@ pkgs:
         - python-gobject
         - python-jinja
         - python-mutagen
+        - python-pipx
         - python-poetry-core
         - qemu-full
         - reflector
@@ -176,6 +177,7 @@ pkgs:
         - tree
         - tree-sitter-cli
         - ttf-fantasque-nerd
+        - ty
         - udisks2
         - unicorn
         - unrar
@@ -191,7 +193,7 @@ pkgs:
         - xmlstarlet
         - yt-dlp
         - zig
-        - zmx
+        - zmx-bin
         - zoxide
         - zram-generator
         - zsh
