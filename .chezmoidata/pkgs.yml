@@ -234,6 +234,7 @@ pkgs:
         - dive
         - docker
         - dockutil
+        - docutils
         - doggo
         - dooit
         - dua-cli
@@ -343,6 +344,7 @@ pkgs:
         - topgrade
         - tree-sitter-cli
         - tty-clock
+        - ty
         - universal-ctags
         - unzip
         - up
