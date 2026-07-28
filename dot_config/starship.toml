@@ -43,11 +43,11 @@ $cmd_duration\
 claude-code = "$claude_model($git_branch )$claude_context"
 
 [claude_context]
-format = " [$input_tokens]($style) "
+format = "[$input_tokens]($style) "
 
 [[claude_context.display]]
 threshold = 0
-style = "surface0"
+style = "teal"
 hidden = false
 
 [[claude_context.display]]

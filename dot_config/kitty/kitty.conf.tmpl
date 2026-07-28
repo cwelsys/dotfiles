@@ -21,6 +21,7 @@ placement_strategy center
 background_opacity 0.8
 background_blur 20
 dynamic_background_opacity yes
+persist_windows yes
 confirm_os_window_close 0
 macos_quit_when_last_window_closed no
 remember_window_size yes
@@ -108,6 +109,7 @@ map cmd+k no_op
 
 # cmd
 map --mode leader shift+; kitty_shell overlay
+map --mode leader p launch --type=overlay --copy-env kmux
 
 # copy/paste
 map ctrl+c copy_or_interrupt
@@ -145,9 +147,6 @@ map --mode leader space kitten zoom_toggle.py
 # fingers
 map --mode leader f kitten hints --customize-processing fingers.py
 
-# kmux a/d
-map --mode leader d kmux_bg detach
-map --mode leader p launch --type=overlay --copy-env kmux
 
 # close/create tabs
 map {{ $mod }}+w close_tab
