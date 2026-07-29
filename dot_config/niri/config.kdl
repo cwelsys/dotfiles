@@ -16,7 +16,7 @@ input {
     keyboard {
         xkb {
             layout "us"
-            options "caps:hyper,compose:rctrl,level3:ralt_switch,grp:win_space_toggle"
+            options "caps:hyper,grp:win_space_toggle"
         }
         repeat-delay 200
         repeat-rate 50
