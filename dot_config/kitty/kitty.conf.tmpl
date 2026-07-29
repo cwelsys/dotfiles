@@ -1,6 +1,8 @@
 {{- $mod := "cmd" -}}
+{{- $rmod := "cmd" -}}
 {{- if ne .chezmoi.os "darwin" -}}
 {{- $mod = "alt" -}}
+{{- $rmod = "ctrl" -}}
 {{- end }}
 ## https://sw.kovidgoyal.net/kitty/conf/
 
@@ -133,6 +135,9 @@ map shift+alt+cmd+/ open_url https://sw.kovidgoyal.net/kitty/
 map {{ $mod }}+equal change_font_size all +0.5
 map {{ $mod }}+minus change_font_size all -0.5
 map {{ $mod }}+0 change_font_size all 0
+map {{ $rmod }}+equal change_font_size all +0.5
+map {{ $rmod }}+minus change_font_size all -0.5
+map {{ $rmod }}+0 change_font_size all 0
 
 # set title
 map --mode leader r set_tab_title
@@ -205,6 +210,8 @@ map kitty_mod+up neighboring_window up
 map kitty_mod+down neighboring_window down
 map {{ $mod }}+. neighboring_window right
 map {{ $mod }}+, neighboring_window left
+map {{ $rmod }}+. neighboring_window right
+map {{ $rmod }}+, neighboring_window left
 map --when-focus-on var:IS_NVIM ctrl+h
 map --when-focus-on var:IS_NVIM ctrl+j
 map --when-focus-on var:IS_NVIM ctrl+k
