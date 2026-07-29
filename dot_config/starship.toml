@@ -45,6 +45,9 @@ claude-code = "$claude_model($git_branch )$claude_context"
 [claude_context]
 format = "[$input_tokens]($style) "
 
+[claude_model]
+symbol = ""
+
 [[claude_context.display]]
 threshold = 0
 style = "teal"
