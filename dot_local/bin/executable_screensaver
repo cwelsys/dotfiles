@@ -74,6 +74,7 @@ exec kitten panel \
   --grab-keyboard \
   --exclusive-zone=-1 \
   --app-id=screensaver \
+  -o persist_windows=no \
   -o background=#000000 \
   -o background_opacity=1 \
   -o tab_bar_style=hidden \
