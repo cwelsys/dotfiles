@@ -859,6 +859,7 @@ pkgs:
         - waydroid
         - waydroidsu
         - wayfreeze-git
+        - wayland-pipewire-idle-inhibit
         - wayland-utils
         - weathr-bin
         - wev
