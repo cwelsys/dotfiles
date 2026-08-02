@@ -501,7 +501,7 @@ pkgs:
         - benchmark
         - bibata-cursor-theme-bin
         - bindfs
-        - bluebubbles-bin
+        - bluebubbles
         - bluetui
         - brightnessctl
         - btop
@@ -619,6 +619,7 @@ pkgs:
         - gvfs-nfs
         - gvfs-smb
         - hdparm
+        - helium-browser-bin
         - i2c-tools
         - imagemagick
         - impala
@@ -627,6 +628,7 @@ pkgs:
         - innoextract
         - iwd
         - jdk11-openjdk
+        - jellium-desktop-git
         - jq
         - just
         - kdenlive
@@ -834,6 +836,7 @@ pkgs:
         - ttf-poppins
         - ttf-rubik-vf
         - ttf-twemoji
+        - ty
         - tzupdate
         - udisks2-btrfs
         - ufw
@@ -895,7 +898,7 @@ pkgs:
         - ydotool
         - zen-browser-bin
         - zig
-        - zmx
+        - zmx-bin
         - zoxide
         - zram-generator
         - zsh
