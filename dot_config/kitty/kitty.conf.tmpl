@@ -23,19 +23,29 @@ placement_strategy center
 background_opacity 0.8
 background_blur 20
 dynamic_background_opacity yes
-persist_windows yes
 confirm_os_window_close 0
 macos_quit_when_last_window_closed no
 remember_window_size yes
 hide_window_decorations titlebar-only
-enabled_layouts splits,*
+enabled_layouts splits:split_axis=auto,*
 macos_traditional_fullscreen no
 macos_show_window_title_in none
+progress_bar top
+
+# scrollbar
+scrollbar scrolled-and-hovered
+scrollbar_interactive yes
+scrollbar_width 0.5
+scrollbar_gap 0.1
+scrollbar_radius 0.3
+scrollbar_handle_opacity 0.6
+scrollbar_track_opacity 0.15
 
 # tabs
 tab_bar_style zones
 tab_bar_edge top
 tab_bar_min_tabs 1
+tab_switch_strategy left
 include tabs.conf
 
 # font
@@ -47,9 +57,12 @@ font_family JetBrainsMono Nerd Font
 {{- end }}
 
 # cursor
-cursor_trail 3
+cursor_trail 1
+cursor_trail_decay 0.1 0.3
+cursor_trail_start_threshold 0
 disable_ligatures cursor
-cursor_shape block
+cursor_shape beam
+cursor_shape_unfocused hollow
 
 # mouse
 mouse_hide_wait 0
@@ -74,6 +87,9 @@ url_style curly
 paste_actions quote-urls-at-prompt
 select_by_word_characters @-./_~?&=%+#,|`:"'(){}[]<>
 sync_to_monitor no
+palette_generate semantic
+underline_hyperlinks hover
+show_hyperlink_targets yes
 
 # binds
 clear_all_shortcuts yes
@@ -87,6 +103,7 @@ action_alias resize kitten relative_resize.py
 
 # leaders
 kitty_mod {{ $mod }}+shift
+map_timeout 3.0
 map --new-mode leader --on-unknown end --on-action end ctrl+space
 map --mode leader esc pop_keyboard_mode
 
@@ -152,6 +169,41 @@ map --mode leader space kitten zoom_toggle.py
 # fingers
 map --mode leader f kitten hints --customize-processing fingers.py
 
+# palette / misc kittens
+map kitty_mod+p command_palette
+map --mode leader e edit_config_file
+map --mode leader u open_url_with_hints
+map --mode leader y input_unicode_character
+
+# scrollback
+map {{ $mod }}+page_up scroll_page_up
+map {{ $mod }}+page_down scroll_page_down
+map kitty_mod+g scroll_home
+map kitty_mod+e scroll_end
+map kitty_mod+[ scroll_to_prompt -1
+map kitty_mod+] scroll_to_prompt 1
+map --mode leader b show_scrollback
+map --mode leader o show_last_non_empty_command_output
+map --mode leader shift+o copy_last_command_output
+
+# markers
+map --mode leader shift+m create_marker
+map --mode leader shift+x remove_marker
+map kitty_mod+m scroll_to_mark prev
+map kitty_mod+b scroll_to_mark next
+
+# sessions
+map --mode leader g goto_session
+map --mode leader shift+g goto_session -1
+map --mode leader shift+s save_as_session
+
+# fullscreen / maximize
+map --mode leader shift+f toggle_fullscreen
+map --mode leader shift+z toggle_maximized
+
+# layouts
+map --mode leader n next_layout
+map --mode leader shift+n last_used_layout
 
 # close/create tabs
 map {{ $mod }}+w close_tab
@@ -159,6 +211,9 @@ map {{ $mod }}+t new_tab_with_cwd
 map kitty_mod+t new_tab
 map --mode leader q close_window
 map --mode leader x close_window
+map --mode leader shift+q close_other_windows_in_tab
+map --mode leader d detach_tab ask
+map --mode leader shift+t select_tab
 
 # rearrange / navigate tabs
 {{ if eq .chezmoi.os "darwin" -}}
@@ -198,6 +253,9 @@ map --mode leader - kmux_lsplit h
 
 # move panes
 map --mode leader m detach_window ask
+map --mode leader s swap_with_window
+map --mode leader v focus_visible_window
+map --mode leader tab nth_window -1
 map --mode leader shift+h move_window left
 map --mode leader shift+j move_window down
 map --mode leader shift+k move_window up
@@ -222,6 +280,7 @@ map --mode leader k neighboring_window up
 map --mode leader l neighboring_window right
 
 # resize panes
+map --mode leader i start_resizing_window
 map alt+h resize left 3
 map alt+j resize down 3
 map alt+k resize up 3
@@ -230,3 +289,5 @@ map --when-focus-on var:IS_NVIM alt+h
 map --when-focus-on var:IS_NVIM alt+j
 map --when-focus-on var:IS_NVIM alt+k
 map --when-focus-on var:IS_NVIM alt+l
+
+include local.conf
