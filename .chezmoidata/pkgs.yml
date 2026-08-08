@@ -625,6 +625,7 @@ pkgs:
         - impala
         - imv
         - inetutils
+        - inkscape
         - innoextract
         - iwd
         - jdk11-openjdk
