@@ -45,23 +45,13 @@ gui:
       - "#f38ba8"
     defaultFgColor:
       - "#cdd6f4"
-
   authorColors:
     "*": "#b4befe"
-
 git:
   overrideGpg: true
-  pagers:
-    - pager: delta --dark --paging=never --line-numbers --hyperlinks
-        --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
-  branchLogCmd: "git log --graph --color=always --abbrev-commit --decorate
-    --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset)
-    %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
-    {{branchName}} --"
+  diffRenderers:
+    - command: delta --dark --paging=never --line-numbers --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
+  branchLogCmd: "git log --graph --color=always --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' {{branchName}} --"
   allBranchesLogCmds:
-    - git log --graph --all --color=always --abbrev-commit  --decorate
-      --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset)
-      %C(bold
-      green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset)
-      %C(dim white)- %an%C(reset)'
+    - git log --graph --all --color=always --abbrev-commit  --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
   parseEmoji: true
