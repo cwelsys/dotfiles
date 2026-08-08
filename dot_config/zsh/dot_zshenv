@@ -1,4 +1,4 @@
-if [[ $(uname) == Darwin ]]; then
+if [[ $OSTYPE == darwin* ]]; then
   export SHELL_SESSIONS_DISABLE=1
 
   if (( ! $+commands[brew] )); then
