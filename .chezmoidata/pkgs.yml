@@ -710,6 +710,7 @@ pkgs:
         - nfs-utils
         - nftables
         - niri
+        - nix
         - nodejs
         - noto-fonts
         - noto-fonts-cjk

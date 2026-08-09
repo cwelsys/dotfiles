@@ -29,6 +29,9 @@
 
 # Disable specific steps - same options as the command line flag
 disable = [
+  {{ if .isVM }}
+  "system",
+  {{ end }}
 	"containers",
 	"pip3",
 	"pnpm",
@@ -44,10 +47,8 @@ disable = [
   "colima",
   "dotnet",
   "firmware",
-  "android_studio"
-{{ if .isVM }}
-	"system",
-{{ end }}
+  "android_studio",
+  "nix"
 ]
 
 # Run these steps before all others
