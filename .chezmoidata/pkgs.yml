@@ -508,10 +508,6 @@ pkgs:
         - btrfs-progs
         - bun
         - cachyos-ananicy-rules
-        - cachyos-keyring
-        - cachyos-mirrorlist
-        - cachyos-v3-mirrorlist
-        - cachyos-v4-mirrorlist
         - cage
         - calf
         - cava
@@ -727,7 +723,6 @@ pkgs:
         - opencode
         - openra
         - opensnitch
-        - otf-apple-sf-pro
         - otf-commit-mono
         - otf-font-awesome
         - ouch
@@ -773,7 +768,7 @@ pkgs:
         - quickbms
         - quickshell
         - realtime-privileges
-        - reflector
+        - reflector-rs
         - resvg
         - ripgrep
         - ripgrep-all
