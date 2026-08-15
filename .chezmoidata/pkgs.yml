@@ -733,7 +733,7 @@ pkgs:
         - paru-git
         - pass
         - pavucontrol
-        - pcsx2
+        - pcsx2-latest-bin
         - perl-image-exiftool
         - php
         - pinta
@@ -768,7 +768,7 @@ pkgs:
         - quickbms
         - quickshell
         - realtime-privileges
-        - reflector-rs
+        - reflector
         - resvg
         - ripgrep
         - ripgrep-all
