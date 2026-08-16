@@ -16,36 +16,39 @@ title_format = "{cwd}"
 
 [files]
 excludes = [
-  { urn = [
-    ".DS_Store",
-    ".localized",
-    ".hushlogin",
-    "NTUSER*",
-    "ntuser*",
-    "Thumbs.db",
-    "lost+found",
-    ".snapshots",
-    ".keep",
-    ".Trash",
-    ".Trash-*",
-    ".pki",
-    ".steampath",
-    ".steampid",
-    ".nextcloudsync.log",
-    ".sync_*.db*",
-    ".sync-exclude.lst",
-    ".stfolder",
-    ".stignore",
-    "__pycache__",
+  { url = [
+    "**/.DS_Store",
+    "**/.localized",
+    "**/.hushlogin",
+    "**/NTUSER*",
+    "**/Thumbs.db",
+    "**/.keep",
+    "**/.steampath",
+    "**/.steampid",
+    "**/.nextcloudsync.log",
+    "**/.sync_*.db*",
+    "**/.sync-exclude.lst",
+    "**/.stignore",
+    "**/.obsidian-cli.sock",
     "*.pyc",
     "*.pyo",
-    "node_modules",
-    ".venv",
-    "venv",
-    ".obsidian-cli.sock",
+    "**/lost+found/",
+    "**/.snapshots/",
+    "**/.Trash/",
+    "**/.Trash-*/",
+    "**/.pki/",
+    "**/.stfolder/",
+    "**/__pycache__/",
+    "**/node_modules/",
+    "**/.venv/",
+    "**/venv/",
   ], in = "*" },
-  { urn = ["Shared"], in = "/Users" },
-  { urn = ["ncdata"], in = "/mnt" },
+  { url = [
+    "**/Shared/",
+  ], in = "/Users" },
+  { url = [
+    "**/ncdata/",
+  ], in = "/mnt" },
 ]
 
 [opener]
@@ -54,16 +57,14 @@ extract = [
 ]
 
 download = [
-      { run = "ya emit download %S",        desc = "Download" },
-      { run = "ya emit download --open %S", desc = "Download and open" },
+  { run = "ya emit download %S", desc = "Download" },
+  { run = "ya emit download --open %S", desc = "Download and open" },
 ]
 
 [plugin]
 prepend_fetchers = [
   { group = "git", url = "*", run = "git" },
   { group = "git", url = "*/", run = "git" },
-  { group = "mime", url = "local://*", run = "mime-ext.local", prio = "high" },
-  { group = "mime", url = "remote://*", run = "mime-ext.remote", prio = "high" },
 ]
 
 prepend_preloaders = [
@@ -84,4 +85,3 @@ prepend_previewers = [
   { mime = "application/msword", run = "office" },
   { url = "*.docx", run = "office" },
 ]
-

@@ -18,10 +18,6 @@ require("linemode-plus"):setup({
 	},
 })
 
-require("mime-ext.local"):setup({
-	fallback_file1 = true,
-})
-
 require("zoxide"):setup({
 	update_db = false,
 })
@@ -44,24 +40,14 @@ require("projects"):setup({
 		load_after_start = false,
 	},
 })
-require("restore"):setup({})
 
 require("augment-command"):setup({
 	prompt = false,
-	smart_enter = true,
-	smart_paste = true,
-	smart_tab_create = true,
-	smart_tab_switch = true,
 })
 
-th.git = th.git or {}
-th.git.modified_sign = "M"
-th.git.added_sign = "A"
-th.git.untracked_sign = "?"
-th.git.ignored_sign = "!"
-th.git.deleted_sign = "D"
-th.git.updated_sign = "U"
-require("git"):setup()
+require("git"):setup({
+	order = 1500,
+})
 
 require("starship"):setup({
 	hide_flags = true,
