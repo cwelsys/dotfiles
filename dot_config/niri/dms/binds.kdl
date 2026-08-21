@@ -51,7 +51,7 @@ binds {
 
     Mod+Shift+N hotkey-overlay-title="Notepad" { spawn "dms" "ipc" "call" "notepad" "toggle"; }
 
-    Mod+B hotkey-overlay-title="Browser" { spawn "nirirun" "-c" "zen" "--" "zen-browser"; }
+    Mod+B hotkey-overlay-title="Browser" { spawn "nirirun" "-c" "zen" "--tile" "--" "zen-browser"; }
 
     Mod+E hotkey-overlay-title="File Manager" { spawn "nirirun" "-c" "org.gnome.Nautilus" "--" "nautilus" "--new-window"; }
 
