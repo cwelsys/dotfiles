@@ -6,19 +6,26 @@ user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
 user_pref("layout.css.prefers-color-scheme.content-override", 0);
 user_pref("zen.view.enable-loading-indicator", false);
 
-// Display / Rendering
+// Display / Performance
 user_pref("widget.dmabuf.force-enabled", true);
 user_pref("gfx.font_rendering.fontconfig.max_generic_substitutions", 127);
 user_pref("gfx.webrender.layer-compositor", true);
-user_pref("media.wmf.zero-copy-nv12-textures-force-enabled", true);
 user_pref("gfx.webrender.quality.force-subpixel-aa-where-possible", true);
 user_pref("gfx.use_text_smoothing_setting", true);
+user_pref("nglayout.initialpaint.delay", 250);
+user_pref("nglayout.initialpaint.delay_in_oofpif", 250);
+user_pref("browser.newtab.preload", false);
+user_pref("javascript.options.baselinejit.threshold", 50);
+user_pref("javascript.options.concurrent_multiprocess_gcs.cpu_divisor", 2);
+user_pref("media.hardware-video-decoding-vulkan.enabled", true);
 
 // Accessibility
 user_pref("accessibility.force_disabled", 1);
 user_pref("devtools.accessibility.enabled", false);
+user_pref("mousewheel.with_shift.action", 5);
+user_pref("ui.key.chromeAccess", 5);
 
-// DevTools / View source
+// DevTools
 user_pref("view_source.wrap_long_lines", true);
 user_pref("devtools.debugger.ui.editor-wrapping", true);
 
@@ -62,6 +69,7 @@ user_pref("signon.privateBrowsingCapture.enabled", false);
 user_pref("browser.formfill.enable", false);
 user_pref("security.insecure_field_warning.contextual.enabled", false);
 user_pref("security.insecure_password.ui.enabled", false);
+user_pref("signon.rememberSignons", false);
 
 // Sessions
 user_pref("browser.sessionhistory.max_total_viewers", 8);
@@ -72,6 +80,9 @@ user_pref("browser.firefox-view.feature-tour", '{"screen":"","complete":true}');
 user_pref("browser.cache.disk.enable", false);
 user_pref("browser.privatebrowsing.forceMediaMemoryCache", true);
 user_pref("media.memory_cache_max_size", 65536);
+user_pref("network.buffer.cache.size", 65535);
+user_pref("network.buffer.cache.count", 48);
+user_pref("gfx.content.skia-font-cache-size", 20);
 
 // Privacy / tracking
 user_pref("privacy.history.custom", true);
@@ -105,6 +116,10 @@ user_pref("network.http.speculative-parallel-limit", 0);
 user_pref("browser.places.speculativeConnect.enabled", false);
 user_pref("network.dns.echconfig.enabled", true);
 user_pref("network.dns.http3_echconfig.enabled", true);
+user_pref("network.http.max-connections", 1800);
+user_pref("network.http.max-persistent-connections-per-server", 10);
+user_pref("network.http.max-urgent-start-excessive-connections-per-host", 5);
+user_pref("network.http.request.max-start-delay", 5);
 
 // Downloads / Safe Browsing
 user_pref("browser.download.start_downloads_in_tmp_dir", true);
@@ -157,18 +172,17 @@ user_pref("browser.newtabpage.activity-stream.feeds.section.topstories", false);
 user_pref("browser.newtabpage.activity-stream.showSponsored", false);
 user_pref("browser.newtabpage.activity-stream.showSponsoredCheckboxes", false);
 
-// Binds / Scrolling
-user_pref("mousewheel.with_shift.action", 5);
-user_pref("ui.key.chromeAccess", 5);
+// Scrolling
 user_pref("apz.overscroll.enabled", true);
 user_pref("general.smoothScroll", true);
-user_pref("general.smoothScroll.msdPhysics.continuousMotionMaxDeltaMS", 12);
 user_pref("general.smoothScroll.msdPhysics.enabled", true);
+user_pref("general.smoothScroll.currentVelocityWeighting", "0.15");
+user_pref("general.smoothScroll.stopDecelerationWeighting", "0.6");
+user_pref("mousewheel.min_line_scroll_amount", 10);
+user_pref("general.smoothScroll.mouseWheel.durationMinMS", 80);
+user_pref("general.smoothScroll.msdPhysics.continuousMotionMaxDeltaMS", 12);
 user_pref("general.smoothScroll.msdPhysics.motionBeginSpringConstant", 600);
 user_pref("general.smoothScroll.msdPhysics.regularSpringConstant", 650);
 user_pref("general.smoothScroll.msdPhysics.slowdownMinDeltaMS", 25);
-user_pref("general.smoothScroll.msdPhysics.slowdownMinDeltaRatio", "2");
 user_pref("general.smoothScroll.msdPhysics.slowdownSpringConstant", 250);
-user_pref("general.smoothScroll.currentVelocityWeighting", "1");
-user_pref("general.smoothScroll.stopDecelerationWeighting", "1");
-user_pref("mousewheel.default.delta_multiplier_y", 300);
+user_pref("mousewheel.default.delta_multiplier_y", 200);

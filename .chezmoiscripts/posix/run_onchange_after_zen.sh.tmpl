@@ -29,12 +29,17 @@ fi
 
 src="{{ .chezmoi.sourceDir }}/dot_config/zen/user.js"
 
+host_prefs='{{ if eq .chezmoi.hostname "main" }}user_pref("layout.frame_rate", 240);{{ end }}'
+
 write_atomic() {
   local dst=$1
   local dir tmp
   dir=$(dirname "$dst")
   tmp=$(mktemp "${dir}/.user.js.XXXXXX")
   cp "$src" "$tmp"
+  if [[ -n "$host_prefs" ]]; then
+    printf '\n// Host\n%s\n' "$host_prefs" >>"$tmp"
+  fi
   mv -f "$tmp" "$dst"
 }
 
