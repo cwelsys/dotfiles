@@ -67,6 +67,7 @@ pkgs:
         - docker-buildx
         - docker-compose
         - doggo
+        - dosfstools
         - ducker
         - dust
         - efibootmgr
