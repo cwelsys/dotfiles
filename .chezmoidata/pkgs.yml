@@ -896,7 +896,7 @@ pkgs:
         - yarn
         - yaru-icon-theme
         - ydotool
-        - zen-browser-bin
+        - zen-browser-twilight-bin
         - zig
         - zmx-bin
         - zoxide
