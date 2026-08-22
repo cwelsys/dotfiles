@@ -426,7 +426,7 @@ pkgs:
         - taskexplorer
         - tor-browser
         - vagrant
-        - zen
+        - zen@twilight
       cargo:
         - cargo-sweep
         - managarr
