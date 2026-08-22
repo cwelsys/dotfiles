@@ -5,6 +5,7 @@ user_pref("zen.theme.accent-color", "#89b4fa");
 user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
 user_pref("layout.css.prefers-color-scheme.content-override", 0);
 user_pref("zen.view.enable-loading-indicator", false);
+user_pref("zen.tabs.essentials.max", 30);
 
 // Display / Performance
 user_pref("widget.dmabuf.force-enabled", true);
