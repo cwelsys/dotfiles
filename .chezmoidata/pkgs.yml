@@ -48,7 +48,6 @@ pkgs:
     - mise
     - moor
     - neovim
-    - openssh
     - pass
     - ripgrep
     - ripgrep-all
@@ -57,7 +56,6 @@ pkgs:
     - topgrade
     - wget
     - zoxide
-    - zsh
 
   casks:
     - font-jetbrains-mono
