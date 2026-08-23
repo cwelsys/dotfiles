@@ -126,6 +126,15 @@ installed_buckets() {
   esac
 }
 
+package_present() {
+  case "$1" in
+  pacman) pacman -Qq "$2" &>/dev/null ;;
+  brews) brew list --formula "$2" &>/dev/null ;;
+  casks) brew list --cask "$2" &>/dev/null ;;
+  *) return 1 ;;
+  esac
+}
+
 installed_packages() {
   local section="$1" glyph color label grouped
   IFS=$'\t' read -r glyph color label grouped < <(section_meta "$section") || return 1
@@ -300,7 +309,8 @@ sync_section() {
     while IFS= read -r p; do
       if ! jq_data -e --arg p "$p" \
         "(.hosts.\"$HOSTNAME\".pkgs.$section // []) | $FLATTEN | select(. == \$p)" >/dev/null 2>&1; then
-        log_warn "$p is global — remove it from pkgs.yml, or it will re-install on next apply"
+        package_present "$section" "$p" && continue
+        log_warn "$p is in the global tier but not installed here — 'chezmoi apply' installs it; drop it from pkgs.yml if this host shouldn't have it"
         continue
       fi
       n_del=$((n_del + 1))
