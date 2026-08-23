@@ -143,6 +143,11 @@ use = "yazi-rs/plugins:term-cwd"
 rev = "72f9e3c"
 hash = "ea4d7108bc2c02738ab652064095905f"
 
+[[plugin.deps]]
+use = "cwelsys/no-header"
+rev = "e14e5a1"
+hash = "633f5e9261c19b0f7a7be83788f42e81"
+
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
 rev = "be0b21d"

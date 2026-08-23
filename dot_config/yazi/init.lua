@@ -49,11 +49,13 @@ require("git"):setup({
 	order = 1500,
 })
 
-require("starship"):setup({
-	hide_flags = true,
-	show_right_prompt = true,
-	hide_count = true,
-})
+-- require("starship"):setup({
+-- 	hide_flags = true,
+-- 	show_right_prompt = true,
+-- 	hide_count = true,
+-- })
+
+require("no-header"):setup()
 
 require("term-cwd"):setup()
 
