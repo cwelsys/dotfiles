@@ -1,5 +1,0 @@
-hosts:
-  bmac:
-    pkgs: {}
-    chassis: vm
-    os: darwin

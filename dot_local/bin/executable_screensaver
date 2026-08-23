@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 PIDFILE="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/screensaver.pid"
 

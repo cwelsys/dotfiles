@@ -1,0 +1,149 @@
+[[plugin.deps]]
+use = "Lil-Dank/lazygit"
+rev = "e73fd74"
+hash = "6ea5f37c7f219671ec504cb8311f889d"
+
+[[plugin.deps]]
+use = "MasouShizuka/projects"
+rev = "22a4006"
+hash = "195d1b8c8fc1a944883b5ce3d92d7ca7"
+
+[[plugin.deps]]
+use = "Rolv-Apneseth/starship"
+rev = "ea92cf4"
+hash = "9776f378459072b6c2875eae5addc49d"
+
+[[plugin.deps]]
+use = "cwelsys/command"
+rev = "e403580"
+hash = "ec24d53d1173a37c101e65935a331e34"
+
+[[plugin.deps]]
+use = "cwelsys/office"
+rev = "a5db232"
+hash = "b443de563cc6fcc83d94e8f80f5cdd4c"
+
+[[plugin.deps]]
+use = "cwelsys/rsync"
+rev = "6276f64"
+hash = "72828957273094ed0ef52792e3290900"
+
+[[plugin.deps]]
+use = "hankertrix/augment-command"
+rev = "352dc37"
+hash = "ceb04cad6bd268b664c0c7fa1e8e9928"
+
+[[plugin.deps]]
+use = "ndtoan96/ouch"
+rev = "cfe4f50"
+hash = "eff5702573b6cfba61e4ac8b1969629a"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:chmod"
+rev = "4848aac"
+hash = "87472b05a8c420100f6a2b9cde1e7746"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:diff"
+rev = "4848aac"
+hash = "14558d2829c0aa05e99c57de8f74d199"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:full-border"
+rev = "4848aac"
+hash = "f281261ff04ad7ec867c3f802a50835f"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:git"
+rev = "4848aac"
+hash = "5bb0bfab901d3601c370eafdd66edd31"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:mount"
+rev = "4848aac"
+hash = "46cbdc05596a3ecd730b288e28c7079d"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:piper"
+rev = "4848aac"
+hash = "45a533508a9840cc5a10cf6129f63e6a"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:smart-filter"
+rev = "4848aac"
+hash = "d6f7351ea25a43c9b5f4315fa1e23935"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:toggle-pane"
+rev = "4848aac"
+hash = "5b2fbef7d1513ce38ff72623a071a5e"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:vcs-files"
+rev = "4848aac"
+hash = "853240b2454c93a93fd03fc9fd7e06e8"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:zoom"
+rev = "4848aac"
+hash = "e8e279463ee99c940e6945a14cf4aa9e"
+
+[[plugin.deps]]
+use = "XYenon/yafg"
+rev = "e6ba851"
+hash = "9558dd9169cbf01eac6044583c426716"
+
+[[plugin.deps]]
+use = "AnirudhG07/plugins-yazi:copy-file-contents"
+rev = "3f4f1a3"
+hash = "421263a8558fbd2fdb07a75f074cc6e3"
+
+[[plugin.deps]]
+use = "barbanevosa/linemode-plus"
+rev = "4d0d034"
+hash = "5d0ac26725d9a975bef1d0887374f10e"
+
+[[plugin.deps]]
+use = "larry-oates/open-git-remote"
+rev = "72158d6"
+hash = "ed359abc14ba915a12e759435ed721ab"
+
+[[plugin.deps]]
+use = "tasnimAlam/croc-send"
+rev = "d7197eb"
+hash = "99de22bf071e4737f8e9dbe146457e9c"
+
+[[plugin.deps]]
+use = "cwelsys/remotes"
+rev = "6529c6a"
+hash = "c72de1fe6aacf830b7cd03e7ccc45ea4"
+
+[[plugin.deps]]
+use = "AnirudhG07/custom-shell"
+rev = "6f68404"
+hash = "32558ab53db6009fb2b0c131c437a139"
+
+[[plugin.deps]]
+use = "cwelsys/fg"
+rev = "1996292"
+hash = "439940677de50544dfab567000b7bdc9"
+
+[[plugin.deps]]
+use = "cwelsys/searchjump"
+rev = "bb9bd14"
+hash = "6f31a2ebb6aeb470e7be452660b65535"
+
+[[plugin.deps]]
+use = "cwelsys/nc-share"
+rev = "2c1f7d7"
+hash = "c40e6de8da7eef1a078eb53e64e2a22b"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:term-cwd"
+rev = "72f9e3c"
+hash = "ea4d7108bc2c02738ab652064095905f"
+
+[[flavor.deps]]
+use = "yazi-rs/flavors:catppuccin-mocha"
+rev = "be0b21d"
+hash = "ce320f877fe709b189433941aba747c4"

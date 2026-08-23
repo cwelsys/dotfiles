@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 {{- $pkgs := get .pkgs "pacman" | default list }}
+{{- if not .headless }}
+{{-   $pkgs = concat $pkgs (get .pkgs "pacman_fonts" | default list) }}
+{{- end }}
 {{- if $pkgs }}
+# paru
+if ! command -v paru >/dev/null 2>&1; then
+  sudo pacman -S --needed --noconfirm base-devel git
+  tmp=$(mktemp -d)
+  trap 'rm -rf "$tmp"' EXIT
+  git clone --depth 1 https://aur.archlinux.org/paru-bin.git "$tmp/paru-bin"
+  (cd "$tmp/paru-bin" && makepkg -si --noconfirm)
+fi
+
+# pkgs
 missing=$(pacman -T {{ $pkgs | quoteList | join " " }} || true)
 if [[ -n "$missing" ]]; then
   paru -S --needed --noconfirm $missing

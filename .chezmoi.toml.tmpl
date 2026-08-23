@@ -37,10 +37,7 @@
 {{- end -}}
 
 {{- /* ===== PROFILE FLAGS ===== */ -}}
-{{- $headless := false -}}
-{{- if eq .chezmoi.os "linux" -}}
-{{-   $headless = promptBoolOnce . "headless" "Headless (no GUI)" (has $chassis (list "vm" "server")) -}}
-{{- end -}}
+{{- $headless := promptBoolOnce . "headless" "Headless (no GUI)" (has $chassis (list "vm" "server")) -}}
 
 {{- $isLaptop := eq $chassis "laptop" -}}
 

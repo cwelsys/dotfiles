@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-{{ if lookPath "npm" }}
-set -e
-{{ range (get .pkgs "npm" | default list) -}}
-npm install -g --fund=false '{{ . }}' || true
-{{ end }}
-{{- end }}

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 kitten @ launch --type=background sh -c '
   case "$(uname)" in
     Darwin) open "$1" ;;

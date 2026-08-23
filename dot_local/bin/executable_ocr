@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 SELECTION=$(slurp -b '#00000066' -c '#ffffffcc' -w 2 2>/dev/null)
 

@@ -2,81 +2,64 @@ pkgs:
   pacman:
     - atuin
     - bat
-    - chezmoi
+    - btop
     - direnv
     - eza
     - fastfetch
     - fd
     - fzf
     - git-delta
+    - gnupg
     - jq
-    - go-yq
     - lazygit
+    - mise
+    - moor
     - neovim
+    - openssh
+    - pass
     - ripgrep
+    - ripgrep-all
+    - rsync
     - starship
+    - topgrade-bin
+    - wget
     - zoxide
     - zsh
+
+  pacman_fonts:
+    - noto-fonts-emoji
+    - ttf-jetbrains-mono
+    - ttf-jetbrains-mono-nerd
+
   brews:
     - atuin
     - bash
     - bat
-    - chezmoi
-    - coreutils
+    - btop
     - direnv
     - eza
     - fastfetch
     - fd
     - fzf
     - git-delta
+    - gnupg
     - jq
-    - yq
     - lazygit
+    - mise
+    - moor
     - neovim
+    - openssh
+    - pass
     - ripgrep
+    - ripgrep-all
+    - rsync
     - starship
+    - topgrade
+    - wget
     - zoxide
+    - zsh
+
   casks:
+    - font-jetbrains-mono
+    - font-jetbrains-mono-nerd-font
     - font-symbols-only-nerd-font
-  cargo:
-    - cargo-cache
-    - cargo-list
-    - cargo-update
-  npm:
-    - '@antfu/ni'
-    - commitizen
-    - git-recent
-    - neovim
-    - npm-check-updates
-    - typescript
-    - typescript-language-server
-  yazi:
-    - AnirudhG07/custom-shell
-    - AnirudhG07/plugins-yazi:copy-file-contents
-    - Lil-Dank/lazygit
-    - MasouShizuka/projects
-    - Rolv-Apneseth/starship
-    - XYenon/yafg
-    - barbanevosa/linemode-plus
-    - cwelsys/command
-    - cwelsys/fg
-    - cwelsys/nc-share
-    - cwelsys/office
-    - cwelsys/remotes
-    - cwelsys/rsync
-    - cwelsys/searchjump
-    - hankertrix/augment-command
-    - larry-oates/open-git-remote
-    - ndtoan96/ouch
-    - tasnimAlam/croc-send
-    - yazi-rs/flavors:catppuccin-mocha
-    - yazi-rs/plugins:chmod
-    - yazi-rs/plugins:diff
-    - yazi-rs/plugins:full-border
-    - yazi-rs/plugins:git
-    - yazi-rs/plugins:mount
-    - yazi-rs/plugins:piper
-    - yazi-rs/plugins:smart-filter
-    - yazi-rs/plugins:toggle-pane
-    - yazi-rs/plugins:vcs-files
-    - yazi-rs/plugins:zoom

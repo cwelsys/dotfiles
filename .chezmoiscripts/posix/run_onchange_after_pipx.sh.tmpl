@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-{{ if lookPath "pipx" }}
-set -e
-{{ range (get .pkgs "pipx" | default list) -}}
-pipx install -q '{{ . }}' || true
-{{ end }}
-{{- end }}

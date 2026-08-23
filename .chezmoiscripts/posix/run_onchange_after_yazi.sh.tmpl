@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-{{ if lookPath "yazi" }}
+# package.toml: {{ include "dot_config/yazi/package.toml" | sha256sum }}
+{{ if lookPath "ya" -}}
 set -e
-{{ range (get .pkgs "yazi" | default list) -}}
-ya pkg add '{{ . }}' 2>/dev/null || true
-{{ end }}
+ya pkg install || true
 {{- end }}

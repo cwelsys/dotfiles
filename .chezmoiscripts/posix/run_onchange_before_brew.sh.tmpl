@@ -1,25 +1,11 @@
 #!/usr/bin/env bash
 {{ if lookPath "brew" }}
-{{- $brews := get .pkgs "brews" | default list }}
-{{- $casks := get .pkgs "casks" | default list }}
-{{- $taps := list }}
-{{- range $brews }}
-{{-   if contains "/" . }}
-{{-     $parts := . | splitList "/" }}
-{{-     if eq (len $parts) 3 }}
-{{-       $taps = append $taps (printf "%s/%s" (index $parts 0) (index $parts 1)) }}
-{{-     end }}
-{{-   end }}
-{{- end }}
 brew bundle --file=/dev/stdin <<'BUNDLE'
-{{- range ($taps | uniq) }}
-tap {{ . | quote }}
-{{- end }}
-{{- range $brews }}
+{{- range (get .pkgs "brews" | default list) }}
 brew {{ . | quote }}
 {{- end }}
-{{- if eq .chezmoi.os "darwin" }}
-{{- range $casks }}
+{{- if and (eq .chezmoi.os "darwin") (not .headless) }}
+{{- range (get .pkgs "casks" | default list) }}
 cask {{ . | quote }}
 {{- end }}
 {{- end }}

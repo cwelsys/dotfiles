@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # darwinenv - Parse vars from file and set via launchctl
 
 set -euo pipefail

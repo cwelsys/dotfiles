@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-{{ if lookPath "go" }}
-set -e
-gobin="${GOBIN:-$HOME/go/bin}"
-{{ range (get .pkgs "go" | default list) -}}
-[[ -x "$gobin/{{ base . }}" ]] || go install '{{ . }}@latest' || true
-{{ end }}
-{{- end }}
