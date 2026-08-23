@@ -1,39 +1,27 @@
-#!/bin/bash
+#!/usr/bin/env bash
 {{ if lookPath "brew" }}
-{{- if hasKey .pkgs.hosts .hostname -}}
-{{-   $hostPkgs := index .pkgs.hosts .hostname -}}
-
-# Extract and add taps from formulae
-{{-   $taps := list }}
-{{-   if and (eq .chezmoi.os "darwin") (hasKey $hostPkgs "brews") }}
-{{-     range $hostPkgs.brews }}
-  {{-       if contains "/" . }}
-    {{-       $parts := . | splitList "/" }}
-    {{-       if eq (len $parts) 3 }}
-      {{-       $tap := printf "%s/%s" (index $parts 0) (index $parts 1) }}
-      {{-       $taps = append $taps $tap }}
-    {{-       end }}
-  {{-       end }}
+{{- $brews := get .pkgs "brews" | default list }}
+{{- $casks := get .pkgs "casks" | default list }}
+{{- $taps := list }}
+{{- range $brews }}
+{{-   if contains "/" . }}
+{{-     $parts := . | splitList "/" }}
+{{-     if eq (len $parts) 3 }}
+{{-       $taps = append $taps (printf "%s/%s" (index $parts 0) (index $parts 1)) }}
 {{-     end }}
 {{-   end }}
-
-brew bundle --file=/dev/stdin <<EOF
-{{-   range ($taps | uniq) }}
-tap {{ . | quote }}
-{{-   end }}
-
-{{-   if and (eq .chezmoi.os "darwin") (hasKey $hostPkgs "brews") }}
-{{-     range $hostPkgs.brews }}
-brew {{ . | quote }}
-{{-     end }}
-{{-   end }}
-{{-   if and (eq .chezmoi.os "darwin") (hasKey $hostPkgs "casks") }}
-{{-     range $hostPkgs.casks }}
-cask {{ . | quote }}
-{{-     end }}
-{{-   end }}
-EOF
-{{- else }}
-echo "No package configuration found for hostname: {{ .hostname }}"
 {{- end }}
+brew bundle --file=/dev/stdin <<'BUNDLE'
+{{- range ($taps | uniq) }}
+tap {{ . | quote }}
+{{- end }}
+{{- range $brews }}
+brew {{ . | quote }}
+{{- end }}
+{{- if eq .chezmoi.os "darwin" }}
+{{- range $casks }}
+cask {{ . | quote }}
+{{- end }}
+{{- end }}
+BUNDLE
 {{- end }}

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# facts: {{ .hostname }} {{ .chassis }} {{ .osid }}
+set -euo pipefail
+
+src={{ .chezmoi.sourceDir | quote }}
+f="$src/.chezmoidata/hosts/{{ .hostname }}.yml"
+
+[[ -f "$f" ]] || printf 'hosts:\n  {{ .hostname }}:\n    pkgs: {}\n' >"$f"
+
+yq -i '.hosts.{{ .hostname }}.chassis = "{{ .chassis }}" | .hosts.{{ .hostname }}.os = "{{ .osid }}"' "$f"
+
+git -C "$src" add -- ".chezmoidata/hosts/{{ .hostname }}.yml"

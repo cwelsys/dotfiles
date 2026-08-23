@@ -1,18 +1,7 @@
 #!/usr/bin/env bash
 {{ if lookPath "yazi" }}
 set -e
-
-{{- $plugins := list }}
-{{- if hasKey .pkgs "global" }}
-{{-   if hasKey .pkgs.global "yazi" }}
-{{-     $plugins = .pkgs.global.yazi }}
-{{-   end }}
-{{- end }}
-{{- if and (hasKey .pkgs.hosts .hostname) (hasKey (index .pkgs.hosts .hostname) "yazi") }}
-{{-   $plugins = concat $plugins (index .pkgs.hosts .hostname).yazi }}
-{{- end }}
-
-{{ range $plugins -}}
+{{ range (get .pkgs "yazi" | default list) -}}
 ya pkg add '{{ . }}' 2>/dev/null || true
 {{ end }}
-{{ end }}
+{{- end }}

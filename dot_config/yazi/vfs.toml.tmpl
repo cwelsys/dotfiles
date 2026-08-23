@@ -1,8 +1,8 @@
-{{- $fleet := list "main" "mba" "pbox" "bmac" -}}
-{{- range $fleet }}
-{{- if ne $.hostname . }}
-[sftp.{{ . }}]
-host = "{{ . }}"
+{{- $fleet := dict -}}{{- if hasKey . "hosts" -}}{{- $fleet = .hosts -}}{{- end -}}
+{{- range $n, $h := $fleet }}
+{{- if ne $n $.hostname }}
+[sftp.{{ $n }}]
+host = "{{ $n }}"
 user = "cwel"
 port = 22
 {{ end -}}

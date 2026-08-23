@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
-{{- if and (hasKey .pkgs.hosts .hostname) (hasKey (index .pkgs.hosts .hostname) "pacman") -}}
-{{ $pkgs := (index .pkgs.hosts .hostname).pacman }}
+{{- $pkgs := get .pkgs "pacman" | default list }}
+{{- if $pkgs }}
 missing=$(pacman -T {{ $pkgs | quoteList | join " " }} || true)
 if [[ -n "$missing" ]]; then
   paru -S --needed --noconfirm $missing
 fi
-{{- else }}
-echo "No package configuration found for hostname: {{ .hostname }}"
 {{- end }}
-

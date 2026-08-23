@@ -1,7 +1,7 @@
 {{- $fleet := dict -}}{{- if hasKey . "hosts" -}}{{- $fleet = .hosts -}}{{- end -}}
 {{- $peers := list -}}
 {{- range $n, $h := $fleet -}}
-{{-   if and (ne $n $.hostname) (ne $h.chassis "vm") -}}{{- $peers = append $peers $n -}}{{- end -}}
+{{-   if and (ne $n $.hostname) (ne (get $h "chassis") "vm") -}}{{- $peers = append $peers $n -}}{{- end -}}
 {{- end -}}
 hostname *
 terminfo_dir .local/share/terminfo

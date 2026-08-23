@@ -16,19 +16,33 @@
 
 {{- $shell := "zsh" -}}
 {{- $isWSL := and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
-{{- $isVM := promptBoolOnce . "isVM" "Is this a virtual machine" false -}}
+
+{{- $isVM := false -}}
+{{- $chassis := "" -}}
+{{- if lookPath "hostnamectl" -}}
+{{-   $chassis = output "hostnamectl" "chassis" | trim -}}
+{{-   $isVM = eq $chassis "vm" -}}
+{{- else if eq .chezmoi.os "darwin" -}}
+{{-   $isVM = promptBoolOnce . "isVM" "Is this a virtual machine" false -}}
+{{-   if $isVM -}}
+{{-     $chassis = "vm" -}}
+{{-   else if hasPrefix "MacBook" (output "sysctl" "-n" "hw.model" | trim) -}}
+{{-     $chassis = "laptop" -}}
+{{-   else -}}
+{{-     $chassis = "desktop" -}}
+{{-   end -}}
+{{- else -}}
+{{-   $isVM = promptBoolOnce . "isVM" "Is this a virtual machine" false -}}
+{{-   $chassis = ternary "vm" "desktop" $isVM -}}
+{{- end -}}
 
 {{- /* ===== PROFILE FLAGS ===== */ -}}
 {{- $headless := false -}}
 {{- if eq .chezmoi.os "linux" -}}
-{{-   if $isVM -}}
-{{-     $headless = promptBoolOnce . "headless" "Headless (no GUI)" true -}}
-{{-   else -}}
-{{-     $headless = promptBoolOnce . "headless" "Headless (no GUI)" false -}}
-{{-   end -}}
+{{-   $headless = promptBoolOnce . "headless" "Headless (no GUI)" (has $chassis (list "vm" "server")) -}}
 {{- end -}}
 
-{{- $isLaptop := eq $hostname "mba" -}}
+{{- $isLaptop := eq $chassis "laptop" -}}
 
 sourceDir = {{ .chezmoi.sourceDir | quote }}
 encryption = "age"
@@ -43,6 +57,7 @@ osid = {{ $osID | quote }}
 email = {{ $email | quote }}
 hostname = {{ $hostname | quote }}
 shell = {{ $shell | quote }}
+chassis = {{ $chassis | quote }}
 isLaptop = {{ $isLaptop }}
 isWSL = {{ $isWSL }}
 isVM = {{ $isVM }}

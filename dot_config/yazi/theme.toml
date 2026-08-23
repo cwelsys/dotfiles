@@ -4,7 +4,8 @@ dark = "catppuccin-mocha"
 
 [git]
 
-modified_sign  = "M"
+unstaged_sign  = "M"
+staged_sign    = "M"
 added_sign     = "A"
 untracked_sign = "?"
 ignored_sign   = "!"
