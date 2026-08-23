@@ -11,8 +11,8 @@ STARTFILE="/tmp/screenrecord.start"
 MODE="gif"
 for arg in "$@"; do
   case "$arg" in
-    --video) MODE="video" ;;
-    --gif) MODE="gif" ;;
+  --video) MODE="video" ;;
+  --gif) MODE="gif" ;;
   esac
 done
 
@@ -47,23 +47,31 @@ stop_recording() {
 start_recording() {
   local state_file="${XDG_CACHE_HOME:-$HOME/.cache}/dms/screenshot-state.json"
 
-  dms screenshot --stdout --no-clipboard --no-notify >/dev/null || exit 0
+  local before after
+  before=$(stat -c '%.9Y' "$state_file" 2>/dev/null || echo 0)
+
+  dms screenshot --no-file --no-clipboard --no-notify >/dev/null || exit 0
+
+  after=$(stat -c '%.9Y' "$state_file" 2>/dev/null || echo 0)
+  [[ "$after" != "$before" ]] || exit 0
 
   local geom
-  geom=$(jq -r '.last_region | "\(.width)x\(.height)+\(.x)+\(.y)"' "$state_file") || exit 1
+  geom=$(jq -er '.last_region
+                 | select((.width // 0) > 0 and (.height // 0) > 0)
+                 | "\(.width)x\(.height)+\(.x)+\(.y)"' "$state_file") || exit 1
 
   local timestamp
   timestamp=$(date +'%m.%d_%H.%M.%S')
 
   if [[ "$MODE" == "video" ]]; then
     local output="$OUTPUT_DIR/$timestamp.mp4"
-    echo "$output" > "$OUTFILE"
+    echo "$output" >"$OUTFILE"
 
     gpu-screen-recorder -w region -region "$geom" -f 60 -k h264 -q very_high \
       -ac opus -a default_output -cursor yes -o "$output" &
   else
     local output="$OUTPUT_DIR/$timestamp.gif"
-    echo "$output" > "$OUTFILE"
+    echo "$output" >"$OUTFILE"
 
     wlgif -g "$geom" -d 0 -o "$output" &
   fi
@@ -76,8 +84,8 @@ start_recording() {
     exit 1
   fi
 
-  echo "$pid" > "$PIDFILE"
-  date +%s > "$STARTFILE"
+  echo "$pid" >"$PIDFILE"
+  date +%s >"$STARTFILE"
 }
 
 if [[ -f "$PIDFILE" ]] && kill -0 "$(<"$PIDFILE")" 2>/dev/null; then

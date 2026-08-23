@@ -13,6 +13,8 @@ dms screenshot --stdout --no-clipboard --no-notify >"$SCREENSHOT_PATH"
 
 clipboard-multi "$SCREENSHOT_PATH"
 
+export SATTY_OUTPUT="$SCREENSHOT_PATH"
+
 satty --filename "$SCREENSHOT_PATH" \
   --output-filename "$SCREENSHOT_PATH" \
-  --copy-command "clipboard-multi -" &
+  --copy-command 'clipboard-multi - --text "$SATTY_OUTPUT"' &
