@@ -10,6 +10,7 @@ pkgs:
     - fzf
     - git-delta
     - jq
+    - go-yq
     - lazygit
     - neovim
     - ripgrep
@@ -29,6 +30,7 @@ pkgs:
     - fzf
     - git-delta
     - jq
+    - yq
     - lazygit
     - neovim
     - ripgrep
