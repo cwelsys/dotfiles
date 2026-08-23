@@ -6,6 +6,7 @@ user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
 user_pref("layout.css.prefers-color-scheme.content-override", 0);
 user_pref("zen.view.enable-loading-indicator", false);
 user_pref("zen.tabs.essentials.max", 30);
+user_pref("zen.glance.animation-duration", 0);
 
 // Display / Performance
 user_pref("widget.dmabuf.force-enabled", true);
