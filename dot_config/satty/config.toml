@@ -1,0 +1,10 @@
+[general]
+early-exit = ["all"]
+save-after-copy = true
+floating-hack = true
+corner-roundness = 12
+disable-notifications = true
+resize = { mode = "smart" }
+
+[keybinds]
+"q" = "run-actions-on-escape"
