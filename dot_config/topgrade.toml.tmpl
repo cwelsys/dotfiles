@@ -43,7 +43,7 @@ no_self_update = true
 [post_commands]
 
 [commands]
-"zinit" = "-i zinit self-update && zinit update --parallel 40; exit $?"
+"zinit" = 'zstyle ":zinit:config" zcompdump-path "$XDG_CACHE_HOME/zsh/zcompdump"; source "$XDG_DATA_HOME/zinit/zinit.git/zinit.zsh" && zinit self-update && zinit update --parallel 40'
 {{ if eq .hostname "main" }}
 "GE-Proton" = "fetch-eggroll"
 {{ end }}
