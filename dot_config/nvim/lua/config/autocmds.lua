@@ -31,6 +31,14 @@ vim.api.nvim_create_autocmd({ "InsertEnter", "WinLeave" }, {
   end,
 })
 
+-- No autoformat on chezmoi templates
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "chezmoitmpl", "*.chezmoitmpl" },
+  callback = function(ev)
+    vim.b[ev.buf].autoformat = false
+  end,
+})
+
 -- Unique backup extension per file path
 vim.api.nvim_create_autocmd("BufWritePre", {
   group = vim.api.nvim_create_augroup("better_backup", { clear = true }),
