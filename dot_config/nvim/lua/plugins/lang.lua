@@ -1,11 +1,8 @@
 return {
   { "fladson/vim-kitty", ft = "kitty" },
-  { "ron-rs/ron.vim" },
+  { "ron-rs/ron.vim", ft = "ron" },
   {
     "MeanderingProgrammer/render-markdown.nvim",
-    ---@module 'render-markdown'
-    ---@type render.md.UserConfig
-    opts = {},
     config = function()
       require("render-markdown").setup({
         preset = "obsidian",
@@ -26,6 +23,7 @@ return {
   },
   {
     "xixiaofinland/sf.nvim",
+    cmd = "SF",
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
       "ibhagwan/fzf-lua", -- no need if you don't use listing metadata feature

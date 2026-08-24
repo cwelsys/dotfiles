@@ -24,16 +24,12 @@ local function update_title()
     filename = "nvim"
   end
 
-  -- Try to find project root (git repository)
+  -- Project root (git repository)
   local project_name = ""
   if bufname ~= "" then
-    local file_dir = vim.fn.fnamemodify(bufname, ":p:h")
-    -- Use git rev-parse to get the root directory (more reliable)
-    local git_root_output =
-      vim.fn.systemlist("cd " .. vim.fn.shellescape(file_dir) .. " && git rev-parse --show-toplevel 2>/dev/null")
-    if git_root_output and #git_root_output > 0 and git_root_output[1] ~= "" then
-      local root_dir = git_root_output[1]
-      project_name = vim.fn.fnamemodify(root_dir, ":t")
+    local root = vim.fs.root(bufname, ".git")
+    if root then
+      project_name = vim.fn.fnamemodify(root, ":t")
     end
   end
 
