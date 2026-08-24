@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # set XDG Base for all login shells
 sudo tee /etc/profile.d/xdg-base-dirs.sh >/dev/null <<'EOF'
