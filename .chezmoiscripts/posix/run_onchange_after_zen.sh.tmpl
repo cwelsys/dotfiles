@@ -1,58 +1,38 @@
-#!/bin/bash
+{{- $home := .chezmoi.homeDir -}}
+{{- $candidates := list -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   $candidates = list (joinPath $home "Library/Application Support/zen") -}}
+{{- else if eq .chezmoi.os "linux" -}}
+{{-   $xdg := env "XDG_CONFIG_HOME" | default (joinPath $home ".config") -}}
+{{-   $candidates = list (joinPath $xdg "zen") (joinPath $home ".zen") (joinPath $home ".var/app/app.zen_browser.zen/.zen") -}}
+{{- end -}}
+{{- $zenDir := "" -}}
+{{- range $candidates -}}
+{{-   if and (not $zenDir) (stat (joinPath . "installs.ini")) -}}
+{{-     $zenDir = . -}}
+{{-   end -}}
+{{- end -}}
+{{- if $zenDir -}}
+#!/usr/bin/env bash
 # user.js hash: {{ include "dot_config/zen/user.js" | sha256sum }}
 
 set -eufo pipefail
 
-case "$(uname -s)" in
-Darwin)
-  ZEN_DIR="$HOME/Library/Application Support/zen"
-  ;;
-Linux)
-  ZEN_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/zen"
-  if [[ ! -d "$ZEN_DIR" ]]; then
-    ZEN_DIR="$HOME/.zen"
-  fi
-  if [[ ! -d "$ZEN_DIR" ]]; then
-    ZEN_DIR="$HOME/.var/app/app.zen_browser.zen/.zen"
-  fi
-  ;;
-*)
-  echo "[user.js] Unsupported OS"
-  exit 0
-  ;;
-esac
-
-if [[ ! -d "$ZEN_DIR" ]]; then
-  echo "[user.js] Zen profile dir not found"
-  exit 0
-fi
-
-src="{{ .chezmoi.sourceDir }}/dot_config/zen/user.js"
-
+zen_dir={{ $zenDir | quote }}
+src={{ joinPath .chezmoi.sourceDir "dot_config/zen/user.js" | quote }}
 host_prefs='{{ if eq .chezmoi.hostname "main" }}user_pref("layout.frame_rate", 240);{{ end }}'
 
-write_atomic() {
-  local dst=$1
-  local dir tmp
-  dir=$(dirname "$dst")
-  tmp=$(mktemp "${dir}/.user.js.XXXXXX")
+# Install-default profiles (Firefox 67+ semantics)
+while IFS= read -r profile; do
+  target="$zen_dir/$profile"
+  [[ -d "$target" ]] || continue
+
+  tmp=$(mktemp "$target/.user.js.XXXXXX")
   cp "$src" "$tmp"
   if [[ -n "$host_prefs" ]]; then
     printf '\n// Host\n%s\n' "$host_prefs" >>"$tmp"
   fi
-  mv -f "$tmp" "$dst"
-}
-
-# Resolve install-default profile(s) from installs.ini (Firefox 67+ semantics)
-installs_ini="$ZEN_DIR/installs.ini"
-if [[ ! -f "$installs_ini" ]]; then
-  echo "[user.js] installs.ini not found"
-  exit 0
-fi
-
-while IFS= read -r profile_path; do
-  target="$ZEN_DIR/$profile_path"
-  [[ -e "$target" ]] || continue
-  write_atomic "$target/user.js"
-  echo "Updated user.js in $profile_path"
-done < <(sed -n 's/^Default=//p' "$installs_ini")
+  mv -f "$tmp" "$target/user.js"
+  echo "[user.js] updated $profile"
+done < <(sed -n 's/^Default=//p' "$zen_dir/installs.ini")
+{{ end -}}
