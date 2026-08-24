@@ -1,17 +1,11 @@
 [misc]
 disable = [
-  {{ if .isVM }}
-  "system",
-  {{ end }}
 	"containers",
 	"pip3",
 	"pnpm",
   "node",
 	"yarn",
 	"uv",
-	"powershell",
-	"yazi",
-	"vscode",
 	"shell",
   "waydroid",
   "gcloud",
@@ -49,6 +43,7 @@ no_self_update = true
 [post_commands]
 
 [commands]
+"zinit" = "-i zinit self-update && zinit update --parallel 40; exit $?"
 {{ if eq .hostname "main" }}
 "GE-Proton" = "fetch-eggroll"
 {{ end }}
