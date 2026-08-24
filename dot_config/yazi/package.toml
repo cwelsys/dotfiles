@@ -39,6 +39,11 @@ rev = "cfe4f50"
 hash = "eff5702573b6cfba61e4ac8b1969629a"
 
 [[plugin.deps]]
+use = "yazi-rs/plugins:chmod"
+rev = "044c3cc"
+hash = "87472b05a8c420100f6a2b9cde1e7746"
+
+[[plugin.deps]]
 use = "yazi-rs/plugins:diff"
 rev = "044c3cc"
 hash = "14558d2829c0aa05e99c57de8f74d199"
@@ -142,11 +147,6 @@ hash = "ea4d7108bc2c02738ab652064095905f"
 use = "cwelsys/no-header"
 rev = "e14e5a1"
 hash = "633f5e9261c19b0f7a7be83788f42e81"
-
-[[plugin.deps]]
-use = "yazi-rs/plugins:chmod"
-rev = "044c3cc"
-hash = "87472b05a8c420100f6a2b9cde1e7746"
 
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
