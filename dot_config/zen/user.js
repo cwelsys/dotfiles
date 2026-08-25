@@ -9,7 +9,6 @@ user_pref("zen.tabs.essentials.max", 30);
 user_pref("zen.glance.animation-duration", 0);
 
 // Display / Performance
-user_pref("widget.dmabuf.force-enabled", true);
 user_pref("gfx.font_rendering.fontconfig.max_generic_substitutions", 127);
 user_pref("gfx.webrender.layer-compositor", true);
 user_pref("gfx.webrender.quality.force-subpixel-aa-where-possible", true);
@@ -19,7 +18,6 @@ user_pref("nglayout.initialpaint.delay_in_oofpif", 250);
 user_pref("browser.newtab.preload", false);
 user_pref("javascript.options.baselinejit.threshold", 50);
 user_pref("javascript.options.concurrent_multiprocess_gcs.cpu_divisor", 2);
-user_pref("media.hardware-video-decoding-vulkan.enabled", true);
 
 // Accessibility
 user_pref("accessibility.force_disabled", 1);
