@@ -6,6 +6,14 @@ url = "https://raw.githubusercontent.com/catppuccin/bat/refs/heads/main/themes/C
 type = "file"
 url = "https://raw.githubusercontent.com/catppuccin/glamour/refs/heads/main/themes/catppuccin-mocha.json"
 
+[".config/mpv/shaders"]
+type = "archive"
+url = "https://github.com/classicjazz/mpv-config/archive/refs/tags/0.26.tar.gz"
+exact = true
+stripComponents = 2
+refreshPeriod = "720h"
+include = ["*/shaders/**"]
+
 # [".config/tmux/plugins/tpm"]
 # type = "git-repo"
 # url = "https://github.com/tmux-plugins/tpm"
