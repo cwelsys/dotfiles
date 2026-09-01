@@ -1,4 +1,5 @@
 // vim: ft=conf
+
 // Theme / Zen
 user_pref("zen.theme.essentials-favicon-bg", false);
 user_pref("zen.theme.accent-color", "#89b4fa");
