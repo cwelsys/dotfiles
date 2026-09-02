@@ -40,58 +40,58 @@ hash = "eff5702573b6cfba61e4ac8b1969629a"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:chmod"
-rev = "c591a36"
+rev = "4dc7f1b"
 hash = "87472b05a8c420100f6a2b9cde1e7746"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:diff"
-rev = "c591a36"
+rev = "4dc7f1b"
 hash = "14558d2829c0aa05e99c57de8f74d199"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:full-border"
-rev = "c591a36"
+rev = "4dc7f1b"
 hash = "f281261ff04ad7ec867c3f802a50835f"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:git"
-rev = "c591a36"
+rev = "4dc7f1b"
 hash = "5bb0bfab901d3601c370eafdd66edd31"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:mount"
-rev = "c591a36"
+rev = "4dc7f1b"
 hash = "b95f898e6dc60b52edbc415952e14395"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:piper"
-rev = "c591a36"
+rev = "4dc7f1b"
 hash = "45a533508a9840cc5a10cf6129f63e6a"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-filter"
-rev = "c591a36"
+rev = "4dc7f1b"
 hash = "d6f7351ea25a43c9b5f4315fa1e23935"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:toggle-pane"
-rev = "c591a36"
+rev = "4dc7f1b"
 hash = "5b2fbef7d1513ce38ff72623a071a5e"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:vcs-files"
-rev = "c591a36"
+rev = "4dc7f1b"
 hash = "853240b2454c93a93fd03fc9fd7e06e8"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:zoom"
-rev = "c591a36"
+rev = "4dc7f1b"
 hash = "e8e279463ee99c940e6945a14cf4aa9e"
 
 [[plugin.deps]]
 use = "XYenon/yafg"
-rev = "e6ba851"
-hash = "9558dd9169cbf01eac6044583c426716"
+rev = "bd03a32"
+hash = "e3b3da408c4bf4adf2f16edc1ec05d45"
 
 [[plugin.deps]]
 use = "AnirudhG07/plugins-yazi:copy-file-contents"
@@ -110,8 +110,8 @@ hash = "ed359abc14ba915a12e759435ed721ab"
 
 [[plugin.deps]]
 use = "tasnimAlam/croc-send"
-rev = "d7197eb"
-hash = "99de22bf071e4737f8e9dbe146457e9c"
+rev = "5d1092e"
+hash = "b624a5e7cd474e2a42b04839ec961bc7"
 
 [[plugin.deps]]
 use = "cwelsys/remotes"
@@ -140,7 +140,7 @@ hash = "c40e6de8da7eef1a078eb53e64e2a22b"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:term-cwd"
-rev = "c591a36"
+rev = "4dc7f1b"
 hash = "ea4d7108bc2c02738ab652064095905f"
 
 [[plugin.deps]]
