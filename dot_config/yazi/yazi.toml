@@ -51,7 +51,17 @@ excludes = [
   ], in = "/mnt" },
 ]
 
+[open]
+prepend_rules = [
+  { mime = "trash/**", use = ["trash", "open"] },
+]
+
 [opener]
+open = [
+  { run = "xdg-open %s1", desc = "Open", block = true, for = "linux" },
+  { run = "open %s", desc = "Open", for = "macos" },
+]
+
 extract = [
   { run = 'ya pub augmented-extract --list %s', desc = "Extract here (augment-command)" },
 ]
