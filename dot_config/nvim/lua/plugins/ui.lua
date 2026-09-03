@@ -176,14 +176,6 @@ return {
     "nvim-lualine/lualine.nvim",
     optional = true,
     opts = function(_, opts)
-      -- dedupe dualing copilot glyphs
-      local x = opts.sections.lualine_x
-      for i = #x, 1, -1 do
-        local render = type(x[i]) == "table" and x[i][1]
-        if type(render) == "function" and debug.getinfo(render, "S").source:match("util/lualine%.lua$") then
-          table.remove(x, i)
-        end
-      end
       -- chezmoi source-dir indicator.
       table.insert(opts.sections.lualine_x, 1, {
         function()
