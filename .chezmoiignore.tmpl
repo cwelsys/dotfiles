@@ -12,6 +12,10 @@
 .local/bin/nvim-open
 {{ end }}
 
+{{ if .headless }}
+.config/ntfy
+{{ end }}
+
 {{ if eq .chezmoi.hostname "pbox" }}
 .config/mpd
 {{ end }}
