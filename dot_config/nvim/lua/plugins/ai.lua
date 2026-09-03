@@ -1,5 +1,14 @@
 return {
   {
+    "zbirenbaum/copilot.lua",
+    opts = {
+      server = { type = "binary" },
+      server_opts_overrides = {
+        settings = { internal = { auth = { tokenEncryption = "false" } } },
+      },
+    },
+  },
+  {
     "folke/sidekick.nvim",
     keys = {
       {
