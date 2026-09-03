@@ -1,3 +1,5 @@
 {{- if and (eq .chezmoi.os "darwin") (not .isVM) }}
 pinentry-program /opt/homebrew/bin/pinentry-mac
 {{- end }}
+default-cache-ttl 3600
+max-cache-ttl 28800

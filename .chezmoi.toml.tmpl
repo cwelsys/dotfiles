@@ -41,6 +41,8 @@
 
 {{- $isLaptop := eq $chassis "laptop" -}}
 
+{{- $gpgKey := or (not $headless) (has $hostname (list "pbox")) -}}
+
 sourceDir = {{ .chezmoi.sourceDir | quote }}
 encryption = "age"
 mode = "file"
@@ -59,6 +61,7 @@ isLaptop = {{ $isLaptop }}
 isWSL = {{ $isWSL }}
 isVM = {{ $isVM }}
 headless = {{ $headless }}
+gpgKey = {{ $gpgKey }}
 
 [age]
   identity = "~/.config/chezmoi/key"

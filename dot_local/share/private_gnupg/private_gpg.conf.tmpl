@@ -1,4 +1,4 @@
-{{- if .headless }}
+{{- if not .gpgKey }}
 no-autostart
 {{ end -}}
 trusted-key {{ .gpgId }}

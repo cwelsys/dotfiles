@@ -16,7 +16,7 @@ if ! command -v gpg &>/dev/null; then
   exit
 fi
 
-{{- if not .headless }}
+{{- if .gpgKey }}
 gpg --batch --pinentry-mode loopback --import <<EOF
 {{ includeTemplate "gpg/encrypted_pri-ecc.gpg" | decrypt }}
 EOF

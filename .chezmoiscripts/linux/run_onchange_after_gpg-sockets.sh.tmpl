@@ -4,7 +4,7 @@ set -euo pipefail
 
 command -v gpgconf >/dev/null 2>&1 || exit 0
 
-headless={{ .headless }}
+mask_agent={{ not .gpgKey }}
 
 # systemd unit name -> gpgconf --list-dirs key
 declare -A units=(
@@ -35,7 +35,7 @@ done
 
 for unit in "${agent_units[@]}"; do
   state="$(systemctl --user is-enabled "$unit" 2>/dev/null || true)"
-  if [[ "$headless" == "true" ]]; then
+  if [[ "$mask_agent" == "true" ]]; then
     if [[ "$state" != "masked" ]]; then
       systemctl --user stop "$unit" 2>/dev/null || true
       systemctl --user mask "$unit" >/dev/null 2>&1 || true
@@ -50,7 +50,7 @@ done
 if ((changed)) && systemctl --user show >/dev/null 2>&1; then
   systemctl --user daemon-reload
   gpgconf --kill all 2>/dev/null || true
-  if [[ "$headless" == "true" ]]; then
+  if [[ "$mask_agent" == "true" ]]; then
     restart=(keyboxd.socket dirmngr.socket)
   else
     restart=("${!units[@]}")

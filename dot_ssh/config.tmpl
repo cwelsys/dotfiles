@@ -25,9 +25,6 @@ Host *
 Host {{ $n }}
 	HostName {{ $n }}
 	User cwel
-{{- if and (eq $n "pbox") (lookPath "gpgconf") }}
-	RemoteForward /run/user/1000/gnupg/d.iy49ckdngxkgyo5wjr9skorp/S.gpg-agent {{ output "gpgconf" "--list-dirs" "agent-extra-socket" | trim }}
-{{- end }}
 {{ end }}
 {{- end }}
 Host lgtv
