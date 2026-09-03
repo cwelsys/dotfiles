@@ -1,18 +1,18 @@
 #:schema https://yazi-rs.github.io/schemas/yazi.json
 
 [mgr]
-ratio = [1, 2, 3]
-sort_by = "natural"
+ratio          = [ 1, 2, 3 ]
+sort_by        = "natural"
 sort_dir_first = true
 sort_sensitive = false
-sort_reverse = false
-sort_translit = false
-linemode = "size_only"
-show_hidden = true
-show_symlink = true
-scrolloff = 5
-mouse_events = ["click", "scroll", "touch", "move", "drag"]
-title_format = "{cwd}"
+sort_reverse   = false
+sort_translit  = false
+linemode       = "size_only"
+show_hidden    = true
+show_symlink   = true
+scrolloff      = 5
+mouse_events   = [ "click", "scroll", "touch", "move", "drag" ]
+title_format   = "{cwd}"
 
 [files]
 excludes = [
@@ -53,12 +53,12 @@ excludes = [
 
 [open]
 prepend_rules = [
-  { mime = "trash/**", use = ["trash", "open"] },
+  { mime = "trash/**", use = [ "trash", "open" ] },
 ]
 
 [opener]
 open = [
-  { run = "xdg-open %s1", desc = "Open", block = true, for = "linux" },
+  { run = "xdg-open %s1", desc = "Open", for = "linux" },
   { run = "open %s", desc = "Open", for = "macos" },
 ]
 
