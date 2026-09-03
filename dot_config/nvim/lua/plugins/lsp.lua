@@ -3,7 +3,7 @@ return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        -- taplo defaults explode arrays past column_width and strip bracket padding
+        copilot = { enabled = false },
         taplo = {
           settings = {
             evenBetterToml = {

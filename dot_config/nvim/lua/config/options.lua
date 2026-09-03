@@ -3,6 +3,9 @@ vim.opt.cmdheight = 0
 vim.opt.backup = true
 vim.opt.backupdir = vim.fn.stdpath("state") .. "/backup"
 
+local stacks = (vim.env.XDG_PROJECTS_DIR or vim.env.HOME .. "/src") .. "/stacks"
+vim.filetype.add({ pattern = { [stacks .. "/.*%.ya?ml"] = "yaml.docker-compose" } })
+
 local function update_title()
   local buftype = vim.bo.buftype
   local bufname = vim.api.nvim_buf_get_name(0)
