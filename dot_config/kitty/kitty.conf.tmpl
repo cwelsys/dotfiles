@@ -207,8 +207,8 @@ map --mode leader shift+n last_used_layout
 
 # close/create tabs
 map {{ $mod }}+w close_tab
-map {{ $mod }}+t new_tab_with_cwd
-map kitty_mod+t new_tab
+map {{ $mod }}+t new_tab_with_cwd !neighbor
+map kitty_mod+t new_tab !neighbor
 map --mode leader q close_window
 map --mode leader x close_window
 map --mode leader shift+q close_other_windows_in_tab
