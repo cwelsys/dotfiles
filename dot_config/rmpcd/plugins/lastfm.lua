@@ -45,8 +45,8 @@ end
 ---@param url string
 ---@return boolean
 local function open_url(url)
-    local opener = util.which("xdg-open") or util.which("open")
-    if opener == nil then
+    local opener = util.which("xdg-open") and "xdg-open" or util.which("open") and "open"
+    if not opener then
         return false
     end
     local _, err = process.spawn({ opener, url })
