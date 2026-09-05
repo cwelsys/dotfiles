@@ -9,3 +9,6 @@ vim.keymap.set = function(mode, lhs, rhs, opts)
 end
 
 vim.keymap.set("i", "jj", "<Esc>")
+
+LazyVim.format.snacks_toggle(true):map("<leader>uf")
+LazyVim.format.snacks_toggle():map("<leader>uF")
