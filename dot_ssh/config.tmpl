@@ -1,7 +1,6 @@
 Host *
 	AddKeysToAgent yes
-	ForwardAgent yes
-	StrictHostKeyChecking no
+	StrictHostKeyChecking accept-new
 	HashKnownHosts yes
 	TCPKeepAlive yes
 	ServerAliveInterval 60
@@ -25,6 +24,7 @@ Host *
 Host {{ $n }}
 	HostName {{ $n }}
 	User cwel
+	ForwardAgent yes
 {{ end }}
 {{- end }}
 Host lgtv
