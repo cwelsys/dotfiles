@@ -15,11 +15,13 @@
 {{- if $zenDir -}}
 #!/usr/bin/env bash
 # user.js hash: {{ include "dot_config/zen/user.js" | sha256sum }}
+# userContent.css hash: {{ include "dot_config/zen/userContent.css" | sha256sum }}
 
 set -eufo pipefail
 
 zen_dir={{ $zenDir | quote }}
 src={{ joinPath .chezmoi.sourceDir "dot_config/zen/user.js" | quote }}
+content_src={{ joinPath .chezmoi.sourceDir "dot_config/zen/userContent.css" | quote }}
 host_prefs='{{ if eq .chezmoi.hostname "main" }}user_pref("layout.frame_rate", 240);{{ end }}'
 
 # Install-default profiles (Firefox 67+ semantics)
@@ -34,5 +36,8 @@ while IFS= read -r profile; do
   fi
   mv -f "$tmp" "$target/user.js"
   echo "[user.js] updated $profile"
+  mkdir -p "$target/chrome"
+  cp "$content_src" "$target/chrome/userContent.css"
+  echo "[userContent.css] updated $profile"
 done < <(sed -n 's/^Default=//p' "$zen_dir/installs.ini")
 {{ end -}}
