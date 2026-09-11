@@ -30,8 +30,8 @@ hash = "72828957273094ed0ef52792e3290900"
 
 [[plugin.deps]]
 use = "hankertrix/augment-command"
-rev = "352dc37"
-hash = "ceb04cad6bd268b664c0c7fa1e8e9928"
+rev = "60d5a13"
+hash = "50bcb87d8cc5e78ef622bc8add1c1e8a"
 
 [[plugin.deps]]
 use = "ndtoan96/ouch"
