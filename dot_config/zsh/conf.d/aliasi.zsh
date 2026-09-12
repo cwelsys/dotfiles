@@ -99,10 +99,13 @@ if (( ${+commands[doggo]} )); then
   alias dig='doggo'
 fi
 
+alias grepip='grep -oE "\b((25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})\b"'
+
 (( ${+commands[btop]} ))    && alias top='btop'
 (( ${+commands[magick]} ))  && alias mg='magick'
 (( ${+commands[thefuck]} )) && alias tf='fuck'
 (( ${+commands[wiremix]} )) && alias wmx='wiremix'
+(( ${+commands[quien]} )) && alias whois='quien'
 
 if (( ${+commands[topgrade]} )); then
   alias tg='topgrade'
