@@ -16,7 +16,6 @@ fi
 HISTFILE="$XDG_STATE_HOME/zsh/history"
 HISTSIZE=290000
 SAVEHIST=$HISTSIZE
-HISTDUP=erase
 
 () {
   local key=~/.ssh/cwel
@@ -173,12 +172,9 @@ zinit wait'0c' lucid light-mode for \
     nocd atinit'_load_completions' \
         zdharma-continuum/fast-syntax-highlighting
 
-setopt extended_history hist_expire_dups_first hist_ignore_all_dups \
-       hist_reduce_blanks hist_ignore_space inc_append_history share_history \
+setopt extended_history hist_ignore_all_dups \
+       hist_reduce_blanks hist_ignore_space share_history \
        autocd multios globdots extended_glob nobgnice bang_hist nobeep
-
-ZSH_HIGHLIGHT_HIGHLIGHTERS+=(regexp)
-ZSH_HIGHLIGHT_REGEXP+=('^\s*(\.){2,}$' fg=green)
 
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/"
@@ -191,7 +187,7 @@ zstyle ':completion:*' list-dirs-first true
 zstyle ':completion:*' accept-exact '*(N)'
 zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
 zstyle ':completion:*' file-sort modification
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle -e ':completion:*' list-colors 'reply=(${(s.:.)LS_COLORS})'
 zstyle ':completion:*' menu no
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*:matches' group 'yes'
@@ -219,7 +215,17 @@ bindkey ' ' magic-space
 bindkey '^[[3~' delete-char
 bindkey "^A" beginning-of-line
 bindkey "^E" end-of-line
+bindkey '^[[H' beginning-of-line
+bindkey '^[[F' end-of-line
 bindkey '^[[1;5C' forward-word
 bindkey '^[[1;5D' backward-word
 bindkey "^N" insert-last-word
 bindkey '^Y' redo
+
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey '^[[A' up-line-or-beginning-search
+bindkey '^[OA' up-line-or-beginning-search
+bindkey '^[[B' down-line-or-beginning-search
+bindkey '^[OB' down-line-or-beginning-search
