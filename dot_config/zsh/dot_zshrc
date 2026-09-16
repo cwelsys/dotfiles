@@ -71,19 +71,20 @@ bindkey -e
 
 if (( ${+commands[atuin]} )); then
   eval "$(atuin init zsh)"
+  bindkey '^R' atuin-search
 
-  fzf-atuin-history-widget() {
-    local selected
-    setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2>/dev/null
-    selected=$(atuin search --cmd-only --reverse --print0 |
-      FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS --scheme=history --read0 --bind=ctrl-r:toggle-sort,ctrl-z:ignore $FZF_CTRL_R_OPTS +m" fzf --query="$LBUFFER")
-    local ret=$?
-    [[ -n $selected ]] && BUFFER=$selected && CURSOR=$#BUFFER
-    zle reset-prompt
-    return $ret
-  }
-  zle -N fzf-atuin-history-widget
-  bindkey '^R' fzf-atuin-history-widget
+  # fzf-atuin-history-widget() {
+  #   local selected
+  #   setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2>/dev/null
+  #   selected=$(atuin search --cmd-only --reverse --print0 |
+  #     FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS --scheme=history --read0 --bind=ctrl-r:toggle-sort,ctrl-z:ignore $FZF_CTRL_R_OPTS +m" fzf --query="$LBUFFER")
+  #   local ret=$?
+  #   [[ -n $selected ]] && BUFFER=$selected && CURSOR=$#BUFFER
+  #   zle reset-prompt
+  #   return $ret
+  # }
+  # zle -N fzf-atuin-history-widget
+  # bindkey '^R' fzf-atuin-history-widget
   FZF_CTRL_R_COMMAND=
 fi
 
