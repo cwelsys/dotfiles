@@ -71,7 +71,6 @@ bindkey -e
 
 if (( ${+commands[atuin]} )); then
   eval "$(atuin init zsh)"
-  bindkey "^H" _atuin_search_widget
 
   fzf-atuin-history-widget() {
     local selected
@@ -160,7 +159,8 @@ zinit wait'0b' lucid light-mode for \
     cwelsys/zsh-dot-up \
     wintermi/zsh-mise \
     caarlos0/ports \
-    hlissner/zsh-autopair \
+    atload'(( ${+widgets[_atuin_search_widget]} )) && bindkey "^H" _atuin_search_widget' \
+        hlissner/zsh-autopair \
     reegnz/jq-zsh-plugin \
     paulirish/git-open \
     cwelsys/zsh-alias-fzf \
