@@ -68,7 +68,7 @@ dir = "~/.cache/atuin/logs"
 records = true
 
 [theme]
-name = "catppuccin-mocha-blue-syntax"
+name = "syntax"
 
 [keys]
 scroll_exits = false
