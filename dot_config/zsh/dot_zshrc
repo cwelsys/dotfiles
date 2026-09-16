@@ -74,12 +74,12 @@ if (( ${+commands[atuin]} )); then
   bindkey "^H" _atuin_search_widget
 
   fzf-atuin-history-widget() {
-    local selected num
+    local selected
     setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2>/dev/null
-    selected=$(atuin search --cmd-only --limit ${ATUIN_LIMIT:-5000} | tac |
-      FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index --bind=ctrl-r:toggle-sort,ctrl-z:ignore $FZF_CTRL_R_OPTS --query=${LBUFFER} +m" fzf)
+    selected=$(atuin search --cmd-only --reverse --print0 |
+      FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS --scheme=history --read0 --bind=ctrl-r:toggle-sort,ctrl-z:ignore $FZF_CTRL_R_OPTS +m" fzf --query="$LBUFFER")
     local ret=$?
-    [[ -n $selected ]] && LBUFFER+="${selected}"
+    [[ -n $selected ]] && BUFFER=$selected && CURSOR=$#BUFFER
     zle reset-prompt
     return $ret
   }
