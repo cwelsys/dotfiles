@@ -30,13 +30,13 @@ hash = "72828957273094ed0ef52792e3290900"
 
 [[plugin.deps]]
 use = "hankertrix/augment-command"
-rev = "60d5a13"
-hash = "50bcb87d8cc5e78ef622bc8add1c1e8a"
+rev = "561f6ec"
+hash = "38b093d444efe1386e0e959aa5be11f8"
 
 [[plugin.deps]]
 use = "ndtoan96/ouch"
-rev = "cfe4f50"
-hash = "eff5702573b6cfba61e4ac8b1969629a"
+rev = "596b666"
+hash = "c2f4f4aca257dcceafa9e3b828dbf1c9"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:chmod"
