@@ -11,7 +11,7 @@ prepend_keymap = [
   { on = [ "s", "g" ], run = "plugin yafg", desc = "rg" },
   { on = [ "s", "G" ], run = '''shell 'f=$(rga --files-with-matches --no-messages "" 2>/dev/null | fzf --preview "rga --pretty --context 5 {q} {}") && [ -n "$f" ] && ya emit reveal "$f"' --block''', desc = "rga" },
   { on = [ "s", "r" ], run = '''shell 'nvim +GrugFar' --block''', desc = "grug-far" },
-  { on = [ "s", "s" ], run = "search --via=fd", desc = "fd" },
+  { on = [ "s", "s" ], run = "plugin fd", desc = "fd" },
   { on = [ "s", "f" ], run = "plugin fzf", desc = "fzf" },
 
   # ── change (c) ───────────────────────────────────────────────────────
