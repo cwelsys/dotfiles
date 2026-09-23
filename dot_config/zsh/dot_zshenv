@@ -128,6 +128,7 @@ export GLOW_STYLE="$XDG_CONFIG_HOME/glow/catppuccin-mocha.json"
 export SF_HOME="$XDG_DATA_HOME/sf"
 export SFDX_HOME="$XDG_DATA_HOME/sfdx"
 export SF_USE_GENERIC_UNIX_KEYCHAIN=true
+export FJ_FALLBACK_HOST=https://git.cwel.sh
 
 path=(
   $XDG_BIN_HOME
