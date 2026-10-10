@@ -199,6 +199,9 @@ esac
 
 if [[ $OSTYPE == darwin* ]]; then
   export OP_BIOMETRIC_UNLOCK_ENABLED="true"
+  export PLAYWRIGHT_MCP_EXECUTABLE_PATH="/Applications/Helium.app/Contents/MacOS/Helium"
+else
+  export PLAYWRIGHT_MCP_EXECUTABLE_PATH="/usr/bin/chromium"
 fi
 
 if [[ -n "$SSH_CONNECTION" ]]; then
