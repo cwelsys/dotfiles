@@ -3,6 +3,7 @@
 paneru.setup({
 	options = {
 		focus_follows_mouse = true,
+		focus_follows_mouse_delay = 200,
 		mouse_follows_focus = true,
 		preset_column_widths = { 0.33, 0.5, 0.75, 1.0 },
 		animation_speed = 420.0,
@@ -10,7 +11,7 @@ paneru.setup({
 		window_hidden_ratio = 0.0,
 		window_resize_cycle = true,
 		reap_empty_workspaces = false,
-		virtual_workspace_animations = true,
+		virtual_workspace_animations = false,
 		mouse_resize_modifier = "alt",
 		horizontal_mouse_warp = -1,
 	},
