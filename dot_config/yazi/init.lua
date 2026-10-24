@@ -1,21 +1,46 @@
--- Linemode size_only
+-- Linemodes
+function ya.readable_size(size)
+	local units = { "B", "K", "M", "G", "T", "P", "E", "Z", "Y", "R", "Q" }
+	local i = 1
+	while size > 1024 and i < #units do
+		size = size / 1024
+		i = i + 1
+	end
+	local s = string.format("%.1f %s", size, units[i]):gsub("[.,]0", "", 1)
+	return s
+end
+
+local function short_date(t)
+	if not t then
+		return ""
+	end
+	local now = ya.time()
+	if t.year == now.year and t.month == now.month and t.day == now.day then
+		return t:format({ hour24 = "2-digit", minute = "2-digit" })
+	end
+	return t:format({ year = "2-digit", month = "2-digit", day = "2-digit" })
+end
+
 function Linemode:size_only()
 	local size = self._file:size()
 	return size and ya.readable_size(size) or ""
 end
 
+function Linemode:mtime()
+	return short_date(self._file.stat.mtime)
+end
+
+function Linemode:btime()
+	return short_date(self._file.stat.btime)
+end
+
+function Linemode:size_mtime()
+	return string.format("%7s  %8s", self:size(), self:mtime())
+end
+
 -- Plugins
 require("full-border"):setup({
-	type = ui.Border.ROUNDED,
-})
-
-require("linemode-plus"):setup({
-	date_mode = "custom",
-	custom = {
-		order = { "month", "day", "year" },
-		separator = "/",
-		year_digits = 2,
-	},
+	set = "rounded",
 })
 
 require("zoxide"):setup({
@@ -41,34 +66,24 @@ require("projects"):setup({
 	},
 })
 
-require("augment-command"):setup({
-	prompt = false,
-})
-
 require("git"):setup({
 	order = 1500,
 })
-
--- require("starship"):setup({
--- 	hide_flags = true,
--- 	show_right_prompt = true,
--- 	hide_count = true,
--- })
 
 require("no-header"):setup()
 
 require("term-cwd"):setup()
 
 Status:children_add(function()
-	local h = cx.active.current.hovered
+	local h = cx.tab.current.hovered
 	if not h or ya.target_family() ~= "unix" then
 		return ""
 	end
 
 	return ui.Line({
-		ui.Span(ya.user_name(h.cha.uid) or tostring(h.cha.uid)):fg("magenta"),
+		ui.Span(ya.user_name(h.stat.uid) or tostring(h.stat.uid)):fg("magenta"),
 		":",
-		ui.Span(ya.group_name(h.cha.gid) or tostring(h.cha.gid)):fg("magenta"),
+		ui.Span(ya.group_name(h.stat.gid) or tostring(h.stat.gid)):fg("magenta"),
 		" ",
 	})
 end, 500, Status.RIGHT)

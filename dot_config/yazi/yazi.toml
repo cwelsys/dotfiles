@@ -57,13 +57,13 @@ prepend_rules = [
 ]
 
 [opener]
+edit = [
+  { run = 'command -v nvim-open >/dev/null && nvim-open --existing %s || ${EDITOR:-vi} %s', desc = "$EDITOR", block = true, for = "unix" },
+]
+
 open = [
   { run = "xdg-open %s1", desc = "Open", for = "linux" },
   { run = "open %s", desc = "Open", for = "macos" },
-]
-
-extract = [
-  { run = 'ya pub augmented-extract --list %s', desc = "Extract here (augment-command)" },
 ]
 
 download = [

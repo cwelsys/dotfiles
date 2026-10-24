@@ -20,7 +20,6 @@ input {
         }
         repeat-delay 200
         repeat-rate 50
-        // numlock
     }
 
     touchpad {
@@ -44,19 +43,25 @@ layout {
         proportion 0.5
     }
     default-column-width { proportion 0.5; }
+    tab-indicator {
+        hide-when-single-tab
+        position "left"
+        gap -12
+        width 8
+        length total-proportion=0.2
+        gaps-between-tabs 8
+        corner-radius 4
+    }
     shadow {
         softness 30
         spread 5
         offset x=0 y=5
         color "#0007"
     }
-    struts {
-    }
 }
 
 layer-rule {
     match namespace="^quickshell$"
-    match namespace="dms:blurwallpaper"
     place-within-backdrop true
 }
 
@@ -64,12 +69,6 @@ overview {
     workspace-shadow {
         off
     }
-
-}
-
-environment {
-  XDG_SESSION_TYPE "wayland"
-  XDG_CURRENT_DESKTOP "niri"
 }
 
 hotkey-overlay {
@@ -116,17 +115,6 @@ animations {
     }
 }
 
-// https://github.com/YaLTeR/niri/wiki/Configuration:-Window-Rules
-// window-rule {
-//     match is-active=false
-//     opacity 0.9
-// }
-
-window-rule {
-    geometry-corner-radius 12
-    clip-to-geometry true
-}
-
 debug {
     honor-xdg-activation-with-invalid-serial
 }
@@ -142,7 +130,7 @@ recent-windows {
 
 spawn-at-startup "wl-clip-persist" "--clipboard" "regular"
 
-include "local.kdl"
+include "local-memory.kdl"
 include "dms/colors.kdl"
 include "dms/layout.kdl"
 include "dms/alttab.kdl"

@@ -14,11 +14,6 @@ gui:
   commandLogSize: 4
   nerdFontsVersion: "3"
   showRandomTip: false
-  # sidePanelWidth: 0.22
-  branchColors:
-    "release": "#f9e2af"
-    "hotfix": "#f38ba8"
-    "feature": "#a6e3a1"
   theme:
     activeBorderColor:
       - "#89b4fa"
@@ -45,8 +40,13 @@ gui:
       - "#f38ba8"
     defaultFgColor:
       - "#cdd6f4"
-  authorColors:
-    "*": "#b4befe"
+    authorColors:
+      "*": "#b4befe"
+    # sidePanelWidth: 0.22
+    branchColorPatterns:
+      "^release(/|$)": "#f9e2af"
+      "^hotfix(/|$)": "#f38ba8"
+      "^feature(/|$)": "#a6e3a1"
 git:
   overrideGpg: true
   diffRenderers:

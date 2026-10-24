@@ -148,7 +148,9 @@ def newest_kitty():
 
 
 def main():
-    files = [os.path.abspath(a) for a in sys.argv[1:]]
+    args = sys.argv[1:]
+    existing_only = "--existing" in args
+    files = [os.path.abspath(a) for a in args if a != "--existing"]
     server = os.environ.get("NVIM")
     if server:
         nvim_remote(server, files)
@@ -164,6 +166,9 @@ def main():
             nvim_remote(srv, files)
             focus_kitty_window(c["sock"], c["win_id"])
             return
+
+    if existing_only:
+        sys.exit(1)
 
     sock = newest_kitty()
     if sock:

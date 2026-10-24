@@ -111,15 +111,15 @@ binds {
 
     // === Focus ===
     Mod+Left  { focus-column-left; }
-    Mod+Down  { focus-window-down; }
-    Mod+Up    { focus-window-up; }
+    Mod+Down  { focus-window-down-or-top; }
+    Mod+Up    { focus-window-up-or-bottom; }
     Mod+Right { focus-column-right; }
     Mod+H     { focus-column-left; }
-    Mod+J     { focus-window-down; }
-    Mod+K     { focus-window-up; }
+    Mod+J     { focus-window-down-or-top; }
+    Mod+K     { focus-window-up-or-bottom; }
     Mod+L     { focus-column-right; }
-    Mod3+Down  { focus-window-down; }
-    Mod3+Up    { focus-window-up; }
+    Mod3+Down  { focus-window-down-or-top; }
+    Mod3+Up    { focus-window-up-or-bottom; }
     Mod3+Left  { focus-column-left; }
     Mod3+Right { focus-column-right; }
     Mod3+H     { focus-column-left; }

@@ -16,7 +16,7 @@ prepend_keymap = [
 
   # ── change (c) ───────────────────────────────────────────────────────
   { on = [ "c", "m" ], run = "plugin chmod", desc = "Chmod" },
-  { on = [ "c", "a" ], run = "plugin augment-command.archive", desc = "Archive selected" },
+  { on = [ "c", "a" ], run = "plugin compress", desc = "Archive selected" },
   { on = [ "c", "r" ], run = "plugin rsync", desc = "rsync" },
   { on = [ "c", "g" ], run = "plugin nc-share", desc = "Share via Nextcloud" },
   { on = [ "c", "s"],  run = "plugin croc-send", desc = "Send with croc" },
@@ -47,12 +47,21 @@ prepend_keymap = [
   # ── linemode (m) ─────────────────────────────────────────────────────
   { on = [ "m", "s" ], run = "linemode size_only", desc = "Size" },
   { on = [ "m", "c" ], run = "linemode size_mtime", desc = "Size + mtime" },
-  { on = [ ",", "M" ], run = [ "sort mtime --reverse=no",  "linemode size_mtime" ], desc = "Modified" },
-  { on = [ ",", "m" ], run = [ "sort mtime --reverse=yes", "linemode size_mtime" ], desc = "Modified (rev)" },
-  { on = [ ",", "B" ], run = [ "sort btime --reverse=no",  "linemode btime" ],      desc = "Created" },
-  { on = [ ",", "b" ], run = [ "sort btime --reverse=yes", "linemode btime" ],      desc = "Created (rev)" },
-  { on = [ ",", "S" ], run = [ "sort size --reverse=no",   "linemode size_only" ],  desc = "Size" },
-  { on = [ ",", "s" ], run = [ "sort size --reverse=yes",  "linemode size_only" ],  desc = "Size (rev)" },
+
+  # ── sort (,) ─────────────────────────────────────────────────────────
+  { on = [ ",", "m" ], run = [ "sort mtime --reverse=yes",       "linemode size_mtime" ], desc = "Modified: new" },
+  { on = [ ",", "M" ], run = [ "sort mtime --reverse=no",        "linemode size_mtime" ], desc = "Modified: old" },
+  { on = [ ",", "b" ], run = [ "sort btime --reverse=yes",       "linemode btime" ],      desc = "Created: new" },
+  { on = [ ",", "B" ], run = [ "sort btime --reverse=no",        "linemode btime" ],      desc = "Created: old" },
+  { on = [ ",", "s" ], run = [ "sort size --reverse=yes",        "linemode size_only" ],  desc = "Size: largest" },
+  { on = [ ",", "S" ], run = [ "sort size --reverse=no",         "linemode size_only" ],  desc = "Size: smallest" },
+  { on = [ ",", "n" ], run = [ "sort natural --reverse=no",      "linemode size_only" ],  desc = "Name: A-Z" },
+  { on = [ ",", "N" ], run = [ "sort natural --reverse=yes",     "linemode size_only" ],  desc = "Name: Z-A" },
+  { on = [ ",", "e" ], run = [ "sort extension --reverse=no",    "linemode size_only" ],  desc = "Ext: A-Z" },
+  { on = [ ",", "E" ], run = [ "sort extension --reverse=yes",   "linemode size_only" ],  desc = "Ext: Z-A" },
+  { on = [ ",", "r" ], run = [ "sort random --reverse=no",       "linemode size_only" ],  desc = "Shuffle" },
+  { on = [ ",", "a" ], run = "noop" },
+  { on = [ ",", "A" ], run = "noop" },
 
   # ── projects (b) ─────────────────────────────────────────────────────
   { on = [ "b", "s" ], run = "plugin projects save", desc = "Save current" },
