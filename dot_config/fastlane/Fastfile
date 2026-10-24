@@ -1,0 +1,57 @@
+require "json"
+require "securerandom"
+require "tmpdir"
+
+OP_ITEM = "vfk6jujqblp3c6wvkp4zlmz67i"
+WILDCARD = "*"
+
+opt_out_usage
+default_platform(:ios)
+
+platform :ios do
+  before_all do
+    asc = JSON.parse(`pass show tokens/appl-asc`)
+    app_store_connect_api_key(key_id: asc["key_id"], issuer_id: asc["issuer_id"], key_content: asc["key"])
+    Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.from(hash: lane_context[SharedValues::APP_STORE_CONNECT_API_KEY])
+  end
+
+  desc "Register every device paired with this Mac"
+  lane :devices do
+    Dir.mktmpdir do |dir|
+      sh("xcrun", "devicectl", "list", "devices", "-j", "#{dir}/devices.json", log: false)
+      paired = JSON.parse(File.read("#{dir}/devices.json"))["result"]["devices"]
+        .select { |d| d["hardwareProperties"]["reality"] == "physical" }
+        .to_h { |d| [d["deviceProperties"]["name"], d["hardwareProperties"]["udid"]] }
+      register_devices(devices: paired)
+    end
+  end
+
+  desc "New Apple Distribution cert + wildcard ad hoc profile, stored in 1Password for Feather"
+  lane :feather do
+    devices
+
+    Dir.mktmpdir do |out|
+      cert(development: false, force: true, output_path: out)
+      cert_id = lane_context[SharedValues::CERT_CERTIFICATE_ID]
+
+      Spaceship::ConnectAPI::BundleId.find(WILDCARD) ||
+        Spaceship::ConnectAPI::BundleId.create(name: "Wildcard", platform: "IOS", identifier: WILDCARD)
+
+      sigh(adhoc: true, force: true, app_identifier: WILDCARD, cert_id: cert_id,
+           provisioning_name: "Feather Ad Hoc", output_path: out, filename: "feather.mobileprovision")
+
+      password = SecureRandom.alphanumeric(24)
+      sh("openssl", "x509", "-inform", "DER", "-in", "#{out}/#{cert_id}.cer", "-out", "#{out}/cert.pem", log: false)
+      sh("openssl", "pkcs12", "-export", "-inkey", "#{out}/#{cert_id}.p12", "-in", "#{out}/cert.pem",
+         "-keypbe", "PBE-SHA1-3DES", "-certpbe", "PBE-SHA1-3DES", "-macalg", "sha1",
+         "-out", "#{out}/feather.p12", "-passout", "pass:#{password}", log: false)
+
+      system("op", "item", "edit", OP_ITEM,
+             "feather.feather\\.p12[file]=#{out}/feather.p12",
+             "feather.feather\\.mobileprovision[file]=#{out}/feather.mobileprovision",
+             "feather p12 password[password]=#{password}", in: File::NULL, out: File::NULL) ||
+        UI.user_error!("op item edit failed")
+      UI.success("Feather pair for cert #{cert_id} saved to 1Password item Apple")
+    end
+  end
+end
