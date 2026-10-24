@@ -1,51 +1,51 @@
 [options]
-focus_follows_mouse = true
-mouse_follows_focus = true
-preset_column_widths = [ 0.33, 0.50, 0.75, 1.0 ]
-animation_speed = 420
-auto_center = true
-window_hidden_ratio = 0.0
-window_resize_cycle = true
-reap_empty_workspaces = false
-virtual_workspace_animations = true
-mouse_resize_modifier = "alt"
-horizontal_mouse_warp = -1
+focus_follows_mouse          = true
+mouse_follows_focus          = true
+preset_column_widths         = [ 0.33, 0.50, 0.75, 1.0 ]
+animation_speed              = 420
+auto_center                  = true
+window_hidden_ratio          = 0.0
+window_resize_cycle          = true
+reap_empty_workspaces        = false
+virtual_workspace_animations = false
+mouse_resize_modifier        = "alt"
+horizontal_mouse_warp        = -1
 
 [padding]
-top = 0
+top    = 0
 bottom = 0
-left = 0
-right = 0
+left   = 0
+right  = 0
 
 [swipe]
-sensitivity = 0.35
+sensitivity  = 0.35
 deceleration = 4.0
-continuous = false
+continuous   = false
 
 [swipe.gesture]
 fingers_count = 3
-direction = "Reversed"
-vertical = false
+direction     = "Reversed"
+vertical      = false
 
 [swipe.scroll]
-modifier = "alt"
+modifier          = "alt"
 vertical_modifier = "shift"
 
 [decorations]
-workspace_menu_status = true
+workspace_menu_status  = true
 workspace_popup_status = false
 
 [decorations.active.border]
 enabled = true
-color = "#cba6f7"
-width = 1.6
+color   = "#89b4fa"
+width   = 1.6
 opacity = 1.0
-radius = "auto"
+radius  = "auto"
 
 [restore]
-enabled = true
+enabled          = true
 startup_grace_ms = 2000
-missing_windows = "ignore"
+missing_windows  = "ignore"
 
 [bindings]
 window_virtualnum_1 = "ctrl + alt + shift + cmd - 1"
@@ -60,68 +60,68 @@ window_virtual_north = "ctrl + alt + shift + cmd - k"
 window_virtualmove_south = "ctrl + alt + shift + cmd - u"
 window_virtualmove_north = "ctrl + alt + shift + cmd - i"
 
-window_focus_west = "ctrl + alt + shift + cmd - h"
-window_focus_east = "ctrl + alt + shift + cmd - l"
+window_focus_west  = "ctrl + alt + shift + cmd - h"
+window_focus_east  = "ctrl + alt + shift + cmd - l"
 window_focus_north = "ctrl + alt + shift + cmd - uparrow"
 window_focus_south = "ctrl + alt + shift + cmd - downarrow"
 
 window_focus_first = "ctrl + alt + shift + cmd - home"
-window_focus_last = "ctrl + alt + shift + cmd - end"
+window_focus_last  = "ctrl + alt + shift + cmd - end"
 
-window_swap_west = "ctrl + alt + shift + cmd - a"
-window_swap_east = "ctrl + alt + shift + cmd - d"
+window_swap_west  = "ctrl + alt + shift + cmd - a"
+window_swap_east  = "ctrl + alt + shift + cmd - d"
 window_swap_north = "ctrl + alt + shift + cmd - w"
 window_swap_south = "ctrl + alt + shift + cmd - s"
 
-window_stack = "ctrl + alt + shift + cmd - leftbracket"
+window_stack   = "ctrl + alt + shift + cmd - leftbracket"
 window_unstack = "ctrl + alt + shift + cmd - rightbracket"
 
-window_center = "ctrl + alt + shift + cmd - space"
-window_fullwidth = ["ctrl + alt + shift + cmd - return", "ctrl + alt + shift + cmd - f"]
+window_center    = "ctrl + alt + shift + cmd - space"
+window_fullwidth = [ "ctrl + alt + shift + cmd - return", "ctrl + alt + shift + cmd - f" ]
 
-window_resize = ["ctrl + alt + shift + cmd - r", "ctrl + alt + shift + cmd - equal"]
+window_resize = [ "ctrl + alt + shift + cmd - r", "ctrl + alt + shift + cmd - equal" ]
 window_shrink = "ctrl + alt + shift + cmd - minus"
 
-window_balance = "ctrl + alt + shift + cmd - b"
+window_balance  = "ctrl + alt + shift + cmd - b"
 window_equalize = "ctrl + alt + shift + cmd - x"
 
-window_manage = "ctrl + alt + shift + cmd - t"
-window_snap = "ctrl + alt + shift + cmd - n"
+window_manage         = "ctrl + alt + shift + cmd - t"
+window_snap           = "ctrl + alt + shift + cmd - n"
 window_raise_floating = "ctrl + alt + shift + cmd - g"
 
-mouse_nextdisplay = "ctrl + cmd - tab"
+mouse_nextdisplay  = "ctrl + cmd - tab"
 window_nextdisplay = "ctrl + cmd + shift - tab"
 
 [windows.gaps]
-title = ".*"
+title              = ".*"
 horizontal_padding = 4
-vertical_padding = 2
+vertical_padding   = 2
 
 [windows.pip]
-title = "Picture.*(in)?.*[Pp]icture"
+title    = "Picture.*(in)?.*[Pp]icture"
 floating = true
 
 [windows.finder]
-title = ".*"
+title     = ".*"
 bundle_id = "com.apple.finder"
-floating = true
+floating  = true
 
 [windows.messages]
-title = ".*"
+title     = ".*"
 bundle_id = "com.apple.MobileSMS"
-floating = true
+floating  = true
 
 [windows.kitty]
-title = ".*"
+title     = ".*"
 bundle_id = "net.kovidgoyal.kitty"
-index = 1
+index     = 1
 
 [windows.zen]
-title = ".*"
+title     = ".*"
 bundle_id = "app.zen-browser.zen"
-index = 2
+index     = 2
 
 [windows.systemsettings]
-title = ".*"
+title     = ".*"
 bundle_id = "com.apple.systempreferences"
-floating = true
+floating  = true
