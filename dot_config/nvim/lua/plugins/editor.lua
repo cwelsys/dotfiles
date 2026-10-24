@@ -72,6 +72,19 @@ return {
     },
   },
   {
+    "MagicDuck/grug-far.nvim",
+    keys = {
+      {
+        "<leader>sf",
+        function()
+          require("grug-far").open({ transient = true, prefills = { paths = vim.fn.expand("%:p") } })
+        end,
+        mode = { "n", "x" },
+        desc = "Search and Replace (file)",
+      },
+    },
+  },
+  {
     "mrjones2014/smart-splits.nvim",
     lazy = false,
     build = "./kitty/install-kittens.bash",
