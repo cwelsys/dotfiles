@@ -39,6 +39,7 @@ user_pref("ui.SpellCheckerUnderlineStyle", 1);
 user_pref("browser.menu.showViewImageInfo", true);
 user_pref("browser.bookmarks.openInTabClosesMenu", false);
 user_pref("browser.tabs.unloadTabInContextMenu", false);
+user_pref("browser.link.open_newwindow.restriction", 0);
 
 // PDF / Reader
 user_pref("pdfjs.defaultZoomValue", "page-width");
