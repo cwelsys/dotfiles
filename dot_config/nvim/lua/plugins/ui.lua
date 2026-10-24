@@ -168,6 +168,20 @@ return {
       opts.picker.sources.projects = vim.tbl_deep_extend("force", opts.picker.sources.projects or {}, {
         dev = { vim.env.XDG_PROJECTS_DIR or "~/src" },
       })
+      opts.picker.sources.notifications = vim.tbl_deep_extend("force", opts.picker.sources.notifications or {}, {
+        confirm = function(picker, item)
+          picker:close()
+          if item then
+            vim.fn.setreg("+", item.item.msg)
+            vim.notify("Copied notification to clipboard")
+          end
+        end,
+      })
+      opts.picker.win = vim.tbl_deep_extend("force", opts.picker.win or {}, {
+        input = { keys = { ["<c-o>"] = { "cycle_win", mode = { "i", "n" } } } },
+        list = { keys = { ["<c-o>"] = "cycle_win" } },
+        preview = { keys = { ["<c-o>"] = "cycle_win" } },
+      })
 
       return opts
     end,
