@@ -123,8 +123,8 @@ binds {
     Mod3+Left  { focus-column-left; }
     Mod3+Right { focus-column-right; }
     Mod3+H     { focus-column-left; }
-    Mod3+J     { focus-workspace-down; }
-    Mod3+K     { focus-workspace-up; }
+    Mod3+J     { focus-window-down-or-top; }
+    Mod3+K     { focus-window-up-or-bottom; }
     Mod3+L     { focus-column-right; }
 
     // === Movement ===
@@ -187,8 +187,10 @@ binds {
     Mod+Shift+9 { move-column-to-workspace 9; }
 
     // === Mouse ===
-    Mod+WheelScrollDown      cooldown-ms=150 { focus-workspace-down; }
-    Mod+WheelScrollUp        cooldown-ms=150 { focus-workspace-up; }
+    Mod+WheelScrollDown      cooldown-ms=150 { focus-window-down-or-top; }
+    Mod+WheelScrollUp        cooldown-ms=150 { focus-window-up-or-bottom; }
+    Mod+Alt+WheelScrollDown  cooldown-ms=150 { focus-workspace-down; }
+    Mod+Alt+WheelScrollUp    cooldown-ms=150 { focus-workspace-up; }
     Mod+Ctrl+WheelScrollDown cooldown-ms=150 { move-column-to-workspace-down; }
     Mod+Ctrl+WheelScrollUp   cooldown-ms=150 { move-column-to-workspace-up; }
     Mod3+WheelScrollDown     cooldown-ms=150 { move-column-to-workspace-down; }
