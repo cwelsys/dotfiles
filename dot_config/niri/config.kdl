@@ -44,11 +44,13 @@ layout {
     }
     default-column-width { proportion 0.5; }
     tab-indicator {
+        off
         hide-when-single-tab
         position "left"
         gap -12
         width 8
-        length total-proportion=0.2
+        length total-proportion=0.25
+        // place-within-column
         gaps-between-tabs 8
         corner-radius 4
     }
@@ -129,6 +131,11 @@ recent-windows {
 }
 
 spawn-at-startup "wl-clip-persist" "--clipboard" "regular"
+// spawn-at-startup "kitty"
+// spawn-at-startup "zen-twilight"
+// spawn-at-startup "jellium-desktop"
+// spawn-at-startup "obsidian"
+// spawn-at-startup "slack"
 
 include "local-memory.kdl"
 include "dms/colors.kdl"
@@ -139,6 +146,7 @@ include "dms/outputs.kdl"
 include "dms/cursor.kdl"
 include "dms/windowrules.kdl"
 include "dms/wpblur.kdl"
+// include "column-groups.kdl"
 
 window-rule {
     match is-window-cast-target=true
