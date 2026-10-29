@@ -131,11 +131,6 @@ recent-windows {
 }
 
 spawn-at-startup "wl-clip-persist" "--clipboard" "regular"
-// spawn-at-startup "kitty"
-// spawn-at-startup "zen-twilight"
-// spawn-at-startup "jellium-desktop"
-// spawn-at-startup "obsidian"
-// spawn-at-startup "slack"
 
 include "local-memory.kdl"
 include "dms/colors.kdl"
@@ -146,7 +141,7 @@ include "dms/outputs.kdl"
 include "dms/cursor.kdl"
 include "dms/windowrules.kdl"
 include "dms/wpblur.kdl"
-// include "column-groups.kdl"
+include "column-groups.kdl"
 
 window-rule {
     match is-window-cast-target=true
