@@ -10,52 +10,52 @@ hash = "6124e6e367675c4e7f0125e509bea41"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:chmod"
-rev = "c0529fc"
+rev = "70e0373"
 hash = "87472b05a8c420100f6a2b9cde1e7746"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:diff"
-rev = "c0529fc"
+rev = "70e0373"
 hash = "14558d2829c0aa05e99c57de8f74d199"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:full-border"
-rev = "c0529fc"
+rev = "70e0373"
 hash = "17ebde15c4349f90aedbc45984b98db2"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:git"
-rev = "c0529fc"
+rev = "70e0373"
 hash = "347cc6b190eb0c2fd60513cc7ae37412"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:mount"
-rev = "c0529fc"
-hash = "dbfc342600993eefbb055bff145fa22a"
+rev = "70e0373"
+hash = "f0dcc0ea71d5c59ce0d527f4b8a3937b"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:piper"
-rev = "c0529fc"
+rev = "70e0373"
 hash = "d1e0499cae5f3aeb628c267616d4b682"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-filter"
-rev = "c0529fc"
+rev = "70e0373"
 hash = "d6f7351ea25a43c9b5f4315fa1e23935"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:toggle-pane"
-rev = "c0529fc"
+rev = "70e0373"
 hash = "5b2fbef7d1513ce38ff72623a071a5e"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:vcs-files"
-rev = "c0529fc"
+rev = "70e0373"
 hash = "4f2a05edce73aef2bceb2ee2c134c8f2"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:zoom"
-rev = "c0529fc"
+rev = "70e0373"
 hash = "558bbb58e3dd36d488280a8f10e7b904"
 
 [[plugin.deps]]
@@ -85,7 +85,7 @@ hash = "c40e6de8da7eef1a078eb53e64e2a22b"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:term-cwd"
-rev = "c0529fc"
+rev = "70e0373"
 hash = "ea4d7108bc2c02738ab652064095905f"
 
 [[plugin.deps]]
@@ -120,5 +120,5 @@ hash = "72828957273094ed0ef52792e3290900"
 
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
-rev = "1183892"
-hash = "ce320f877fe709b189433941aba747c4"
+rev = "38c08d8"
+hash = "57d33c9c6107017bf8afc8df186356c5"
