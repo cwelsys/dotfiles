@@ -53,7 +53,7 @@ binds {
 
     Mod+B hotkey-overlay-title="Browser" { spawn "nirirun" "-c" "^zen-twilight$" "--tile" "--" "zen-twilight"; }
 
-    Mod+E hotkey-overlay-title="File Manager" { spawn "nirirun" "-c" "org.gnome.Nautilus" "--" "nautilus" "--new-window"; }
+    Mod+E hotkey-overlay-title="File Manager" { spawn "nirirun" "-c" "dev.duxlabs.files" "--" "dfiles" "open"; }
 
     Mod+F1 hotkey-overlay-title="Toggle Dock" { spawn "dms" "ipc" "call" "dock" "toggleAutoHide"; }
     

@@ -132,7 +132,7 @@ recent-windows {
 
 spawn-at-startup "wl-clip-persist" "--clipboard" "regular"
 
-include "local-memory.kdl"
+include "local.kdl"
 include "dms/colors.kdl"
 include "dms/layout.kdl"
 include "dms/alttab.kdl"
