@@ -164,3 +164,4 @@ window-rule {
         inactive-color "#7d0d2d"
     }
 }
+include "dms/animations.kdl"
