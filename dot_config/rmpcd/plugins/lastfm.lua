@@ -355,6 +355,7 @@ M.setup = function(self, args)
     self.shared_secret = args.shared_secret
     self.update_now_playing = args.update_now_playing == true
     self.enabled = args.enabled == nil or args.enabled
+    self.skip_prefixes = args.skip_prefixes
 
     self.scrobble_queue = Deque.new()
 
@@ -411,9 +412,28 @@ M.setup = function(self, args)
     end)
 end
 
+local function skipped(self, song)
+    if song == nil or song.file == nil or self.skip_prefixes == nil then
+        return false
+    end
+    for _, prefix in ipairs(self.skip_prefixes) do
+        if song.file:sub(1, #prefix) == prefix then
+            return true
+        end
+    end
+    return false
+end
+
 M.song_change = function(self, old, new)
     if not self.enabled or self.session_key == nil then
         return
+    end
+
+    if skipped(self, old) then
+        old = nil
+    end
+    if skipped(self, new) then
+        new = nil
     end
 
     if new ~= nil and (self.update_now_playing or false) then
