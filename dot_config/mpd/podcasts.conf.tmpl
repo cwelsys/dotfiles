@@ -1,0 +1,57 @@
+music_directory         "nfs://pbox/mnt/media/audio"
+playlist_directory      "~/.local/share/mpd-podcasts/playlists"
+state_file              "~/.local/share/mpd-podcasts/state"
+sticker_file            "~/.local/share/mpd-podcasts/sticker.sql"
+restore_paused          "yes"
+bind_to_address         "127.0.0.1"
+port                    "6601"
+replaygain              "auto"
+replaygain_limit        "yes"
+database {
+    plugin              "proxy"
+    host                "pbox"
+    port                "6600"
+}
+
+playlist_plugin {
+    name "cue"
+    enabled "true"
+}
+
+playlist_plugin {
+    name "pls"
+    enabled "true"
+}
+
+decoder {
+    plugin "wildmidi"
+    enabled "no"
+}
+
+decoder {
+    plugin "mpg123"
+    enabled "no"
+}
+
+input_cache {
+    size "1 GB"
+}
+{{- if eq .chezmoi.os "darwin" }}
+log_file                "~/Library/Logs/mpd-podcasts/mpd.log"
+bind_to_address         "~/.cache/mpd-podcasts/socket"
+
+audio_output {
+    type        "osx"
+    name        "CoreAudio"
+    mixer_type  "software"
+    format      "44100:16:2"
+}
+{{- else }}
+bind_to_address         "$XDG_RUNTIME_DIR/mpd-podcasts/socket"
+log_file                "syslog"
+
+audio_output {
+    type        "pipewire"
+    name        "pipewire-podcasts"
+}
+{{- end }}
