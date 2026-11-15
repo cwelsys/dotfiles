@@ -1,0 +1,92 @@
+#!/bin/sh
+
+self_dir=$(cd "$(dirname "$0")" && pwd -P)
+
+real_rmpc() {
+    old_ifs=$IFS
+    IFS=:
+    for dir in $PATH; do
+        [ -n "$dir" ] || continue
+        [ -x "$dir/rmpc" ] || continue
+        [ "$(cd "$dir" 2>/dev/null && pwd -P)" = "$self_dir" ] && continue
+        IFS=$old_ifs
+        printf '%s\n' "$dir/rmpc"
+        return 0
+    done
+    IFS=$old_ifs
+    return 1
+}
+
+case "$(uname -s)" in
+    Darwin)
+        default_music="$HOME/.cache/mpd/socket"
+        default_podcasts="$HOME/.cache/mpd-podcasts/socket"
+        ;;
+    *)
+        default_music="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/mpd/socket"
+        default_podcasts="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/mpd-podcasts/socket"
+        ;;
+esac
+
+music=${MPD_ACTIVE_MUSIC:-$default_music}
+podcasts=${MPD_ACTIVE_PODCASTS:-$default_podcasts}
+state_dir=${MPD_ACTIVE_STATE_DIR:-$HOME/.local/state/mpd-active}
+
+if [ "$1" = "--other" ]; then
+    if [ "$2" = "$podcasts" ]; then
+        printf '%s\n' "$music"
+    else
+        printf '%s\n' "$podcasts"
+    fi
+    exit 0
+fi
+
+rmpc_bin=$(real_rmpc) || {
+    printf '%s\n' "$music"
+    exit 0
+}
+
+is_playing() {
+    case "$1" in
+        /*) [ -S "$1" ] || return 1 ;;
+    esac
+    out=$(mktemp)
+    "$rmpc_bin" -a "$1" status >"$out" 2>/dev/null &
+    pid=$!
+    (sleep 2 && kill "$pid") >/dev/null 2>&1 &
+    killer=$!
+    wait "$pid" 2>/dev/null
+    kill "$killer" 2>/dev/null
+    grep -q '"state":"Play"' "$out"
+    rc=$?
+    rm -f "$out"
+    return $rc
+}
+
+stamp() {
+    v=$(cat "$state_dir/$1" 2>/dev/null)
+    case "$v" in
+        ''|*[!0-9]*) echo 0 ;;
+        *) echo "$v" ;;
+    esac
+}
+
+music_playing=0
+podcasts_playing=0
+is_playing "$music" && music_playing=1
+is_playing "$podcasts" && podcasts_playing=1
+
+if [ "$music_playing" -ne "$podcasts_playing" ]; then
+    if [ "$podcasts_playing" -eq 1 ]; then
+        printf '%s\n' "$podcasts"
+    else
+        printf '%s\n' "$music"
+    fi
+    exit 0
+fi
+
+if [ "$(stamp podcasts)" -gt "$(stamp music)" ]; then
+    printf '%s\n' "$podcasts"
+else
+    printf '%s\n' "$music"
+fi

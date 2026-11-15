@@ -76,6 +76,7 @@
     keybinds: (
         global: {
             "q":       Quit,
+            "M":       ExternalCommand(command: ["sh", "-c", "[ -n \"$RMPC_FLIP_FLAG\" ] && touch \"$RMPC_FLIP_FLAG\" && rmpc remote --pid \"$PID\" keybind q"], description: "Switch music/podcasts"),
             "?":       ShowHelp,
             ":":       CommandMode,
             "I":       ShowCurrentSongInfo,

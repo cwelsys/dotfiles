@@ -1,0 +1,64 @@
+#!/bin/sh
+
+self_dir=$(cd "$(dirname "$0")" && pwd -P)
+
+real_rmpc() {
+    old_ifs=$IFS
+    IFS=:
+    for dir in $PATH; do
+        [ -n "$dir" ] || continue
+        [ -x "$dir/rmpc" ] || continue
+        [ "$(cd "$dir" 2>/dev/null && pwd -P)" = "$self_dir" ] && continue
+        IFS=$old_ifs
+        printf '%s\n' "$dir/rmpc"
+        return 0
+    done
+    IFS=$old_ifs
+    return 1
+}
+
+rmpc_bin=$(real_rmpc) || {
+    echo "rmpc: real rmpc not found on PATH" >&2
+    exit 127
+}
+
+has_subcommand=0
+skip_next=0
+for arg in "$@"; do
+    if [ "$skip_next" -eq 1 ]; then
+        skip_next=0
+        continue
+    fi
+    case "$arg" in
+        -a|--address|--address=*) exec "$rmpc_bin" "$@" ;;
+        -c|--config|-t|--theme|-p|--password|--partition) skip_next=1 ;;
+        -*) ;;
+        *) has_subcommand=1 ;;
+    esac
+done
+
+case " $* " in
+    *" -V "*|*" --version "*|*" -v "*|*" -h "*|*" --help "*) exec "$rmpc_bin" "$@" ;;
+esac
+
+target=$("$self_dir/mpd-active")
+
+if [ "$has_subcommand" -eq 1 ]; then
+    exec "$rmpc_bin" -a "$target" "$@"
+fi
+
+flag="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/rmpc-flip.$$"
+rm -f "$flag"
+RMPC_FLIP_FLAG=$flag
+export RMPC_FLIP_FLAG
+
+while :; do
+    "$rmpc_bin" -a "$target" "$@"
+    rc=$?
+    if [ -e "$flag" ]; then
+        rm -f "$flag"
+        target=$("$self_dir/mpd-active" --other "$target")
+        continue
+    fi
+    exit "$rc"
+done
