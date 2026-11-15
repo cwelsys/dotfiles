@@ -1,6 +1,9 @@
 #!/bin/sh
 
-self_dir=$(cd "$(dirname "$0")" && pwd -P)
+case "$0" in
+    */*) self_dir=${0%/*} ;;
+    *) self_dir=. ;;
+esac
 
 real_rmpc() {
     old_ifs=$IFS
@@ -8,7 +11,7 @@ real_rmpc() {
     for dir in $PATH; do
         [ -n "$dir" ] || continue
         [ -x "$dir/rmpc" ] || continue
-        [ "$(cd "$dir" 2>/dev/null && pwd -P)" = "$self_dir" ] && continue
+        [ "$dir/rmpc" -ef "$0" ] && continue
         IFS=$old_ifs
         printf '%s\n' "$dir/rmpc"
         return 0
