@@ -299,6 +299,60 @@ local function try_resume(self)
     end)
 end
 
+local function reconcile(self)
+    local t = self.track
+    if t == nil then
+        return
+    end
+
+    local file = t.file
+    local local_at = tonumber(mpd.get_song_sticker(file, "elapsedAt") or "") or 0
+
+    remote_get(self, file, function(values, _err)
+        if values == nil then
+            return
+        end
+        local remote_at = tonumber(values.elapsedAt or "")
+        local remote_elapsed = tonumber(values.elapsed or "")
+        if remote_at == nil or remote_elapsed == nil or remote_at <= local_at then
+            return
+        end
+
+        mpd.set_song_sticker(file, "elapsed", tostring(remote_elapsed))
+        mpd.set_song_sticker(file, "elapsedAt", tostring(remote_at))
+        if values.finishedAt ~= nil then
+            mpd.set_song_sticker(file, "finishedAt", values.finishedAt)
+        end
+
+        local cur = self.track
+        if cur == nil or cur.file ~= file or remote_elapsed == 0 then
+            return
+        end
+
+        local status = mpd.get_status()
+        if status == nil or status.state == "stop" or status.elapsed == nil then
+            return
+        end
+
+        local target = math.floor(remote_elapsed - self.rewind_ms / 1000)
+        if target * 1000 < self.min_resume_ms then
+            return
+        end
+        if math.abs(remote_elapsed * 1000 - status.elapsed) < self.min_jump_ms then
+            return
+        end
+
+        local ok, err = mpd.seek_current(tostring(target))
+        if not ok then
+            log.error("resume: seek failed for " .. file .. ": " .. tostring(err))
+            return
+        end
+        cur.elapsed = target * 1000
+        cur.saved = cur.elapsed
+        log.info("resume: " .. file .. " moved to " .. target .. "s (newer position on pbox)")
+    end)
+end
+
 local function poll(self)
     local t = self.track
     if t == nil then
@@ -370,6 +424,7 @@ M.setup = function(self, args)
     self.min_resume_ms = (args.min_resume_s or 30) * 1000
     self.poll_ms = (args.poll_s or 5) * 1000
     self.remote_timeout_ms = (args.remote_timeout_s or 5) * 1000
+    self.min_jump_ms = (args.min_jump_s or 10) * 1000
     self.fresh_start_ms = 3000
     self.late_seek_ms = self.fresh_start_ms + self.remote_timeout_ms + 2000
 
@@ -404,6 +459,7 @@ M.start = function(self)
             self.track.elapsed = status.elapsed
             self.track.saved = status.elapsed
             self.track.duration = status.duration
+            reconcile(self)
         end
         arm_if_playing(self)
     end
@@ -429,7 +485,11 @@ M.state_change = function(self, _old, new)
         if self.track == nil then
             adopt(self, true)
         end
-        try_resume(self)
+        if self.track ~= nil and self.track.pending then
+            try_resume(self)
+        elseif self.track ~= nil and _old == "pause" then
+            reconcile(self)
+        end
         arm_if_playing(self)
         return
     end
