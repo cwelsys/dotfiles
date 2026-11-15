@@ -26,7 +26,9 @@ M.setup = function(self, args)
 end
 
 M.start = function(self)
-    touch(self)
+    if self.path ~= nil and not fs.exists(self.path) then
+        touch(self)
+    end
 end
 
 M.state_change = function(self, _old, _new)

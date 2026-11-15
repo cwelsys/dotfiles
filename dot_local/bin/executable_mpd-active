@@ -49,9 +49,9 @@ rmpc_bin=$(real_rmpc) || {
     exit 0
 }
 
-is_playing() {
+probe() {
     case "$1" in
-        /*) [ -S "$1" ] || return 1 ;;
+        /*) [ -S "$1" ] || { echo down; return; } ;;
     esac
     out=$(mktemp)
     "$rmpc_bin" -a "$1" status >"$out" 2>/dev/null &
@@ -60,10 +60,14 @@ is_playing() {
     killer=$!
     wait "$pid" 2>/dev/null
     { kill "$killer"; wait "$killer"; } 2>/dev/null
-    grep -q '"state":"Play"' "$out"
-    rc=$?
+    if grep -q '"state":"Play"' "$out"; then
+        echo play
+    elif grep -q '"state":' "$out"; then
+        echo up
+    else
+        echo down
+    fi
     rm -f "$out"
-    return $rc
 }
 
 stamp() {
@@ -74,21 +78,23 @@ stamp() {
     esac
 }
 
-music_playing=0
-podcasts_playing=0
-is_playing "$music" && music_playing=1
-is_playing "$podcasts" && podcasts_playing=1
-
-if [ "$music_playing" -ne "$podcasts_playing" ]; then
-    if [ "$podcasts_playing" -eq 1 ]; then
-        printf '%s\n' "$podcasts"
-    else
-        printf '%s\n' "$music"
-    fi
-    exit 0
+if [ "$1" = "--reachable" ]; then
+    [ "$(probe "$2")" != down ]
+    exit $?
 fi
 
-if [ "$(stamp podcasts)" -gt "$(stamp music)" ]; then
+m=$(probe "$music")
+p=$(probe "$podcasts")
+
+if [ "$p" = down ]; then
+    printf '%s\n' "$music"
+elif [ "$m" = down ]; then
+    printf '%s\n' "$podcasts"
+elif [ "$m" = play ] && [ "$p" != play ]; then
+    printf '%s\n' "$music"
+elif [ "$p" = play ] && [ "$m" != play ]; then
+    printf '%s\n' "$podcasts"
+elif [ "$(stamp podcasts)" -gt "$(stamp music)" ]; then
     printf '%s\n' "$podcasts"
 else
     printf '%s\n' "$music"

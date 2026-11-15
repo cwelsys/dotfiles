@@ -60,7 +60,12 @@ while :; do
     rc=$?
     if [ -e "$flag" ]; then
         rm -f "$flag"
-        target=$("$self_dir/mpd-active" --other "$target")
+        other=$("$self_dir/mpd-active" --other "$target")
+        if "$self_dir/mpd-active" --reachable "$other"; then
+            target=$other
+        else
+            echo "rmpc: $other is not reachable, staying on $target" >&2
+        fi
         continue
     fi
     exit "$rc"
