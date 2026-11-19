@@ -1,0 +1,6 @@
+#!/bin/sh
+case "$1 $2" in
+  "inspect-internal rootid"|"subvolume list"|"subvolume show")
+    exec pkexec /usr/bin/btrfs "$@" ;;
+esac
+exec /usr/bin/btrfs "$@"
