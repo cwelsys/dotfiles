@@ -76,6 +76,10 @@ require("repo-status"):setup({
 		hide = { "main", "master", "cwel" },
 		max = 16,
 	},
+	signs = {
+		stashed = "*",
+		conflicted = "~",
+	},
 	styles = {
 		icon = ui.Style():fg("#9399b2"),
 		branch = ui.Style():fg("#cba6f7"),
