@@ -149,11 +149,6 @@ rev = "5351506"
 hash = "48d87cef80e4574125a5c55a4fa0a95e"
 
 [[plugin.deps]]
-use = "ThomasVanRiel/repo-status"
-rev = "2b3ef8b"
-hash = "28fd4e30ed2aaf2e2bbabe38a22c67d0"
-
-[[plugin.deps]]
 use = "glassjaw/difftool"
 rev = "f17e72c"
 hash = "7f0bfd6f9664c658cb6ee0758b7210bd"
@@ -162,6 +157,11 @@ hash = "7f0bfd6f9664c658cb6ee0758b7210bd"
 use = "cwelsys/snapshots"
 rev = "6e4a8e7"
 hash = "da91c350c96e2b71fc618a9521198a59"
+
+[[plugin.deps]]
+use = "cwelsys/repo-status"
+rev = "160c9a7"
+hash = "4bb7cd9f5f9a8e2706e5a8f660aeded0"
 
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"

@@ -70,7 +70,13 @@ require("git"):setup({
 	order = 1500,
 })
 
-require("repo-status"):setup()
+require("repo-status"):setup({
+	align = false,
+	branch = {
+		hide = { "main", "master", "cwel" },
+		max = 16,
+	},
+})
 
 require("difftool"):setup()
 
