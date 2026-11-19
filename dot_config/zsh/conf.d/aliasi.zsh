@@ -129,10 +129,6 @@ fi
 
 alias adb='HOME="$XDG_DATA_HOME"/android adb'
 
-if (( ${+commands[svn]} )); then
-  alias svn='svn --config-dir "$XDG_CONFIG_HOME/subversion"'
-fi
-
 if (( ${+commands[rsync]} )); then
   alias rcp='rsync -avz --progress -h'
   alias rmv='rsync -avz --progress -h --remove-source-files'
