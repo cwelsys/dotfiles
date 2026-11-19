@@ -4,8 +4,8 @@ prepend_keymap = [
   { on = [ "z", "l" ], run = "plugin lazygit", desc = "Lazygit" },
   { on = [ "z", "h" ], run = 'shell "nvim %s +GitFileHistory" --block', desc = "Git file history" },
   { on = [ "z", "s" ], run = "plugin vcs-files", desc = "Git file changes" },
-  { on = [ "z", "d" ], run = "plugin diff", desc = "Diff hovered v selection" },
-  { on = [ "z", "D" ], run = "plugin difftool", desc = "Difftool (nvimdiff)" },
+  { on = [ "z", "d" ], run = "plugin difftool", desc = "Difftool" },
+  { on = [ "z", "D" ], run = "plugin diff", desc = "Diff hovered v selection" },
   { on = [ "z", "o" ], run = "plugin open-git-remote", desc = "Git Open" },
 
   # ── search (s) ───────────────────────────────────────────────────────

@@ -72,9 +72,7 @@ require("git"):setup({
 
 require("repo-status"):setup()
 
-require("difftool"):setup({
-	tool = "nvimdiff",
-})
+require("difftool"):setup()
 
 require("no-header"):setup()
 
