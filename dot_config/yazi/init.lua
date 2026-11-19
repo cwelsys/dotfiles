@@ -71,6 +71,8 @@ require("git"):setup({
 })
 
 require("repo-status"):setup({
+	icon = "\u{e725} ",
+	icon_only_clean = true,
 	align = false,
 	branch = {
 		hide = { "main", "master", "cwel" },
