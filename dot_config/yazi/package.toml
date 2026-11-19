@@ -160,8 +160,8 @@ hash = "da91c350c96e2b71fc618a9521198a59"
 
 [[plugin.deps]]
 use = "cwelsys/repo-status"
-rev = "160c9a7"
-hash = "4bb7cd9f5f9a8e2706e5a8f660aeded0"
+rev = "d7b086f"
+hash = "8a55d9ed0b6f423e0d4d5354ef3cae75"
 
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"

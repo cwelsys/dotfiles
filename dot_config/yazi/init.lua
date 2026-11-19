@@ -76,6 +76,20 @@ require("repo-status"):setup({
 		hide = { "main", "master", "cwel" },
 		max = 16,
 	},
+	styles = {
+		icon = ui.Style():fg("#9399b2"),
+		branch = ui.Style():fg("#cba6f7"),
+		conflicted = ui.Style():fg("#f38ba8"),
+		untracked = ui.Style():fg("#89b4fa"),
+		stashed = ui.Style():fg("#a6adc8"),
+		modified = ui.Style():fg("#f9e2af"),
+		staged = ui.Style():fg("#74c7ec"),
+		renamed = ui.Style():fg("#fab387"),
+		deleted = ui.Style():fg("#cba6f7"),
+		ahead = ui.Style():fg("#a6e3a1"),
+		behind = ui.Style():fg("#f38ba8"),
+		diverged = ui.Style():fg("#94e2d5"),
+	},
 })
 
 require("difftool"):setup()
