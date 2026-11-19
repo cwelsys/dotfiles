@@ -73,27 +73,27 @@ download = [
 
 [plugin]
 prepend_fetchers = [
-  { group = "git", url = "*", run = "git" },
-  { group = "git", url = "*/", run = "git" },
-  { group = "repo-status", url = "*/", run = "repo-status" },
+  { group = "git", url = "local://*", run = "git" },
+  { group = "git", url = "local://*/", run = "git" },
+  { group = "repo-status", url = "local://*/", run = "repo-status" },
 ]
 
 prepend_preloaders = [
-  { mime = "application/openxmlformats-officedocument.*", run = "office" },
-  { mime = "application/oasis.opendocument.*", run = "office" },
-  { mime = "application/ms-*", run = "office" },
-  { mime = "application/msword", run = "office" },
-  { url = "*.docx", run = "office" },
+  { url = "local://*", mime = "application/openxmlformats-officedocument.*", run = "office" },
+  { url = "local://*", mime = "application/oasis.opendocument.*", run = "office" },
+  { url = "local://*", mime = "application/ms-*", run = "office" },
+  { url = "local://*", mime = "application/msword", run = "office" },
+  { url = "local://*.docx", run = "office" },
 ]
 
 prepend_previewers = [
-  { url = "*/", run = "repo-status" },
-  { url = "*.csv", run = 'piper -- xan view "$1"' },
-  { mime = "text/*", run = 'piper -- bat -p --color=always "$1"' },
-  { mime = "application/{*xml,xml-dtd,ecmascript,javascript,sql,csh,tcl,latex,rtf,pgp-signature,pgp-keys,graphql,*+json}", run = 'piper -- bat -p --color=always "$1"' },
-  { mime = "application/openxmlformats-officedocument.*", run = "office" },
-  { mime = "application/oasis.opendocument.*", run = "office" },
-  { mime = "application/ms-*", run = "office" },
-  { mime = "application/msword", run = "office" },
-  { url = "*.docx", run = "office" },
+  { url = "local://*/", run = "repo-status" },
+  { url = "local://*.csv", run = 'piper -- xan view "$1"' },
+  { url = "local://*", mime = "text/*", run = 'piper -- bat -p --color=always "$1"' },
+  { url = "local://*", mime = "application/{*xml,xml-dtd,ecmascript,javascript,sql,csh,tcl,latex,rtf,pgp-signature,pgp-keys,graphql,*+json}", run = 'piper -- bat -p --color=always "$1"' },
+  { url = "local://*", mime = "application/openxmlformats-officedocument.*", run = "office" },
+  { url = "local://*", mime = "application/oasis.opendocument.*", run = "office" },
+  { url = "local://*", mime = "application/ms-*", run = "office" },
+  { url = "local://*", mime = "application/msword", run = "office" },
+  { url = "local://*.docx", run = "office" },
 ]
