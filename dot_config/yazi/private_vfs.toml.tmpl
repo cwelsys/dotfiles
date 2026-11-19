@@ -1,0 +1,23 @@
+{{- $fleet := dict -}}{{- if hasKey . "hosts" -}}{{- $fleet = .hosts -}}{{- end -}}
+{{- range $n, $h := $fleet }}
+{{- if ne $n $.hostname }}
+[sftp.{{ $n }}]
+host = "{{ $n }}"
+user = "cwel"
+port = 22
+{{ end -}}
+{{- end -}}
+{{- if and (lookPath "rclone") (stat (joinPath .chezmoi.homeDir ".config/rclone/rclone.conf")) -}}
+{{- $remotes := dict -}}
+{{- range $name, $opts := output "rclone" "config" "dump" | fromJson -}}
+{{- if hasKey $opts "type" -}}
+{{- $backend := dict -}}
+{{- range $k, $v := $opts -}}
+{{- if not (hasPrefix "_" $k) -}}{{- $_ := set $backend $k $v -}}{{- end -}}
+{{- end -}}
+{{- $_ := set $remotes ($name | lower | replace " " "-") (dict "kind" "scope" "run" "rclone" "root" "/" "backend" $backend) -}}
+{{- end -}}
+{{- end }}
+
+{{ dict "rclone" $remotes | toToml }}
+{{- end -}}
