@@ -38,6 +38,7 @@ Library/**
 {{ if ne .chezmoi.os "linux" }}
 .config/systemd/
 .config/systemd/**
+.local/bin/btrfs
 {{ end }}
 
 {{ if ne .osid "linux-arch" }}
