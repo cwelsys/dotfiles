@@ -159,9 +159,9 @@ rev = "f17e72c"
 hash = "7f0bfd6f9664c658cb6ee0758b7210bd"
 
 [[plugin.deps]]
-use = "Mikilio/snapshots"
-rev = "dd1380e"
-hash = "f0ebee614b41fedcabc749aaff9b6b3a"
+use = "cwelsys/snapshots"
+rev = "6e4a8e7"
+hash = "da91c350c96e2b71fc618a9521198a59"
 
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
