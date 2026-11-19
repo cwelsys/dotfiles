@@ -118,6 +118,11 @@ use = "GianniBYoung/rsync"
 rev = "b5c657a"
 hash = "72828957273094ed0ef52792e3290900"
 
+[[plugin.deps]]
+use = "cwelsys/zjump"
+rev = "10fd736"
+hash = "8ff1bbc1b7d105123a5843525121edac"
+
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
 rev = "38c08d8"
