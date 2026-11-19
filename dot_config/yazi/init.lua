@@ -70,6 +70,12 @@ require("git"):setup({
 	order = 1500,
 })
 
+require("repo-status"):setup()
+
+require("difftool"):setup({
+	tool = "nvimdiff",
+})
+
 require("no-header"):setup()
 
 require("term-cwd"):setup()

@@ -94,11 +94,6 @@ rev = "e14e5a1"
 hash = "633f5e9261c19b0f7a7be83788f42e81"
 
 [[plugin.deps]]
-use = "KKV9/compress"
-rev = "80e5268"
-hash = "868db729374b97871bc30b96d0e9061f"
-
-[[plugin.deps]]
 use = "cwelsys/command"
 rev = "3a103d2"
 hash = "7318be8beef0185715cd87662b9b270d"
@@ -122,6 +117,51 @@ hash = "72828957273094ed0ef52792e3290900"
 use = "cwelsys/zjump"
 rev = "10fd736"
 hash = "8ff1bbc1b7d105123a5843525121edac"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:compress"
+rev = "1ef5fe0"
+hash = "e360c7d4f40ecd5d4926dd8f5bca4774"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:rclone"
+rev = "1ef5fe0"
+hash = "bc400c5fad30db75cbc1ace5950964b5"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:smart-enter"
+rev = "1ef5fe0"
+hash = "187cc58ba7ac3befd49c342129e6f1b6"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:smart-paste"
+rev = "1ef5fe0"
+hash = "5be02722d97561b6f7aec22429aa00be"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:visual-pivot"
+rev = "1ef5fe0"
+hash = "11e7b50ca963cc9a7779ddccd217ab7e"
+
+[[plugin.deps]]
+use = "superb-striker/retarget-link"
+rev = "5351506"
+hash = "48d87cef80e4574125a5c55a4fa0a95e"
+
+[[plugin.deps]]
+use = "ThomasVanRiel/repo-status"
+rev = "2b3ef8b"
+hash = "28fd4e30ed2aaf2e2bbabe38a22c67d0"
+
+[[plugin.deps]]
+use = "glassjaw/difftool"
+rev = "f17e72c"
+hash = "7f0bfd6f9664c658cb6ee0758b7210bd"
+
+[[plugin.deps]]
+use = "Mikilio/snapshots"
+rev = "dd1380e"
+hash = "f0ebee614b41fedcabc749aaff9b6b3a"
 
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
